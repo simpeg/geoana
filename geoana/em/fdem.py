@@ -12,14 +12,10 @@ from scipy.special import erf
 import numpy as np
 
 
-
 class ElectricDipole_WholeSpace(BaseElectricDipole, BaseFDEM):
 
     def electric_field(self, xyz, **kwargs):
         pass
-
-
-
 
 
 def E_from_EDWS(XYZ, srcLoc, sig, f, current=1., length=1., orientation='X', kappa=0., epsr=1., t=0.):

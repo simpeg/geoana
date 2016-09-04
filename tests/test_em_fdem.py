@@ -11,10 +11,7 @@ from geoana.em import fdem
 class TestFDEM(unittest.TestCase):
 
     def test_vector(self):
-
         edws = fdem.ElectricDipole_WholeSpace()
-        print(edws.trait_names())
-
 
 if __name__ == '__main__':
     unittest.main()

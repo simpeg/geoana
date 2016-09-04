@@ -29,6 +29,16 @@ class DocumentedTrait(tr.TraitType):
             )
         )
 
+    def get_property(self, name):
+
+        def fget(self):
+            return getattr(self.traits, name)
+
+        def fset(self, value):
+            return setattr(self.traits, name, value)
+
+        return property(fget=fget, fset=fset, doc=self.help)
+
 
 class DocumentedNumber(DocumentedTrait):
 

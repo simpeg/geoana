@@ -8,13 +8,14 @@ from .. import traits as tr
 
 import numpy as np
 from ipywidgets import Latex
+import warnings
 
 
 class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
 
     @tr.observe('sigma')
     def _sigma_changed(self, change):
-        print("Warning: Sigma is not involved in the calculation.")
+        warnings.warn("Sigma is not involved in the calculation", UserWarning)
 
     def vector_potential(self, xyz, **kwargs):
         """Vector potential of a static magnetic dipole
