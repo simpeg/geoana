@@ -3,12 +3,9 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from ..base import BaseAnalytic
 from .base import BaseElectricDipole, BaseFDEM
-from .. import traits as tr
 
 from scipy.constants import mu_0, pi, epsilon_0
-from scipy.special import erf
 import numpy as np
 
 
@@ -45,10 +42,10 @@ def E_from_EDWS(XYZ, srcLoc, sig, f, current=1., length=1., orientation='X', kap
     dz = XYZ[:,2]-srcLoc[2]
 
     r  = np.sqrt( dx**2. + dy**2. + dz**2.)
-    # k  = np.sqrt( -1j*2.*np.pi*f*mu*sig )
+    # k  = np.sqrt( -1j*2.*pi*f*mu*sig )
     k  = np.sqrt( omega(f)**2. *mu*epsilon -1j*omega(f)*mu*sig )
 
-    front = current * length / (4.*np.pi*sig_hat* r**3) * np.exp(-1j*k*r)
+    front = current * length / (4.*pi*sig_hat* r**3) * np.exp(-1j*k*r)
     mid   = -k**2 * r**2 + 3*1j*k*r + 3
 
     if orientation.upper() == 'X':
@@ -161,7 +158,7 @@ def MagneticDipoleFields(srcLoc, obsLoc, component, orientation='Z', moment=1., 
 
         # dot product with rx orientation
         inside_dot_rx = (inside * rx).sum(axis=1)
-        front = (mu/(4.* np.pi * r**3))
+        front = (mu/(4.* pi * r**3))
 
         B.append(Utils.mkvc(front * inside_dot_rx))
 
