@@ -4,22 +4,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import traitlets as tr
-from traitlets import TraitError
+from traitlets import TraitError, observe
 import numpy as np
 from six import string_types
-
-
-VECTOR_DIRECTIONS = dict(
-    X=[1, 0, 0],
-    Y=[0, 1, 0],
-    Z=[0, 0, 1],
-    EAST=[1, 0, 0],
-    WEST=[-1, 0, 0],
-    NORTH=[0, 1, 0],
-    SOUTH=[0, -1, 0],
-    UP=[0, 0, 1],
-    DOWN=[0, 0, -1],
-)
 
 
 class DocumentedTrait(tr.TraitType):
@@ -41,6 +28,44 @@ class DocumentedTrait(tr.TraitType):
                 cls=self.sphinx_class
             )
         )
+
+
+class DocumentedNumber(DocumentedTrait):
+
+    @property
+    def sphinx_extra(self):
+        if (getattr(self, 'min', None) is None and
+                getattr(self, 'max', None) is None):
+            return ''
+        return ', Range: [{mn}, {mx}]'.format(
+            mn='-inf' if getattr(self, 'min', None) is None else self.min,
+            mx='inf' if getattr(self, 'max', None) is None else self.max
+        )
+
+
+class Int(DocumentedNumber, tr.Int):
+    pass
+
+
+class Float(DocumentedNumber, tr.Float):
+    pass
+
+
+VECTOR_DIRECTIONS = {
+    'ZERO': [0, 0, 0],
+    'X': [1, 0, 0],
+    'Y': [0, 1, 0],
+    'Z': [0, 0, 1],
+    '-X': [-1, 0, 0],
+    '-Y': [0, -1, 0],
+    '-Z': [0, 0, -1],
+    'EAST': [1, 0, 0],
+    'WEST': [-1, 0, 0],
+    'NORTH': [0, 1, 0],
+    'SOUTH': [0, -1, 0],
+    'UP': [0, 0, 1],
+    'DOWN': [0, 0, -1],
+}
 
 
 class Vector(DocumentedTrait):

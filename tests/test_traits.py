@@ -19,12 +19,6 @@ class SimpleAnalytic(geoana.BaseAnalytic):
 
 class TestTraits(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     def test_vector(self):
 
         v = SimpleAnalytic()
