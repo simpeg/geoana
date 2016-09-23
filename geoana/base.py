@@ -7,7 +7,7 @@ import traitlets as tr
 from six import with_metaclass
 
 
-class AutoDocumentor(type):
+class _PropertyMetaclass(type):
 
     def __new__(mcs, name, bases, classdict):
 
@@ -24,7 +24,7 @@ class AutoDocumentor(type):
             )
 
         # Find all of the previous traits bases
-        traits_base = tuple([base._traits_class for base in bases])
+        traits_base = tuple([base._backend_class for base in bases])
 
         # Grab all the traitlets stuff
         traits_dict = {
@@ -37,8 +37,8 @@ class AutoDocumentor(type):
 
         # Create a new traits class and merge with previous
         my_traits = type(str('HasTraits'), (tr.HasTraits,), traits_dict)
-        _traits_class = type(str('HasTraits'), (my_traits,) + traits_base, {})
-        classdict["_traits_class"] = _traits_class
+        _backend_class = type(str('HasTraits'), (my_traits,) + traits_base, {})
+        classdict["_backend_class"] = _backend_class
 
         # Overwrite the traits with properties, delete the others
         for n in traits_dict:
@@ -60,17 +60,17 @@ class AutoDocumentor(type):
         classdict["__doc__"] = __doc__
 
         # Create the new class
-        newcls = super(AutoDocumentor, mcs).__new__(
+        newcls = super(_PropertyMetaclass, mcs).__new__(
             mcs, name, bases, classdict
         )
         return newcls
 
 
-class BaseAnalytic(with_metaclass(AutoDocumentor)):
+class HasProperties(with_metaclass(_PropertyMetaclass)):
 
     def __init__(self, **kwargs):
-        self.traits = self._traits_class()
+        self.backend = self._backend_class()
         for key in kwargs:
-            if key not in self.traits.trait_names():
+            if key not in self.backend.trait_names():
                 raise KeyError('{}: Keyword input is not trait'.format(key))
-            setattr(self.traits, key, kwargs[key])
+            setattr(self.backend, key, kwargs[key])

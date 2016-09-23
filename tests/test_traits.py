@@ -10,7 +10,7 @@ import geoana
 import geoana.traits as tr
 
 
-class Simple1(geoana.BaseAnalytic):
+class Simple1(geoana.HasProperties):
         orientation1 = tr.Vector(
             help='Orientation of the dipole',
             normalize=True,
@@ -29,7 +29,7 @@ class Simple2(Simple1):
         )
 
 
-class SimpleOther(geoana.BaseAnalytic):
+class SimpleOther(geoana.HasProperties):
         blah = tr.Vector(
             help='Orientation of the dipole',
             normalize=True,

@@ -3,14 +3,14 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from ..base import BaseAnalytic
+from ..base import HasProperties
 from .. import traits as tr
 
 import numpy as np
 from scipy.constants import mu_0, pi, epsilon_0
 
 
-class BaseEM(BaseAnalytic):
+class BaseEM(HasProperties):
 
     mu = tr.Float(
         help="Magnetic permeability.",
