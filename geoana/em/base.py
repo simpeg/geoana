@@ -3,45 +3,43 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from ..base import HasProperties
-from .. import traits as tr
-
 import numpy as np
+import properties
 from scipy.constants import mu_0, pi, epsilon_0
 
 
-class BaseEM(HasProperties):
+class BaseEM(properties.HasProperties()):
 
-    mu = tr.Float(
+    mu = properties.Float(
         help="Magnetic permeability.",
-        default_value=mu_0,
+        default=mu_0,
         min=0.0
     )
 
-    sigma = tr.Float(
+    sigma = properties.Float(
         help="Electrical conductivity (S/m)",
-        default_value=1.0,
+        default=1.0,
         min=0.0
     )
 
-    epsilon = tr.Float(
+    epsilon = properties.Float(
         help="Permitivity value",
-        default_value=epsilon_0,
+        default=epsilon_0,
         min=0.0
     )
 
 
 class BaseDipole(BaseEM):
 
-    orientation = tr.Vector(
+    orientation = properties.Vector3(
         help="orientation of dipole",
-        default_value='X',
-        normalize=True
+        default='X',
+        length=1.0
     )
 
-    location = tr.Vector(
+    location = properties.Vector3(
         help="location of the electric dipole source",
-        default_value='ZERO'
+        default='ZERO'
     )
 
     def offset_from_location(self, xyz):
@@ -61,9 +59,9 @@ class BaseDipole(BaseEM):
 
 class BaseFDEM(BaseEM):
 
-    frequency = tr.Float(
+    frequency = properties.Float(
         help="Source frequency (Hz)",
-        default_value=1e2,
+        default=1e2,
         min=0.0
     )
 
@@ -85,23 +83,23 @@ class BaseFDEM(BaseEM):
 
 class BaseElectricDipole(BaseDipole):
 
-    length = tr.Float(
+    length = properties.Float(
         help="length of the dipole (m)",
-        default_value=1.0,
+        default=1.0,
         min=0.0
     )
 
-    current = tr.Float(
+    current = properties.Float(
         help="size of the injected current (A)",
-        default_value=1.0,
+        default=1.0,
         min=0.0
     )
 
 
 class BaseMagneticDipole(BaseDipole):
 
-    moment = tr.Float(
+    moment = properties.Float(
         help="moment of the dipole (Am^2)",
-        default_value=1.0,
+        default=1.0,
         min=0.0
     )
