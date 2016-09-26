@@ -1,0 +1,6 @@
+numpy
+scipy
+properties
+ipywidgets
+vectormath
+utm
