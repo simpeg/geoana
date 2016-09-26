@@ -22,7 +22,10 @@ before_install:
   - conda update --yes conda
 
 install:
-  - pip install -r requirements.txt
+  - conda install --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy ipywidgets nose utm properties
+  - git clone https://github.com/3ptscience/vectormath;
+  - export PYTHONPATH=$PYTHONPATH:./vectormath/vectormath
+  - pip install properties
 
 # Run test
 script:
