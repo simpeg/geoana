@@ -1,0 +1,20 @@
+language: python
+python:
+  - 3.4
+  - 2.7
+
+sudo: false
+
+env:
+  - TEST_DIR='tests'
+
+install:
+  - pip install --upgrade pip;
+  - pip install -r requirements.txt
+  - pip install sphinx_rtd_theme
+  - git clone https://github.com/3ptscience/vectormath;
+  - export PYTHONPATH=$PWD/geoana:$PWD/vectormath:$PYTHONPATH
+
+# Run test
+script:
+  - nosetests $TEST_DIR
