@@ -13,7 +13,7 @@ install:
   - pip install -r requirements.txt
   - pip install sphinx_rtd_theme
   - git clone https://github.com/3ptscience/vectormath;
-  - export PATH=$PWD/geoana:$PWD/vectormath:$PATH
+  - export PYTHONPATH=$PWD/geoana:$PWD/vectormath:$PYTHONPATH
 
 # Run test
 script:
