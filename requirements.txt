@@ -1,5 +1,5 @@
 numpy
 scipy
-properties
 ipywidgets
 utm
+git+git://github.com/3ptscience/properties@feat/backends
