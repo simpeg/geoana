@@ -2,4 +2,5 @@ numpy
 scipy
 ipywidgets
 utm
+sphinx
 git+git://github.com/3ptscience/properties@feat/backends
