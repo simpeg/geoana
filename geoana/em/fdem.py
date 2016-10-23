@@ -7,6 +7,7 @@ from .base import BaseElectricDipole, BaseFDEM
 
 from scipy.constants import mu_0, pi, epsilon_0
 import numpy as np
+import warnings
 
 
 class ElectricDipole_WholeSpace(BaseElectricDipole, BaseFDEM):
@@ -16,16 +17,15 @@ class ElectricDipole_WholeSpace(BaseElectricDipole, BaseFDEM):
 
 
 def E_from_EDWS(XYZ, srcLoc, sig, f, current=1., length=1., orientation='X', kappa=0., epsr=1., t=0.):
+    """E_from_EDWS
+    Computing the analytic electric fields (E) from an electrical dipole in a wholespace
+    - You have the option of computing E for multiple frequencies at a single reciever location
+      or a single frequency at multiple locations
 
-    """
-        Computing the analytic electric fields (E) from an electrical dipole in a wholespace
-        - You have the option of computing E for multiple frequencies at a single reciever location
-          or a single frequency at multiple locations
-
-        :param numpy.array XYZ: reciever locations at which to evaluate E
-        :param float epsr: relative permitivitty value (unitless),  default is 1.0
-        :rtype: numpy.array
-        :return: Ex, Ey, Ez: arrays containing all 3 components of E evaluated at the specified locations and frequencies.
+    :param numpy.array XYZ: reciever locations at which to evaluate E
+    :param float epsr: relative permitivitty value (unitless),  default is 1.0
+    :rtype: numpy.array
+    :return: Ex, Ey, Ez: arrays containing all 3 components of E evaluated at the specified locations and frequencies.
     """
 
     mu = mu_0*(1+kappa)
@@ -35,15 +35,15 @@ def E_from_EDWS(XYZ, srcLoc, sig, f, current=1., length=1., orientation='X', kap
     XYZ = Utils.asArray_N_x_Dim(XYZ, 3)
     # Check
     if XYZ.shape[0] > 1 & f.shape[0] > 1:
-        raise Exception("I/O type error: For multiple field locations only a single frequency can be specified.")
+        raise Exception('I/O type error: For multiple field locations only a single frequency can be specified.')
 
-    dx = XYZ[:,0]-srcLoc[0]
-    dy = XYZ[:,1]-srcLoc[1]
-    dz = XYZ[:,2]-srcLoc[2]
+    dx = XYZ[:, 0] - srcLoc[0]
+    dy = XYZ[:, 1] - srcLoc[1]
+    dz = XYZ[:, 2] - srcLoc[2]
 
-    r  = np.sqrt( dx**2. + dy**2. + dz**2.)
+    r = np.sqrt(dx**2. + dy**2. + dz**2.)
     # k  = np.sqrt( -1j*2.*pi*f*mu*sig )
-    k  = np.sqrt( omega(f)**2. *mu*epsilon -1j*omega(f)*mu*sig )
+    k = np.sqrt(omega(f)**2. * mu * epsilon - 1j * omega(f) * mu * sig)
 
     front = current * length / (4.*pi*sig_hat* r**3) * np.exp(-1j*k*r)
     mid   = -k**2 * r**2 + 3*1j*k*r + 3
@@ -69,8 +69,6 @@ def E_from_EDWS(XYZ, srcLoc, sig, f, current=1., length=1., orientation='X', kap
         return Ex, Ey, Ez
 
 
-
-
 def MagneticDipoleFields(srcLoc, obsLoc, component, orientation='Z', moment=1., mu=mu_0):
     """
         Calculate the vector potential of a set of magnetic dipoles
@@ -93,26 +91,30 @@ def MagneticDipoleFields(srcLoc, obsLoc, component, orientation='Z', moment=1., 
     """
 
     if isinstance(orientation, str):
-        assert orientation.upper() in ['X', 'Y', 'Z'], ("orientation must be 'x', "
-                                                      "'y', or 'z' or a vector"
-                                                      "not {}".format(orientation)
-                                                      )
+        assert orientation.upper() in ['X', 'Y', 'Z'], (
+            "orientation must be 'x', 'y', or 'z' or a vector not {}"
+            .format(orientation)
+        )
     elif (not np.allclose(np.r_[1., 0., 0.], orientation) or
           not np.allclose(np.r_[0., 1., 0.], orientation) or
           not np.allclose(np.r_[0., 0., 1.], orientation)):
-        warnings.warn('Arbitrary trasnmitter orientations ({}) not thouroughly tested '
-                      'Pull request on a test anyone? bueller?').format(orientation)
+        warnings.warn(
+            'Arbitrary trasnmitter orientations ({}) not thouroughly tested '
+            'Pull request on a test anyone? bueller?'.format(orientation)
+        )
 
     if isinstance(component, str):
-        assert component.upper() in ['X', 'Y', 'Z'], ("component must be 'x', "
-                                                      "'y', or 'z' or a vector"
-                                                      "not {}".format(component)
-                                                      )
+        assert component.upper() in ['X', 'Y', 'Z'], (
+            "component must be 'x', 'y', or 'z' or a vector not {}"
+            .format(component)
+        )
     elif (not np.allclose(np.r_[1., 0., 0.], component) or
           not np.allclose(np.r_[0., 1., 0.], component) or
           not np.allclose(np.r_[0., 0., 1.], component)):
-        warnings.warn('Arbitrary receiver orientations ({}) not thouroughly tested '
-                      'Pull request on a test anyone? bueller?').format(component)
+        warnings.warn(
+            'Arbitrary receiver orientations ({}) not thouroughly tested '
+            'Pull request on a test anyone? bueller?'
+        ).format(component)
 
     if isinstance(orientation, str):
         orientation = orientationDict[orientation.upper()]
@@ -120,14 +122,17 @@ def MagneticDipoleFields(srcLoc, obsLoc, component, orientation='Z', moment=1., 
     if isinstance(component, str):
         component = orientationDict[component.upper()]
 
-    assert np.linalg.norm(orientation, 2) == 1., ('orientation must be a unit '
-                                                  'vector. Use "moment=X to '
-                                                  'scale source fields')
+    assert np.linalg.norm(orientation, 2) == 1., (
+        "orientation must be a unit vector. "
+        "Use 'moment=X to scale source fields"
+    )
 
     if np.linalg.norm(component, 2) != 1.:
-        warnings.warn('The magnitude of the receiver component vector is > 1, '
-                      ' it is {}. The receiver fields will be scaled.'
-                      ).format(np.linalg.norm(component, 2))
+        warnings.warn(
+            'The magnitude of the receiver component vector is > 1, '
+            ' it is {}. The receiver fields will be scaled.'
+            .format(np.linalg.norm(component, 2))
+        )
 
     srcLoc = np.atleast_2d(srcLoc)
     component = np.atleast_2d(component)

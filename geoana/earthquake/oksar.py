@@ -25,112 +25,111 @@ import matplotlib.pyplot as plt
 
 class EarthquakeInterferogram(properties.UidModel):
     location = properties.Vector2(
-        "interferogram location (bottom N, left E)",
+        'interferogram location (bottom N, left E)',
         required=True
     )
 
     location_UTM_zone = properties.Integer(
-        "UTM zone",
+        'UTM zone',
         required=True
     )
 
     shape = properties.Array(
-        "number of pixels in the interferogram",
+        'number of pixels in the interferogram',
         shape=(2,),
         dtype=int,
-        wrapper=tuple,
         required=True
     )
 
     pixel_size = properties.Array(
-        "Size of each pixel (northing, easting)",
+        'Size of each pixel (northing, easting)',
         shape=(2,),
         dtype=float,
         required=True
     )
 
     data = properties.Array(
-        "Processed interferogram data (unwrapped)",
+        'Processed interferogram data (unwrapped)',
         dtype=float,
         required=True
     )
 
     ref = properties.Vector2(
-        "interferogram reference",
+        'interferogram reference',
         required=True
     )
 
     ref_incidence = properties.Float(
-        "Incidence angle",
+        'Incidence angle',
         required=True
     )
 
     scaling = properties.Float(
-        "Scaling of the interferogram",
+        'Scaling of the interferogram',
         default=1.0
     )
 
-    satellite_name = properties.String("Name of the satelite.")
+    satellite_name = properties.String('Name of the satelite.')
 
     satellite_fringe_interval = properties.Float(
-        "Fringe interval",
+        'Fringe interval',
         default=0.028333
     )
 
     satellite_azimuth = properties.Float(
-        "satellite_azimuth",
+        'satellite_azimuth',
         required=True
     )
 
     satellite_altitude = properties.Float(
-        "satellite_altitude",
+        'satellite_altitude',
         required=True
     )
 
     local_rigidity = properties.Float(
-        "Local rigidity",
+        'Local rigidity',
         default=3e10
     )
 
     local_earth_radius = properties.Float(
-        "Earth radius",
+        'Earth radius',
         default=6371000.
     )
 
     date1 = properties.DateTime(
-        "date1",
+        'date1',
         required=True
     )
 
     date2 = properties.DateTime(
-        "date2",
+        'date2',
         required=True
     )
 
     processed_by = properties.String(
-        "processed_by",
+        'processed_by',
         required=True
     )
 
     processed_date = properties.DateTime(
-        "processed_date",
+        'processed_date',
         required=True
     )
 
     copyright = properties.String(
-        "copyright",
+        'copyright',
         required=True
     )
 
     data_source = properties.String(
-        "data_source",
+        'data_source',
         required=True
     )
 
-    event_date = properties.DateTime("Date of the earthquake")
-    event_gcmt_id = properties.String("GCMT ID")
-    event_name = properties.String("Earthquake name")
-    event_country = properties.String("Earthquake country")
+    event_date = properties.DateTime('Date of the earthquake')
+    event_gcmt_id = properties.String('GCMT ID')
+    event_name = properties.String('Earthquake name')
+    event_country = properties.String('Earthquake country')
 
     def _get_plot_data(self):
 
@@ -232,7 +231,7 @@ class EarthquakeInterferogram(properties.UidModel):
         """
 
         utmZone = self.location_UTM_zone
-        refPoint = vmath.Vector3(self.ref[0], self.ref[1], 0)
+        refPoint = vmath.Vector3(self.ref.x, self.ref.y, 0)
         satAltitude = self.satellite_altitude
         satAzimuth = self.satellite_azimuth
         satIncidence = self.ref_incidence
@@ -341,37 +340,36 @@ class EarthquakeInterferogram(properties.UidModel):
 
 class Oksar(properties.HasProperties):
 
-    beta = properties.Float("beta", default=3E10)
-    mu = properties.Float("mu", default=3E10)
+    beta = properties.Float('beta', default=3E10)
+    mu = properties.Float('mu', default=3E10)
 
-    strike = properties.Float("Strike", min=0, max=360)
-    dip = properties.Float("Dip", default=45, min=0, max=90)
-    rake = properties.Float("Rake", default=90, min=-180, max=180)
-    slip = properties.Float("Slip", default=0.5, min=0)
-    length = properties.Float("Fault length", default=10000., min=0)
-    center = properties.Vector2("Center of the fault plane.")
-    depth_top = properties.Float("Top of fault", min=0)
-    depth_bottom = properties.Float("Bottom of fault", default=10000, min=0)
+    strike = properties.Float('Strike', min=0, max=360)
+    dip = properties.Float('Dip', default=45, min=0, max=90)
+    rake = properties.Float('Rake', default=90, min=-180, max=180)
+    slip = properties.Float('Slip', default=0.5, min=0)
+    length = properties.Float('Fault length', default=10000., min=0)
+    center = properties.Vector2('Center of the fault plane.')
+    depth_top = properties.Float('Top of fault', min=0)
+    depth_bottom = properties.Float('Bottom of fault', default=10000, min=0)
 
     O = properties.Vector2(
-        "Origin of the simulation domain", required=True
+        'Origin of the simulation domain', required=True
     )
 
     U = properties.Vector2(
-        "U direction of the simulation domain", required=True
+        'U direction of the simulation domain', required=True
     )
 
     V = properties.Vector2(
-        "V direction of the simulation domain", required=True
+        'V direction of the simulation domain', required=True
     )
 
     shape = properties.Array(
-        "number of pixels in the simulation",
+        'number of pixels in the simulation',
         shape=(2,),
         default=(300, 300),
         dtype=int,
-        wrapper=tuple,
-        required=True
+        # required=True
     )
 
     @property
@@ -701,24 +699,24 @@ def example():
     data = np.fromstring(dinar_file.content, np.float32)
 
     dinar = EarthquakeInterferogram(
-        uid="dinar",
-        title="Dinar, Turkey",
+        # uid='dinar',
+        title='Dinar, Turkey',
         description=(
-            "On October 1, 1995, a strong earthquake ruptured a section of "
-            "the Dinar-Civril fault in SW Turkey. Around 30% of the buildings "
-            "in the nearby town of Dinar were destroyed. 92 inhabitants were "
-            "killed and over 200 injured."
+            'On October 1, 1995, a strong earthquake ruptured a section of '
+            'the Dinar-Civril fault in SW Turkey. Around 30% of the buildings '
+            'in the nearby town of Dinar were destroyed. 92 inhabitants were '
+            'killed and over 200 injured.'
         ),
-        event_country="Turkey",
-        event_date="1995-09-30T18:00:00Z",
-        event_gcmt_id="100195B",
-        event_name="Dinar",
-        copyright="ESA",
-        data_source="ESA",
-        date1="1995-08-12T18:00:00Z",
-        date2="1995-12-31T17:00:00Z",
-        processed_by="GarethFunning",
-        processed_date="2003-01-20T17:00:00Z",
+        event_country='Turkey',
+        event_date='1995-09-30T18:00:00Z',
+        event_gcmt_id='100195B',
+        event_name='Dinar',
+        copyright='ESA',
+        data_source='ESA',
+        date1='1995-08-12T18:00:00Z',
+        date2='1995-12-31T17:00:00Z',
+        processed_by='GarethFunning',
+        processed_date='2003-01-20T17:00:00Z',
         ref_incidence=23,
         ref=[741140., 4230327.],
         scaling=0.0045040848895,
@@ -731,7 +729,7 @@ def example():
         satellite_altitude=788792,
         satellite_azimuth=192,
         satellite_fringe_interval=0.028333333,
-        satellite_name="ERS",
+        satellite_name='ERS',
         data=data
     )
 
