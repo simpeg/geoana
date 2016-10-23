@@ -8,7 +8,7 @@ import properties
 from scipy.constants import mu_0, pi, epsilon_0
 
 
-class BaseEM(properties.HasProperties()):
+class BaseEM(properties.HasProperties):
 
     mu = properties.Float(
         help="Magnetic permeability.",

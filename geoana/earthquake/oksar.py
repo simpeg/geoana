@@ -163,7 +163,7 @@ class EarthquakeInterferogram(properties.UidModel):
         self.assert_valid
 
         if ax is None:
-            fig = plt.figure()
+            plt.figure()
             ax = plt.subplot(111)
 
         vectorNx, vectorNy, data = self._get_plot_data()
@@ -201,7 +201,7 @@ class EarthquakeInterferogram(properties.UidModel):
     def plot_mask(self, ax=None, opacity=0.2):
 
         if ax is None:
-            fig = plt.figure()
+            plt.figure()
             ax = plt.subplot(111)
 
         vectorNx, vectorNy, data = self._get_plot_data()
@@ -339,7 +339,7 @@ class EarthquakeInterferogram(properties.UidModel):
         return angdist
 
 
-class Oksar(properties.HasProperties()):
+class Oksar(properties.HasProperties):
 
     beta = properties.Float("beta", default=3E10)
     mu = properties.Float("mu", default=3E10)
@@ -629,7 +629,7 @@ class Oksar(properties.HasProperties()):
             assert isinstance(eq, EarthquakeInterferogram)
 
         if ax is None:
-            fig = plt.figure()
+            plt.figure()
             ax = plt.subplot(111)
 
         vectorNx = (
