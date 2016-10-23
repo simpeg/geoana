@@ -696,7 +696,7 @@ def example():
 
     import requests
     dinar_file = requests.get(
-        'https://storage.googleapis.com/sci3pt-insar/dinar.r4'
+        'http://storage.googleapis.com/sci3pt-insar/dinar.r4'
     )
     data = np.fromstring(dinar_file.content, np.float32)
 

@@ -1,2 +1,2 @@
-import static
-import fdem
+from . import static
+from . import fdem

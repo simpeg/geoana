@@ -1,0 +1,8 @@
+numpy
+scipy
+matplotlib
+sphinx
+ipywidgets
+requests
+utm
+git+git://github.com/3ptscience/properties@feat/backends

@@ -1,1 +1,1 @@
-import oksar
+from . import oksar
