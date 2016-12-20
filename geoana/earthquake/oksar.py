@@ -23,7 +23,15 @@ import utm
 import matplotlib.pyplot as plt
 
 
-class EarthquakeInterferogram(properties.UidModel):
+class EarthquakeInterferogram(properties.HasProperties):
+    title = properties.String(
+        "Name of the event"
+    )
+
+    description = properties.String(
+        "description of the event"
+    )
+
     location = properties.Vector2(
         'interferogram location (bottom N, left E)',
         required=True
