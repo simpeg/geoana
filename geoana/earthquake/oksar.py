@@ -22,6 +22,97 @@ import vectormath as vmath
 import utm
 import matplotlib.pyplot as plt
 
+def mkvc(vec):
+    """Flatten vector with Fortran (column-major) ordering"""
+    return vec.flatten(order='F')
+
+def ndgrid(*args, **kwargs):
+    """Form tensorial grid for 1, 2, or 3 dimensions.
+    Returns as column vectors by default.
+    To return as matrix input::
+        ndgrid(..., vector=False)
+    The inputs can be a list or separate arguments.
+    .. code::
+        a = np.array([1, 2, 3])
+        b = np.array([1, 2])
+        XY = ndgrid(a, b)
+        > [[1 1]
+           [2 1]
+           [3 1]
+           [1 2]
+           [2 2]
+           [3 2]]
+        X, Y = ndgrid(a, b, vector=False)
+        > X = [[1 1]
+               [2 2]
+               [3 3]]
+        > Y = [[1 2]
+               [1 2]
+               [1 2]]
+    """
+
+    # Read the keyword arguments, and only accept a vector=True/False
+    vec = kwargs.pop('vector', True)
+    assert isinstance(vec, bool), '\'vector\' keyword must be a bool'
+    assert len(kwargs) == 0, 'Only \'vector\' keyword accepted'
+
+    # you can either pass a list [x1, x2, x3] or each separately
+    if isinstance(args[0], list):
+        xin = args[0]
+    else:
+        xin = args
+
+    # Each vector needs to be a numpy array
+    assert np.all([isinstance(x, np.ndarray) for x in xin]), (
+        'All vectors must be numpy arrays'
+    )
+
+    if len(xin) == 1:
+        return xin[0]
+    elif len(xin) == 2:
+        xy_arr = np.broadcast_arrays(
+            mkvc(xin[1]),
+            mkvc(xin[0])[:, np.newaxis]
+        )
+        if vec:
+            x2_arr, x1_arr = [mkvc(x) for x in xy_arr]
+            return np.c_[x1_arr, x2_arr]
+        else:
+            return xy_arr[1], xy_arr[0]
+    elif len(xin) == 3:
+        xyz_arr = np.broadcast_arrays(
+            mkvc(xin[2]),
+            mkvc(xin[1])[:, np.newaxis],
+            mkvc(xin[0])[:, np.newaxis, np.newaxis]
+        )
+        if vec:
+            x3_arr, x2_arr, x1_arr = [mkvc(x) for x in xyz_arr]
+            return np.c_[x1_arr, x2_arr, x3_arr]
+        else:
+            return xyz_arr[2], xyz_arr[1], xyz_arr[0]
+
+def ouv_to_vec(O, U, V, n):                                                    #pylint: disable=invalid-name
+    """A grid in the parallelogram defined by the OUV Vector3Arrays and n cells
+    If len(n) == 2, n is (nx, ny)
+    If n is an integer, n is the number of cells in the longer dimension
+    (and cell x-width = y-width)
+    """
+
+    aspect = U.length / V.length
+    if isinstance(n, (list, tuple)) and len(n) == 2:
+        numx, numy = int(n[0]), int(n[1])
+    elif np.isscalar(n):
+        numx = int(n) if aspect >= 1 else int(n*aspect)
+        numy = int(n / aspect) if aspect >= 1 else int(n)
+    else:
+        raise ValueError('n must be a scalar or a list/tuple of 2 scalars')
+    square = ndgrid(np.linspace(0, 1, numx), np.linspace(1, 0, numy))
+    X = O.x + U.x * square[:, 0] + V.x * square[:, 1]
+    Y = O.y + U.y * square[:, 0] + V.y * square[:, 1]
+    Z = O.z + U.z * square[:, 0] + V.z * square[:, 1]
+    vec = vmath.Vector3Array(X, Y, Z)
+    return vec, (numx, numy)
+
 
 class EarthquakeInterferogram(properties.HasProperties):
     title = properties.String(
@@ -239,7 +330,7 @@ class EarthquakeInterferogram(properties.HasProperties):
         """
 
         utmZone = self.location_UTM_zone
-        refPoint = vmath.Vector3(self.ref.x, self.ref.y, 0)
+        refPoint = vmath.Vector3Array(self.ref.x, self.ref.y, 0)
         satAltitude = self.satellite_altitude
         satAzimuth = self.satellite_azimuth
         satIncidence = self.ref_incidence
@@ -291,7 +382,7 @@ class EarthquakeInterferogram(properties.HasProperties):
         los_y = -np.sin(satAzimuth * DEG2RAD) * np.cos(satIncidence * DEG2RAD)
         los_z = np.sin(satIncidence * DEG2RAD)
 
-        return vmath.Vector3(los_x, los_y, los_z)
+        return vmath.Vector3Array(los_x, los_y, los_z)
 
     @staticmethod
     def _ang_to_gc(x, y, origx, origy, satAzimuth):
@@ -385,11 +476,11 @@ class Oksar(properties.HasProperties):
 
         self.validate()
 
-        vec, shape = vmath.ouv2vec(
-            vmath.Vector3(self.O[0], self.O[1], 0),
-            vmath.Vector3(self.U[0], self.U[1], 0),
-            vmath.Vector3(self.V[0], self.V[1], 0),
-            self.shape
+        vec, shape = ouv_to_vec(
+            vmath.Vector3Array(self.O[0], self.O[1], 0),
+            vmath.Vector3Array(self.U[0], self.U[1], 0),
+            vmath.Vector3Array(self.V[0], self.V[1], 0),
+            self.shape.tolist()
         )
         return vec
 
@@ -447,7 +538,7 @@ class Oksar(properties.HasProperties):
         UY = -st*u.x + ct*u.y
         UZ = u.z
 
-        return vmath.Vector3(UX, UY, UZ)
+        return vmath.Vector3Array(UX, UY, UZ)
 
     def _dc3d3(self, alpha, X, Y, dip, al1, al2, aw1, aw2, disl1, disl2):
         F0 = 0.0
@@ -456,8 +547,8 @@ class Oksar(properties.HasProperties):
         PI2 = 6.283185307179586
         EPS = 1.0E-6
 
-        u = vmath.Vector3(F0, F0, F0)
-        dub = vmath.Vector3(F0, F0, F0)
+        u = vmath.Vector3Array(F0, F0, F0)
+        dub = vmath.Vector3Array(F0, F0, F0)
 
         #  %%dccon0 subroutine
         #  Calculates medium and fault dip constants
@@ -603,17 +694,17 @@ class Oksar(properties.HasProperties):
                     du2x = - xi*qy - c2_tt - c0_alp3 * ai1 * c0_sd
                     du2y = - q/c2_r + c0_alp3*c2_y/rd*c0_sd
                     du2z = q*qy - c0_alp3*ai2*c0_sd
-                    du2 = vmath.Vector3(du2x, du2y, du2z)
+                    du2 = vmath.Vector3Array(du2x, du2y, du2z)
                     dub = du2 * (disl1 / PI2)
                 else:
-                    dub = vmath.Vector3()
+                    dub = vmath.Vector3Array()
 
                 # dip-slip contribution
                 if(disl2 != F0):
                     du2x = - q/c2_r + c0_alp3 * ai3 * c0_sdcd
                     du2y = - et*qx - c2_tt - c0_alp3 * xi / rd * c0_sdcd
                     du2z = q*qx + c0_alp3 * ai4 * c0_sdcd
-                    du2 = vmath.Vector3(du2x, du2y, du2z)
+                    du2 = vmath.Vector3Array(du2x, du2y, du2z)
                     dub = dub + (du2 * (disl2 / PI2))
 
                 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -621,7 +712,7 @@ class Oksar(properties.HasProperties):
                 dux = dub.x
                 duy = dub.y*c0_cd - dub.z*c0_sd
                 duz = dub.y*c0_sd + dub.z*c0_cd
-                du = vmath.Vector3(dux, duy, duz)
+                du = vmath.Vector3Array(dux, duy, duz)
                 if((j+k) != 3):
                     u = + du + u
                 else:
@@ -658,7 +749,7 @@ class Oksar(properties.HasProperties):
         DIR = self.displacement_vector
         grid = self.simulation_grid
         if eq is None:
-            LOS = vmath.Vector3(0, 0, 1)
+            LOS = vmath.Vector3Array(0, 0, 1)
         else:
             LOS = eq.get_LOS_vector(grid)
         data = DIR.dot(LOS)
