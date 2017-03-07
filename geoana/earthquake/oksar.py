@@ -167,7 +167,7 @@ class EarthquakeInterferogram(properties.HasProperties):
 
     def plot_interferogram(self, wrap=True, ax=None):
 
-        self.assert_valid
+        self.validate()
 
         if ax is None:
             plt.figure()
@@ -383,7 +383,7 @@ class Oksar(properties.HasProperties):
     @property
     def simulation_grid(self):
 
-        self.assert_valid
+        self.validate()
 
         vec, shape = vmath.ouv2vec(
             vmath.Vector3(self.O[0], self.O[1], 0),
@@ -396,7 +396,7 @@ class Oksar(properties.HasProperties):
     @property
     def displacement_vector(self):
 
-        self.assert_valid
+        self.validate()
 
         vec = self.simulation_grid
         x, y = vec.x, vec.y
