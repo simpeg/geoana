@@ -7,23 +7,100 @@ import numpy as np
 import properties
 from scipy.constants import mu_0, pi, epsilon_0
 
+from .. import spatial
+
+
+###############################################################################
+#                                                                             #
+#                                 Functions                                   #
+#                                                                             #
+###############################################################################
+
+def omega(frequency):
+    """
+    Angular frequency
+
+    :param frequency float: frequency (Hz)
+    """
+    return 2*np.pi*frequency
+
+
+def wave_number(frequency, sigma, mu=mu_0, epsilon=epsilon_0):
+    """
+    Wavenumber of an electromagnetic wave in a medium with constant physical
+    properties
+
+    :param frequency float: frequency (Hz)
+    :param sigma float: electrical conductivity (S/m)
+    :param mu float: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
+    :param epsilon float: dielectric permittivity (F/m). Default: :math:`\epsilon_0 = 8.85 \times 10^{-12}` F/m
+    """
+    omega = omega(frequency)
+    return np.sqrt(omega**2. * mu * epsilon - 1j * omega * mu * sigma)
+
+
+def skin_depth(frequency, sigma, mu=mu_0):
+    """
+    Distance at which an em wave has decayed by a factor of 1/e in a medium
+    with constant physical properties
+
+    :param frequency float: frequency (Hz)
+    :param sigma float: electrical conductivity (S/m)
+    :param mu float: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
+    """
+    omega = omega(frequency)
+    return np.sqrt(2./(omega*sigma*mu))
+
+
+def peak_time(z, sigma, mu=mu_0):
+    """
+    Time at which the maximum signal amplitude is observed at a particular
+    location for a transient plane wave through a homogeneous medium.
+
+    See: http://em.geosci.xyz/content/maxwell1_fundamentals/plane_waves_in_homogeneous_media/time/analytic_solution.html
+
+    :param z float: distance from source (m)
+    :param sigma float: electrical conductivity (S/m)
+    :param mu float: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
+    """
+    return (mu * sigma * z**2)/6.
+
+
+def diffusion_distance(time, sigma, mu=mu_0):
+    """
+    Distance at which the signal amplitude is largest for a given time after
+    shut off. Also referred to as the peak distance
+
+    See: http://em.geosci.xyz/content/maxwell1_fundamentals/plane_waves_in_homogeneous_media/time/analytic_solution.html
+
+
+    """
+    return np.sqrt(2*time/(mu*sigma))
+
+
+###############################################################################
+#                                                                             #
+#                              Base Classes                                   #
+#                                                                             #
+###############################################################################
+
 
 class BaseEM(properties.HasProperties):
 
     mu = properties.Float(
-        help='Magnetic permeability.',
+        "Magnetic permeability.",
         default=mu_0,
         min=0.0
     )
 
     sigma = properties.Float(
-        help='Electrical conductivity (S/m)',
+        "Electrical conductivity (S/m)",
         default=1.0,
         min=0.0
     )
 
     epsilon = properties.Float(
-        help='Permitivity value',
+        "Permitivity value",
         default=epsilon_0,
         min=0.0
     )
@@ -32,42 +109,34 @@ class BaseEM(properties.HasProperties):
 class BaseDipole(BaseEM):
 
     orientation = properties.Vector3(
-        help='orientation of dipole',
-        default='X',
+        "orientation of dipole",
+        default="X",
         length=1.0
     )
 
     location = properties.Vector3(
-        help='location of the electric dipole source',
-        default='ZERO'
+        "location of the electric dipole source",
+        default="ZERO"
     )
 
-    def offset_from_location(self, xyz):
+    def vector_distance(self, xyz):
+        return spatial.vector_distance(xyz, self.location)
 
-        # TODO: validate stuff
-        # xyz = Utils.asArray_N_x_Dim(xyz, 3)
-
-        return np.c_[
-            xyz[:, 0] - self.location[0],
-            xyz[:, 1] - self.location[1],
-            xyz[:, 2] - self.location[2]
-        ]
-
-    def distance_from_location(self, xyz):
-        return np.sqrt((self.offset_from_location(xyz)**2).sum(axis=1))
+    def distance(self, xyz):
+        return spatial.distance(xyz, self.location)
 
 
 class BaseFDEM(BaseEM):
 
     frequency = properties.Float(
-        help='Source frequency (Hz)',
+        "Source frequency (Hz)",
         default=1e2,
         min=0.0
     )
 
     @property
     def omega(self):
-        return 2.0*pi*self.frequency
+        return omega(self.frequency)
 
     @property
     def sigma_hat(self):
@@ -75,22 +144,39 @@ class BaseFDEM(BaseEM):
 
     @property
     def wave_number(self):
-        np.sqrt(
-            self.omega**2. * self.mu * self.epsilon -
-            1j * self.omega * self.mu * self.sigma
-        )
+        return wave_number(self.frequency, self.sigma, self.mu)
+
+    @property
+    def skin_depth(self):
+        return skin_depth(self.frequency, self.sigma, self.mu)
+
+
+class BaseTDEM(BaseEM):
+
+    time = properties.Float(
+        "time after shut-off at which we are evaluating the fields (s)",
+
+        required=True
+    )
+
+    def peak_time(self, z):
+        return peak_time(z, self.sigma, self.mu)
+
+    @property
+    def diffusion_distance(self):
+        return diffusion_distance(self.time, self.sigma, self.mu)
 
 
 class BaseElectricDipole(BaseDipole):
 
     length = properties.Float(
-        help='length of the dipole (m)',
+        "length of the dipole (m)",
         default=1.0,
         min=0.0
     )
 
     current = properties.Float(
-        help='size of the injected current (A)',
+        "size of the injected current (A)",
         default=1.0,
         min=0.0
     )
@@ -99,7 +185,7 @@ class BaseElectricDipole(BaseDipole):
 class BaseMagneticDipole(BaseDipole):
 
     moment = properties.Float(
-        help='moment of the dipole (Am^2)',
+        "moment of the dipole (Am^2)",
         default=1.0,
         min=0.0
     )
