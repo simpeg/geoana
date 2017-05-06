@@ -16,6 +16,9 @@ class ElectricDipole(BaseTDEM, BaseElectricDipole):
     """
     .. todo: write this independent of source orientation with dot products
     """
+    def __init__(self, **kwargs):
+        super(ElectricDipole, self).__init__(**kwargs)
+
     @property
     def theta(self):
         return np.sqrt(self.mu*self.sigma / (4.*self.time))
@@ -81,9 +84,5 @@ class ElectricDipole(BaseTDEM, BaseElectricDipole):
         return np.c_[ex, ey, ez]
 
     def current_density(self, xyz):
-        return self.sigma * self.e(xyz)
-
-
-
-
+        return self.sigma * self.electric_field(xyz)
 
