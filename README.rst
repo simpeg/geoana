@@ -7,7 +7,7 @@ geoana
     :target: http://geoana.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://img.shields.io/github/license/geoana/simpeg.svg
+.. image:: https://img.shields.io/github/license/simpeg/geoana.svg
     :target: https://github.com/simpeg/geoana/blob/master/LICENSE
     :alt: MIT license
 
