@@ -21,7 +21,7 @@ class TestOksar(unittest.TestCase):
         dinar.satellite_azimuth = 192
         dinar.location_UTM_zone = 35
 
-        utmLoc = vmath.Vector3([706216.0606], [4269238.9999], [0])
+        utmLoc = vmath.Vector3([706216.0606, 4269238.9999, 0])
         # refPoint = vmath.Vector3(dinar.ref.x, dinar.ref.y, 0)
 
         LOS = dinar.get_LOS_vector(utmLoc)

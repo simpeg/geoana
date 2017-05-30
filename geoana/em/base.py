@@ -11,19 +11,19 @@ from scipy.constants import mu_0, pi, epsilon_0
 class BaseEM(properties.HasProperties):
 
     mu = properties.Float(
-        help='Magnetic permeability.',
+        'Magnetic permeability.',
         default=mu_0,
         min=0.0
     )
 
     sigma = properties.Float(
-        help='Electrical conductivity (S/m)',
+        'Electrical conductivity (S/m)',
         default=1.0,
         min=0.0
     )
 
     epsilon = properties.Float(
-        help='Permitivity value',
+        'Permitivity value',
         default=epsilon_0,
         min=0.0
     )
@@ -32,13 +32,13 @@ class BaseEM(properties.HasProperties):
 class BaseDipole(BaseEM):
 
     orientation = properties.Vector3(
-        help='orientation of dipole',
+        'orientation of dipole',
         default='X',
         length=1.0
     )
 
     location = properties.Vector3(
-        help='location of the electric dipole source',
+        'location of the electric dipole source',
         default='ZERO'
     )
 
@@ -60,7 +60,7 @@ class BaseDipole(BaseEM):
 class BaseFDEM(BaseEM):
 
     frequency = properties.Float(
-        help='Source frequency (Hz)',
+        'Source frequency (Hz)',
         default=1e2,
         min=0.0
     )
@@ -84,13 +84,13 @@ class BaseFDEM(BaseEM):
 class BaseElectricDipole(BaseDipole):
 
     length = properties.Float(
-        help='length of the dipole (m)',
+        'length of the dipole (m)',
         default=1.0,
         min=0.0
     )
 
     current = properties.Float(
-        help='size of the injected current (A)',
+        'size of the injected current (A)',
         default=1.0,
         min=0.0
     )
@@ -99,7 +99,7 @@ class BaseElectricDipole(BaseDipole):
 class BaseMagneticDipole(BaseDipole):
 
     moment = properties.Float(
-        help='moment of the dipole (Am^2)',
+        'moment of the dipole (Am^2)',
         default=1.0,
         min=0.0
     )
