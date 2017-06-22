@@ -3,18 +3,63 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .base import BaseElectricDipole, BaseFDEM
-
 from scipy.constants import mu_0, pi, epsilon_0
 import numpy as np
 import warnings
 
+from .base import BaseElectricDipole, BaseMagneticDipole
 
-class ElectricDipole_WholeSpace(BaseElectricDipole, BaseFDEM):
+
+class BaseFDEM(BaseEM):
+    """
+    Base frequency domain EM class. Contains methds and properties usefull
+    across all FDEM problems.
+    """
+
+    frequency = properties.Float(
+        "Source frequency (Hz)",
+        default=1e2,
+        min=0.0
+    )
+
+    @property
+    def omega(self):
+        """
+        """
+        return 2.0*pi*self.frequency
+
+    @property
+    def sigma_hat(self):
+        return self.sigma + 1j*self.omega*self.epsilon
+
+    @property
+    def wave_number(self):
+        return np.sqrt(
+            self.omega**2. * self.mu * self.epsilon -
+            1j * self.omega * self.mu * self.sigma
+        )
+
+    @property
+    def skin_depth(self):
+        return np.sqrt()
+
+
+class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
 
     def electric_field(self, xyz, **kwargs):
         pass
 
+    def current_density(self, xyz, **kwargs):
+        pass
+
+    def magnetic_field(self, xyz, **kwargs):
+        pass
+
+    def magnetic_flux_density(self, xyz, **kwargs):
+        pass
+
+
+class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM)
 
 def E_from_EDWS(XYZ, srcLoc, sig, f, current=1., length=1., orientation='X', kappa=0., epsr=1., t=0.):
     """E_from_EDWS

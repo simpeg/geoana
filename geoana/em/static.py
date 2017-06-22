@@ -3,11 +3,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .base import BaseEM, BaseMagneticDipole
-
 import numpy as np
 from ipywidgets import Latex
 import warnings
+
+from .base import BaseEM, BaseMagneticDipole, BaseElectricDipole
 
 
 class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
