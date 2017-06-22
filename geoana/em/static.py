@@ -28,9 +28,9 @@ class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
 
         offset = self.offset_from_location(xyz)
         dist = self.distance_from_location(xyz)
-        m_vec = self.moment * np.atleast_2d(
-            self.orientation
-        ).repeat(n_obs, axis=0)
+        m_vec = (
+            self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
+        )
 
         # Repeat the scalars
         dist = np.atleast_2d(dist).T.repeat(3, axis=1)
@@ -52,9 +52,9 @@ class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
 
         offset = self.offset_from_location(xyz)
         dist = self.distance_from_location(xyz)
-        m_vec = self.moment * np.atleast_2d(
-            self.orientation
-        ).repeat(n_obs, axis=0)
+        m_vec = (
+            self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
+        )
 
         m_dot_r = (m_vec * offset).sum(axis=1)
 
@@ -77,3 +77,6 @@ class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
 
     def magnetic_field(self, xyz, **kwargs):
         return self.magnetic_flux(xyz, **kwargs) / self.mu
+
+
+# class

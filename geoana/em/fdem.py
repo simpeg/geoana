@@ -61,6 +61,8 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
 
 class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM)
 
+
+
 def E_from_EDWS(XYZ, srcLoc, sig, f, current=1., length=1., orientation='X', kappa=0., epsr=1., t=0.):
     """E_from_EDWS
     Computing the analytic electric fields (E) from an electrical dipole in a wholespace
