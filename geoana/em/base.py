@@ -10,48 +10,6 @@ from scipy.constants import mu_0, pi, epsilon_0
 from .. import spatial
 
 
-###############################################################################
-#                                                                             #
-#                                 Functions                                   #
-#                                                                             #
-###############################################################################
-
-def omega(frequency):
-    """
-    Angular frequency
-
-    :param frequency float: frequency (Hz)
-    """
-    return 2*np.pi*frequency
-
-
-def wave_number(frequency, sigma, mu=mu_0, epsilon=epsilon_0):
-    """
-    Wavenumber of an electromagnetic wave in a medium with constant physical
-    properties
-
-    :param frequency float: frequency (Hz)
-    :param sigma float: electrical conductivity (S/m)
-    :param mu float: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
-    :param epsilon float: dielectric permittivity (F/m). Default: :math:`\epsilon_0 = 8.85 \times 10^{-12}` F/m
-    """
-    omega = omega(frequency)
-    return np.sqrt(omega**2. * mu * epsilon - 1j * omega * mu * sigma)
-
-
-def skin_depth(frequency, sigma, mu=mu_0):
-    """
-    Distance at which an em wave has decayed by a factor of 1/e in a medium
-    with constant physical properties
-
-    :param frequency float: frequency (Hz)
-    :param sigma float: electrical conductivity (S/m)
-    :param mu float: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
-    """
-    omega = omega(frequency)
-    return np.sqrt(2./(omega*sigma*mu))
-
-
 def peak_time(z, sigma, mu=mu_0):
     """
     Time at which the maximum signal amplitude is observed at a particular
@@ -132,30 +90,6 @@ class BaseDipole(BaseEM):
     def distance(self, xyz):
         return spatial.distance(xyz, self.location)
 
-
-class BaseFDEM(BaseEM):
-
-    frequency = properties.Float(
-        "Source frequency (Hz)",
-        default=1e2,
-        min=0.0
-    )
-
-    @property
-    def omega(self):
-        return omega(self.frequency)
-
-    @property
-    def sigma_hat(self):
-        return self.sigma + 1j*self.omega*self.epsilon
-
-    @property
-    def wave_number(self):
-        return wave_number(self.frequency, self.sigma, self.mu)
-
-    @property
-    def skin_depth(self):
-        return skin_depth(self.frequency, self.sigma, self.mu)
 
 
 class BaseTDEM(BaseEM):

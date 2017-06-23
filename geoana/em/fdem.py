@@ -7,44 +7,167 @@ from scipy.constants import mu_0, pi, epsilon_0
 import numpy as np
 import warnings
 
-from .base import BaseElectricDipole, BaseMagneticDipole
+from .base import BaseElectricDipole, BaseMagneticDipole, BaseEM
 
+
+###############################################################################
+#                                                                             #
+#                           Utility Functions                                 #
+#                                                                             #
+###############################################################################
+
+def omega(frequency):
+    """
+    Angular frequency
+
+    .. math::
+
+        \omega = 2 \pi f
+
+    :param frequency float: frequency (Hz)
+    """
+    return 2*np.pi*frequency
+
+
+def wave_number(
+    frequency, sigma, mu=mu_0, epsilon=epsilon_0, quasi_static=False
+):
+    """
+    Wavenumber of an electromagnetic wave in a medium with constant physical
+    properties
+
+    .. math::
+
+        k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+
+    :param (float, numpy.ndarray) frequency: frequency (Hz)
+    :param float sigma: electrical conductivity (S/m)
+    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
+    :param float epsilon: dielectric permittivity (F/m). Default: :math:`\epsilon_0 = 8.85 \times 10^{-12}` F/m
+    :param bool quasi_static: use the quasi-static assumption? Default: False
+    """
+    omega = omega(frequency)
+    if quasi_static is True:
+        return np.sqrt(-1j * omega * mu * sigma)
+    return np.sqrt(omega**2. * mu * epsilon - 1j * omega * mu * sigma)
+
+
+def skin_depth(frequency, sigma, mu=mu_0):
+    """
+    Distance at which an em wave has decayed by a factor of :math:`1/e` in a
+    medium with constant physical properties
+
+    .. math::
+
+        \sqrt{\\frac{2}{\omega \sigma \mu}}
+
+    :param float frequency: frequency (Hz)
+    :param float sigma: electrical conductivity (S/m)
+    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
+    """
+    omega = omega(frequency)
+    return np.sqrt(2./(omega*sigma*mu))
+
+
+def sigma_hat(frequency, sigma, epsilon=epsilon_0, quasi_static=False):
+    """
+    conductivity with displacement current contribution
+
+    .. math::
+
+        \hat{\sigma} = \sigma + i \omega \varepsilon
+
+    :param (float, numpy.array) frequency: frequency (Hz)
+    :param float sigma: electrical conductivity (S/m)
+    :param float epsilon: dielectric permittivity. Default :math:`\varepsilon_0`
+    :param bool quasi_static: use the quasi-static assumption? Default: False
+    """
+    if quasi_static is True:
+        return sigma
+    return sigma + 1j*omega(frequency)*epsilon
+
+
+###############################################################################
+#                                                                             #
+#                                  Classes                                    #
+#                                                                             #
+###############################################################################
 
 class BaseFDEM(BaseEM):
     """
-    Base frequency domain EM class. Contains methds and properties usefull
-    across all FDEM problems.
+    Base frequency domain electromagnetic class
     """
-
     frequency = properties.Float(
         "Source frequency (Hz)",
         default=1e2,
         min=0.0
     )
 
+    quasi_static = properties.Bool(
+        "Use the quasi-static approximation and ignore displacement current?",
+        default=False
+    )
+
     @property
     def omega(self):
         """
+        Angular frequency
+
+        .. math::
+
+            \omega = 2\pi f
         """
-        return 2.0*pi*self.frequency
+        return omega(self.frequency)
 
     @property
     def sigma_hat(self):
-        return self.sigma + 1j*self.omega*self.epsilon
+        """
+        conductivity with displacement current contribution
 
-    @property
-    def wave_number(self):
-        return np.sqrt(
-            self.omega**2. * self.mu * self.epsilon -
-            1j * self.omega * self.mu * self.sigma
+        .. math::
+
+            \hat{\sigma} = \sigma + i \omega \varepsilon
+
+        """
+        return sigma_hat(
+            self.frequency, self.sigma, self.epsilon, self.quasi_static
         )
 
     @property
+    def wave_number(self):
+        """
+        Wavenumber of an electromagnetic wave in a medium with constant physical
+        properties
+
+        .. math::
+
+        k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}        """
+        return wave_number(self.frequency, self.sigma, self.mu)
+
+    @property
     def skin_depth(self):
-        return np.sqrt()
+        """
+        Distance at which an em wave has decayed by a factor of :math:`1/e` in a
+        medium with constant physical properties
+
+        .. math::
+
+            \sqrt{\\frac{2}{\omega \sigma \mu}}
+        """
+        return skin_depth(self.frequency, self.sigma, self.mu)
 
 
 class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
+    """
+    Harmonic electric dipole in a whole space. The source is
+    (c.f. Ward and Hohmann, 1988 page 173). The source current
+    density for a dipole located at :math:`\mathbf{r}_s` with orientation
+    :math:`\hat{\mathbf{r}}_s`
+
+    .. math::
+
+        \mathbf{J}(\mathbf{r}) = I ds \delta(\mathbf{r} - \mathbf{r}_s)
+    """
 
     def electric_field(self, xyz, **kwargs):
         pass
@@ -61,6 +184,17 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
 
 class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM)
 
+    def electric_field(self, xyz, **kwargs):
+        pass
+
+    def current_density(self, xyz, **kwargs):
+        pass
+
+    def magnetic_field(self, xyz, **kwargs):
+        pass
+
+    def magnetic_flux_density(self, xyz, **kwargs):
+        pass
 
 
 def E_from_EDWS(XYZ, srcLoc, sig, f, current=1., length=1., orientation='X', kappa=0., epsr=1., t=0.):
