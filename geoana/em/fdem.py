@@ -157,43 +157,113 @@ class BaseFDEM(BaseEM):
         return skin_depth(self.frequency, self.sigma, self.mu)
 
 
-class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
+class BaseFDEMDipoleWholeSpace(BaseFDEM):
+    """
+    Base FDEM Dipole
+    """
+
+
+class ElectricDipoleWholeSpace(
+    BaseElectricDipole, BaseFDEMDipoleWholeSpace
+):
     """
     Harmonic electric dipole in a whole space. The source is
     (c.f. Ward and Hohmann, 1988 page 173). The source current
     density for a dipole located at :math:`\mathbf{r}_s` with orientation
-    :math:`\hat{\mathbf{r}}_s`
+    :math:`\mathbf{\hat{u}}`
 
     .. math::
 
-        \mathbf{J}(\mathbf{r}) = I ds \delta(\mathbf{r} - \mathbf{r}_s)
+        \mathbf{J}(\mathbf{r}) = I ds \delta(\mathbf{r} - \mathbf{r}_s)\mathbf{\hat{u}}
     """
+    def vector_potential(self, xyz):
+        """
+        Vector potential for an electric dipole in a wholespace
 
-    def electric_field(self, xyz, **kwargs):
-        pass
+        .. math::
 
-    def current_density(self, xyz, **kwargs):
-        pass
+            \mathbf{A} = \frac{I ds}{4 \pi r} e^{-ikr}\mathbf{\hat{u}}
 
-    def magnetic_field(self, xyz, **kwargs):
-        pass
+        """
+        r = self.distance(xyz)
+        a = (
+            (self.current * self.length) / (4*np.pi*r) *
+            np.exp(-i*self.wave_number*r)
+        )
+        a = np.kron(np.ones(1, 3), np.atleast_2d(a).T)
+        return self.dot_orientation(a)
 
-    def magnetic_flux_density(self, xyz, **kwargs):
-        pass
+    def electric_field(self, xyz):
+        """
+        Electric field from an electric dipole
+
+        .. math::
+
+            \mathbf{E} = \frac{1}{\hat{\sigma}} \nabla \nabla \cdot \mathbf{A} - i \omega \mu \mathbf{A}
+
+        """
+        dxyz = self.vector_distance(xyz)
+        r = self.distance(xyz)
+        r = np.kron(np.ones(1, 3), np.atleast_2d(r).T)
+        kr = self.wave_number * r
+
+        front = (
+            (self.current * self.length) / (4 * np.pi * self.sigma * r**3 ) *
+            np.exp(-1j * kr)
+        )
+        symmetric_term = (
+            self.dot_orientation(dxyz) * (-kr**2 + 3*1j*kr + 3) / r**2
+        )
+        oriented_term = (
+            (kr**2 - 1j*kr - 1) *
+            np.kron(self.orientation, np.ones(dxyz.shape[0], 1))
+        )
+        return front * ( symmetric_term + oriented_term )
+
+    def current_density(self, xyz):
+        return self.sigma * self.electric_field(xyz)
+
+    def magnetic_field(self, xyz):
+        """
+        Magnetic field from an electric dipole
+
+        .. math::
+
+            \mathbf{H} = \nabla \times \mathbf{A}
+
+        """
+        dxyz = self.vector_distance(xyz)
+        r = self.distance(xyz)
+        r = np.kron(np.ones(1, 3), np.atleast_2d(r).T)
+        kr = self.wave_number * r
+
+        front = (
+            self.current * self.length / (4 * np.pi * r**2) * (1j * kr + 1) *
+            np.exp(-1j * kr)
+        )
+        return front * self.cross_orientation(xyz) / r
+
+    def magnetic_flux_density(self, xyz):
+        """
+        magnetic flux density from an electric dipole
+        """
+        return self.mu * self.magnetic_field(xyz)
 
 
 class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM)
-
-    def electric_field(self, xyz, **kwargs):
+    """
+    Harmonic magnetic dipole in a whole space.
+    """
+    def electric_field(self, xyz):
         pass
 
-    def current_density(self, xyz, **kwargs):
+    def current_density(self, xyz):
         pass
 
-    def magnetic_field(self, xyz, **kwargs):
+    def magnetic_field(self, xyz):
         pass
 
-    def magnetic_flux_density(self, xyz, **kwargs):
+    def magnetic_flux_density(self, xyz):
         pass
 
 
