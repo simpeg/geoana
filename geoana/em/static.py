@@ -4,7 +4,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import numpy as np
-from ipywidgets import Latex
 import warnings
 
 from .base import BaseEM, BaseMagneticDipole, BaseElectricDipole
@@ -70,7 +69,7 @@ class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
 
     @staticmethod
     def magnetic_flux_equation():
-        return Latex(
+        return "{}".format(
             "$\\frac{\mu}{4\pi} \\frac{\mathbf{m} \\times "
             "\mathbf{\hat{r}}}{r^2}$"
         )
