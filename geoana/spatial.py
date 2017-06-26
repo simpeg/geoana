@@ -43,6 +43,18 @@ def vector_dot(xyz, vector):
     :param numpy.array vector: vector (1 x 3)
     """
     assert len(vector) == 3, "vector should be length 3"
-    return np.hstack([
-        vector[0]*xyz[:, 0], vector[1]*xyz[:, 1], vector[2]*xyz[:, 2]
-    ])
+    return vector[0]*xyz[:, 0] + vector[1]*xyz[:, 1] + vector[2]*xyz[:, 2]
+
+
+def repeat_scalar(scalar, dim=3):
+    """
+    Repeat a spatially distributed scalar value dim times to simplify
+    multiplication with a vector.
+    """
+    assert len(scalar) in scalar.shape, (
+        "input must be a scalar. The shape you provided is {}".format(
+            scalar.shape
+        )
+    )
+
+    return np.kron(np.ones((1, dim)), np.atleast_2d(scalar).T)

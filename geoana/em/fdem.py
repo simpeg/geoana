@@ -9,6 +9,7 @@ import warnings
 import properties
 
 from .base import BaseElectricDipole, BaseMagneticDipole, BaseEM
+from .. import spatial
 
 
 ###############################################################################
@@ -47,10 +48,10 @@ def wave_number(
     :param float epsilon: dielectric permittivity (F/m). Default: :math:`\epsilon_0 = 8.85 \times 10^{-12}` F/m
     :param bool quasi_static: use the quasi-static assumption? Default: False
     """
-    omega = omega(frequency)
+    w = omega(frequency)
     if quasi_static is True:
-        return np.sqrt(-1j * omega * mu * sigma)
-    return np.sqrt(omega**2. * mu * epsilon - 1j * omega * mu * sigma)
+        return np.sqrt(-1j * w * mu * sigma)
+    return np.sqrt(w**2. * mu * epsilon - 1j * w * mu * sigma)
 
 
 def skin_depth(frequency, sigma, mu=mu_0):
@@ -100,7 +101,7 @@ class BaseFDEM(BaseEM):
     """
     frequency = properties.Float(
         "Source frequency (Hz)",
-        default=1e2,
+        default=1,
         min=0.0
     )
 
@@ -206,7 +207,7 @@ class ElectricDipoleWholeSpace(
         """
         dxyz = self.vector_distance(xyz)
         r = self.distance(xyz)
-        r = np.kron(np.ones(1, 3), np.atleast_2d(r).T)
+        r = spatial.repeat_scalar(r)
         kr = self.wave_number * r
 
         front = (
@@ -214,11 +215,12 @@ class ElectricDipoleWholeSpace(
             np.exp(-1j * kr)
         )
         symmetric_term = (
-            self.dot_orientation(dxyz) * (-kr**2 + 3*1j*kr + 3) / r**2
+            spatial.repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
+            (-kr**2 + 3*1j*kr + 3) / r**2
         )
         oriented_term = (
             (kr**2 - 1j*kr - 1) *
-            np.kron(self.orientation, np.ones(dxyz.shape[0], 1))
+            np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
         )
         return front * ( symmetric_term + oriented_term )
 
@@ -267,105 +269,3 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
     def magnetic_flux_density(self, xyz):
         pass
-
-
-
-def MagneticDipoleFields(srcLoc, obsLoc, component, orientation='Z', moment=1., mu=mu_0):
-    """
-        Calculate the vector potential of a set of magnetic dipoles
-        at given locations 'ref. <http://en.wikipedia.org/wiki/Dipole#Magnetic_vector_potential>'
-
-        .. math::
-
-            B = \frac{\mu_0}{4 \pi r^3} \left( \frac{3 \vec{r} (\vec{m} \cdot
-                                                                \vec{r})}{r^2})
-                                                - \vec{m}
-                                        \right) \cdot{\hat{rx}}
-
-        :param numpy.ndarray srcLoc: Location of the source(s) (x, y, z)
-        :param numpy.ndarray obsLoc: Where the potentials will be calculated
-                                     (x, y, z)
-        :param str component: The component to calculate - 'x', 'y', or 'z'
-        :param numpy.ndarray moment: The vector dipole moment (vertical)
-        :rtype: numpy.ndarray
-        :return: The vector potential each dipole at each observation location
-    """
-
-    if isinstance(orientation, str):
-        assert orientation.upper() in ['X', 'Y', 'Z'], (
-            "orientation must be 'x', 'y', or 'z' or a vector not {}"
-            .format(orientation)
-        )
-    elif (not np.allclose(np.r_[1., 0., 0.], orientation) or
-          not np.allclose(np.r_[0., 1., 0.], orientation) or
-          not np.allclose(np.r_[0., 0., 1.], orientation)):
-        warnings.warn(
-            'Arbitrary trasnmitter orientations ({}) not thouroughly tested '
-            'Pull request on a test anyone? bueller?'.format(orientation)
-        )
-
-    if isinstance(component, str):
-        assert component.upper() in ['X', 'Y', 'Z'], (
-            "component must be 'x', 'y', or 'z' or a vector not {}"
-            .format(component)
-        )
-    elif (not np.allclose(np.r_[1., 0., 0.], component) or
-          not np.allclose(np.r_[0., 1., 0.], component) or
-          not np.allclose(np.r_[0., 0., 1.], component)):
-        warnings.warn(
-            'Arbitrary receiver orientations ({}) not thouroughly tested '
-            'Pull request on a test anyone? bueller?'
-        ).format(component)
-
-    if isinstance(orientation, str):
-        orientation = orientationDict[orientation.upper()]
-
-    if isinstance(component, str):
-        component = orientationDict[component.upper()]
-
-    assert np.linalg.norm(orientation, 2) == 1., (
-        "orientation must be a unit vector. "
-        "Use 'moment=X to scale source fields"
-    )
-
-    if np.linalg.norm(component, 2) != 1.:
-        warnings.warn(
-            'The magnitude of the receiver component vector is > 1, '
-            ' it is {}. The receiver fields will be scaled.'
-            .format(np.linalg.norm(component, 2))
-        )
-
-    srcLoc = np.atleast_2d(srcLoc)
-    component = np.atleast_2d(component)
-    obsLoc = np.atleast_2d(obsLoc)
-    orientation = np.atleast_2d(orientation)
-
-    nObs = obsLoc.shape[0]
-    nSrc = int(srcLoc.size / 3.)
-
-    # use outer product to construct an array of [x_src, y_src, z_src]
-
-    m = moment*orientation.repeat(nObs, axis=0)
-    B = []
-
-    for i in range(nSrc):
-        srcLoc = srcLoc[i, np.newaxis].repeat(nObs, axis=0)
-        rx = component.repeat(nObs, axis=0)
-        dR = obsLoc - srcLoc
-        r = np.sqrt((dR**2).sum(axis=1))
-
-        # mult each element and sum along the axis (vector dot product)
-        m_dot_dR_div_r2 = (m * dR).sum(axis=1) / (r**2)
-
-        # multiply the scalar m_dot_dR by the 3D vector r
-        rvec_m_dot_dR_div_r2 = np.vstack([m_dot_dR_div_r2 * dR[:, i] for
-                                          i in range(3)]).T
-        inside = (3. * rvec_m_dot_dR_div_r2) - m
-
-        # dot product with rx orientation
-        inside_dot_rx = (inside * rx).sum(axis=1)
-        front = (mu/(4.* pi * r**3))
-
-        B.append(Utils.mkvc(front * inside_dot_rx))
-
-    return np.vstack(B).T
