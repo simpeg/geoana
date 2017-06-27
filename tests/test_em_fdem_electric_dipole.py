@@ -8,7 +8,10 @@ import numpy as np
 
 from scipy.constants import mu_0, epsilon_0
 from geoana.em import fdem
-from discretize.utils import ndgrid, asArray_N_x_Dim
+import discretize
+
+from SimPEG.EM import FDEM
+from SimPEG import Maps
 
 
 def E_from_EDWS(
@@ -32,7 +35,7 @@ def E_from_EDWS(
     epsilon = epsilon_0*epsr
     sig_hat = sig + 1j*fdem.omega(f)*epsilon
 
-    XYZ = asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
     dx = XYZ[:, 0] - srcLoc[0]
     dy = XYZ[:, 1] - srcLoc[1]
@@ -95,17 +98,19 @@ class TestFDEMdipole(unittest.TestCase):
             )
             return passed
 
+        passed = []
         for i, orientation in enumerate(['x', 'y', 'z']):
             for component in ['real', 'imag']:
-                check_component(
+                passed.append(check_component(
                     orientation + '_' + component,
                     getattr(field[:, i], component),
                     getattr(ftest[:, i], component)
-                )
+                ))
+        return all(passed)
 
     def electric_dipole_e(self, orientation):
-        sigma = np.exp(np.random.randn(1))
-        frequency = np.random.rand(1)*1e6
+        sigma = np.random.random_integers(1)
+        frequency = np.random.random_integers(1)
         edws = fdem.ElectricDipoleWholeSpace(
             orientation=orientation,
             sigma=sigma,
@@ -114,7 +119,7 @@ class TestFDEMdipole(unittest.TestCase):
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = ndgrid([x, y, z])
+        xyz = discretize.utils.ndgrid([x, y, z])
 
         extest, eytest, eztest = E_from_EDWS(
             xyz, edws.location, edws.sigma, edws.frequency,
@@ -126,7 +131,8 @@ class TestFDEMdipole(unittest.TestCase):
             "\n\nTesting Electric Dipole {} orientation\n".format(orientation)
         )
 
-        self.compare_fields(e, np.vstack([extest, eytest, eztest]).T)
+        passed = self.compare_fields(e, np.vstack([extest, eytest, eztest]).T)
+        self.assertTrue(passed)
 
     def test_electric_dipole_x_e(self):
         self.electric_dipole_e("x")
@@ -149,7 +155,7 @@ class TestFDEMdipole(unittest.TestCase):
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
 
-        xyz = ndgrid([x, y, z])
+        xyz = discretize.utils.ndgrid([x, y, z])
 
         extest0, eytest0, eztest0 = E_from_EDWS(
             xyz, edws.location, edws.sigma, edws.frequency,
@@ -181,6 +187,147 @@ class TestFDEMdipole(unittest.TestCase):
 
         self.compare_fields(e, np.vstack([extest, eytest, eztest]).T)
 
+
+class TestFDEMdipole_SimPEG(unittest.TestCase):
+
+    tol = 1e-1 # error must be an order of magnitude smaller than results
+
+    # put the source at the center
+
+    def getFaceSrc(self, mesh):
+        csx = mesh.hx.min()
+        csz = mesh.hz.min()
+        srcInd = (
+            (mesh.gridFz[:, 0] < csx) &
+            (mesh.gridFz[:, 2] < csz/2.) & (mesh.gridFz[:, 2] > -csz/2.)
+        )
+
+        src_vecz = np.zeros(mesh.nFz, dtype=complex)
+        src_vecz[srcInd] = 1.
+
+        return np.hstack(
+            [np.zeros(mesh.vnF[:2].sum(), dtype=complex), src_vecz]
+        )
+
+    def getProjections(self, mesh):
+        ignore_inside_radius = 5*mesh.hx.min()
+        ignore_outside_radius = 40*mesh.hx.min()
+
+        def ignoredGridLocs(grid):
+            return (
+                (
+                    grid[:, 0]**2 + grid[:, 1]**2 + grid[:, 2]**2  <
+                    ignore_inside_radius**2
+                ) | (
+                    grid[:, 0]**2 + grid[:, 1]**2 + grid[:, 2]**2 >
+                    ignore_outside_radius**2
+                )
+            )
+
+        # Faces
+        ignore_me_Fx = ignoredGridLocs(mesh.gridFx)
+        ignore_me_Fz = ignoredGridLocs(mesh.gridFz)
+        ignore_me = np.hstack([ignore_me_Fx, ignore_me_Fz])
+        keep_me = np.array(~ignore_me, dtype=float)
+        Pf = discretize.utils.sdiag(keep_me)
+
+        # Edges
+        ignore_me_Ey = ignoredGridLocs(mesh.gridEy)
+        keep_me_Ey = np.array(~ignore_me_Ey, dtype=float)
+        Pe = discretize.utils.sdiag(keep_me_Ey)
+
+        return Pf, Pe
+
+    def test_e_dipole_v_SimPEG(self):
+
+        def compare_w_SimPEG(name, geoana, simpeg):
+
+            norm_geoana = np.linalg.norm(geoana)
+            norm_simpeg = np.linalg.norm(simpeg)
+            diff = np.linalg.norm(geoana - simpeg)
+            passed = diff < self.tol * 0.5 * (norm_geoana + norm_simpeg)
+            print(
+                "  {} ... geoana: {:1.4e}, SimPEG: {:1.4e}, diff: {:1.4e}, "
+                "passed?: {}".format(
+                    name, norm_geoana, norm_simpeg, diff, passed
+                )
+            )
+
+            return passed
+
+        print("\n\nComparing Electric dipole with SimPEG")
+
+        sigma_back = 1e-1
+        freqs = np.r_[10., 100.]
+
+        csx, ncx, npadx = 0.5, 40, 20
+        ncy = 1
+        csz, ncz, npadz = 0.5, 40, 20
+
+        hx = discretize.utils.meshTensor(
+            [(csx, ncx), (csx, npadx, 1.2)]
+        )
+        hy = 2*np.pi / ncy * np.ones(ncy)
+        hz = discretize.utils.meshTensor(
+            [(csz, npadz, -1.2), (csz, ncz), (csz, npadz, 1.2)]
+        )
+
+        mesh = discretize.CylMesh([hx, hy, hz], x0='00C')
+
+        s_e = self.getFaceSrc(mesh)
+        prob = FDEM.Problem3D_h(mesh, sigmaMap=Maps.IdentityMap(mesh))
+        srcList = [FDEM.Src.RawVec_e([], f, s_e) for f in freqs]
+        survey = FDEM.Survey(srcList)
+
+        prob.pair(survey)
+
+        fields = prob.fields(sigma_back*np.ones(mesh.nC))
+
+        length = mesh.hz.min()
+        current = np.pi * csx**2
+
+        edws = fdem.ElectricDipoleWholeSpace(
+            sigma=sigma_back, length=length, current=current, orientation="z"
+        )
+
+        Pf, Pe = self.getProjections(mesh)
+
+        j_passed = []
+        h_passed = []
+        for i, f in enumerate(freqs):
+            edws.frequency = f
+
+            j_xz = []
+            for j, component in zip([0, 2], ['x', 'z']):
+                grid = getattr(mesh, "gridF{}".format(component))
+                j_xz.append(
+                    edws.current_density(grid)[:, j
+                    ]
+                )
+            j_geoana = np.hstack(j_xz)
+            h_geoana = edws.magnetic_field(mesh.gridEy)[:, 1]
+
+            P_j_geoana = Pf*j_geoana
+            P_j_simpeg = Pf*discretize.utils.mkvc(fields[srcList[i], 'j'])
+
+            P_h_geoana = Pe*h_geoana
+            P_h_simpeg = Pe*discretize.utils.mkvc(fields[srcList[i], 'h'])
+
+            print("Testing {} Hz".format(f))
+
+            for comp in ['real', 'imag']:
+                j_passed.append(compare_w_SimPEG(
+                    'J {}'.format(comp),
+                    getattr(P_j_geoana, comp),
+                    getattr(P_j_simpeg, comp)
+                ))
+                h_passed.append(compare_w_SimPEG(
+                    'H {}'.format(comp),
+                    getattr(P_h_geoana, comp),
+                    getattr(P_h_simpeg, comp)
+                ))
+        assert(all(j_passed))
+        assert(all(h_passed))
 
 
 if __name__ == '__main__':

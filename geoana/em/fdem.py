@@ -238,14 +238,14 @@ class ElectricDipoleWholeSpace(
         """
         dxyz = self.vector_distance(xyz)
         r = self.distance(xyz)
-        r = np.kron(np.ones(1, 3), np.atleast_2d(r).T)
+        r = spatial.repeat_scalar(r)
         kr = self.wave_number * r
 
         front = (
             self.current * self.length / (4 * np.pi * r**2) * (1j * kr + 1) *
             np.exp(-1j * kr)
         )
-        return front * self.cross_orientation(xyz) / r
+        return - front * self.cross_orientation(xyz) / r
 
     def magnetic_flux_density(self, xyz):
         """

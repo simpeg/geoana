@@ -108,7 +108,7 @@ class BaseDipole(BaseEM):
         Take the cross product between a grid and the orientation of the dipole
         """
         orientation = np.kron(
-            np.atleast_2d(self.orientation), np.ones(xyz.shape[0]).T
+            np.atleast_2d(self.orientation), np.ones((xyz.shape[0], 1))
         )
         return np.cross(xyz, orientation)
 
