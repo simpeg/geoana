@@ -138,19 +138,20 @@ class BaseFDEM(BaseEM):
     @property
     def wave_number(self):
         """
-        Wavenumber of an electromagnetic wave in a medium with constant physical
-        properties
+        Wavenumber of an electromagnetic wave in a medium with constant
+        physical properties
 
         .. math::
 
-        k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}        """
+        k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+        """
         return wave_number(self.frequency, self.sigma, self.mu)
 
     @property
     def skin_depth(self):
         """
-        Distance at which an em wave has decayed by a factor of :math:`1/e` in a
-        medium with constant physical properties
+        Distance at which an em wave has decayed by a factor of :math:`1/e` in
+        a medium with constant physical properties
 
         .. math::
 
@@ -159,16 +160,7 @@ class BaseFDEM(BaseEM):
         return skin_depth(self.frequency, self.sigma, self.mu)
 
 
-class BaseFDEMDipoleWholeSpace(BaseFDEM):
-    """
-    Base FDEM Dipole
-    """
-    pass
-
-
-class ElectricDipoleWholeSpace(
-    BaseElectricDipole, BaseFDEMDipoleWholeSpace
-):
+class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
     """
     Harmonic electric dipole in a whole space. The source is
     (c.f. Ward and Hohmann, 1988 page 173). The source current
@@ -177,7 +169,9 @@ class ElectricDipoleWholeSpace(
 
     .. math::
 
-        \mathbf{J}(\mathbf{r}) = I ds \delta(\mathbf{r} - \mathbf{r}_s)\mathbf{\hat{u}}
+        \mathbf{J}(\mathbf{r}) = I ds \delta(\mathbf{r}
+        - \mathbf{r}_s)\mathbf{\hat{u}}
+
     """
     def vector_potential(self, xyz):
         """
@@ -202,7 +196,8 @@ class ElectricDipoleWholeSpace(
 
         .. math::
 
-            \mathbf{E} = \frac{1}{\hat{\sigma}} \nabla \nabla \cdot \mathbf{A} - i \omega \mu \mathbf{A}
+            \mathbf{E} = \frac{1}{\hat{\sigma}} \nabla \nabla \cdot \mathbf{A}
+            - i \omega \mu \mathbf{A}
 
         """
         dxyz = self.vector_distance(xyz)
@@ -211,7 +206,7 @@ class ElectricDipoleWholeSpace(
         kr = self.wave_number * r
 
         front = (
-            (self.current * self.length) / (4 * np.pi * self.sigma * r**3 ) *
+            (self.current * self.length) / (4 * np.pi * self.sigma * r**3) *
             np.exp(-1j * kr)
         )
         symmetric_term = (
@@ -222,9 +217,12 @@ class ElectricDipoleWholeSpace(
             (kr**2 - 1j*kr - 1) *
             np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
         )
-        return front * ( symmetric_term + oriented_term )
+        return front * (symmetric_term + oriented_term)
 
     def current_density(self, xyz):
+        """
+        Current density due to a harmonic electric dipole
+        """
         return self.sigma * self.electric_field(xyz)
 
     def magnetic_field(self, xyz):

@@ -141,7 +141,7 @@ class BaseElectricDipole(BaseDipole):
     )
 
     current = properties.Float(
-        "size of the injected current (A)",
+        "magnitude of the injected current (A)",
         default=1.0,
         min=0.0
     )
