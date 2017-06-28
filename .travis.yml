@@ -1,7 +1,11 @@
 language: python
 python:
-  - 3.4
+  - 3.6
   - 2.7
+  - "nightly"
+
+allowed_failures:
+  - "nightly"
 
 sudo: false
 
