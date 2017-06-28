@@ -1,4 +1,4 @@
-.. _index:
+.. _geoana:
 
 geoana
 ======
