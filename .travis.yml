@@ -4,8 +4,9 @@ python:
   - 2.7
   - "nightly"
 
-allowed_failures:
-  - "nightly"
+matrix:
+  allow_failures:
+    - "nightly"
 
 sudo: false
 
