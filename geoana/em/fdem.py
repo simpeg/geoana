@@ -11,6 +11,11 @@ import properties
 from .base import BaseElectricDipole, BaseMagneticDipole, BaseEM
 from .. import spatial
 
+__all__ = [
+    'omega', 'wave_number', 'skin_depth', 'sigma_hat',
+    'ElectricDipoleWholeSpace'
+]
+
 
 ###############################################################################
 #                                                                             #
@@ -263,7 +268,15 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         pass
 
     def magnetic_field(self, xyz):
-        pass
+        dxyz = self.vector_distance(xyz)
+        r = self.distance(xyz)
+        r = spatial.repeat_scalar(r)
+        kr = self.wave_number*r
+
+        front = self.moment / (4. * np.pi * r*3) * np.exp(-1j * kr)
+        symmetric_term = (
+
+        )
 
     def magnetic_flux_density(self, xyz):
         pass
