@@ -72,7 +72,7 @@ class BaseTDEM(BaseEM):
 
     @property
     def theta(self):
-        return np.sqrt(self.mu*self.sigma)
+        return np.sqrt(self.mu*self.sigma/(4.*self.time))
 
 
 class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
@@ -110,8 +110,8 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         )
 
         symmetric_term = (
-            - (
-                (
+            (
+                - (
                     4/root_pi * thetar ** 3 + 6/root_pi * thetar
                 ) * np.exp(-thetar**2) +
                 3 * erf(thetar)
@@ -123,7 +123,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         oriented_term = (
             (
                 4./root_pi * thetar**3 + 2./root_pi * thetar
-            ) * np.exp(-thetar) +
+            ) * np.exp(-thetar**2) -
             erf(thetar)
         ) * np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
 

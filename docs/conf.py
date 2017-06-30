@@ -303,7 +303,9 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 def supress_nonlocal_image_warn():
     import sphinx.environment
-    sphinx.environment.BuildEnvironment.warn_node = _supress_nonlocal_image_warn
+    sphinx.environment.BuildEnvironment.warn_node = (
+        _supress_nonlocal_image_warn
+    )
 
 
 def _supress_nonlocal_image_warn(self, msg, node, **kwargs):
