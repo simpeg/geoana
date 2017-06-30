@@ -9,6 +9,7 @@ import numpy as np
 import properties
 
 from .base import BaseElectricDipole, BaseEM
+from .. import spatial
 
 
 ###############################################################################
@@ -109,7 +110,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         )
 
         symmetric_term = (
-            (
+            - (
                 (
                     4/root_pi * thetar ** 3 + 6/root_pi * thetar
                 ) * np.exp(-thetar**2) +
