@@ -43,14 +43,14 @@ class TestDoc(unittest.TestCase):
         )
         assert check == 0
 
-    def test_linkcheck(self):
-        check = subprocess.call(
-            ['sphinx-build', '-nW', '-b', 'linkcheck', '-d',
-             '{}'.format(self.doctrees_dir),
-             '{}'.format(self.docs_dir),
-             '{}'.format(self.build_dir)]
-        )
-        assert check == 0
+    # def test_linkcheck(self):
+    #     check = subprocess.call(
+    #         ['sphinx-build', '-nW', '-b', 'linkcheck', '-d',
+    #          '{}'.format(self.doctrees_dir),
+    #          '{}'.format(self.docs_dir),
+    #          '{}'.format(self.build_dir)]
+    #     )
+    #     assert check == 0
 
 if __name__ == '__main__':
     unittest.main()
