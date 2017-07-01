@@ -121,6 +121,7 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 
 
 linkcheck_ignore = [
+    'https://readthedocs.org/projects/geoana/badge/?version=latest'
 ]
 
 linkcheck_retries = 3
