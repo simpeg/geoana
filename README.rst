@@ -4,7 +4,7 @@ geoana
 ======
 
 .. image:: https://readthedocs.org/projects/geoana/badge/?version=latest
-    :target: http://geoana.readthedocs.io/en/latest/?badge=latest
+    :target: https://geoana.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
 .. image:: https://img.shields.io/github/license/simpeg/geoana.svg
