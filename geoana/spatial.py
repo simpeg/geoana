@@ -4,7 +4,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import numpy as np
-import properties
 
 
 def vector_distance(xyz, origin=np.r_[0., 0., 0.]):

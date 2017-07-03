@@ -248,7 +248,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
             self.current * self.length / (4 * np.pi * r**2) * (1j * kr + 1) *
             np.exp(-1j * kr)
         )
-        return - front * self.cross_orientation(xyz) / r
+        return - front * self.cross_orientation(dxyz) / r
 
     def magnetic_flux_density(self, xyz):
         """
@@ -268,6 +268,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         pass
 
     def magnetic_field(self, xyz):
+        pass
         dxyz = self.vector_distance(xyz)
         r = self.distance(xyz)
         r = spatial.repeat_scalar(r)

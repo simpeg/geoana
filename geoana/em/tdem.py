@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from scipy.constants import mu_0, pi, epsilon_0
+from scipy.constants import mu_0, pi
 from scipy.special import erf
 import numpy as np
 import properties
