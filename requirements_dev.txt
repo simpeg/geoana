@@ -2,3 +2,4 @@ discretize
 sphinx_rtd_theme
 SimPEG
 sphinx
+nose
