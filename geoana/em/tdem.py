@@ -47,6 +47,7 @@ def theta(time, sigma, mu=mu_0):
     Analog to wavenumber in the frequency domain. See Ward and Hohmann, 1988
     pages 174-175
     """
+    return np.sqrt(mu*sigma/(4.*time))
 
 
 ###############################################################################
@@ -72,7 +73,7 @@ class BaseTDEM(BaseEM):
 
     @property
     def theta(self):
-        return np.sqrt(self.mu*self.sigma/(4.*self.time))
+        return theta(self.time, self.sigma, self.mu)
 
 
 class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
