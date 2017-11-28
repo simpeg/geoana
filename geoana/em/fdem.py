@@ -220,7 +220,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
         )
         symmetric_term = (
             spatial.repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
-            (-kr**2 + 3*ikr+ 3) / r**2
+            (-kr**2 + 3*ikr + 3) / r**2
         )
         oriented_term = (
             (kr**2 - ikr - 1) *
@@ -290,10 +290,11 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         dxyz = self.vector_distance(xyz)
         r = spatial.repeat_scalar(self.distance(xyz))
         kr = self.wavenumber*r
+        ikr = 1j * kr
 
         front_term = (
             (1j * self.omega * self.mu * self.moment) / (4. * np.pi * r**2) *
-            (1j * kr + 1) * np.exp(-1j * kr)
+            (ikr + 1) * np.exp(-ikr)
         )
         return front_term * self.cross_orientation(dxyz) / r
 
@@ -308,8 +309,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         Magnetic field due to a magnetic dipole in a wholespace
         """
         dxyz = self.vector_distance(xyz)
-        r = self.distance(xyz)
-        r = spatial.repeat_scalar(r)
+        r = spatial.repeat_scalar(self.distance(xyz))
         kr = self.wavenumber*r
         ikr = 1j*kr
 

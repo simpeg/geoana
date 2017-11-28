@@ -14,16 +14,24 @@ from geoana.em import fdem
 from discretize.utils import ndgrid, asArray_N_x_Dim
 
 
-def H_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=1., epsr=1., t=0.):
+def H_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=0, epsr=1., t=0.):
 
     """
         Computing magnetic fields from Magnetic Dipole in a Wholespace
         TODO:
             Add description of parameters
     """
+    assert current == 1
+    assert loopArea == 1
+    assert np.all(srcLoc == np.r_[0., 0., 0.])
+    assert kappa == 0
     mu = mu_0 * (1+kappa)
     epsilon = epsilon_0 * epsr
     m = current * loopArea
+
+    assert m == 1
+    assert mu == mu_0
+    assert epsilon == epsilon_0
 
     omega = lambda f: 2*np.pi*f
 
@@ -36,33 +44,32 @@ def H_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1.
 
     r = np.sqrt(dx**2. + dy**2. + dz**2.)
     # k  = np.sqrt( -1j*2.*np.pi*f*mu*sig )
-    k = np.sqrt(omega(f)**2. * mu*epsilon - 1j*omega(f)*mu*sig)
+    k = np.sqrt(omega(f)**2. * mu * epsilon - 1j*omega(f)*mu*sig)
 
-    front = m / (4.*np.pi*(r)**3) * np.exp(-1j*k*r)
-    mid   = -k**2 * r**2 + 3*1j*k*r + 3
+    front = m / (4. * np.pi * r**3) * np.exp(-1j*k*r)
+    mid   = - k**2 * r**2 + 3*1j*k*r + 3
 
     if orientation.upper() == 'X':
         Hx = front*((dx**2 / r**2)*mid + (k**2 * r**2 - 1j*k*r - 1.))
         Hy = front*(dx*dy  / r**2)*mid
         Hz = front*(dx*dz  / r**2)*mid
-        return Hx, Hy, Hz
 
     elif orientation.upper() == 'Y':
         #  x--> y, y--> z, z-->x
         Hy = front * ((dy**2 / r**2)*mid + (k**2 * r**2 - 1j*k*r - 1.))
         Hz = front * (dy*dz  / r**2)*mid
         Hx = front * (dy*dx  / r**2)*mid
-        return Hx, Hy, Hz
 
     elif orientation.upper() == 'Z':
         # x --> z, y --> x, z --> y
         Hz = front*((dz**2 / r**2)*mid + (k**2 * r**2 - 1j*k*r - 1.))
         Hx = front*(dz*dx  / r**2)*mid
         Hy = front*(dz*dy  / r**2)*mid
-        return Hx, Hy, Hz
+
+    return Hx, Hy, Hz
 
 
-def B_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=1., epsr=1., t=0.):
+def B_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=0, epsr=1., t=0.):
 
     """
         Computing magnetic flux densites from Magnetic Dipole in a Wholespace
@@ -93,9 +100,9 @@ def E_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1.
 
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
-    dx = XYZ[:,0]-srcLoc[0]
-    dy = XYZ[:,1]-srcLoc[1]
-    dz = XYZ[:,2]-srcLoc[2]
+    dx = XYZ[:, 0]-srcLoc[0]
+    dy = XYZ[:, 1]-srcLoc[1]
+    dz = XYZ[:, 2]-srcLoc[2]
 
     r  = np.sqrt( dx**2. + dy**2. + dz**2.)
     # k  = np.sqrt( -1j*2.*np.pi*f*mu*sig )
@@ -173,7 +180,7 @@ class TestFDEMdipole(unittest.TestCase):
         return all(passed)
 
     def magnetic_dipole_b(self, orientation):
-        sigma = 1e-3
+        sigma = 1
         frequency = 1.
         mdws = fdem.MagneticDipoleWholeSpace(
             orientation=orientation,
@@ -193,7 +200,8 @@ class TestFDEMdipole(unittest.TestCase):
         # ) for rx_orientation in ["x", "y", "z"]]
 
         bxtest, bytest, bztest = B_from_MagneticDipoleWholeSpace(
-            xyz, mdws.location, mdws.sigma, mdws.frequency
+            xyz, mdws.location, mdws.sigma, mdws.frequency,
+            orientation=orientation
         )
 
         b = mdws.magnetic_flux_density(xyz)
@@ -257,11 +265,11 @@ class TestFDEMdipole(unittest.TestCase):
             xyz, mdws.location, mdws.sigma, mdws.frequency,
             orientation='X'
         )
-        bxtest1, bytest1, bztest1 = E_from_MagneticDipoleWholeSpace(
+        bxtest1, bytest1, bztest1 = B_from_MagneticDipoleWholeSpace(
             xyz, mdws.location, mdws.sigma, mdws.frequency,
             orientation='Y'
         )
-        bxtest2, bytest2, bztest2 = E_from_MagneticDipoleWholeSpace(
+        bxtest2, bytest2, bztest2 = B_from_MagneticDipoleWholeSpace(
             xyz, mdws.location, mdws.sigma, mdws.frequency,
             orientation='Z'
         )
@@ -343,23 +351,25 @@ class TestFDEMdipole_SimPEG(unittest.TestCase):
 
     # put the source at the center
 
-    def getFaceSrc(self, mesh):
-        csx = mesh.hx.min()
-        csz = mesh.hz.min()
-        srcInd = (
-            (mesh.gridFz[:, 0] < csx) &
-            (mesh.gridFz[:, 2] < csz/2.) & (mesh.gridFz[:, 2] > -csz/2.)
-        )
+    # def getFaceSrc(self, mesh):
+    #     csx = mesh.hx.min()
+    #     csz = mesh.hz.min()
+    #     srcInd = (
+    #         (mesh.gridFz[:, 0] < csx) &
+    #         (mesh.gridFz[:, 2] < csz/2.) & (mesh.gridFz[:, 2] > -csz/2.)
+    #     )
 
-        src_vecz = np.zeros(mesh.nFz, dtype=complex)
-        src_vecz[srcInd] = 1.
+    #     assert srcInd.
 
-        return np.hstack(
-            [np.zeros(mesh.vnF[:2].sum(), dtype=complex), src_vecz]
-        )
+    #     src_vecz = np.zeros(mesh.nFz, dtype=complex)
+    #     src_vecz[srcInd] = 1.
+
+    #     return np.hstack(
+    #         [np.zeros(mesh.vnF[:2].sum(), dtype=complex), src_vecz]
+    #     )
 
     def getProjections(self, mesh):
-        ignore_inside_radius = 5*mesh.hx.min()
+        ignore_inside_radius = 10*mesh.hx.min()
         ignore_outside_radius = 40*mesh.hx.min()
 
         def ignoredGridLocs(grid):
@@ -406,34 +416,32 @@ class TestFDEMdipole_SimPEG(unittest.TestCase):
 
         print("\n\nComparing Magnetic dipole with SimPEG")
 
-        sigma_back = 1e-1
+        sigma_back = 1.
         freqs = np.r_[10., 100.]
 
-        csx, ncx, npadx = 0.5, 50, 30
+        csx, ncx, npadx = 1, 50, 50
         ncy = 1
-        csz, ncz, npadz = 0.5, 50, 30
+        csz, ncz, npadz = 1, 50, 50
 
         hx = discretize.utils.meshTensor(
-            [(csx, ncx), (csx, npadx, 1.2)]
+            [(csx, ncx), (csx, npadx, 1.3)]
         )
         hy = 2*np.pi / ncy * np.ones(ncy)
         hz = discretize.utils.meshTensor(
-            [(csz, npadz, -1.2), (csz, ncz), (csz, npadz, 1.2)]
+            [(csz, npadz, -1.3), (csz, ncz), (csz, npadz, 1.3)]
         )
 
         mesh = discretize.CylMesh([hx, hy, hz], x0='00C')
 
-        s_m = self.getFaceSrc(mesh)
-        prob = FDEM.Problem3D_b(mesh, sigmaMap=Maps.IdentityMap(mesh))
-        srcList = [FDEM.Src.RawVec_m([], f, s_m) for f in freqs]
+        prob = FDEM.Problem3D_e(mesh, sigmaMap=Maps.IdentityMap(mesh))
+        srcList = [FDEM.Src.MagDipole([], loc=np.r_[0., 0., 0.], freq=f) for f in freqs]
         survey = FDEM.Survey(srcList)
 
         prob.pair(survey)
 
         fields = prob.fields(sigma_back*np.ones(mesh.nC))
 
-        moment = np.pi * csx**2 # mesh.hz.min() *
-
+        moment = 1.
         mdws = fdem.MagneticDipoleWholeSpace(
             sigma=sigma_back, moment=moment, orientation="z"
         )
