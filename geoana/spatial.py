@@ -6,6 +6,22 @@ from __future__ import unicode_literals
 import numpy as np
 
 
+def vector_magnitude(v):
+    """
+    Amplitude of a vector, v.
+
+    :param numpy.array v: vector array :code:`np.r_[x, y, z]`, with shape (n, 3)
+    """
+
+    assert (v.shape[1] == 3), (
+        "the vector, v, should be npoints by 3. The shape provided is {}".format(
+            v.shape
+        )
+    )
+
+    return np.sqrt((v**2).sum(axis=1))
+
+
 def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
     """
     Vector distance of a grid, xyz from an origin origin.
@@ -32,7 +48,7 @@ def distance(xyz, origin=np.r_[0., 0., 0.]):
     :param numpy.array origin: origin (default: [0., 0., 0.])
     """
     dxyz = vector_distance(xyz, origin)
-    return np.sqrt((dxyz**2).sum(axis=1))
+    return vector_magnitude(dxyz)
 
 
 def vector_dot(xyz, vector):
