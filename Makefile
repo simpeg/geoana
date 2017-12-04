@@ -6,7 +6,7 @@ install:
 	python setup.py install
 
 coverage:
-	nosetests --logging-level=INFO --with-coverage --cover-package=discretize --cover-html
+	nosetests --logging-level=INFO --with-coverage --cover-package=geoana --cover-html
 	open cover/index.html
 
 lint:
@@ -16,7 +16,7 @@ lint-html:
 	pylint --output-format=html $(PACKAGE_NAME) > pylint.html
 
 graphs:
-	pyreverse -my -A -o pdf -p discretize discretize/**.py discretize/**/**.py
+	pyreverse -my -A -o pdf -p geoana geoana/**.py geoana/**/**.py
 
 tests:
 	nosetests --logging-level=INFO
