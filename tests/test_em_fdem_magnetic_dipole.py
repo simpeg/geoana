@@ -14,17 +14,16 @@ from geoana.em import fdem
 from discretize.utils import ndgrid, asArray_N_x_Dim
 
 
-def H_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=0, epsr=1., t=0.):
+def H_from_MagneticDipoleWholeSpace(
+    XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=0,
+    epsr=1., t=0.
+):
 
-    """
-        Computing magnetic fields from Magnetic Dipole in a Wholespace
-        TODO:
-            Add description of parameters
-    """
     assert current == 1
     assert loopArea == 1
     assert np.all(srcLoc == np.r_[0., 0., 0.])
     assert kappa == 0
+
     mu = mu_0 * (1+kappa)
     epsilon = epsilon_0 * epsr
     m = current * loopArea
@@ -69,29 +68,28 @@ def H_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1.
     return Hx, Hy, Hz
 
 
-def B_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=0, epsr=1., t=0.):
+def B_from_MagneticDipoleWholeSpace(
+    XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=0,
+    epsr=1., t=0.
+):
 
-    """
-        Computing magnetic flux densites from Magnetic Dipole in a Wholespace
-        TODO:
-            Add description of parameters
-    """
     mu = mu_0 * (1+kappa)
 
-    Hx, Hy, Hz = H_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=current, loopArea=loopArea, orientation=orientation, kappa=kappa, epsr=epsr)
+    Hx, Hy, Hz = H_from_MagneticDipoleWholeSpace(
+        XYZ, srcLoc, sig, f, current=current, loopArea=loopArea,
+        orientation=orientation, kappa=kappa, epsr=epsr
+    )
     Bx = mu * Hx
     By = mu * Hy
     Bz = mu * Hz
     return Bx, By, Bz
 
 
-def E_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=0., epsr=1., t=0.):
+def E_from_MagneticDipoleWholeSpace(
+    XYZ, srcLoc, sig, f, current=1., loopArea=1., orientation='X', kappa=0.,
+    epsr=1., t=0.
+):
 
-    """
-        Computing analytic electric fields from Magnetic Dipole in a Wholespace
-        TODO:
-            Add description of parameters
-    """
     mu = mu_0 * (1+kappa)
     epsilon = epsilon_0 * epsr
     m = current * loopArea
@@ -108,25 +106,27 @@ def E_from_MagneticDipoleWholeSpace(XYZ, srcLoc, sig, f, current=1., loopArea=1.
     # k  = np.sqrt( -1j*2.*np.pi*f*mu*sig )
     k  = np.sqrt( omega(f)**2. *mu*epsilon -1j*omega(f)*mu*sig )
 
-    front = ((1j * omega(f) * mu * m) / (4.* np.pi * r**2)) * (1j * k * r + 1) * np.exp(-1j*k*r)
+    front = (
+        ((1j * omega(f) * mu * m) / (4.* np.pi * r**2)) *
+        (1j * k * r + 1) * np.exp(-1j*k*r)
+    )
 
     if orientation.upper() == 'X':
         Ey = front * (dz / r)
         Ez = front * (-dy / r)
         Ex = np.zeros_like(Ey)
-        return Ex, Ey, Ez
 
     elif orientation.upper() == 'Y':
         Ex = front * (-dz / r)
         Ez = front * (dx / r)
         Ey = np.zeros_like(Ex)
-        return Ex, Ey, Ez
 
     elif orientation.upper() == 'Z':
         Ex = front * (dy / r)
         Ey = front * (-dx / r)
         Ez = np.zeros_like(Ex)
-        return Ex, Ey, Ez
+
+    return Ex, Ey, Ez
 
 
 class TestFDEMdipole(unittest.TestCase):
@@ -348,25 +348,6 @@ class TestFDEMdipole(unittest.TestCase):
 class TestFDEMdipole_SimPEG(unittest.TestCase):
 
     tol = 1e-1 # error must be an order of magnitude smaller than results
-
-    # put the source at the center
-
-    # def getFaceSrc(self, mesh):
-    #     csx = mesh.hx.min()
-    #     csz = mesh.hz.min()
-    #     srcInd = (
-    #         (mesh.gridFz[:, 0] < csx) &
-    #         (mesh.gridFz[:, 2] < csz/2.) & (mesh.gridFz[:, 2] > -csz/2.)
-    #     )
-
-    #     assert srcInd.
-
-    #     src_vecz = np.zeros(mesh.nFz, dtype=complex)
-    #     src_vecz[srcInd] = 1.
-
-    #     return np.hstack(
-    #         [np.zeros(mesh.vnF[:2].sum(), dtype=complex), src_vecz]
-    #     )
 
     def getProjections(self, mesh):
         ignore_inside_radius = 10*mesh.hx.min()
