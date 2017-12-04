@@ -37,7 +37,6 @@ setup(
         'numpy>=1.7',
         'scipy>=0.13',
         'matplotlib',
-        'requests',
         'ipywidgets',
         'properties[math]',
         'jupyter',
