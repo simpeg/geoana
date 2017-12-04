@@ -11,10 +11,6 @@ from .base import BaseEM, BaseMagneticDipole, BaseElectricDipole
 
 class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
 
-    # @tr.observe('sigma')
-    # def _sigma_changed(self, change):
-    #     warnings.warn("Sigma is not involved in the calculation", UserWarning)
-
     def vector_potential(self, xyz, **kwargs):
         """Vector potential of a static magnetic dipole
 
@@ -77,5 +73,3 @@ class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
     def magnetic_field(self, xyz, **kwargs):
         return self.magnetic_flux(xyz, **kwargs) / self.mu
 
-
-# class
