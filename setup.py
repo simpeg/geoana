@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
-"""geoana
+"""
+geoana
 
 Interactive geoscience (mostly) analytic functions.
 """

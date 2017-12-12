@@ -18,7 +18,7 @@ def mkvc(x, numDims=1):
             > (3, 1, 1)
 
     """
-    if type(x) == np.matrix:
+    if isinstance(x, np.matrix):
         x = np.array(x)
 
     if hasattr(x, 'tovec'):
@@ -71,7 +71,7 @@ def ndgrid(*args, **kwargs):
 
     # Read the keyword arguments, and only accept a vector=True/False
     vector = kwargs.pop('vector', True)
-    assert type(vector) == bool, "'vector' keyword must be a bool"
+    assert isinstance(vector, bool), "'vector' keyword must be a bool"
     assert len(kwargs) == 0, "Only 'vector' keyword accepted"
 
     # you can either pass a list [x1, x2, x3] or each seperately

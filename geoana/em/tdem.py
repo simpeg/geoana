@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from scipy.constants import mu_0, pi
+from scipy.constants import mu_0
 from scipy.special import erf
 import numpy as np
 import properties
@@ -141,7 +141,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         Magnetic field from an electric dipole
         """
         dxyz = self.vector_distance(xyz)
-        r = self.distance(xyz)
+        r = self.distance(dxyz)
         r = spatial.repeat_scalar(r)
         thetar = self.theta * r
 

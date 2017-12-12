@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from scipy.constants import mu_0, pi, epsilon_0
+from scipy.constants import mu_0, epsilon_0
 import numpy as np
 import warnings
 import properties
@@ -72,8 +72,8 @@ def skin_depth(frequency, sigma, mu=mu_0):
     :param float sigma: electrical conductivity (S/m)
     :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
     """
-    omega = omega(frequency)
-    return np.sqrt(2./(omega*sigma*mu))
+    w = omega(frequency)
+    return np.sqrt(2./(w*sigma*mu))
 
 
 def sigma_hat(frequency, sigma, epsilon=epsilon_0, quasistatic=False):
