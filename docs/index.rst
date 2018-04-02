@@ -1,18 +1,13 @@
-.. _index:
+
 
 .. include:: ../README.rst
 
-Contents:
+
+**Contents:**
 
 .. toctree::
    :maxdepth: 2
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   content/earthquake
+   content/em
 

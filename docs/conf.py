@@ -119,6 +119,14 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
     html_theme = 'sphinx_rtd_theme'
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
+
+linkcheck_ignore = [
+    'https://readthedocs.org/projects/geoana/badge/?version=latest'
+]
+
+linkcheck_retries = 3
+linkcheck_timeout = 500
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -299,3 +307,20 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+
+def supress_nonlocal_image_warn():
+    import sphinx.environment
+    sphinx.environment.BuildEnvironment.warn_node = (
+        _supress_nonlocal_image_warn
+    )
+
+
+def _supress_nonlocal_image_warn(self, msg, node, **kwargs):
+    from docutils.utils import get_source_line
+
+    if not msg.startswith('nonlocal image URI found:'):
+        self._warnfunc(msg, '{0!s}:{1!s}'.format(*get_source_line(node)))
+
+supress_nonlocal_image_warn()
+

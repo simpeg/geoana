@@ -23,7 +23,17 @@ import utm
 import matplotlib.pyplot as plt
 
 
-class EarthquakeInterferogram(properties.UidModel):
+class EarthquakeInterferogram(properties.HasProperties):
+    title = properties.String(
+        'name of the earthquake',
+        required=True
+    )
+
+    description = properties.String(
+        'description of the event',
+        required=False
+    )
+
     location = properties.Vector2(
         'interferogram location (bottom N, left E)',
         required=True
@@ -229,6 +239,8 @@ class EarthquakeInterferogram(properties.UidModel):
             calculate beta - the angle at earth center between reference point
             and satellite nadir
         """
+        if not isinstance(locations, list):
+            locations = [locations]
 
         utmZone = self.location_UTM_zone
         refPoint = vmath.Vector3(self.ref.x, self.ref.y, 0)
@@ -283,7 +295,7 @@ class EarthquakeInterferogram(properties.UidModel):
         los_y = -np.sin(satAzimuth * DEG2RAD) * np.cos(satIncidence * DEG2RAD)
         los_z = np.sin(satIncidence * DEG2RAD)
 
-        return vmath.Vector3(los_x, los_y, los_z)
+        return vmath.Vector3Array([los_x, los_y, los_z])
 
     @staticmethod
     def _ang_to_gc(x, y, origx, origy, satAzimuth):

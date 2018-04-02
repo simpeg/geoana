@@ -1,8 +1,1 @@
-numpy
-scipy
-matplotlib
-sphinx
-ipywidgets
-requests
-utm
-properties
+-e .

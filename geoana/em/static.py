@@ -3,18 +3,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .base import BaseEM, BaseMagneticDipole
-
 import numpy as np
-from ipywidgets import Latex
 import warnings
+
+from .base import BaseEM, BaseMagneticDipole, BaseElectricDipole
 
 
 class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
-
-    # @tr.observe('sigma')
-    # def _sigma_changed(self, change):
-    #     warnings.warn("Sigma is not involved in the calculation", UserWarning)
 
     def vector_potential(self, xyz, **kwargs):
         """Vector potential of a static magnetic dipole
@@ -28,9 +23,9 @@ class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
 
         offset = self.offset_from_location(xyz)
         dist = self.distance_from_location(xyz)
-        m_vec = self.moment * np.atleast_2d(
-            self.orientation
-        ).repeat(n_obs, axis=0)
+        m_vec = (
+            self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
+        )
 
         # Repeat the scalars
         dist = np.atleast_2d(dist).T.repeat(3, axis=1)
@@ -52,9 +47,9 @@ class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
 
         offset = self.offset_from_location(xyz)
         dist = self.distance_from_location(xyz)
-        m_vec = self.moment * np.atleast_2d(
-            self.orientation
-        ).repeat(n_obs, axis=0)
+        m_vec = (
+            self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
+        )
 
         m_dot_r = (m_vec * offset).sum(axis=1)
 
@@ -70,10 +65,11 @@ class MagneticDipole_WholeSpace(BaseMagneticDipole, BaseEM):
 
     @staticmethod
     def magnetic_flux_equation():
-        return Latex(
+        return "{}".format(
             "$\\frac{\mu}{4\pi} \\frac{\mathbf{m} \\times "
             "\mathbf{\hat{r}}}{r^2}$"
         )
 
     def magnetic_field(self, xyz, **kwargs):
         return self.magnetic_flux(xyz, **kwargs) / self.mu
+

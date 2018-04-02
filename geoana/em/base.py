@@ -7,99 +7,111 @@ import numpy as np
 import properties
 from scipy.constants import mu_0, pi, epsilon_0
 
+from .. import spatial
+
+
+###############################################################################
+#                                                                             #
+#                              Base Classes                                   #
+#                                                                             #
+###############################################################################
+
 
 class BaseEM(properties.HasProperties):
+    """
+    Base class for electromanetics. Contains physical properties that are
+    relevant to all problems that use Maxwell's equations
+    """
 
     mu = properties.Float(
-        help='Magnetic permeability.',
+        "Magnetic permeability (H/m)",
         default=mu_0,
         min=0.0
     )
 
     sigma = properties.Float(
-        help='Electrical conductivity (S/m)',
+        "Electrical conductivity (S/m)",
         default=1.0,
         min=0.0
     )
 
     epsilon = properties.Float(
-        help='Permitivity value',
+        "Permitivity value (F/m)",
         default=epsilon_0,
         min=0.0
     )
 
 
 class BaseDipole(BaseEM):
+    """
+    Base class for dipoles.
+    """
 
     orientation = properties.Vector3(
-        help='orientation of dipole',
-        default='X',
+        "orientation of dipole",
+        default="X",
         length=1.0
     )
 
     location = properties.Vector3(
-        help='location of the electric dipole source',
-        default='ZERO'
+        "location of the electric dipole source",
+        default="ZERO"
     )
 
-    def offset_from_location(self, xyz):
+    def vector_distance(self, xyz):
+        """
+        Vector distance from the dipole location
+        :param numpy.ndarray xyz: grid
+        """
+        return spatial.vector_distance(xyz, self.location)
 
-        # TODO: validate stuff
-        # xyz = Utils.asArray_N_x_Dim(xyz, 3)
+    def distance(self, xyz):
+        """
+        Distance from the dipole location
+        """
+        return spatial.distance(xyz, self.location)
 
-        return np.c_[
-            xyz[:, 0] - self.location[0],
-            xyz[:, 1] - self.location[1],
-            xyz[:, 2] - self.location[2]
-        ]
+    def dot_orientation(self, xyz):
+        """
+        Take the dot product between a grid and the orientation of the dipole
+        """
+        return spatial.vector_dot(xyz, self.orientation)
 
-    def distance_from_location(self, xyz):
-        return np.sqrt((self.offset_from_location(xyz)**2).sum(axis=1))
-
-
-class BaseFDEM(BaseEM):
-
-    frequency = properties.Float(
-        help='Source frequency (Hz)',
-        default=1e2,
-        min=0.0
-    )
-
-    @property
-    def omega(self):
-        return 2.0*pi*self.frequency
-
-    @property
-    def sigma_hat(self):
-        return self.sigma + 1j*self.omega*self.epsilon
-
-    @property
-    def wave_number(self):
-        np.sqrt(
-            self.omega**2. * self.mu * self.epsilon -
-            1j * self.omega * self.mu * self.sigma
+    def cross_orientation(self, xyz):
+        """
+        Take the cross product between a grid and the orientation of the dipole
+        """
+        orientation = np.kron(
+            np.atleast_2d(self.orientation), np.ones((xyz.shape[0], 1))
         )
+        return np.cross(xyz, orientation)
 
 
 class BaseElectricDipole(BaseDipole):
+    """
+    Base class for electric current dipoles
+    """
 
     length = properties.Float(
-        help='length of the dipole (m)',
+        "length of the dipole (m)",
         default=1.0,
         min=0.0
     )
 
     current = properties.Float(
-        help='size of the injected current (A)',
+        "magnitude of the injected current (A)",
         default=1.0,
         min=0.0
     )
 
 
 class BaseMagneticDipole(BaseDipole):
+    """
+    Base class for magnetic dipoles
+    """
 
     moment = properties.Float(
-        help='moment of the dipole (Am^2)',
+        "moment of the dipole (Am^2)",
         default=1.0,
         min=0.0
     )

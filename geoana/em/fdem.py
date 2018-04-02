@@ -3,168 +3,330 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .base import BaseElectricDipole, BaseFDEM
-
-from scipy.constants import mu_0, pi, epsilon_0
+from scipy.constants import mu_0, epsilon_0
 import numpy as np
 import warnings
+import properties
+
+from .base import BaseElectricDipole, BaseMagneticDipole, BaseEM
+from .. import spatial
+
+__all__ = [
+    'omega', 'wavenumber', 'skin_depth', 'sigma_hat',
+    'ElectricDipoleWholeSpace', 'MagneticDipoleWholeSpace'
+]
 
 
-class ElectricDipole_WholeSpace(BaseElectricDipole, BaseFDEM):
+###############################################################################
+#                                                                             #
+#                           Utility Functions                                 #
+#                                                                             #
+###############################################################################
 
-    def electric_field(self, xyz, **kwargs):
-        pass
-
-
-def E_from_EDWS(XYZ, srcLoc, sig, f, current=1., length=1., orientation='X', kappa=0., epsr=1., t=0.):
-    """E_from_EDWS
-    Computing the analytic electric fields (E) from an electrical dipole in a wholespace
-    - You have the option of computing E for multiple frequencies at a single reciever location
-      or a single frequency at multiple locations
-
-    :param numpy.array XYZ: reciever locations at which to evaluate E
-    :param float epsr: relative permitivitty value (unitless),  default is 1.0
-    :rtype: numpy.array
-    :return: Ex, Ey, Ez: arrays containing all 3 components of E evaluated at the specified locations and frequencies.
+def omega(frequency):
     """
+    Angular frequency
 
-    mu = mu_0*(1+kappa)
-    epsilon = epsilon_0*epsr
-    sig_hat = sig + 1j*omega(f)*epsilon
+    .. math::
 
-    XYZ = Utils.asArray_N_x_Dim(XYZ, 3)
-    # Check
-    if XYZ.shape[0] > 1 & f.shape[0] > 1:
-        raise Exception('I/O type error: For multiple field locations only a single frequency can be specified.')
+        \omega = 2 \pi f
 
-    dx = XYZ[:, 0] - srcLoc[0]
-    dy = XYZ[:, 1] - srcLoc[1]
-    dz = XYZ[:, 2] - srcLoc[2]
-
-    r = np.sqrt(dx**2. + dy**2. + dz**2.)
-    # k  = np.sqrt( -1j*2.*pi*f*mu*sig )
-    k = np.sqrt(omega(f)**2. * mu * epsilon - 1j * omega(f) * mu * sig)
-
-    front = current * length / (4.*pi*sig_hat* r**3) * np.exp(-1j*k*r)
-    mid   = -k**2 * r**2 + 3*1j*k*r + 3
-
-    if orientation.upper() == 'X':
-        Ex = front*((dx**2 / r**2)*mid + (k**2 * r**2 -1j*k*r-1.))
-        Ey = front*(dx*dy  / r**2)*mid
-        Ez = front*(dx*dz  / r**2)*mid
-        return Ex, Ey, Ez
-
-    elif orientation.upper() == 'Y':
-        #  x--> y, y--> z, z-->x
-        Ey = front*((dy**2 / r**2)*mid + (k**2 * r**2 -1j*k*r-1.))
-        Ez = front*(dy*dz  / r**2)*mid
-        Ex = front*(dy*dx  / r**2)*mid
-        return Ex, Ey, Ez
-
-    elif orientation.upper() == 'Z':
-        # x --> z, y --> x, z --> y
-        Ez = front*((dz**2 / r**2)*mid + (k**2 * r**2 -1j*k*r-1.))
-        Ex = front*(dz*dx  / r**2)*mid
-        Ey = front*(dz*dy  / r**2)*mid
-        return Ex, Ey, Ez
-
-
-def MagneticDipoleFields(srcLoc, obsLoc, component, orientation='Z', moment=1., mu=mu_0):
+    :param frequency float: frequency (Hz)
     """
-        Calculate the vector potential of a set of magnetic dipoles
-        at given locations 'ref. <http://en.wikipedia.org/wiki/Dipole#Magnetic_vector_potential>'
+    return 2*np.pi*frequency
+
+
+def wavenumber(
+    frequency, sigma, mu=mu_0, epsilon=epsilon_0, quasistatic=False
+):
+    """
+    Wavenumber of an electromagnetic wave in a medium with constant physical
+    properties
+
+    .. math::
+
+        k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+
+    :param (float, numpy.ndarray) frequency: frequency (Hz)
+    :param float sigma: electrical conductivity (S/m)
+    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
+    :param float epsilon: dielectric permittivity (F/m). Default: :math:`\epsilon_0 = 8.85 \times 10^{-12}` F/m
+    :param bool quasistatic: use the quasi-static assumption? Default: False
+    """
+    w = omega(frequency)
+    if quasistatic is True:
+        return np.sqrt(-1j * w * mu * sigma)
+    return np.sqrt(w**2 * mu * epsilon - 1j * w * mu * sigma)
+
+
+def skin_depth(frequency, sigma, mu=mu_0):
+    """
+    Distance at which an em wave has decayed by a factor of :math:`1/e` in a
+    medium with constant physical properties
+
+    .. math::
+
+        \sqrt{\\frac{2}{\omega \sigma \mu}}
+
+    :param float frequency: frequency (Hz)
+    :param float sigma: electrical conductivity (S/m)
+    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
+    """
+    w = omega(frequency)
+    return np.sqrt(2./(w*sigma*mu))
+
+
+def sigma_hat(frequency, sigma, epsilon=epsilon_0, quasistatic=False):
+    """
+    conductivity with displacement current contribution
+
+    .. math::
+
+        \hat{\sigma} = \sigma + i \omega \varepsilon
+
+    :param (float, numpy.array) frequency: frequency (Hz)
+    :param float sigma: electrical conductivity (S/m)
+    :param float epsilon: dielectric permittivity. Default :math:`\varepsilon_0`
+    :param bool quasistatic: use the quasi-static assumption? Default: False
+    """
+    if quasistatic is True:
+        return sigma
+    return sigma + 1j*omega(frequency)*epsilon
+
+
+###############################################################################
+#                                                                             #
+#                                  Classes                                    #
+#                                                                             #
+###############################################################################
+
+class BaseFDEM(BaseEM):
+    """
+    Base frequency domain electromagnetic class
+    """
+    frequency = properties.Float(
+        "Source frequency (Hz)",
+        default=1.,
+        min=0.0
+    )
+
+    quasistatic = properties.Bool(
+        "Use the quasi-static approximation and ignore displacement current?",
+        default=False
+    )
+
+    @property
+    def omega(self):
+        """
+        Angular frequency
 
         .. math::
 
-            B = \frac{\mu_0}{4 \pi r^3} \left( \frac{3 \vec{r} (\vec{m} \cdot
-                                                                \vec{r})}{r^2})
-                                                - \vec{m}
-                                        \right) \cdot{\hat{rx}}
+            \omega = 2\pi f
+        """
+        return omega(self.frequency)
 
-        :param numpy.ndarray srcLoc: Location of the source(s) (x, y, z)
-        :param numpy.ndarray obsLoc: Where the potentials will be calculated
-                                     (x, y, z)
-        :param str component: The component to calculate - 'x', 'y', or 'z'
-        :param numpy.ndarray moment: The vector dipole moment (vertical)
-        :rtype: numpy.ndarray
-        :return: The vector potential each dipole at each observation location
+    @property
+    def sigma_hat(self):
+        """
+        conductivity with displacement current contribution
+
+        .. math::
+
+            \hat{\sigma} = \sigma + i \omega \varepsilon
+
+        """
+        return sigma_hat(
+            self.frequency, self.sigma, epsilon=self.epsilon,
+            quasistatic=self.quasistatic
+        )
+
+    @property
+    def wavenumber(self):
+        """
+        Wavenumber of an electromagnetic wave in a medium with constant
+        physical properties
+
+        .. math::
+
+        k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+        """
+        return wavenumber(
+            self.frequency, self.sigma, mu=self.mu, epsilon=self.epsilon,
+            quasistatic=self.quasistatic
+        )
+
+    @property
+    def skin_depth(self):
+        """
+        Distance at which an em wave has decayed by a factor of :math:`1/e` in
+        a medium with constant physical properties
+
+        .. math::
+
+            \sqrt{\\frac{2}{\omega \sigma \mu}}
+        """
+        return skin_depth(self.frequency, self.sigma, mu=self.mu)
+
+
+class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
+    """
+    Harmonic electric dipole in a whole space. The source is
+    (c.f. Ward and Hohmann, 1988 page 173). The source current
+    density for a dipole located at :math:`\mathbf{r}_s` with orientation
+    :math:`\mathbf{\hat{u}}`
+
+    .. math::
+
+        \mathbf{J}(\mathbf{r}) = I ds \delta(\mathbf{r}
+        - \mathbf{r}_s)\mathbf{\hat{u}}
+
+    """
+    def vector_potential(self, xyz):
+        """
+        Vector potential for an electric dipole in a wholespace
+
+        .. math::
+
+            \mathbf{A} = \frac{I ds}{4 \pi r} e^{-ikr}\mathbf{\hat{u}}
+
+        """
+        r = self.distance(xyz)
+        a = (
+            (self.current * self.length) / (4*np.pi*r) *
+            np.exp(-i*self.wavenumber*r)
+        )
+        a = np.kron(np.ones(1, 3), np.atleast_2d(a).T)
+        return self.dot_orientation(a)
+
+    def electric_field(self, xyz):
+        """
+        Electric field from an electric dipole
+
+        .. math::
+
+            \mathbf{E} = \frac{1}{\hat{\sigma}} \nabla \nabla \cdot \mathbf{A}
+            - i \omega \mu \mathbf{A}
+
+        """
+        dxyz = self.vector_distance(xyz)
+        r = spatial.repeat_scalar(self.distance(xyz))
+        kr = self.wavenumber * r
+        ikr = 1j * kr
+
+        front_term = (
+            (self.current * self.length) / (4 * np.pi * self.sigma * r**3) *
+            np.exp(-ikr)
+        )
+        symmetric_term = (
+            spatial.repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
+            (-kr**2 + 3*ikr + 3) / r**2
+        )
+        oriented_term = (
+            (kr**2 - ikr - 1) *
+            np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
+        )
+        return front_term * (symmetric_term + oriented_term)
+
+    def current_density(self, xyz):
+        """
+        Current density due to a harmonic electric dipole
+        """
+        return self.sigma * self.electric_field(xyz)
+
+    def magnetic_field(self, xyz):
+        """
+        Magnetic field from an electric dipole
+
+        .. math::
+
+            \mathbf{H} = \nabla \times \mathbf{A}
+
+        """
+        dxyz = self.vector_distance(xyz)
+        r = spatial.repeat_scalar(self.distance(xyz))
+        kr = self.wavenumber * r
+        ikr = 1j*kr
+
+        front_term = (
+            self.current * self.length / (4 * np.pi * r**2) * (ikr + 1) *
+            np.exp(-ikr)
+        )
+        return -front_term * self.cross_orientation(dxyz) / r
+
+    def magnetic_flux_density(self, xyz):
+        """
+        magnetic flux density from an electric dipole
+        """
+        return self.mu * self.magnetic_field(xyz)
+
+
+class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
+    """
+    Harmonic magnetic dipole in a whole space.
     """
 
-    if isinstance(orientation, str):
-        assert orientation.upper() in ['X', 'Y', 'Z'], (
-            "orientation must be 'x', 'y', or 'z' or a vector not {}"
-            .format(orientation)
+    def vector_potential(self, xyz):
+        """
+        Vector potential for a magnetic dipole in a wholespace
+
+        .. math::
+
+            \mathbf{F} = \frac{i \omega \mu m}{4 \pi r} e^{-ikr}\mathbf{\hat{u}}
+
+        """
+        r = self.distance(xyz)
+        f = (
+            (1j * self.omega * self.mu * self.moment) / (4 * np.pi * r) *
+            np.exp(-1j * self.wavenumber * r)
         )
-    elif (not np.allclose(np.r_[1., 0., 0.], orientation) or
-          not np.allclose(np.r_[0., 1., 0.], orientation) or
-          not np.allclose(np.r_[0., 0., 1.], orientation)):
-        warnings.warn(
-            'Arbitrary trasnmitter orientations ({}) not thouroughly tested '
-            'Pull request on a test anyone? bueller?'.format(orientation)
+        f = np.kron(np.ones(1, 3), np.atleast_2d(f).T)
+        return self.dot_orientation(f)
+
+    def electric_field(self, xyz):
+        """
+        Electric field from a magnetic dipole in a wholespace
+        """
+        dxyz = self.vector_distance(xyz)
+        r = spatial.repeat_scalar(self.distance(xyz))
+        kr = self.wavenumber*r
+        ikr = 1j * kr
+
+        front_term = (
+            (1j * self.omega * self.mu * self.moment) / (4. * np.pi * r**2) *
+            (ikr + 1) * np.exp(-ikr)
+        )
+        return front_term * self.cross_orientation(dxyz) / r
+
+    def current_density(self, xyz):
+        """
+        Current density from a magnetic dipole in a wholespace
+        """
+        return self.sigma * self.electric_field(xyz)
+
+    def magnetic_field(self, xyz):
+        """
+        Magnetic field due to a magnetic dipole in a wholespace
+        """
+        dxyz = self.vector_distance(xyz)
+        r = spatial.repeat_scalar(self.distance(xyz))
+        kr = self.wavenumber*r
+        ikr = 1j*kr
+
+        front_term = self.moment / (4. * np.pi * r**3) * np.exp(-ikr)
+        symmetric_term = (
+            spatial.repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
+            (-kr**2 + 3*ikr + 3) / r**2
+        )
+        oriented_term = (
+            (kr**2 - ikr - 1) *
+            np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
         )
 
-    if isinstance(component, str):
-        assert component.upper() in ['X', 'Y', 'Z'], (
-            "component must be 'x', 'y', or 'z' or a vector not {}"
-            .format(component)
-        )
-    elif (not np.allclose(np.r_[1., 0., 0.], component) or
-          not np.allclose(np.r_[0., 1., 0.], component) or
-          not np.allclose(np.r_[0., 0., 1.], component)):
-        warnings.warn(
-            'Arbitrary receiver orientations ({}) not thouroughly tested '
-            'Pull request on a test anyone? bueller?'
-        ).format(component)
+        return front_term * (symmetric_term + oriented_term)
 
-    if isinstance(orientation, str):
-        orientation = orientationDict[orientation.upper()]
-
-    if isinstance(component, str):
-        component = orientationDict[component.upper()]
-
-    assert np.linalg.norm(orientation, 2) == 1., (
-        "orientation must be a unit vector. "
-        "Use 'moment=X to scale source fields"
-    )
-
-    if np.linalg.norm(component, 2) != 1.:
-        warnings.warn(
-            'The magnitude of the receiver component vector is > 1, '
-            ' it is {}. The receiver fields will be scaled.'
-            .format(np.linalg.norm(component, 2))
-        )
-
-    srcLoc = np.atleast_2d(srcLoc)
-    component = np.atleast_2d(component)
-    obsLoc = np.atleast_2d(obsLoc)
-    orientation = np.atleast_2d(orientation)
-
-    nObs = obsLoc.shape[0]
-    nSrc = int(srcLoc.size / 3.)
-
-    # use outer product to construct an array of [x_src, y_src, z_src]
-
-    m = moment*orientation.repeat(nObs, axis=0)
-    B = []
-
-    for i in range(nSrc):
-        srcLoc = srcLoc[i, np.newaxis].repeat(nObs, axis=0)
-        rx = component.repeat(nObs, axis=0)
-        dR = obsLoc - srcLoc
-        r = np.sqrt((dR**2).sum(axis=1))
-
-        # mult each element and sum along the axis (vector dot product)
-        m_dot_dR_div_r2 = (m * dR).sum(axis=1) / (r**2)
-
-        # multiply the scalar m_dot_dR by the 3D vector r
-        rvec_m_dot_dR_div_r2 = np.vstack([m_dot_dR_div_r2 * dR[:, i] for
-                                          i in range(3)]).T
-        inside = (3. * rvec_m_dot_dR_div_r2) - m
-
-        # dot product with rx orientation
-        inside_dot_rx = (inside * rx).sum(axis=1)
-        front = (mu/(4.* pi * r**3))
-
-        B.append(Utils.mkvc(front * inside_dot_rx))
-
-    return np.vstack(B).T
+    def magnetic_flux_density(self, xyz):
+        """
+        Magnetic flux density due to a magnetic dipole in a wholespace
+        """
+        return self.mu * self.magnetic_field(xyz)
