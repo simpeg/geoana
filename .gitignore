@@ -92,3 +92,6 @@ ENV/
 
 # sphinx-gallery
 /docs/auto_examples/*
+
+# Jupyter
+*.ipynb
