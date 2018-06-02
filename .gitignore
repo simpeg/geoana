@@ -89,3 +89,6 @@ ENV/
 .ropeproject
 *.sublime-workspace
 *.sublime-project
+
+# sphinx-gallery
+/docs/auto_examples/*

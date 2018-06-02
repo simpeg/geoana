@@ -1,5 +1,6 @@
 discretize
 sphinx_rtd_theme
+sphinx-gallery
 SimPEG
 sphinx
 nose

@@ -12,12 +12,15 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import sys
 import os
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 # sys.path.insert(0, os.path.abspath('.'))
+
+sys.path.append(os.path.abspath('../'))
 
 # -- General configuration ------------------------------------------------
 
@@ -33,6 +36,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'matplotlib.sphinxext.plot_directive',
+    'sphinx_gallery.gen_gallery',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -51,7 +56,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'geoana'
-copyright = u'2017, SimPEG Team'
+copyright = u'2017-2018, SimPEG Team'
 author = u'SimPEG Team'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -126,6 +131,14 @@ linkcheck_ignore = [
 
 linkcheck_retries = 3
 linkcheck_timeout = 500
+
+# Sphinx Gallery
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs' : '../examples',
+    'gallery_dirs'  : 'auto_examples',
+    'backreferences_dir' : False
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
