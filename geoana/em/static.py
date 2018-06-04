@@ -25,12 +25,21 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
                 \\vec{A}(\\vec{r}) = \\frac{\\mu_0}{4\\pi}
                     \\frac{\\vec{m}\\times\\vec{r}}{r^3}
 
-            :param numpy.ndarray xyz: Location of the receivers(s)
-            :param str coordinates: coordinate system that the xyz is provided
-                                    in and that the solution will be returned
-                                    in (cartesian or cylindrical)
-            :rtype: numpy.ndarray
-            :return: The magnetic vector potential at each observation location
+        **Required**
+
+        :param numpy.ndarray xyz: Location of the receivers(s)
+
+        **Optional**
+
+        :param str coordinates: coordinate system that the xyz is provided
+                                in and that the solution will be returned
+                                in (cartesian or cylindrical).
+                                Default: `"cartesian"`
+        **Returns**
+
+        :rtype: numpy.ndarray
+        :return: The magnetic vector potential at each observation location
+
         """
         supported_coordinates = ["cartesian", "cylindrical"]
         assert coordinates.lower() in supported_coordinates, (
@@ -63,12 +72,24 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
     def magnetic_flux(self, xyz, coordinates="cartesian"):
         """Magnetic flux (:math:`\\vec{b}`) of a static magnetic dipole
 
+            **Required**
+
             :param numpy.ndarray xyz: Location of the receivers(s)
+
+            **Optional**
+
+            :param str coordinates: coordinate system that the xyz is provided
+                                    in and that the solution will be returned
+                                    in (cartesian or cylindrical).
+                                    Default: `"cartesian"`
+
+            **Returns**
+
             :rtype: numpy.ndarray
-            :return: The magnetic vector potential at each observation location
+            :return: The magnetic flux at each observation location
         """
 
-        supported_coordinates = ["cartesian"]
+        supported_coordinates = ["cartesian", "cylindrical"]
         assert coordinates.lower() in supported_coordinates, (
             "coordinates must be in {}, the coordinate system "
             "you provided, {}, is not yet supported".format(
@@ -77,6 +98,9 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         )
 
         n_obs = xyz.shape[0]
+
+        if coordinates.lower() == "cylindrical":
+            xyz = spatial.cylindrical_2_cartesian(xyz)
 
         offset = self.offset_from_location(xyz)
         dist = self.distance_from_location(xyz)
@@ -94,14 +118,39 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
             (3.0 * offset * m_dot_r / (dist ** 5)) -
             m_vec / (dist ** 3)
         )
+
+        if coordinates.lower() == "cylindrical":
+            b = spatial.cartesian_2_cylindrical(xyz, b)
+
         return b
 
     def magnetic_field(self, xyz, coordinates="cartesian"):
         """Magnetic field (:math:`\\vec{h}`) of a static magnetic dipole
 
+        **Required**
+
+        :param numpy.ndarray xyz: Location of the receivers(s)
+
+        **Optional**
+
+        :param str coordinates: coordinate system that the xyz is provided
+                                in and that the solution will be returned
+                                in (cartesian or cylindrical).
+                                Default: `"cartesian"`
+
+        **Returns**
+
+        :rtype: numpy.ndarray
+        :return: The magnetic field at each observation location
+
         """
         return self.magnetic_flux(xyz, coordinates=coordinates) / self.mu
 
 
-# class CircularLoopWholeSpace()
+class CircularLoopWholeSpace(BaseMagneticDipole, BaseEM):
+
+    """
+    Static magnetic field from a circular loop in a wholespace.
+    """
+    pass
 

@@ -29,8 +29,9 @@ def omega(frequency):
 
     .. math::
 
-        \omega = 2 \pi f
+        \\omega = 2 \\pi f
 
+    **Required**
     :param frequency float: frequency (Hz)
     """
     return 2*np.pi*frequency
@@ -45,13 +46,20 @@ def wavenumber(
 
     .. math::
 
-        k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+        k = \\sqrt{\\omega^2 \\mu \\varepsilon - i \\omega \\mu \\sigma}
+
+
+    **Required**
 
     :param (float, numpy.ndarray) frequency: frequency (Hz)
     :param float sigma: electrical conductivity (S/m)
-    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
-    :param float epsilon: dielectric permittivity (F/m). Default: :math:`\epsilon_0 = 8.85 \times 10^{-12}` F/m
+
+    **Optional**
+
+    :param float mu: magnetic permeability (H/m). Default: :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
+    :param float epsilon: dielectric permittivity (F/m). Default: :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
     :param bool quasistatic: use the quasi-static assumption? Default: False
+
     """
     w = omega(frequency)
     if quasistatic is True:
@@ -66,11 +74,16 @@ def skin_depth(frequency, sigma, mu=mu_0):
 
     .. math::
 
-        \sqrt{\\frac{2}{\omega \sigma \mu}}
+        \\sqrt{\\frac{2}{\\omega \\sigma \\mu}}
+
+    **Required**
 
     :param float frequency: frequency (Hz)
     :param float sigma: electrical conductivity (S/m)
-    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
+
+    **Optional**
+    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \\times 10^{-7}` H/m
+
     """
     w = omega(frequency)
     return np.sqrt(2./(w*sigma*mu))
@@ -82,12 +95,18 @@ def sigma_hat(frequency, sigma, epsilon=epsilon_0, quasistatic=False):
 
     .. math::
 
-        \hat{\sigma} = \sigma + i \omega \varepsilon
+        \hat{\sigma} = \sigma + i \omega \\varepsilon
+
+    **Required**
 
     :param (float, numpy.array) frequency: frequency (Hz)
     :param float sigma: electrical conductivity (S/m)
-    :param float epsilon: dielectric permittivity. Default :math:`\varepsilon_0`
+
+    **Optional**
+
+    :param float epsilon: dielectric permittivity. Default :math:`\\varepsilon_0`
     :param bool quasistatic: use the quasi-static assumption? Default: False
+
     """
     if quasistatic is True:
         return sigma
@@ -122,7 +141,8 @@ class BaseFDEM(BaseEM):
 
         .. math::
 
-            \omega = 2\pi f
+            \\omega = 2\\pi f
+
         """
         return omega(self.frequency)
 
@@ -133,7 +153,7 @@ class BaseFDEM(BaseEM):
 
         .. math::
 
-            \hat{\sigma} = \sigma + i \omega \varepsilon
+            \\hat{\\sigma} = \\sigma + i \\omega \\varepsilon
 
         """
         return sigma_hat(
@@ -149,7 +169,8 @@ class BaseFDEM(BaseEM):
 
         .. math::
 
-        k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \\sqrt{\\omega**2 \\mu \\varepsilon - i \\omega \\mu \\sigma}
+
         """
         return wavenumber(
             self.frequency, self.sigma, mu=self.mu, epsilon=self.epsilon,
@@ -164,7 +185,8 @@ class BaseFDEM(BaseEM):
 
         .. math::
 
-            \sqrt{\\frac{2}{\omega \sigma \mu}}
+            \\sqrt{\\frac{2}{\\omega \\sigma \\mu}}
+
         """
         return skin_depth(self.frequency, self.sigma, mu=self.mu)
 
@@ -173,13 +195,13 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
     """
     Harmonic electric dipole in a whole space. The source is
     (c.f. Ward and Hohmann, 1988 page 173). The source current
-    density for a dipole located at :math:`\mathbf{r}_s` with orientation
-    :math:`\mathbf{\hat{u}}`
+    density for a dipole located at :math:`\\mathbf{r}_s` with orientation
+    :math:`\\mathbf{\\hat{u}}`
 
     .. math::
 
-        \mathbf{J}(\mathbf{r}) = I ds \delta(\mathbf{r}
-        - \mathbf{r}_s)\mathbf{\hat{u}}
+        \\mathbf{J}(\\mathbf{r}) = I ds \\delta(\\mathbf{r}
+        - \\mathbf{r}_s)\\mathbf{\\hat{u}}
 
     """
     def vector_potential(self, xyz):
@@ -188,7 +210,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
 
         .. math::
 
-            \mathbf{A} = \frac{I ds}{4 \pi r} e^{-ikr}\mathbf{\hat{u}}
+            \\mathbf{A} = \\frac{I ds}{4 \\pi r} e^{-ikr}\\mathbf{\\hat{u}}
 
         """
         r = self.distance(xyz)
@@ -205,8 +227,9 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
 
         .. math::
 
-            \mathbf{E} = \frac{1}{\hat{\sigma}} \nabla \nabla \cdot \mathbf{A}
-            - i \omega \mu \mathbf{A}
+            \\mathbf{E} = \\frac{1}{\\hat{\\sigma}} \\nabla \\nabla \\cdot
+             \\mathbf{A}
+            - i \\omega \\mu \\mathbf{A}
 
         """
         dxyz = self.vector_distance(xyz)
@@ -240,7 +263,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
 
         .. math::
 
-            \mathbf{H} = \nabla \times \mathbf{A}
+            \\mathbf{H} = \\nabla \\times \\mathbf{A}
 
         """
         dxyz = self.vector_distance(xyz)
@@ -272,7 +295,8 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
         .. math::
 
-            \mathbf{F} = \frac{i \omega \mu m}{4 \pi r} e^{-ikr}\mathbf{\hat{u}}
+            \\mathbf{F} = \\frac{i \\omega \\mu m}{4 \\pi r} e^{-ikr}
+            \\mathbf{\\hat{u}}
 
         """
         r = self.distance(xyz)

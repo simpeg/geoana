@@ -13,4 +13,5 @@ Contents
    auto_examples/index
    content/earthquake
    content/em
+   content/utils
 

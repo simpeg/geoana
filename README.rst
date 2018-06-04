@@ -34,8 +34,9 @@ Getting started
 
 - If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
 - :ref:`Install <installing>` geoana
-- Browse the `gallery <examples>` for ideas and example usage
+- Browse the :ref:`gallery <examples>` for ideas and example usage
 - Read the `documentation <http://geoana.readthedocs.io/en/latest/>`_ for more information on the library and what it can do
+
 .. - See the `contributor guide` and `code of conduct` if you are interested in helping develop or maintain geoana
 
 .. _connecting:
@@ -74,7 +75,4 @@ License
 -------
 
 geoana is licensed under the `MIT license <https://github.com/simpeg/geoana/blob/master/LICENSE>`_ .
-
-.. include:: LICENSE
-    :literal:
 

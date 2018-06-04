@@ -1,14 +1,17 @@
 """
-    oksar3
+oksar3
 
-   Program to calcuate forward models of interferograms, strain tensor, etc.
-   from Okada subroutine.
+Program to calcuate forward models of interferograms, strain tensor, etc.
+from Okada subroutine.
 
-   Heritage: originally fringes.c written by Barry Parsons
-             updated to oksar                                 tjw
-             oksar_strain: added strain tensor calculation    tjw
-             oksar3:       added new line of sight calculator tjw feb 2003
-             Modified into Python by RowanCockett, 3point Science Aug 2014
+Heritage:
+    - originally fringes.c written by Barry Parsons
+    - updated to oksar                                 tjw
+    - oksar_strain: added strain tensor calculation    tjw
+    - oksar3:       added new line of sight calculator tjw feb 2003
+    - Modified into Python by RowanCockett, 3point Science Aug 2014
+
+
 """
 
 from __future__ import absolute_import
@@ -236,8 +239,8 @@ class EarthquakeInterferogram(properties.HasProperties):
 
     def get_LOS_vector(self, locations):
         """
-            calculate beta - the angle at earth center between reference point
-            and satellite nadir
+        calculate beta - the angle at earth center between reference point
+        and satellite nadir
         """
         if not isinstance(locations, list):
             locations = [locations]
@@ -300,8 +303,8 @@ class EarthquakeInterferogram(properties.HasProperties):
     @staticmethod
     def _ang_to_gc(x, y, origx, origy, satAzimuth):
         """
-            Calculate angular distance to great circle passing through
-            given point
+        Calculate angular distance to great circle passing through
+        given point
         """
 
         Ngc = np.zeros(3)

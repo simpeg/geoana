@@ -25,9 +25,15 @@ def peak_time(z, sigma, mu=mu_0):
 
     See: http://em.geosci.xyz/content/maxwell1_fundamentals/plane_waves_in_homogeneous_media/time/analytic_solution.html
 
-    :param z float: distance from source (m)
-    :param sigma float: electrical conductivity (S/m)
-    :param mu float: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
+    **Required**
+
+    :param float z: distance from source (m)
+    :param float sigma: electrical conductivity (S/m)
+
+    **Optional**
+
+    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \\times 10^{-7}` H/m
+
     """
     return (mu * sigma * z**2)/6.
 
@@ -96,7 +102,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
 
         .. math::
 
-            \mathbf{E} = \frac{1}{\hat{\sigma}} \nabla \nabla \cdot \mathbf{A}
+            \mathbf{E} = \\frac{1}{\hat{\sigma}} \\nabla \\nabla \cdot \mathbf{A}
             - i \omega \mu \mathbf{A}
 
         """

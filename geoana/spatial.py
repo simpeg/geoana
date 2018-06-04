@@ -13,15 +13,18 @@ def cylindrical_2_cartesian(grid, vec=None):
     defined in cylindrical coordinates :math:`(r, \\theta, z)` and
     transform it to cartesian coordinates, :math:`(x, y, z)`.
 
-    ** Required **
+    **Required**
+
     :param numpy.ndarray grid: grid in cylindrical coordinates
                                :math:`(r, \\theta, z)`
 
-    ** Optional **
+    **Optional**
+
     :param numpy.ndarray vec: (optional) vector defined in cylindrical
                               coordinates
 
-    ** Returns **
+    **Returns**
+
     :return: grid or vector (if provided) in cartesian coordinates
              :math:`(x, y, z)`
     :rtype: numpy.ndarray
@@ -55,15 +58,18 @@ def cartesian_2_cylindrical(grid, vec=None):
     defined in cartesian coordinates :math:`(x, y, z)` and
     transform it to cylindrical coordinates, :math:`(r, \\theta, z)`.
 
-    ** Required **
+    **Required**
+
     :param numpy.ndarray grid: grid in cartesian coordinates
                                :math:`(x, y, z)`
 
-    ** Optional **
+    **Optional**
+
     :param numpy.ndarray vec: (optional) vector defined in cartesian
                               coordinates
 
-    ** Returns **
+    **Returns**
+
     :return: grid or vector (if provided) in cylindrical coordinates
              :math:`(r, \\theta, z)`
     :rtype: numpy.ndarray
@@ -93,11 +99,13 @@ def vector_magnitude(v):
     """
     Amplitude of a vector, v.
 
-    ** Required **
+    **Required**
+
     :param numpy.array v: vector array :code:`np.r_[x, y, z]`, with shape
                           (n, 3)
 
-    ** Returns **
+    **Returns**
+
     :returns: magnitude of a vector (n, 1)
     :rtype: numpy.ndarray
     """
@@ -115,13 +123,16 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
     """
     Vector distance of a grid, xyz from an origin origin.
 
-    ** Required **
+    **Required**
+
     :param numpy.array xyz: grid (npoints x 3)
 
-    ** Optional **
+    **Optional**
+
     :param numpy.array origin: origin (default: [0., 0., 0.])
 
-    ** Returns **
+    **Returns**
+
     :returns: vector distance from a grid of points from the origin
               (npoints x 3)
     :rtype: numpy.ndarray
@@ -143,13 +154,16 @@ def distance(xyz, origin=np.r_[0., 0., 0.]):
     """
     Radial distance from an grid of points to the origin
 
-    ** Required **
+    **Required**
+
     :param numpy.array xyz: grid (npoints x 3)
 
-    ** Optional **
+    **Optional**
+
     :param numpy.array origin: origin (default: [0., 0., 0.])
 
-    ** Returns **
+    **Returns**
+
     :returns: distance between each point and the origin (npoints x 1)
     :rtype: nunmpy.ndarray
     """
@@ -161,11 +175,13 @@ def vector_dot(xyz, vector):
     """
     Take a dot product between an array of vectors, xyz and a vector [x, y, z]
 
-    ** Required **
+    **Required**
+
     :param numpy.array xyz: grid (npoints x 3)
     :param numpy.array vector: vector (1 x 3)
 
-    ** Returns **
+    **Returns**
+
     :returns: dot product between the grid and the (1 x 3) vector, returns an
               (npoints x 1) array
     :rtype: numpy.ndarray
@@ -179,13 +195,16 @@ def repeat_scalar(scalar, dim=3):
     Repeat a spatially distributed scalar value dim times to simplify
     multiplication with a vector.
 
-    ** Required **
+    **Required**
+
     :param numpy.ndarray scalar: (n x 1) array of scalars
 
-    ** Optional **
+    **Optional**
+
     :param int dim: dimension of the second axis for the output (default = 3)
 
-    ** Returns **
+    **Returns**
+
     :returns: (n x dim) array of the repeated vector
     :rtype: numpy.ndarray
     """
