@@ -273,7 +273,7 @@ def distance(xyz, origin=np.r_[0., 0., 0.]):
     **Returns**
 
     :returns: distance between each point and the origin (npoints x 1)
-    :rtype: nunmpy.array
+    :rtype: numpy.array
     """
     dxyz = vector_distance(xyz, origin)
     return vector_magnitude(dxyz)
@@ -333,9 +333,11 @@ def rotation_matrix_from_normals(v0, v1, tol=1e-20):
 
     :param numpy.array v0: vector of length 3
     :param numpy.array v1: vector of length 3
-    :param tol = 1e-20: tolerance. If the norm of the cross product between the two vectors is below this, no rotation is performed
-    :rtype: numpy.array, 3x3
-    :return: rotation matrix which rotates the frame so that n0 is aligned with n1
+    :param tol = 1e-20: tolerance. If the norm of the cross product between the
+                        two vectors is below this, no rotation is performed
+    :rtype: numpy.array
+    :return: 3 x 3 rotation matrix which rotates the frame so that n0 is
+             aligned with n1
     """
 
     # ensure both n0, n1 are vectors of length 1

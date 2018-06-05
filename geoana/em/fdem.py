@@ -12,7 +12,7 @@ from .base import BaseElectricDipole, BaseMagneticDipole, BaseEM
 from .. import spatial
 
 __all__ = [
-    'omega', 'wavenumber', 'skin_depth', 'sigma_hat',
+    'omega', 'wavenumber', 'skin_depth', 'sigma_hat', 'BaseFDEM',
     'ElectricDipoleWholeSpace', 'MagneticDipoleWholeSpace'
 ]
 

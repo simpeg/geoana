@@ -9,6 +9,10 @@ Cartesian
 
 We use a right-handed coordinate system :math:`(x, y, z)` with z-positive up as shown in the Figure below.
 
+.. image:: ../images/coordinates-02.png
+    :width: 40%
+    :align: center
+
 
 Cylindrical
 ^^^^^^^^^^^
@@ -16,12 +20,20 @@ Cylindrical
 We again work with z-positive up and use :math:`\theta` to denote the azimuthal angle, thus the coordinate
 system is defined as :math:`(r, \theta, z)`.
 
+.. image:: ../images/coordinates-03.png
+    :width: 40%
+    :align: center
+
 
 Spherical
 ^^^^^^^^^
 
 We use :math:`r` for the radial direction, :math:`\theta` for the azimuthal direction, and :math:`\phi` for
 the polar direction as shown in the figure below.
+
+.. image:: ../images/coordinates-04.png
+    :width: 40%
+    :align: center
 
 
 Fourier Transform

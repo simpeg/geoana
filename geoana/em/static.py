@@ -16,7 +16,6 @@ __all__ = ["MagneticDipoleWholeSpace", "CircularLoopWholeSpace"]
 
 
 class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
-
     """
     Static magnetic dipole in a wholespace.
     """
@@ -27,13 +26,13 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         .. math::
 
-            \\vec{A}(\\vec{r}) = \\frac{\\mu_0}{4\\pi}
+            \\vec{A}(\\vec{r}) = \\frac{\mu_0}{4\pi}
             \\frac{\\vec{m}\\times\\vec{r}}{r^3}
 
         **Required**
 
         :param numpy.array xyz: Location at which we calculate the vector
-                                  potential
+                                potential
 
         **Optional**
 
@@ -41,6 +40,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
                                 in and that the solution will be returned
                                 in (cartesian or cylindrical).
                                 Default: `"cartesian"`
+
         **Returns**
 
         :rtype: numpy.array
@@ -77,21 +77,21 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
     def magnetic_flux_density(self, xyz, coordinates="cartesian"):
         """Magnetic flux (:math:`\\vec{b}`) of a static magnetic dipole
 
-            **Required**
+        **Required**
 
-            :param numpy.array xyz: Location of the receivers(s)
+        :param numpy.array xyz: Location of the receivers(s)
 
-            **Optional**
+        **Optional**
 
-            :param str coordinates: coordinate system that the xyz is provided
-                                    in and that the solution will be returned
-                                    in (cartesian or cylindrical).
-                                    Default: `"cartesian"`
+        :param str coordinates: coordinate system that the xyz is provided
+                                in and that the solution will be returned
+                                in (cartesian or cylindrical).
+                                Default: `"cartesian"`
 
-            **Returns**
+        **Returns**
 
-            :rtype: numpy.array
-            :return: The magnetic flux at each observation location
+        :rtype: numpy.array
+        :return: The magnetic flux at each observation location
         """
 
         supported_coordinates = ["cartesian", "cylindrical"]
@@ -192,7 +192,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         E = ellipe(k)
         K = ellipk(k)
 
-        # % 1/r singular at r = 0 and K(k) singular at k = 1
+        # % 1/r singular at r = 0 and 1/k singular at k = 0
         ind = (r > 0) & (k2 > 0)
         Atheta = np.zeros(n_obs)
 
@@ -248,6 +248,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
                                 in and that the solution will be returned
                                 in (cartesian or cylindrical).
                                 Default: `"cartesian"`
+
         **Returns**
 
         :rtype: numpy.array

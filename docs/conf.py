@@ -344,3 +344,6 @@ def _supress_nonlocal_image_warn(self, msg, node, **kwargs):
 
 supress_nonlocal_image_warn()
 
+nitpick_ignore = [
+    ('py:class', 'properties.base.base.HasProperties')
+]
