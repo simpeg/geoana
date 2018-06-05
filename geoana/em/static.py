@@ -107,21 +107,21 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
-        offset = self.offset_from_location(xyz)
-        dist = self.distance_from_location(xyz)
+        r = self.vector_distance(xyz)
+        dxyz = spatial.repeat_scalar(self.distance(xyz))
         m_vec = (
             self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
         )
 
-        m_dot_r = (m_vec * offset).sum(axis=1)
+        m_dot_r = (m_vec * r).sum(axis=1)
 
         # Repeat the scalars
         m_dot_r = np.atleast_2d(m_dot_r).T.repeat(3, axis=1)
-        dist = np.atleast_2d(dist).T.repeat(3, axis=1)
+        # dxyz = np.atleast_2d(dxyz).T.repeat(3, axis=1)
 
         b = (self.mu / (4 * np.pi)) * (
-            (3.0 * offset * m_dot_r / (dist ** 5)) -
-            m_vec / (dist ** 3)
+            (3.0 * r * m_dot_r / (dxyz ** 5)) -
+            m_vec / (dxyz ** 3)
         )
 
         if coordinates.lower() == "cylindrical":
@@ -165,50 +165,6 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
     radius = properties.Float(
         "radius of the loop (m)", default=1., min=0.
     )
-
-    def _vector_potential_spherical(self, xyz):
-        """
-        Azimuthal component of the vector potential in spherical coordinates
-        """
-        n_obs = xyz.shape[0]
-
-        dxyz = self.vector_distance(xyz)
-        r = self.distance(xyz)
-
-        # # calculate sin theta
-        # here we use the definition of the dot product:
-        #    a dot b = |a| |b| cos(\theta)
-        # and the identity cos(\theta)**2 + sin(\theta)**2 = 1
-        magnitudes = (spatial.vector_magnitude(self.orientation) * r)
-        cos_phi = self.dot_orientation(dxyz) / magnitudes
-        sin_phi = np.sqrt(1 - cos_phi**2)
-
-        k2 = (
-            (4*self.radius*r*sin_phi) /
-            (self.radius**2 + r**2 + 2*self.radius*r*sin_phi)
-        )
-        k = np.sqrt(k2)
-
-        E = ellipe(k)
-        K = ellipk(k)
-
-        # % 1/r singular at r = 0 and 1/k singular at k = 0
-        ind = (r > 0) & (k2 > 0)
-        Atheta = np.zeros(n_obs)
-
-        Atheta[ind] = (
-            mu_0 / (4*np.pi) *
-            (
-                (4*self.current*self.radius) /
-                (
-                    self.radius**2 + r[ind]**2 +
-                    2*self.radius*r[ind]*sin_phi[ind]
-                )
-            ) *
-            ((2-k2[ind])*K[ind]-2*E[ind]) / k2[ind]
-        )
-
-        return Atheta
 
     def vector_potential(self, xyz, coordinates="cartesian"):
         """Vector potential due to the a steady-state current through a
@@ -267,13 +223,47 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
+        n_obs = xyz.shape[0]
+        dxyz = self.vector_distance(xyz)
         r = self.distance(xyz)
-        Atheta  = self._vector_potential_spherical(xyz)
+
+        # # calculate sin theta
+        # here we use the definition of the dot product:
+        #    a dot b = |a| |b| cos(\theta)
+        # and the identity cos(\theta)**2 + sin(\theta)**2 = 1
+        magnitudes = (spatial.vector_magnitude(self.orientation) * r)
+        cos_phi = self.dot_orientation(dxyz) / magnitudes
+        sin_phi = np.sqrt(1 - cos_phi**2)
+
+        k2 = (
+            (4*self.radius*r*sin_phi) /
+            (self.radius**2 + r**2 + 2*self.radius*r*sin_phi)
+        )
+        k = np.sqrt(k2)
+
+        E = ellipe(k)
+        K = ellipk(k)
+
+        # % 1/r singular at r = 0 and 1/k singular at k = 0
+        ind = (r > 0) & (k2 > 0) & (k < 1)
+        Atheta = np.zeros(n_obs)
+
+        Atheta[ind] = (
+            mu_0 / (4*np.pi) *
+            (
+                (4*self.current*self.radius) /
+                (
+                    self.radius**2 + r[ind]**2 +
+                    2*self.radius*r[ind]*sin_phi[ind]
+                )
+            ) *
+            ((2-k2[ind])*K[ind]-2*E[ind]) / k2[ind]
+        )
 
         # assume that the z-axis aligns with the polar axis
         A = np.zeros_like(xyz)
-        A[:, 0] = Atheta * (-xyz[:, 1] / r)
-        A[:, 1] = Atheta * (xyz[:, 0] / r)
+        A[ind, 0] = Atheta[ind] * (-xyz[ind, 1] / r[ind])
+        A[ind, 1] = Atheta[ind] * (xyz[ind, 0] / r[ind])
 
         # rotate the points to aligned with the normal to the source
         A = spatial.rotate_points_from_normals(
