@@ -22,6 +22,7 @@ before_install:
 install:
   - conda install --quiet --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib pillow cython ipython;
   - pip install --upgrade pip;
+  - pip install -r requirements.txt
   - pip install -r requirements_dev.txt
   - cd geoana; python setup.py install; cd ..
   - export MPLBACKEND="agg"
