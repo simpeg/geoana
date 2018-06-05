@@ -11,7 +11,8 @@ Contents
    :maxdepth: 2
 
    auto_examples/index
-   content/earthquake
+   content/conventions
    content/em
+   content/earthquake
    content/utils
 
