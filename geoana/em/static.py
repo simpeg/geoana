@@ -192,13 +192,20 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         E = ellipe(k)
         K = ellipk(k)
 
-        Atheta = (
+        # % 1/r singular at r = 0 and K(k) singular at k = 1
+        ind = (r > 0) & (k2 > 0)
+        Atheta = np.zeros(n_obs)
+
+        Atheta[ind] = (
             mu_0 / (4*np.pi) *
             (
                 (4*self.current*self.radius) /
-                (self.radius**2 + r**2 + 2*self.radius*r*sin_phi)
+                (
+                    self.radius**2 + r[ind]**2 +
+                    2*self.radius*r[ind]*sin_phi[ind]
+                )
             ) *
-            ((2-k2)*K-2*E) / k2
+            ((2-k2[ind])*K[ind]-2*E[ind]) / k2[ind]
         )
 
         return Atheta
@@ -276,10 +283,3 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
             A = spatial.cartesian_2_cylindrical(xyz, A)
 
         return A
-
-
-
-
-
-
-
