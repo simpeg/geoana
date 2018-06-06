@@ -168,29 +168,32 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
     def vector_potential(self, xyz, coordinates="cartesian"):
         """Vector potential due to the a steady-state current through a
-        circular loop. Following Jackson, 2004 (equation 5.37), in spherical
-        coordinates (radial :math:`r`, azimuthal:`theta`, polar :math:`\phi`)
-        the vector potential is given by:
+        circular loop. We solve in cylindrical coordinates
 
         .. math::
 
-            A_\\theta(r, \phi, z) = \\frac{\mu_0}{4\pi}
-            \\frac{4IR}{\sqrt{R^2 + r^2 + 2Rr\sin\phi}}
-            \left[ \\frac{(2-k^2)K(k) - 2E(k)}{k^2} \\right]
+        Atheta[ind] = (
+            (self.mu * self.current) / (np.pi * np.sqrt(k2[ind])) *
+            np.sqrt(self.radius / r[ind]) *
+            ((1. - k2[ind] / 2.)*K[ind] - E[ind])
+        )
+
+            A_\\theta(\\rho, z) = \\frac{\mu_0 I}{\pi k}
+            \sqrt{R / r^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
 
         where
 
         .. math::
 
-            k^2 = \\frac{4 R r \sin\phi}{R^2 + r^2 + 2Rr\sin\phi}
+            k^2 = \\frac{4 R \\rho}{(R + \\rho)^2 + z^2}
 
         and
 
+        - :math:`\\rho = \sqrt{x^2 + y^2}` is the horizontal distance to the test point
         - :math:`r` is the distance to a test point
         - :math:`I` is the current through the loop
         - :math:`R` is the radius of the loop
-        - :math:`\phi` is the angle between the test point and the normal of the loop
-        - :math:`E(k)` and :math:`K(k)` are the complete elliptic integrals
+        - :math:`E(k^2)` and :math:`K(k^2)` are the complete elliptic integrals
 
 
         **Required**
@@ -211,6 +214,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         :return: The magnetic vector potential at each observation location
 
         """
+        eps = 1e-3
         supported_coordinates = ["cartesian", "cylindrical"]
         assert coordinates.lower() in supported_coordinates, (
             "coordinates must be in {}, the coordinate system "
@@ -223,51 +227,41 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
+        xyz = spatial.rotate_points_from_normals(
+            xyz, np.array([i for i in self.orientation]),  # work around for a properties issue
+            np.r_[0., 0., 1.], x0=self.location
+        )
+
         n_obs = xyz.shape[0]
         dxyz = self.vector_distance(xyz)
         r = self.distance(xyz)
 
-        # # calculate sin theta
-        # here we use the definition of the dot product:
-        #    a dot b = |a| |b| cos(\theta)
-        # and the identity cos(\theta)**2 + sin(\theta)**2 = 1
-        magnitudes = (spatial.vector_magnitude(self.orientation) * r)
-        cos_phi = self.dot_orientation(dxyz) / magnitudes
-        sin_phi = np.sqrt(1 - cos_phi**2)
+        rho = np.sqrt((dxyz[:, :2]**2).sum(1))
 
-        k2 = (
-            (4*self.radius*r*sin_phi) /
-            (self.radius**2 + r**2 + 2*self.radius*r*sin_phi)
-        )
-        k = np.sqrt(k2)
+        k2 = (4 * self.radius * rho) / ((self.radius + rho)**2 +dxyz[:, 2]**2)
+        k2[k2 > 1] = 1.  # if there are any rounding errors
 
-        E = ellipe(k)
-        K = ellipk(k)
+        E = ellipe(k2)
+        K = ellipk(k2)
 
-        # % 1/r singular at r = 0 and 1/k singular at k = 0
-        ind = (r > 0) & (k2 > 0) & (k < 1)
-        Atheta = np.zeros(n_obs)
+        # singular if r = 0, k2 = 0, k2 = 1
+        ind = (r > eps) & (k2 < 1) & (k2 > eps)
 
+        Atheta = np.zeros_like(r)
         Atheta[ind] = (
-            mu_0 / (4*np.pi) *
-            (
-                (4*self.current*self.radius) /
-                (
-                    self.radius**2 + r[ind]**2 +
-                    2*self.radius*r[ind]*sin_phi[ind]
-                )
-            ) *
-            ((2-k2[ind])*K[ind]-2*E[ind]) / k2[ind]
+            (self.mu * self.current) / (np.pi * np.sqrt(k2[ind])) *
+            np.sqrt(self.radius / r[ind]) *
+            ((1. - k2[ind] / 2.)*K[ind] - E[ind])
         )
 
         # assume that the z-axis aligns with the polar axis
         A = np.zeros_like(xyz)
-        A[ind, 0] = Atheta[ind] * (-xyz[ind, 1] / r[ind])
-        A[ind, 1] = Atheta[ind] * (xyz[ind, 0] / r[ind])
+        A[r>eps, 0] = Atheta[r>eps] * (-xyz[r>eps, 1] / r[r>eps])
+        A[r>eps, 1] = Atheta[r>eps] * (xyz[r>eps, 0] / r[r>eps])
 
         # rotate the points to aligned with the normal to the source
-        A = spatial.rotate_points_from_normals(
-            A, np.r_[0., 0., 1.], self.orientation
+        A_new = spatial.rotate_points_from_normals(
+            A, np.r_[0., 0., 1.], self.orientation, x0=self.location
         )
 
         if coordinates.lower() == "cylindrical":

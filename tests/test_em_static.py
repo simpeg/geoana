@@ -37,7 +37,7 @@ class TestEM_Static(unittest.TestCase):
         self.assertTrue(self.clws.radius == 1)
 
     def test_vector_potential(self):
-        n = 100
+        n = 50
         mesh = discretize.TensorMesh(
             [np.ones(n), np.ones(n), np.ones(n)], x0="CCC"
         )
@@ -62,9 +62,11 @@ class TestEM_Static(unittest.TestCase):
             ))
 
     def test_magnetic_field_tensor(self):
+        print("\n === Testing Tensor Mesh === \n")
         n = 30
+        h = 2.
         mesh = discretize.TensorMesh(
-            [np.ones(n), np.ones(n), np.ones(n)], x0="CCC"
+            [h*np.ones(n), h*np.ones(n), h*np.ones(n)], x0="CCC"
         )
 
         for radius in [0.5, 1, 1.5]:
@@ -75,7 +77,7 @@ class TestEM_Static(unittest.TestCase):
 
             for location in [
                 np.r_[0, 0, 0], np.r_[10, 0, 0], np.r_[0, -10, 0],
-                np.r_[0, 0, 10],
+                np.r_[0, 0, 10], np.r_[10, 10, 10]
             ]:
                 self.clws.location = location
                 self.mdws.location = location
@@ -108,25 +110,45 @@ class TestEM_Static(unittest.TestCase):
                     ])
 
                     inds = (np.hstack([
-                        (np.absolute(mesh.gridFx[:, 0]) > 4 + location[0]) &
-                        (np.absolute(mesh.gridFx[:, 1]) > 4 + location[1]) &
-                        (np.absolute(mesh.gridFx[:, 2]) > 4 + location[2]),
-                        (np.absolute(mesh.gridFy[:, 0]) > 4 + location[0]) &
-                        (np.absolute(mesh.gridFy[:, 1]) > 4 + location[1]) &
-                        (np.absolute(mesh.gridFy[:, 2]) > 4 + location[2]),
-                        (np.absolute(mesh.gridFz[:, 0]) > 4 + location[0]) &
-                        (np.absolute(mesh.gridFz[:, 1]) > 4 + location[1]) &
-                        (np.absolute(mesh.gridFz[:, 2]) > 4 + location[2])
+                        (np.absolute(mesh.gridFx[:, 0]) > h*2 + location[0]) &
+                        (np.absolute(mesh.gridFx[:, 1]) > h*2 + location[1]) &
+                        (np.absolute(mesh.gridFx[:, 2]) > h*2 + location[2]),
+                        (np.absolute(mesh.gridFy[:, 0]) > h*2 + location[0]) &
+                        (np.absolute(mesh.gridFy[:, 1]) > h*2 + location[1]) &
+                        (np.absolute(mesh.gridFy[:, 2]) > h*2 + location[2]),
+                        (np.absolute(mesh.gridFz[:, 0]) > h*2 + location[0]) &
+                        (np.absolute(mesh.gridFz[:, 1]) > h*2 + location[1]) &
+                        (np.absolute(mesh.gridFz[:, 2]) > h*2 + location[2])
                     ]))
 
-                    self.assertTrue(np.allclose(b_fdem[inds], b_clws[inds]))
-                    self.assertTrue(np.allclose(b_fdem[inds], b_mdws[inds]))
+                    loop_passed = np.allclose(b_fdem[inds], b_clws[inds])
+                    dipole_passed = np.allclose(b_fdem[inds], b_mdws[inds])
+
+                    print(
+                        "Testing r = {}, loc = {}, orientation = {}".format(
+                            radius, location, orientation
+                        )
+                    )
+                    print(
+                        "  fdem: {:1.4e}, loop: {:1.4e}, dipole: {:1.4e}"
+                        " Passed? loop: {}, dipole: {} \n".format(
+                            np.linalg.norm(b_fdem[inds]),
+                            np.linalg.norm(b_clws[inds]),
+                            np.linalg.norm(b_mdws[inds]),
+                            loop_passed,
+                            dipole_passed
+                        )
+                    )
+                    self.assertTrue(loop_passed)
+                    self.assertTrue(dipole_passed)
 
     def test_magnetic_field_3Dcyl(self):
-        n = 30
+        print("\n === Testing 3D Cyl Mesh === \n")
+        n = 50
         ny = 10
+        h = 2.
         mesh = discretize.CylMesh(
-            [np.ones(n), np.ones(ny) * 2 * np.pi / ny, np.ones(n)], x0="00C"
+            [h*np.ones(n), np.ones(ny) * 2 * np.pi / ny, h*np.ones(n)], x0="00C"
         )
 
         for radius in [0.5, 1, 1.5]:
@@ -136,8 +158,8 @@ class TestEM_Static(unittest.TestCase):
             fdem_dipole = fdem.MagneticDipoleWholeSpace(frequency=0)
 
             for location in [
-                np.r_[0, 0, 0], np.r_[10, 0, 0], np.r_[10, np.pi/2., 0],
-                np.r_[0, 0, 10]
+                np.r_[0, 0, 0], np.r_[0, 4, 0], np.r_[4, 4., 0],
+                np.r_[4, 4, 4], np.r_[4, 0, -4]
             ]:
                 self.clws.location = location
                 self.mdws.location = location
@@ -196,20 +218,36 @@ class TestEM_Static(unittest.TestCase):
                         )[:, 2]
                     ])
 
+
                     inds = (np.hstack([
-                        (np.absolute(mesh.gridFx[:, 0]) > 3 + location[0]) &
-                        (np.absolute(mesh.gridFx[:, 1]) > 0 + location[1]) &
-                        (np.absolute(mesh.gridFx[:, 2]) > 3 + location[2]),
-                        (np.absolute(mesh.gridFy[:, 0]) > 3 + location[0]) &
-                        (np.absolute(mesh.gridFy[:, 1]) > 0 + location[1]) &
-                        (np.absolute(mesh.gridFy[:, 2]) > 3 + location[2]),
-                        (np.absolute(mesh.gridFz[:, 0]) > 3 + location[0]) &
-                        (np.absolute(mesh.gridFz[:, 1]) > 0 + location[1]) &
-                        (np.absolute(mesh.gridFz[:, 2]) > 3 + location[2])
+                        (np.absolute(mesh.gridFx[:, 0]) > h*2 + location[0]) &
+                        (np.absolute(mesh.gridFx[:, 2]) > h*2 + location[2]),
+                        (np.absolute(mesh.gridFy[:, 0]) > h*2 + location[0]) &
+                        (np.absolute(mesh.gridFy[:, 2]) > h*2 + location[2]),
+                        (np.absolute(mesh.gridFz[:, 0]) > h*2 + location[0]) &
+                        (np.absolute(mesh.gridFz[:, 2]) > h*2 + location[2])
                     ]))
 
-                    self.assertTrue(np.allclose(b_fdem[inds], b_clws[inds]))
-                    self.assertTrue(np.allclose(b_fdem[inds], b_mdws[inds]))
+                    loop_passed = np.allclose(b_fdem[inds], b_clws[inds])
+                    dipole_passed = np.allclose(b_fdem[inds], b_mdws[inds])
+
+                    print(
+                        "Testing r = {}, loc = {}, orientation = {}".format(
+                            radius, location, orientation
+                        )
+                    )
+                    print(
+                        "  fdem: {:1.4e}, loop: {:1.4e}, dipole: {:1.4e}"
+                        " Passed? loop: {}, dipole: {} \n".format(
+                            np.linalg.norm(b_fdem[inds]),
+                            np.linalg.norm(b_clws[inds]),
+                            np.linalg.norm(b_mdws[inds]),
+                            loop_passed,
+                            dipole_passed
+                        )
+                    )
+                    self.assertTrue(loop_passed)
+                    self.assertTrue(dipole_passed)
 
 if __name__ == '__main__':
     unittest.main()

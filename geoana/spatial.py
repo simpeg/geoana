@@ -340,6 +340,9 @@ def rotation_matrix_from_normals(v0, v1, tol=1e-20):
              aligned with n1
     """
 
+    v0 = mkvc(v0)
+    v1 = mkvc(v1)
+
     # ensure both n0, n1 are vectors of length 1
     assert len(v0) == 3, "Length of n0 should be 3"
     assert len(v1) == 3, "Length of n1 should be 3"
