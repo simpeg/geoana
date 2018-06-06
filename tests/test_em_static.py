@@ -11,6 +11,7 @@ import discretize
 from geoana.em import static, fdem
 from geoana import spatial
 
+TOL = 0.1
 
 class TestEM_Static(unittest.TestCase):
 
@@ -56,10 +57,13 @@ class TestEM_Static(unittest.TestCase):
                 (np.absolute(mesh.gridCC[:, 2]) > 5)
             )
 
-            self.assertTrue(np.allclose(
-                self.clws.vector_potential(mesh.gridCC)[inds],
-                self.mdws.vector_potential(mesh.gridCC)[inds],
-            ))
+            a_clws = self.clws.vector_potential(mesh.gridCC)[inds]
+            a_mdws = self.mdws.vector_potential(mesh.gridCC)[inds]
+
+            self.assertTrue(
+                np.linalg.norm(a_clws - a_mdws) <
+                0.5 * TOL * (np.linalg.norm(a_clws) + np.linalg.norm(a_mdws))
+            )
 
     def test_magnetic_field_tensor(self):
         print("\n === Testing Tensor Mesh === \n")
@@ -121,9 +125,21 @@ class TestEM_Static(unittest.TestCase):
                         (np.absolute(mesh.gridFz[:, 2]) > h*2 + location[2])
                     ]))
 
-                    loop_passed = np.allclose(b_fdem[inds], b_clws[inds])
-                    dipole_passed = np.allclose(b_fdem[inds], b_mdws[inds])
+                    loop_passed = (
+                        np.linalg.norm(b_fdem[inds] - b_clws[inds]) <
+                        0.5 * TOL * (
+                            np.linalg.norm(b_fdem[inds]) +
+                            np.linalg.norm(b_clws[inds])
+                        )
+                    )
 
+                    dipole_passed = (
+                        np.linalg.norm(b_fdem[inds] - b_mdws[inds]) <
+                        0.5 * TOL * (
+                            np.linalg.norm(b_fdem[inds]) +
+                            np.linalg.norm(b_mdws[inds])
+                        )
+                    )
                     print(
                         "Testing r = {}, loc = {}, orientation = {}".format(
                             radius, location, orientation
@@ -165,7 +181,7 @@ class TestEM_Static(unittest.TestCase):
                 self.mdws.location = location
                 fdem_dipole.location = location
 
-                for orientation in ["x", "y", "z"]:
+                for orientation in ["z"]:
                     self.clws.orientation = orientation
                     self.mdws.orientation = orientation
                     fdem_dipole.orientation = orientation
@@ -220,16 +236,29 @@ class TestEM_Static(unittest.TestCase):
 
 
                     inds = (np.hstack([
-                        (np.absolute(mesh.gridFx[:, 0]) > h*2 + location[0]) &
-                        (np.absolute(mesh.gridFx[:, 2]) > h*2 + location[2]),
-                        (np.absolute(mesh.gridFy[:, 0]) > h*2 + location[0]) &
-                        (np.absolute(mesh.gridFy[:, 2]) > h*2 + location[2]),
-                        (np.absolute(mesh.gridFz[:, 0]) > h*2 + location[0]) &
-                        (np.absolute(mesh.gridFz[:, 2]) > h*2 + location[2])
+                        (np.absolute(mesh.gridFx[:, 0]) > h*4 + location[0]) &
+                        (np.absolute(mesh.gridFx[:, 2]) > h*4 + location[2]),
+                        (np.absolute(mesh.gridFy[:, 0]) > h*4 + location[0]) &
+                        (np.absolute(mesh.gridFy[:, 2]) > h*4 + location[2]),
+                        (np.absolute(mesh.gridFz[:, 0]) > h*4 + location[0]) &
+                        (np.absolute(mesh.gridFz[:, 2]) > h*4 + location[2])
                     ]))
 
-                    loop_passed = np.allclose(b_fdem[inds], b_clws[inds])
-                    dipole_passed = np.allclose(b_fdem[inds], b_mdws[inds])
+                    loop_passed = (
+                        np.linalg.norm(b_fdem[inds] - b_clws[inds]) <
+                        0.5 * TOL * (
+                            np.linalg.norm(b_fdem[inds]) +
+                            np.linalg.norm(b_clws[inds])
+                        )
+                    )
+
+                    dipole_passed = (
+                        np.linalg.norm(b_fdem[inds] - b_mdws[inds]) <
+                        0.5 * TOL * (
+                            np.linalg.norm(b_fdem[inds]) +
+                            np.linalg.norm(b_mdws[inds])
+                        )
+                    )
 
                     print(
                         "Testing r = {}, loc = {}, orientation = {}".format(

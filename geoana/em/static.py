@@ -179,7 +179,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         )
 
             A_\\theta(\\rho, z) = \\frac{\mu_0 I}{\pi k}
-            \sqrt{R / r^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
+            \sqrt{R / \\rho^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
 
         where
 
@@ -214,7 +214,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         :return: The magnetic vector potential at each observation location
 
         """
-        eps = 1e-3
+        eps = 1e-10
         supported_coordinates = ["cartesian", "cylindrical"]
         assert coordinates.lower() in supported_coordinates, (
             "coordinates must be in {}, the coordinate system "
@@ -239,28 +239,28 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         rho = np.sqrt((dxyz[:, :2]**2).sum(1))
 
         k2 = (4 * self.radius * rho) / ((self.radius + rho)**2 +dxyz[:, 2]**2)
-        k2[k2 > 1] = 1.  # if there are any rounding errors
+        k2[k2 > 1.] = 1.  # if there are any rounding errors
 
         E = ellipe(k2)
         K = ellipk(k2)
 
-        # singular if r = 0, k2 = 0, k2 = 1
-        ind = (r > eps) & (k2 < 1) & (k2 > eps)
+        # singular if rho = 0, k2 = 1
+        ind = (rho > eps) & (k2 < 1)
 
         Atheta = np.zeros_like(r)
         Atheta[ind] = (
             (self.mu * self.current) / (np.pi * np.sqrt(k2[ind])) *
-            np.sqrt(self.radius / r[ind]) *
+            np.sqrt(self.radius / rho[ind]) *
             ((1. - k2[ind] / 2.)*K[ind] - E[ind])
         )
 
         # assume that the z-axis aligns with the polar axis
         A = np.zeros_like(xyz)
-        A[r>eps, 0] = Atheta[r>eps] * (-xyz[r>eps, 1] / r[r>eps])
-        A[r>eps, 1] = Atheta[r>eps] * (xyz[r>eps, 0] / r[r>eps])
+        A[ind, 0] = Atheta[ind] * (-dxyz[ind, 1] / rho[ind])
+        A[ind, 1] = Atheta[ind] * (dxyz[ind, 0] / rho[ind])
 
         # rotate the points to aligned with the normal to the source
-        A_new = spatial.rotate_points_from_normals(
+        A = spatial.rotate_points_from_normals(
             A, np.r_[0., 0., 1.], self.orientation, x0=self.location
         )
 
