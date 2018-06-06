@@ -33,6 +33,7 @@ def omega(frequency):
 
     **Required**
     :param frequency float: frequency (Hz)
+
     """
     return 2*np.pi*frequency
 

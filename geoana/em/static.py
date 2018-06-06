@@ -31,7 +31,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         **Required**
 
-        :param numpy.array xyz: Location at which we calculate the vector
+        :param numpy.ndarray xyz: Location at which we calculate the vector
                                 potential
 
         **Optional**
@@ -43,7 +43,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         **Returns**
 
-        :rtype: numpy.array
+        :rtype: numpy.ndarray
         :return: The magnetic vector potential at each observation location
 
         """
@@ -79,7 +79,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         **Required**
 
-        :param numpy.array xyz: Location of the receivers(s)
+        :param numpy.ndarray xyz: Location of the receivers(s)
 
         **Optional**
 
@@ -90,7 +90,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         **Returns**
 
-        :rtype: numpy.array
+        :rtype: numpy.ndarray
         :return: The magnetic flux at each observation location
         """
 
@@ -134,7 +134,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         **Required**
 
-        :param numpy.array xyz: Location of the receivers(s)
+        :param numpy.ndarray xyz: Location of the receivers(s)
 
         **Optional**
 
@@ -145,7 +145,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         **Returns**
 
-        :rtype: numpy.array
+        :rtype: numpy.ndarray
         :return: The magnetic field at each observation location
 
         """
@@ -192,7 +192,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         **Required**
 
-        :param numpy.array xyz: Location where we calculate the vector
+        :param numpy.ndarray xyz: Location where we calculate the vector
                                 potential
 
         **Optional**
@@ -204,7 +204,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         **Returns**
 
-        :rtype: numpy.array
+        :rtype: numpy.ndarray
         :return: The magnetic vector potential at each observation location
 
         """
