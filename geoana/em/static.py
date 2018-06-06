@@ -172,12 +172,6 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         .. math::
 
-        Atheta[ind] = (
-            (self.mu * self.current) / (np.pi * np.sqrt(k2[ind])) *
-            np.sqrt(self.radius / r[ind]) *
-            ((1. - k2[ind] / 2.)*K[ind] - E[ind])
-        )
-
             A_\\theta(\\rho, z) = \\frac{\mu_0 I}{\pi k}
             \sqrt{R / \\rho^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
 
