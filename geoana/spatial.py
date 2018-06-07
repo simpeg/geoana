@@ -27,7 +27,7 @@ def cylindrical_2_cartesian(grid, vec=None):
 
     :return: grid or vector (if provided) in cartesian coordinates
              :math:`(x, y, z)`
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
 
     """
     grid = np.atleast_2d(grid)
@@ -72,7 +72,7 @@ def cartesian_2_cylindrical(grid, vec=None):
 
     :return: grid or vector (if provided) in cylindrical coordinates
              :math:`(r, \\theta, z)`
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     """
 
     grid = np.atleast_2d(grid)
@@ -115,7 +115,7 @@ def spherical_2_cartesian(grid, vec=None):
 
     :return: grid or vector (if provided) in cartesian coordinates
              :math:`(x, y, z)`
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
 
     """
     grid = np.atleast_2d(grid)
@@ -169,7 +169,7 @@ def cartesian_2_spherical(grid, vec=None):
 
     :return: grid or vector (if provided) in spherical coordinates
              :math:`(r, \\theta, \\phi)`
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     """
 
     grid = np.atleast_2d(grid)
@@ -219,7 +219,7 @@ def vector_magnitude(v):
     **Returns**
 
     :returns: magnitude of a vector (n, 1)
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     """
 
     v = np.atleast_2d(v)
@@ -243,7 +243,7 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
 
     :returns: vector distance from a grid of points from the origin
               (npoints x 3)
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     """
     assert(xyz.shape[1] == 3), (
         "the xyz grid should be npoints by 3, the shape provided is {}".format(
@@ -273,7 +273,7 @@ def distance(xyz, origin=np.r_[0., 0., 0.]):
     **Returns**
 
     :returns: distance between each point and the origin (npoints x 1)
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     """
     dxyz = vector_distance(xyz, origin)
     return vector_magnitude(dxyz)
@@ -292,7 +292,7 @@ def vector_dot(xyz, vector):
 
     :returns: dot product between the grid and the (1 x 3) vector, returns an
               (npoints x 1) array
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     """
     assert len(vector) == 3, "vector should be length 3"
     return vector[0]*xyz[:, 0] + vector[1]*xyz[:, 1] + vector[2]*xyz[:, 2]
@@ -314,7 +314,7 @@ def repeat_scalar(scalar, dim=3):
     **Returns**
 
     :returns: (n x dim) array of the repeated vector
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     """
     assert len(scalar) in scalar.shape, (
         "input must be a scalar. The shape you provided is {}".format(
@@ -336,7 +336,7 @@ def rotation_matrix_from_normals(v0, v1, tol=1e-20):
     :param float tol: tolerance. If the norm of the cross product between the
                         two vectors is below this, no rotation is performed
                         default = 1e-20
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     :return: 3 x 3 rotation matrix which rotates the frame so that n0 is
              aligned with n1
     """
@@ -393,7 +393,7 @@ def rotate_points_from_normals(xyz, n0, n1, x0=np.r_[0., 0., 0.]):
 
     **Returns**
 
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     :return: (3x3) rotation matrix which rotates the frame so that n0 is
              aligned with n1
 
