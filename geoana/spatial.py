@@ -15,12 +15,12 @@ def cylindrical_2_cartesian(grid, vec=None):
 
     **Required**
 
-    :param numpy.array grid: grid in cylindrical coordinates
+    :param numpy.ndarray grid: grid in cylindrical coordinates
                                :math:`(r, \\theta, z)`
 
     **Optional**
 
-    :param numpy.array vec: (optional) vector defined in cylindrical
+    :param numpy.ndarray vec: (optional) vector defined in cylindrical
                               coordinates
 
     **Returns**
@@ -60,12 +60,12 @@ def cartesian_2_cylindrical(grid, vec=None):
 
     **Required**
 
-    :param numpy.array grid: grid in cartesian coordinates
+    :param numpy.ndarray grid: grid in cartesian coordinates
                                :math:`(x, y, z)`
 
     **Optional**
 
-    :param numpy.array vec: (optional) vector defined in cartesian
+    :param numpy.ndarray vec: (optional) vector defined in cartesian
                               coordinates
 
     **Returns**
@@ -103,12 +103,12 @@ def spherical_2_cartesian(grid, vec=None):
 
     **Required**
 
-    :param numpy.array grid: grid in spherical coordinates
+    :param numpy.ndarray grid: grid in spherical coordinates
                              :math:`(r, \\theta, \\phi)`
 
     **Optional**
 
-    :param numpy.array vec: (optional) vector defined in spherical
+    :param numpy.ndarray vec: (optional) vector defined in spherical
                               coordinates
 
     **Returns**
@@ -157,12 +157,12 @@ def cartesian_2_spherical(grid, vec=None):
 
     **Required**
 
-    :param numpy.array grid: grid in cartesian coordinates
+    :param numpy.ndarray grid: grid in cartesian coordinates
                                :math:`(x, y, z)`
 
     **Optional**
 
-    :param numpy.array vec: (optional) vector defined in cartesian
+    :param numpy.ndarray vec: (optional) vector defined in cartesian
                               coordinates
 
     **Returns**
@@ -214,7 +214,7 @@ def vector_magnitude(v):
 
     **Required**
 
-    :param numpy.array v: vector array
+    :param numpy.ndarray v: vector array
 
     **Returns**
 
@@ -233,11 +233,11 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
 
     **Required**
 
-    :param numpy.array xyz: grid (npoints x 3)
+    :param numpy.ndarray xyz: grid (npoints x 3)
 
     **Optional**
 
-    :param numpy.array origin: origin (default: [0., 0., 0.])
+    :param numpy.ndarray origin: origin (default: [0., 0., 0.])
 
     **Returns**
 
@@ -264,11 +264,11 @@ def distance(xyz, origin=np.r_[0., 0., 0.]):
 
     **Required**
 
-    :param numpy.array xyz: grid (npoints x 3)
+    :param numpy.ndarray xyz: grid (npoints x 3)
 
     **Optional**
 
-    :param numpy.array origin: origin (default: [0., 0., 0.])
+    :param numpy.ndarray origin: origin (default: [0., 0., 0.])
 
     **Returns**
 
@@ -285,8 +285,8 @@ def vector_dot(xyz, vector):
 
     **Required**
 
-    :param numpy.array xyz: grid (npoints x 3)
-    :param numpy.array vector: vector (1 x 3)
+    :param numpy.ndarray xyz: grid (npoints x 3)
+    :param numpy.ndarray vector: vector (1 x 3)
 
     **Returns**
 
@@ -305,7 +305,7 @@ def repeat_scalar(scalar, dim=3):
 
     **Required**
 
-    :param numpy.array scalar: (n x 1) array of scalars
+    :param numpy.ndarray scalar: (n x 1) array of scalars
 
     **Optional**
 
@@ -331,8 +331,8 @@ def rotation_matrix_from_normals(v0, v1, tol=1e-20):
     The axis of rotation is n0 x n1
     https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 
-    :param numpy.array v0: vector of length 3
-    :param numpy.array v1: vector of length 3
+    :param numpy.ndarray v0: vector of length 3
+    :param numpy.ndarray v1: vector of length 3
     :param float tol: tolerance. If the norm of the cross product between the
                         two vectors is below this, no rotation is performed
                         default = 1e-20
@@ -382,13 +382,13 @@ def rotate_points_from_normals(xyz, n0, n1, x0=np.r_[0., 0., 0.]):
 
     **Required**
 
-    :param numpy.array xyz:
-    :param numpy.array n0: vector of length 3, should have norm 1
-    :param numpy.array n1: vector of length 3, should have norm 1
+    :param numpy.ndarray xyz:
+    :param numpy.ndarray n0: vector of length 3, should have norm 1
+    :param numpy.ndarray n1: vector of length 3, should have norm 1
 
     **Optional**
 
-    :param numpy.array x0: vector of length 3, point about which we perform the
+    :param numpy.ndarray x0: vector of length 3, point about which we perform the
                            rotation
 
     **Returns**
