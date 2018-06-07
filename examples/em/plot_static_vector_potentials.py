@@ -108,7 +108,7 @@ def plot_streamlines(ax, v):
 # Create subplots for plotting the results. Loop over frequencies and plot the
 # electric and magnetic fields along a slice through the center of the dipole.
 
-fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+fig, ax = plt.subplots(1, 2, figsize=(12, 5))
 
 # plot dipole vector potential
 plot_amplitude(ax[0], a_dipole)
