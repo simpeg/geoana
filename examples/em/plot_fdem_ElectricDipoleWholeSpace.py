@@ -36,7 +36,7 @@ sigma = 1.  # conductivity of 1 S/m
 mu = mu_0  # permeability of free space (this is the default)
 epsilon=epsilon_0  # permittivity of free space (this is the default)
 location=np.r_[0., 0., 0.]  # location of the dipole
-orientation='Z',  # vertical dipole (can also be a unit-vector)
+orientation='Z'  # vertical dipole (can also be a unit-vector)
 quasistatic=False  # don't use the quasistatic assumption
 
 ###############################################################################
@@ -50,7 +50,7 @@ quasistatic=False  # don't use the quasistatic assumption
 
 edipole = fdem.ElectricDipoleWholeSpace(
     sigma=sigma, mu=mu, epsilon=epsilon,
-    location=location, orientation='Z',
+    location=location, orientation=orientation,
     quasistatic=False
 )
 
