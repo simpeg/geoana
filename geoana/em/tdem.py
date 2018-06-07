@@ -20,10 +20,10 @@ from .. import spatial
 
 def peak_time(z, sigma, mu=mu_0):
     """
+    `Peak time <https://em.geosci.xyz/content/maxwell1_fundamentals/transient_planewaves_homogeneous/peaktime.html>`_:
     Time at which the maximum signal amplitude is observed at a particular
     location for a transient plane wave through a homogeneous medium.
 
-    See: http://em.geosci.xyz/content/maxwell1_fundamentals/plane_waves_in_homogeneous_media/time/analytic_solution.html
 
     **Required**
 
@@ -40,10 +40,9 @@ def peak_time(z, sigma, mu=mu_0):
 
 def diffusion_distance(time, sigma, mu=mu_0):
     """
+    `Diffusion distance <https://em.geosci.xyz/content/maxwell1_fundamentals/transient_planewaves_homogeneous/peakdistance.html>`_:
     Distance at which the signal amplitude is largest for a given time after
     shut off. Also referred to as the peak distance
-
-    See: http://em.geosci.xyz/content/maxwell1_fundamentals/plane_waves_in_homogeneous_media/time/analytic_solution.html
     """
     return np.sqrt(2*time/(mu*sigma))
 

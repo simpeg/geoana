@@ -44,7 +44,7 @@ Getting started
 Connecting with the community
 -----------------------------
 
-geoana is a part of the larger `SimPEG <https://simpeg.xyz>`_ ecosystem. There are several avenues for connecting:
+geoana is a part of the larger `SimPEG <https://www.simpeg.xyz>`_ ecosystem. There are several avenues for connecting:
 
 - a mailing list for questions and general news items: https://groups.google.com/forum/#!forum/simpeg
 - a newsletter where meeting notices and re-caps are posted: http://eepurl.com/bVUoOL

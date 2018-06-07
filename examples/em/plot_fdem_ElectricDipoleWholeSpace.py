@@ -45,8 +45,8 @@ quasistatic=False  # don't use the quasistatic assumption
 #
 # Here, we build the geoana electric dipole in a wholespace using the
 # parameters defined above. For a full list of the properties you can set on an
-# electric dipole, see the
-# `frequency domain electric dipole docs <http://geoana.readthedocs.io/en/latest/content/em.html#geoana.em.fdem.ElectricDipoleWholeSpace>`_
+# electric dipole, see the :class:`geoana.em.fdem.ElectricDipoleWholeSpace`
+# docs
 
 edipole = fdem.ElectricDipoleWholeSpace(
     sigma=sigma, mu=mu, epsilon=epsilon,
