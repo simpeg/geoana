@@ -405,5 +405,4 @@ def rotate_points_from_normals(xyz, n0, n1, x0=np.r_[0., 0., 0.]):
     assert len(x0) == 3, "x0 should have length 3"
 
     X0 = np.ones([xyz.shape[0], 1])*mkvc(x0)
-
-    return (xyz - X0).dot(R.T) + X0 # equivalent to (R*(XYZ - X0)).T + X0
+    return np.dot(xyz - X0, R.T) + X0 # equivalent to (R*(XYZ - X0)).T + X0

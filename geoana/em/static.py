@@ -259,6 +259,6 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         )
 
         if coordinates.lower() == "cylindrical":
-            A = spatial.cartesian_2_cylindrical(xyz, A)
+            A = spatial.cartesian_2_cylindrical(np.array(xyz), A)
 
         return A
