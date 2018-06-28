@@ -1,7 +1,7 @@
 .. _geoana:
 
 
-| :ref:`getting_started` | :ref:`connecting` | :ref:`installing` | :ref:`license` | `Documentation <http://geoana.readthedocs.io/en/latest/>`_ |
+| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `Documentation <http://geoana.readthedocs.io/en/latest/>`_ |
 
 geoana
 ======
@@ -33,7 +33,7 @@ Getting started
 ---------------
 
 - If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
-- :ref:`Install <installing>` geoana
+- `Install <installing>`_ geoana
 - Browse the :ref:`gallery <examples>` for ideas and example usage
 - Read the `documentation <http://geoana.readthedocs.io/en/latest/>`_ for more information on the library and what it can do
 
