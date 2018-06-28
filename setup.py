@@ -48,7 +48,7 @@ setup(
     description = 'geoana',
     long_description = LONG_DESCRIPTION,
     keywords = 'geophysics, electromagnetics',
-    url = 'http://simpeg.xyz',
+    url = 'https://www.simpeg.xyz',
     download_url = 'https://github.com/simpeg/geoana',
     classifiers=CLASSIFIERS,
     platforms = ['Windows', 'Linux', 'Solaris', 'Mac OS-X', 'Unix'],

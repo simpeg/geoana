@@ -2,12 +2,17 @@
 
 .. include:: ../README.rst
 
+.. _contents:
 
-**Contents:**
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
 
-   content/earthquake
+   auto_examples/index
+   content/conventions
    content/em
+   content/earthquake
+   content/utils
 

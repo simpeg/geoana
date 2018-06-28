@@ -8,11 +8,24 @@ sudo: false
 env:
   - TEST_DIR='tests'
 
+before_install:
+  - if [ ${TRAVIS_PYTHON_VERSION:0:1} == "2" ]; then
+      wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b -p $HOME/miniconda
+  - export PATH=/home/travis/anaconda/bin:/home/travis/miniconda/bin:$PATH
+  - conda update --yes conda
+
 install:
+  - conda install --quiet --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib pillow cython ipython;
   - pip install --upgrade pip;
   - pip install -r requirements.txt
   - pip install -r requirements_dev.txt
   - cd geoana; python setup.py install; cd ..
+  - export MPLBACKEND="agg"
 
 # Run test
 script:

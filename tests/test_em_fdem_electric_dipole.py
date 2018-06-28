@@ -25,9 +25,9 @@ def E_from_EDWS(
     reciever location
       or a single frequency at multiple locations
 
-    :param numpy.array XYZ: reciever locations at which to evaluate E
+    :param numpy.ndarray XYZ: reciever locations at which to evaluate E
     :param float epsr: relative permitivitty value (unitless),  default is 1.0
-    :rtype: numpy.array
+    :rtype: numpy.ndarray
     :return: Ex, Ey, Ez: arrays containing all 3 components of E evaluated at the specified locations and frequencies.
     """
 

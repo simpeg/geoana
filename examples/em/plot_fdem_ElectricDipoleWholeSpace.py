@@ -10,7 +10,11 @@ We can vary the conductivity, magnetic permeability and dielectric permittivity
 of the wholespace, the frequency of the source and whether or not the
 quasistatic assumption is imposed.
 
+:author: Lindsey Heagy (`@lheagy <https://github.com/lheagy>`_)
+:date: June 2, 2018
+
 """
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,26 +24,51 @@ from scipy.constants import mu_0, epsilon_0
 from geoana import utils, spatial
 from geoana.em import fdem
 
-# define frequencies that we want to look at
-frequencies = np.logspace(0, 4, 3)
+###############################################################################
+# Setup
+# -----
+#
+# define frequencies that we want to examine, physical properties of the
+# wholespace and location and orientation of the dipole
 
-# Build the electric dipole object
+frequencies = np.logspace(0, 4, 3)  # frequencies to examine
+sigma = 1.  # conductivity of 1 S/m
+mu = mu_0  # permeability of free space (this is the default)
+epsilon=epsilon_0  # permittivity of free space (this is the default)
+location=np.r_[0., 0., 0.]  # location of the dipole
+orientation='Z'  # vertical dipole (can also be a unit-vector)
+quasistatic=False  # don't use the quasistatic assumption
+
+###############################################################################
+# Electric Dipole
+# ---------------
+#
+# Here, we build the geoana electric dipole in a wholespace using the
+# parameters defined above. For a full list of the properties you can set on an
+# electric dipole, see the :class:`geoana.em.fdem.ElectricDipoleWholeSpace`
+# docs
+
 edipole = fdem.ElectricDipoleWholeSpace(
-    sigma=1.,  # conductivity of 1 S/m
-    mu=mu_0,  # permeability of free space (this is the default)
-    epsilon=epsilon_0,  # permittivity of free space (this is the default)
-    location=np.r_[0., 0., 0.],  # location of the dipole
-    orientation='Z',  # vertical dipole (can also be a unit-vector)
-    quasistatic=False  # don't use the quasistatic assumption
+    sigma=sigma, mu=mu, epsilon=epsilon,
+    location=location, orientation=orientation,
+    quasistatic=False
 )
 
-# construct a grid where we want to plot electric fields
+###############################################################################
+# Evaluate fields and fluxes
+# --------------------------
+#
+# Next, we construct a grid where we want to plot electric fields
+
 x = np.linspace(-50, 50, 100)
 z = np.linspace(-50, 50, 100)
 xyz = utils.ndgrid([x, np.r_[0], z])
 
+###############################################################################
+#
+# and define plotting code to plot an image of the amplitude of the vector
+# field / flux as well as the streamlines
 
-# plot amplitude
 def plot_amplitude(ax, v):
     v = spatial.vector_magnitude(v)
     plt.colorbar(
@@ -59,7 +88,11 @@ def plot_streamlines(ax, v):
     ax.streamplot(x, z, vx.T, vz.T, color='k')
 
 
-# create fig, ax for electric fields and magnetic flux
+###############################################################################
+#
+# Create subplots for plotting the results. Loop over frequencies and plot the
+# electric and magnetic fields along a slice through the center of the dipole.
+
 fig_e, ax_e = plt.subplots(
     2, len(frequencies), figsize=(5*len(frequencies), 7)
 )
@@ -67,7 +100,6 @@ fig_b, ax_b = plt.subplots(
     2, len(frequencies), figsize=(5*len(frequencies), 7)
 )
 
-# loop over frequencies and plot
 for i, frequency in enumerate(frequencies):
 
     # set the frequency of the dipole

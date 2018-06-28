@@ -1,5 +1,8 @@
 .. _geoana:
 
+
+| :ref:`getting_started` | :ref:`connecting` | :ref:`installing` | :ref:`license` | `Documentation <http://geoana.readthedocs.io/en/latest/>`_ |
+
 geoana
 ======
 
@@ -20,5 +23,56 @@ geoana
     :alt: codacy status
 
 
-Interactive geoscience (mostly) analytic functions in geophysics.
+`geoana` is a collection of (mostly) analytic functions in geophysics. We take an object oriented
+approach with the aim of having users be able to readily interact with the functions using `Jupyter <https://jupyter.org>`_
+
+
+.. _getting_started:
+
+Getting started
+---------------
+
+- If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
+- :ref:`Install <installing>` geoana
+- Browse the :ref:`gallery <examples>` for ideas and example usage
+- Read the `documentation <http://geoana.readthedocs.io/en/latest/>`_ for more information on the library and what it can do
+
+.. - See the `contributor guide` and `code of conduct` if you are interested in helping develop or maintain geoana
+
+.. _connecting:
+
+Connecting with the community
+-----------------------------
+
+geoana is a part of the larger `SimPEG <https://www.simpeg.xyz>`_ ecosystem. There are several avenues for connecting:
+
+- a mailing list for questions and general news items: https://groups.google.com/forum/#!forum/simpeg
+- a newsletter where meeting notices and re-caps are posted: http://eepurl.com/bVUoOL
+- a slack group for real-time chat with users and developers of SimPEG: http://slack.simpeg.xyz/
+
+.. _installing:
+
+Installing
+----------
+
+geoana is available on `pypi <https://pypi.org/project/geoana/>`_ and can be installed by opening a command window and running:
+
+.. code::
+
+    pip install geoana
+
+
+To install from source, you can
+
+.. code::
+
+    git clone https://github.com/simpeg/geoana.git
+    python setup.py install
+
+.. _license:
+
+License
+-------
+
+geoana is licensed under the `MIT license <https://github.com/simpeg/geoana/blob/master/LICENSE>`_ .
 
