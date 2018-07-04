@@ -251,6 +251,14 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
         )
     )
 
+    if len(origin) != 3:
+        raise Exception(
+            "the origin must be length 3, the length provided is {}".format(
+                len(origin)
+            )
+        )
+
+
     dx = xyz[:, 0] - origin[0]
     dy = xyz[:, 1] - origin[1]
     dz = xyz[:, 2] - origin[2]
@@ -294,7 +302,12 @@ def vector_dot(xyz, vector):
               (npoints x 1) array
     :rtype: numpy.ndarray
     """
-    assert len(vector) == 3, "vector should be length 3"
+    if len(vector) != 3:
+        raise Exception(
+            "vector should be length 3, the provided length is {}".format(
+                len(vector)
+            )
+        )
     return vector[0]*xyz[:, 0] + vector[1]*xyz[:, 1] + vector[2]*xyz[:, 2]
 
 
