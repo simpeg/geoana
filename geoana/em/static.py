@@ -255,7 +255,8 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         # rotate the points to aligned with the normal to the source
         A = spatial.rotate_points_from_normals(
-            A, np.r_[0., 0., 1.], np.array(self.orientation), x0=self.location
+            A, np.r_[0., 0., 1.], np.array(self.orientation),
+            x0=np.array(self.location)
         )
 
         if coordinates.lower() == "cylindrical":
