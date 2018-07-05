@@ -222,8 +222,8 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
         xyz = spatial.rotate_points_from_normals(
-            xyz, np.array([i for i in self.orientation]),  # work around for a properties issue
-            np.r_[0., 0., 1.], x0=self.location
+            xyz, np.array(self.orientation),  # work around for a properties issue
+            np.r_[0., 0., 1.], x0=np.array(self.location)
         )
 
         n_obs = xyz.shape[0]
@@ -255,10 +255,11 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         # rotate the points to aligned with the normal to the source
         A = spatial.rotate_points_from_normals(
-            A, np.r_[0., 0., 1.], self.orientation, x0=self.location
+            A, np.r_[0., 0., 1.], np.array(self.orientation),
+            x0=np.array(self.location)
         )
 
         if coordinates.lower() == "cylindrical":
-            A = spatial.cartesian_2_cylindrical(np.array(xyz), A)
+            A = spatial.cartesian_2_cylindrical(xyz, A)
 
         return A

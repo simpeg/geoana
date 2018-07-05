@@ -7,6 +7,7 @@ import unittest
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
 import discretize
+import properties
 
 from geoana.em import static, fdem
 from geoana import spatial
@@ -33,7 +34,6 @@ class TestEM_Static(unittest.TestCase):
         self.assertTrue(np.all(self.clws.orientation == np.r_[1., 0., 0.]))
 
         self.assertTrue(self.mdws.moment == 1)
-
         self.assertTrue(self.clws.current == 1)
         self.assertTrue(self.clws.radius == 1)
 
@@ -59,6 +59,12 @@ class TestEM_Static(unittest.TestCase):
 
             a_clws = self.clws.vector_potential(mesh.gridCC)[inds]
             a_mdws = self.mdws.vector_potential(mesh.gridCC)[inds]
+
+            self.assertTrue(isinstance(a_clws, np.ndarray))
+            self.assertFalse(isinstance(a_clws, properties.Vector3))
+
+            self.assertTrue(isinstance(a_mdws, np.ndarray))
+            self.assertFalse(isinstance(a_mdws, properties.Vector3))
 
             self.assertTrue(
                 np.linalg.norm(a_clws - a_mdws) <
@@ -112,6 +118,9 @@ class TestEM_Static(unittest.TestCase):
                         fdem_dipole.magnetic_flux_density(mesh.gridFy)[:, 1],
                         fdem_dipole.magnetic_flux_density(mesh.gridFz)[:, 2]
                     ])
+
+                    self.assertTrue(isinstance(b_fdem, np.ndarray))
+                    self.assertFalse(isinstance(b_fdem, properties.Vector3))
 
                     inds = (np.hstack([
                         (np.absolute(mesh.gridFx[:, 0]) > h*2 + location[0]) &
