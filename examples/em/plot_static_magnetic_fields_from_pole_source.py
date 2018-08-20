@@ -122,5 +122,3 @@ ax[1].set_title("Total field: pole")
 # format so text doesn't overlap
 plt.tight_layout()
 plt.show()
-
-
