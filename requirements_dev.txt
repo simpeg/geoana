@@ -1,4 +1,3 @@
-git+https://github.com/simpeg/discretize.git@feat/3Dcylmesh
 sphinx_rtd_theme
 sphinx-gallery
 SimPEG
