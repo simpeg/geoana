@@ -12,7 +12,10 @@ from scipy.constants import mu_0
 from .base import BaseEM, BaseDipole, BaseMagneticDipole, BaseElectricDipole
 from .. import spatial
 
-__all__ = ["MagneticDipoleWholeSpace", "CircularLoopWholeSpace", "MagneticPoleWholeSpace"]
+__all__ = [
+    "MagneticDipoleWholeSpace", "CircularLoopWholeSpace",
+    "MagneticPoleWholeSpace"
+]
 
 
 class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
