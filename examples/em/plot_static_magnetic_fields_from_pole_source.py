@@ -44,10 +44,6 @@ inclination, declination = 67., 0.
 #
 # Here, we build the geoana magnetic dipole and poie in a wholespace
 # using the parameters defined above.
-# For a full list of the properties you can set on a dipole, see the
-# :class:`geoana.em.static.MagneticDipoleWholeSpace` docs and for the
-# pole source, see the
-# :class:`geoana.em.static.MagneticPoleWholeSpace` docs
 
 def id_to_cartesian(inclination, declination):
     ux = np.cos(inclination/180.*np.pi)*np.sin(declination/180.*np.pi)
