@@ -6,6 +6,10 @@ python:
 sudo: false
 
 env:
+  global:
+    - MASTER_BRANCH=master
+
+env:
   - TEST_DIR='tests'
 
 before_install:
@@ -33,3 +37,23 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
+  # early exit if not on a deplotment branch
+  - if ! [ "$TRAVIS_BRANCH" = "$MASTER_BRANCH" -o "$TRAVIS_TAG" = "true" ]; then
+      echo "Not deploying (because this is not a deployment branch)" ;
+      exit 0 ;
+    fi
+  - if ! [ $TRAVIS_PULL_REQUEST = "false" ] ; then
+      echo "Not deploying (because this is a pull request)" ;
+      exit 0 ;
+    fi
+  - echo "Deploying"
+
+  # unpack credentials
+  - openssl aes-256-cbc -K $encrypted_e1a1deb7b9e1_key -iv $encrypted_e1a1deb7b9e1_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
+  - tar -xvzf credentials.tar.gz
+
+  # deploy to pypi
+  - mv credentials/.pypirc ~/.pypirc ;
+  - python setup.py sdist ;
+  - twine upload dist/* --skip-existing ;
