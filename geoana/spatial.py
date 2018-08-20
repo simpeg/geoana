@@ -52,6 +52,7 @@ def cylindrical_2_cartesian(grid, vec=None):
 
     return np.vstack(newvec).T
 
+
 def cartesian_2_cylindrical(grid, vec=None):
     """
     Takes a grid or vector (if provided)
