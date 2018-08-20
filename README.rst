@@ -1,7 +1,7 @@
 .. _geoana:
 
 
-| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `Documentation <http://geoana.readthedocs.io/en/latest/>`_ |
+| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <http://geoana.readthedocs.io/en/latest/>`_ |
 
 geoana
 ======
