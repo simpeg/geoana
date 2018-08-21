@@ -39,7 +39,8 @@ install:
   - "conda create -q -n test-environment python=%PYTHON% numpy scipy matplotlib cython jupyter ipython pillow wheel"
   - activate test-environment
   - pip install -r requirements_dev.txt
-  - pip install git+git://github.com/simpeg/geoana.git@magnetic_pole
+  - pip uninstall geoana
+  - python install setup.py
 
 test_script:
   - nosetests tests -v -s
