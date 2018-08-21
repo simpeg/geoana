@@ -39,7 +39,7 @@ install:
   - "conda create -q -n test-environment python=%PYTHON% numpy scipy matplotlib cython jupyter ipython pillow wheel"
   - activate test-environment
   - pip install -r requirements_dev.txt
-  - pip install+https://github.com/simpeg/geoana.git@magnetic_pole
+  - pip install git+git://github.com/simpeg/geoana.git@magnetic_pole
 
 test_script:
   - nosetests tests -v -s
