@@ -83,8 +83,8 @@ class BaseDipole(BaseEM):
         """
         orientation = np.kron(
             np.atleast_2d(
-                np.array(self.orientation)), np.ones((xyz.shape[0], 1)
-            )
+                np.array(self.orientation)
+            ), np.ones((xyz.shape[0], 1))
         )
         return np.cross(xyz, orientation)
 

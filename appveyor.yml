@@ -38,8 +38,8 @@ install:
   - conda info -a
   - "conda create -q -n test-environment python=%PYTHON% numpy scipy matplotlib cython jupyter ipython pillow wheel"
   - activate test-environment
-  - pip install -r requirements_dev.txt
   - python setup.py install
+  - pip install -r requirements_dev.txt
 
 test_script:
   - nosetests tests -v -s
