@@ -341,7 +341,6 @@ class Oksar(properties.HasProperties):
 
         rrake = (rake + 90.0) * DEG2RAD
         sindip = np.sin(dip * DEG2RAD)
-        w = (hmax - hmin) / sindip
         ud = slip * np.cos(rrake)
         us = -slip * np.sin(rrake)
         halflen = length / 2.0

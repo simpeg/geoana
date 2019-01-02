@@ -226,7 +226,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
         a = (
             (self.current * self.length)
             / (4 * np.pi * r)
-            * np.exp(-i * self.wavenumber * r)
+            * np.exp(-1j * self.wavenumber * r)
         )
         a = np.kron(np.ones(1, 3), np.atleast_2d(a).T)
         return self.dot_orientation(a)

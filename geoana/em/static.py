@@ -185,8 +185,6 @@ class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
             )
         )
 
-        n_obs = xyz.shape[0]
-
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
@@ -294,8 +292,6 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
             np.r_[0.0, 0.0, 1.0],
             x0=np.array(self.location),
         )
-
-        n_obs = xyz.shape[0]
         dxyz = self.vector_distance(xyz)
         r = self.distance(xyz)
 

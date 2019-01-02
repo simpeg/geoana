@@ -142,6 +142,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         r = self.distance(dxyz)
         r = spatial.repeat_scalar(r)
         thetar = self.theta * r
+        root_pi = np.sqrt(np.pi)
 
         front = (
             self.current
@@ -158,7 +159,6 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         :math:`\\frac{\partial \mathbf{h}}{\partial t}`
         """
 
-        dxyz = self.vector_distance(xyz)
         r = self.distance(xyz)
         r = spatial.repeat_scalar(r)
 
