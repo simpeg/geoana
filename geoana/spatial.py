@@ -33,14 +33,16 @@ def cylindrical_2_cartesian(grid, vec=None):
     grid = np.atleast_2d(grid)
 
     if vec is None:
-        return np.hstack([
-            mkvc(grid[:, 0]*np.cos(grid[:, 1]), 2),
-            mkvc(grid[:, 0]*np.sin(grid[:, 1]), 2),
-            mkvc(grid[:, 2], 2)
-        ])
+        return np.hstack(
+            [
+                mkvc(grid[:, 0] * np.cos(grid[:, 1]), 2),
+                mkvc(grid[:, 0] * np.sin(grid[:, 1]), 2),
+                mkvc(grid[:, 2], 2),
+            ]
+        )
 
     if len(vec.shape) == 1 or vec.shape[1] == 1:
-        vec = vec.reshape(grid.shape, order='F')
+        vec = vec.reshape(grid.shape, order="F")
 
     x = vec[:, 0] * np.cos(grid[:, 1]) - vec[:, 1] * np.sin(grid[:, 1])
     y = vec[:, 0] * np.sin(grid[:, 1]) + vec[:, 1] * np.cos(grid[:, 1])
@@ -79,22 +81,27 @@ def cartesian_2_cylindrical(grid, vec=None):
     grid = np.atleast_2d(grid)
 
     if vec is None:
-        return np.hstack([
-            mkvc(np.sqrt(grid[:, 0]**2 + grid[:, 1]**2), 2),
-            mkvc(np.arctan2(grid[:, 1], grid[:, 0]), 2),
-            mkvc(grid[:, 2], 2)
-        ])
+        return np.hstack(
+            [
+                mkvc(np.sqrt(grid[:, 0] ** 2 + grid[:, 1] ** 2), 2),
+                mkvc(np.arctan2(grid[:, 1], grid[:, 0]), 2),
+                mkvc(grid[:, 2], 2),
+            ]
+        )
 
     if len(vec.shape) == 1 or vec.shape[1] == 1:
-        vec = vec.reshape(grid.shape, order='F')
+        vec = vec.reshape(grid.shape, order="F")
 
     theta = np.arctan2(grid[:, 1], grid[:, 0])
 
-    return np.hstack([
-        mkvc(np.cos(theta)*vec[:, 0] + np.sin(theta)*vec[:, 1], 2),
-        mkvc(-np.sin(theta)*vec[:, 0] + np.cos(theta)*vec[:, 1], 2),
-        mkvc(vec[:, 2], 2)
-    ])
+    return np.hstack(
+        [
+            mkvc(np.cos(theta) * vec[:, 0] + np.sin(theta) * vec[:, 1], 2),
+            mkvc(-np.sin(theta) * vec[:, 0] + np.cos(theta) * vec[:, 1], 2),
+            mkvc(vec[:, 2], 2),
+        ]
+    )
+
 
 def spherical_2_cartesian(grid, vec=None):
     """
@@ -122,33 +129,33 @@ def spherical_2_cartesian(grid, vec=None):
     grid = np.atleast_2d(grid)
 
     if vec is None:
-        return np.hstack([
-            mkvc(grid[:, 0] * np.sin(grid[:, 2]) * np.cos(grid[:, 1]), 2),
-            mkvc(grid[:, 0] * np.sin(grid[:, 2]) * np.sin(grid[:, 1]), 2),
-            mkvc(grid[:, 0] * np.cos(grid[:, 2]), 2)
-        ])
+        return np.hstack(
+            [
+                mkvc(grid[:, 0] * np.sin(grid[:, 2]) * np.cos(grid[:, 1]), 2),
+                mkvc(grid[:, 0] * np.sin(grid[:, 2]) * np.sin(grid[:, 1]), 2),
+                mkvc(grid[:, 0] * np.cos(grid[:, 2]), 2),
+            ]
+        )
 
     if len(vec.shape) == 1 or vec.shape[1] == 1:
-        vec = vec.reshape(grid.shape, order='F')
+        vec = vec.reshape(grid.shape, order="F")
 
     x = (
-        vec[:, 0] * np.sin(grid[:, 2]) * np.cos(grid[:, 1]) +
-        vec[:, 2] * np.cos(grid[:, 2]) * np.cos(grid[:, 1]) -
-        vec[:, 1] * np.sin(grid[:, 1])
+        vec[:, 0] * np.sin(grid[:, 2]) * np.cos(grid[:, 1])
+        + vec[:, 2] * np.cos(grid[:, 2]) * np.cos(grid[:, 1])
+        - vec[:, 1] * np.sin(grid[:, 1])
     )
     y = (
-        vec[:, 0] * np.sin(grid[:, 2]) * np.sin(grid[:, 1]) +
-        vec[:, 2] * np.cos(grid[:, 2]) * np.sin(grid[:, 1]) -
-        vec[:, 1] * np.cos(grid[:, 1])
+        vec[:, 0] * np.sin(grid[:, 2]) * np.sin(grid[:, 1])
+        + vec[:, 2] * np.cos(grid[:, 2]) * np.sin(grid[:, 1])
+        - vec[:, 1] * np.cos(grid[:, 1])
     )
-    z = (
-        vec[:, 0] * np.cos(grid[:, 2]) -
-        vec[:, 2] * np.sin(grid[:, 2])
-    )
+    z = vec[:, 0] * np.cos(grid[:, 2]) - vec[:, 2] * np.sin(grid[:, 2])
 
     newvec = [x, y, z]
 
     return np.vstack(newvec).T
+
 
 def cartesian_2_spherical(grid, vec=None):
     """
@@ -176,38 +183,41 @@ def cartesian_2_spherical(grid, vec=None):
     grid = np.atleast_2d(grid)
 
     if vec is None:
-        return np.hstack([
-            mkvc(np.sqrt(grid[:, 0]**2 + grid[:, 1]**2 + grid[:, 2]**2), 2),
-            mkvc(np.arctan2(grid[:, 1], grid[:, 0]), 2),
-            mkvc(
-                np.arctan2(np.sqrt(grid[:, 0]**2 + grid[:, 1]**2), grid[:, 2]),
-                2
-            ),
-        ])
+        return np.hstack(
+            [
+                mkvc(np.sqrt(grid[:, 0] ** 2 + grid[:, 1] ** 2 + grid[:, 2] ** 2), 2),
+                mkvc(np.arctan2(grid[:, 1], grid[:, 0]), 2),
+                mkvc(
+                    np.arctan2(np.sqrt(grid[:, 0] ** 2 + grid[:, 1] ** 2), grid[:, 2]),
+                    2,
+                ),
+            ]
+        )
 
     if len(vec.shape) == 1 or vec.shape[1] == 1:
-        vec = vec.reshape(grid.shape, order='F')
+        vec = vec.reshape(grid.shape, order="F")
 
     theta = np.arctan2(grid[:, 1], grid[:, 0])
-    phi = np.arctan2(np.sqrt(grid[:, 0]**2 + grid[:, 1]**2), grid[:, 2])
+    phi = np.arctan2(np.sqrt(grid[:, 0] ** 2 + grid[:, 1] ** 2), grid[:, 2])
 
     r = (
-        vec[:, 0] * np.sin(phi) * np.cos(theta) +
-        vec[:, 1] * np.sin(phi) * np.sin(theta) +
-        vec[:, 2] * np.cos(phi)
+        vec[:, 0] * np.sin(phi) * np.cos(theta)
+        + vec[:, 1] * np.sin(phi) * np.sin(theta)
+        + vec[:, 2] * np.cos(phi)
     )
 
-    theta = - vec[:, 0] * np.sin(theta) + vec[:, 1] * np.cos(theta)
+    theta = -vec[:, 0] * np.sin(theta) + vec[:, 1] * np.cos(theta)
 
     phi = (
-        vec[:, 0] * np.cos(phi) * np.cos(theta) +
-        vec[:, 1] * np.cos(phi) * np.sin(theta) -
-        vec[:, 2] * np.sin(phi)
+        vec[:, 0] * np.cos(phi) * np.cos(theta)
+        + vec[:, 1] * np.cos(phi) * np.sin(theta)
+        - vec[:, 2] * np.sin(phi)
     )
 
     newvec = [r, theta, phi]
 
     return np.vstack(newvec).T
+
 
 def vector_magnitude(v):
     """
@@ -225,10 +235,10 @@ def vector_magnitude(v):
 
     v = np.atleast_2d(v)
 
-    return np.sqrt((v**2).sum(axis=1))
+    return np.sqrt((v ** 2).sum(axis=1))
 
 
-def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
+def vector_distance(xyz, origin=np.r_[0.0, 0.0, 0.0]):
     """
     Vector distance of a grid, xyz from an origin origin.
 
@@ -246,19 +256,14 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
               (npoints x 3)
     :rtype: numpy.ndarray
     """
-    assert(xyz.shape[1] == 3), (
-        "the xyz grid should be npoints by 3, the shape provided is {}".format(
-            xyz.shape
-        )
-    )
+    assert (
+        xyz.shape[1] == 3
+    ), "the xyz grid should be npoints by 3, the shape provided is {}".format(xyz.shape)
 
     if len(origin) != 3:
         raise Exception(
-            "the origin must be length 3, the length provided is {}".format(
-                len(origin)
-            )
+            "the origin must be length 3, the length provided is {}".format(len(origin))
         )
-
 
     dx = xyz[:, 0] - origin[0]
     dy = xyz[:, 1] - origin[1]
@@ -267,7 +272,7 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
     return np.c_[dx, dy, dz]
 
 
-def distance(xyz, origin=np.r_[0., 0., 0.]):
+def distance(xyz, origin=np.r_[0.0, 0.0, 0.0]):
     """
     Radial distance from an grid of points to the origin
 
@@ -305,11 +310,9 @@ def vector_dot(xyz, vector):
     """
     if len(vector) != 3:
         raise Exception(
-            "vector should be length 3, the provided length is {}".format(
-                len(vector)
-            )
+            "vector should be length 3, the provided length is {}".format(len(vector))
         )
-    return vector[0]*xyz[:, 0] + vector[1]*xyz[:, 1] + vector[2]*xyz[:, 2]
+    return vector[0] * xyz[:, 0] + vector[1] * xyz[:, 1] + vector[2] * xyz[:, 2]
 
 
 def repeat_scalar(scalar, dim=3):
@@ -330,13 +333,12 @@ def repeat_scalar(scalar, dim=3):
     :returns: (n x dim) array of the repeated vector
     :rtype: numpy.ndarray
     """
-    assert len(scalar) in scalar.shape, (
-        "input must be a scalar. The shape you provided is {}".format(
-            scalar.shape
-        )
-    )
+    assert (
+        len(scalar) in scalar.shape
+    ), "input must be a scalar. The shape you provided is {}".format(scalar.shape)
 
     return np.kron(np.ones((1, dim)), np.atleast_2d(scalar).T)
+
 
 def rotation_matrix_from_normals(v0, v1, tol=1e-20):
     """
@@ -363,8 +365,8 @@ def rotation_matrix_from_normals(v0, v1, tol=1e-20):
     assert len(v1) == 3, "Length of n1 should be 3"
 
     # ensure both are true normals
-    n0 = v0*1./np.linalg.norm(v0)
-    n1 = v1*1./np.linalg.norm(v1)
+    n0 = v0 * 1.0 / np.linalg.norm(v0)
+    n1 = v1 * 1.0 / np.linalg.norm(v1)
 
     n0dotn1 = n0.dot(n1)
 
@@ -374,23 +376,24 @@ def rotation_matrix_from_normals(v0, v1, tol=1e-20):
     if np.linalg.norm(rotAx) < tol:
         return np.eye(3, dtype=float)
 
-    rotAx *= 1./np.linalg.norm(rotAx)
+    rotAx *= 1.0 / np.linalg.norm(rotAx)
 
-    cosT = n0dotn1/(np.linalg.norm(n0)*np.linalg.norm(n1))
-    sinT = np.sqrt(1.-n0dotn1**2)
+    cosT = n0dotn1 / (np.linalg.norm(n0) * np.linalg.norm(n1))
+    sinT = np.sqrt(1.0 - n0dotn1 ** 2)
 
     ux = np.array(
         [
-            [0., -rotAx[2], rotAx[1]],
-            [rotAx[2], 0., -rotAx[0]],
-            [-rotAx[1], rotAx[0], 0.]
-        ], dtype=float
+            [0.0, -rotAx[2], rotAx[1]],
+            [rotAx[2], 0.0, -rotAx[0]],
+            [-rotAx[1], rotAx[0], 0.0],
+        ],
+        dtype=float,
     )
 
-    return np.eye(3, dtype=float) + sinT*ux + (1.-cosT)*(ux.dot(ux))
+    return np.eye(3, dtype=float) + sinT * ux + (1.0 - cosT) * (ux.dot(ux))
 
 
-def rotate_points_from_normals(xyz, n0, n1, x0=np.r_[0., 0., 0.]):
+def rotate_points_from_normals(xyz, n0, n1, x0=np.r_[0.0, 0.0, 0.0]):
     """
     rotates a grid so that the vector n0 is aligned with the vector n1
 
@@ -423,5 +426,5 @@ def rotate_points_from_normals(xyz, n0, n1, x0=np.r_[0., 0., 0.]):
 
     x0 = np.array(x0.flatten())  # ensure it is an array not a vector3
 
-    X0 = np.ones([xyz.shape[0], 1])*mkvc(x0)
+    X0 = np.ones([xyz.shape[0], 1]) * mkvc(x0)
     return np.dot(xyz - X0, R.T) + X0  # equivalent to (R*(XYZ - X0)).T + X0

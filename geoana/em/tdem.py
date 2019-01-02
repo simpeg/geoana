@@ -18,6 +18,7 @@ from .. import spatial
 #                                                                             #
 ###############################################################################
 
+
 def peak_time(z, sigma, mu=mu_0):
     """
     `Peak time <https://em.geosci.xyz/content/maxwell1_fundamentals/transient_planewaves_homogeneous/peaktime.html>`_:
@@ -35,7 +36,7 @@ def peak_time(z, sigma, mu=mu_0):
     :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \\times 10^{-7}` H/m
 
     """
-    return (mu * sigma * z**2)/6.
+    return (mu * sigma * z ** 2) / 6.0
 
 
 def diffusion_distance(time, sigma, mu=mu_0):
@@ -44,7 +45,7 @@ def diffusion_distance(time, sigma, mu=mu_0):
     Distance at which the signal amplitude is largest for a given time after
     shut off. Also referred to as the peak distance
     """
-    return np.sqrt(2*time/(mu*sigma))
+    return np.sqrt(2 * time / (mu * sigma))
 
 
 def theta(time, sigma, mu=mu_0):
@@ -52,7 +53,7 @@ def theta(time, sigma, mu=mu_0):
     Analog to wavenumber in the frequency domain. See Ward and Hohmann, 1988
     pages 174-175
     """
-    return np.sqrt(mu*sigma/(4.*time))
+    return np.sqrt(mu * sigma / (4.0 * time))
 
 
 ###############################################################################
@@ -61,12 +62,13 @@ def theta(time, sigma, mu=mu_0):
 #                                                                             #
 ###############################################################################
 
+
 class BaseTDEM(BaseEM):
 
     time = properties.Float(
         "time after shut-off at which we are evaluating the fields (s)",
         required=True,
-        default=1e-4
+        default=1e-4,
     )
 
     def peak_time(self, z):
@@ -111,26 +113,17 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         thetar = self.theta * r
         root_pi = np.sqrt(np.pi)
 
-        front = (
-            (self.current * self.length) / (4 * np.pi * self.sigma * r**3)
-        )
+        front = (self.current * self.length) / (4 * np.pi * self.sigma * r ** 3)
 
         symmetric_term = (
-            (
-                - (
-                    4/root_pi * thetar ** 3 + 6/root_pi * thetar
-                ) * np.exp(-thetar**2) +
-                3 * erf(thetar)
-            ) * (
-                spatial.repeat_scalar(self.dot_orientation(dxyz)) * dxyz / r**2
-            )
-        )
+            -(4 / root_pi * thetar ** 3 + 6 / root_pi * thetar) * np.exp(-thetar ** 2)
+            + 3 * erf(thetar)
+        ) * (spatial.repeat_scalar(self.dot_orientation(dxyz)) * dxyz / r ** 2)
 
         oriented_term = (
-            (
-                4./root_pi * thetar**3 + 2./root_pi * thetar
-            ) * np.exp(-thetar**2) -
-            erf(thetar)
+            (4.0 / root_pi * thetar ** 3 + 2.0 / root_pi * thetar)
+            * np.exp(-thetar ** 2)
+            - erf(thetar)
         ) * np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
 
         return front * (symmetric_term + oriented_term)
@@ -151,12 +144,13 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         thetar = self.theta * r
 
         front = (
-            self.current * self.length / (4 * np.pi * r**2) * (
-                2/root_pi * thetar * np.exp(-thetar**2) + erf(thetar)
-            )
+            self.current
+            * self.length
+            / (4 * np.pi * r ** 2)
+            * (2 / root_pi * thetar * np.exp(-thetar ** 2) + erf(thetar))
         )
 
-        return - front * self.cross_orientation(xyz) / r
+        return -front * self.cross_orientation(xyz) / r
 
     def magnetic_field_time_deriv(self, xyz):
         """
@@ -169,11 +163,14 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         r = spatial.repeat_scalar(r)
 
         front = (
-            self.current * self.length * self.theta**3 * r /
-            (2 * np.sqrt(np.pi)**3 * self.time)
+            self.current
+            * self.length
+            * self.theta ** 3
+            * r
+            / (2 * np.sqrt(np.pi) ** 3 * self.time)
         )
 
-        return - front * self.cross_orientation(xyz) / r
+        return -front * self.cross_orientation(xyz) / r
 
     def magnetic_flux_density(self, xyz):
         """
@@ -188,6 +185,3 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         """
 
         return self.mu * self.magnetic_field_time_deriv(xyz)
-
-
-

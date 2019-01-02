@@ -21,17 +21,17 @@ def mkvc(x, numDims=1):
     if isinstance(x, np.matrix):
         x = np.array(x)
 
-    if hasattr(x, 'tovec'):
+    if hasattr(x, "tovec"):
         x = x.tovec()
 
     assert isinstance(x, np.ndarray), "Vector must be a numpy array"
 
     if numDims == 1:
-        return x.flatten(order='F')
+        return x.flatten(order="F")
     elif numDims == 2:
-        return x.flatten(order='F')[:, np.newaxis]
+        return x.flatten(order="F")[:, np.newaxis]
     elif numDims == 3:
-        return x.flatten(order='F')[:, np.newaxis, np.newaxis]
+        return x.flatten(order="F")[:, np.newaxis, np.newaxis]
 
 
 def ndgrid(*args, **kwargs):
@@ -70,7 +70,7 @@ def ndgrid(*args, **kwargs):
     """
 
     # Read the keyword arguments, and only accept a vector=True/False
-    vector = kwargs.pop('vector', True)
+    vector = kwargs.pop("vector", True)
     assert isinstance(vector, bool), "'vector' keyword must be a bool"
     assert len(kwargs) == 0, "Only 'vector' keyword accepted"
 
@@ -95,9 +95,7 @@ def ndgrid(*args, **kwargs):
         else:
             return XY[1], XY[0]
     elif len(xin) == 3:
-        XYZ = np.broadcast_arrays(
-            mkvc(xin[2], 1), mkvc(xin[1], 2), mkvc(xin[0], 3)
-        )
+        XYZ = np.broadcast_arrays(mkvc(xin[2], 1), mkvc(xin[1], 2), mkvc(xin[0], 3))
         if vector:
             X3, X2, X1 = [mkvc(x) for x in XYZ]
             return np.c_[X1, X2, X3]

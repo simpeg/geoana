@@ -12,8 +12,13 @@ from .base import BaseElectricDipole, BaseMagneticDipole, BaseEM
 from .. import spatial
 
 __all__ = [
-    'omega', 'wavenumber', 'skin_depth', 'sigma_hat', 'BaseFDEM',
-    'ElectricDipoleWholeSpace', 'MagneticDipoleWholeSpace'
+    "omega",
+    "wavenumber",
+    "skin_depth",
+    "sigma_hat",
+    "BaseFDEM",
+    "ElectricDipoleWholeSpace",
+    "MagneticDipoleWholeSpace",
 ]
 
 
@@ -22,6 +27,7 @@ __all__ = [
 #                           Utility Functions                                 #
 #                                                                             #
 ###############################################################################
+
 
 def omega(frequency):
     """
@@ -35,12 +41,10 @@ def omega(frequency):
     :param frequency float: frequency (Hz)
 
     """
-    return 2*np.pi*frequency
+    return 2 * np.pi * frequency
 
 
-def wavenumber(
-    frequency, sigma, mu=mu_0, epsilon=epsilon_0, quasistatic=False
-):
+def wavenumber(frequency, sigma, mu=mu_0, epsilon=epsilon_0, quasistatic=False):
     """
     Wavenumber of an electromagnetic wave in a medium with constant physical
     properties
@@ -65,7 +69,7 @@ def wavenumber(
     w = omega(frequency)
     if quasistatic is True:
         return np.sqrt(-1j * w * mu * sigma)
-    return np.sqrt(w**2 * mu * epsilon - 1j * w * mu * sigma)
+    return np.sqrt(w ** 2 * mu * epsilon - 1j * w * mu * sigma)
 
 
 def skin_depth(frequency, sigma, mu=mu_0):
@@ -87,7 +91,7 @@ def skin_depth(frequency, sigma, mu=mu_0):
 
     """
     w = omega(frequency)
-    return np.sqrt(2./(w*sigma*mu))
+    return np.sqrt(2.0 / (w * sigma * mu))
 
 
 def sigma_hat(frequency, sigma, epsilon=epsilon_0, quasistatic=False):
@@ -111,7 +115,7 @@ def sigma_hat(frequency, sigma, epsilon=epsilon_0, quasistatic=False):
     """
     if quasistatic is True:
         return sigma
-    return sigma + 1j*omega(frequency)*epsilon
+    return sigma + 1j * omega(frequency) * epsilon
 
 
 ###############################################################################
@@ -120,19 +124,17 @@ def sigma_hat(frequency, sigma, epsilon=epsilon_0, quasistatic=False):
 #                                                                             #
 ###############################################################################
 
+
 class BaseFDEM(BaseEM):
     """
     Base frequency domain electromagnetic class
     """
-    frequency = properties.Float(
-        "Source frequency (Hz)",
-        default=1.,
-        min=0.0
-    )
+
+    frequency = properties.Float("Source frequency (Hz)", default=1.0, min=0.0)
 
     quasistatic = properties.Bool(
         "Use the quasi-static approximation and ignore displacement current?",
-        default=False
+        default=False,
     )
 
     @property
@@ -158,8 +160,10 @@ class BaseFDEM(BaseEM):
 
         """
         return sigma_hat(
-            self.frequency, self.sigma, epsilon=self.epsilon,
-            quasistatic=self.quasistatic
+            self.frequency,
+            self.sigma,
+            epsilon=self.epsilon,
+            quasistatic=self.quasistatic,
         )
 
     @property
@@ -174,8 +178,11 @@ class BaseFDEM(BaseEM):
 
         """
         return wavenumber(
-            self.frequency, self.sigma, mu=self.mu, epsilon=self.epsilon,
-            quasistatic=self.quasistatic
+            self.frequency,
+            self.sigma,
+            mu=self.mu,
+            epsilon=self.epsilon,
+            quasistatic=self.quasistatic,
         )
 
     @property
@@ -205,6 +212,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
         - \\mathbf{r}_s)\\mathbf{\\hat{u}}
 
     """
+
     def vector_potential(self, xyz):
         """
         Vector potential for an electric dipole in a wholespace
@@ -216,8 +224,9 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
         """
         r = self.distance(xyz)
         a = (
-            (self.current * self.length) / (4*np.pi*r) *
-            np.exp(-i*self.wavenumber*r)
+            (self.current * self.length)
+            / (4 * np.pi * r)
+            * np.exp(-i * self.wavenumber * r)
         )
         a = np.kron(np.ones(1, 3), np.atleast_2d(a).T)
         return self.dot_orientation(a)
@@ -239,16 +248,18 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
         ikr = 1j * kr
 
         front_term = (
-            (self.current * self.length) / (4 * np.pi * self.sigma * r**3) *
-            np.exp(-ikr)
+            (self.current * self.length)
+            / (4 * np.pi * self.sigma * r ** 3)
+            * np.exp(-ikr)
         )
         symmetric_term = (
-            spatial.repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
-            (-kr**2 + 3*ikr + 3) / r**2
+            spatial.repeat_scalar(self.dot_orientation(dxyz))
+            * dxyz
+            * (-kr ** 2 + 3 * ikr + 3)
+            / r ** 2
         )
-        oriented_term = (
-            (kr**2 - ikr - 1) *
-            np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
+        oriented_term = (kr ** 2 - ikr - 1) * np.kron(
+            self.orientation, np.ones((dxyz.shape[0], 1))
         )
         return front_term * (symmetric_term + oriented_term)
 
@@ -270,11 +281,10 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
         dxyz = self.vector_distance(xyz)
         r = spatial.repeat_scalar(self.distance(xyz))
         kr = self.wavenumber * r
-        ikr = 1j*kr
+        ikr = 1j * kr
 
         front_term = (
-            self.current * self.length / (4 * np.pi * r**2) * (ikr + 1) *
-            np.exp(-ikr)
+            self.current * self.length / (4 * np.pi * r ** 2) * (ikr + 1) * np.exp(-ikr)
         )
         return -front_term * self.cross_orientation(dxyz) / r
 
@@ -302,8 +312,9 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         """
         r = self.distance(xyz)
         f = (
-            (1j * self.omega * self.mu * self.moment) / (4 * np.pi * r) *
-            np.exp(-1j * self.wavenumber * r)
+            (1j * self.omega * self.mu * self.moment)
+            / (4 * np.pi * r)
+            * np.exp(-1j * self.wavenumber * r)
         )
         f = np.kron(np.ones(1, 3), np.atleast_2d(f).T)
         return self.dot_orientation(f)
@@ -314,12 +325,14 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         """
         dxyz = self.vector_distance(xyz)
         r = spatial.repeat_scalar(self.distance(xyz))
-        kr = self.wavenumber*r
+        kr = self.wavenumber * r
         ikr = 1j * kr
 
         front_term = (
-            (1j * self.omega * self.mu * self.moment) / (4. * np.pi * r**2) *
-            (ikr + 1) * np.exp(-ikr)
+            (1j * self.omega * self.mu * self.moment)
+            / (4.0 * np.pi * r ** 2)
+            * (ikr + 1)
+            * np.exp(-ikr)
         )
         return front_term * self.cross_orientation(dxyz) / r
 
@@ -335,17 +348,18 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         """
         dxyz = self.vector_distance(xyz)
         r = spatial.repeat_scalar(self.distance(xyz))
-        kr = self.wavenumber*r
-        ikr = 1j*kr
+        kr = self.wavenumber * r
+        ikr = 1j * kr
 
-        front_term = self.moment / (4. * np.pi * r**3) * np.exp(-ikr)
+        front_term = self.moment / (4.0 * np.pi * r ** 3) * np.exp(-ikr)
         symmetric_term = (
-            spatial.repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
-            (-kr**2 + 3*ikr + 3) / r**2
+            spatial.repeat_scalar(self.dot_orientation(dxyz))
+            * dxyz
+            * (-kr ** 2 + 3 * ikr + 3)
+            / r ** 2
         )
-        oriented_term = (
-            (kr**2 - ikr - 1) *
-            np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
+        oriented_term = (kr ** 2 - ikr - 1) * np.kron(
+            self.orientation, np.ones((dxyz.shape[0], 1))
         )
 
         return front_term * (symmetric_term + oriented_term)

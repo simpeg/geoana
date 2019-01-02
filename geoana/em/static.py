@@ -13,8 +13,9 @@ from .base import BaseEM, BaseDipole, BaseMagneticDipole, BaseElectricDipole
 from .. import spatial
 
 __all__ = [
-    "MagneticDipoleWholeSpace", "CircularLoopWholeSpace",
-    "MagneticPoleWholeSpace"
+    "MagneticDipoleWholeSpace",
+    "CircularLoopWholeSpace",
+    "MagneticPoleWholeSpace",
 ]
 
 
@@ -69,7 +70,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         m = self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
 
         m_cross_r = np.cross(m, dxyz)
-        a = (self.mu / (4 * np.pi)) * m_cross_r / (r**3)
+        a = (self.mu / (4 * np.pi)) * m_cross_r / (r ** 3)
 
         if coordinates.lower() == "cylindrical":
             a = spatial.cartesian_2_cylindrical(xyz, a)
@@ -111,9 +112,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         r = self.vector_distance(xyz)
         dxyz = spatial.repeat_scalar(self.distance(xyz))
-        m_vec = (
-            self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
-        )
+        m_vec = self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
 
         m_dot_r = (m_vec * r).sum(axis=1)
 
@@ -122,8 +121,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         # dxyz = np.atleast_2d(dxyz).T.repeat(3, axis=1)
 
         b = (self.mu / (4 * np.pi)) * (
-            (3.0 * r * m_dot_r / (dxyz ** 5)) -
-            m_vec / (dxyz ** 3)
+            (3.0 * r * m_dot_r / (dxyz ** 5)) - m_vec / (dxyz ** 3)
         )
 
         if coordinates.lower() == "cylindrical":
@@ -231,13 +229,9 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
     Static magnetic field from a circular loop in a wholespace.
     """
 
-    current = properties.Float(
-        "Electric current through the loop (A)", default=1.
-    )
+    current = properties.Float("Electric current through the loop (A)", default=1.0)
 
-    radius = properties.Float(
-        "radius of the loop (m)", default=1., min=0.
-    )
+    radius = properties.Float("radius of the loop (m)", default=1.0, min=0.0)
 
     def vector_potential(self, xyz, coordinates="cartesian"):
         """Vector potential due to the a steady-state current through a
@@ -295,18 +289,20 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
         xyz = spatial.rotate_points_from_normals(
-            xyz, np.array(self.orientation),  # work around for a properties issue
-            np.r_[0., 0., 1.], x0=np.array(self.location)
+            xyz,
+            np.array(self.orientation),  # work around for a properties issue
+            np.r_[0.0, 0.0, 1.0],
+            x0=np.array(self.location),
         )
 
         n_obs = xyz.shape[0]
         dxyz = self.vector_distance(xyz)
         r = self.distance(xyz)
 
-        rho = np.sqrt((dxyz[:, :2]**2).sum(1))
+        rho = np.sqrt((dxyz[:, :2] ** 2).sum(1))
 
-        k2 = (4 * self.radius * rho) / ((self.radius + rho)**2 +dxyz[:, 2]**2)
-        k2[k2 > 1.] = 1.  # if there are any rounding errors
+        k2 = (4 * self.radius * rho) / ((self.radius + rho) ** 2 + dxyz[:, 2] ** 2)
+        k2[k2 > 1.0] = 1.0  # if there are any rounding errors
 
         E = ellipe(k2)
         K = ellipk(k2)
@@ -316,9 +312,10 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         Atheta = np.zeros_like(r)
         Atheta[ind] = (
-            (self.mu * self.current) / (np.pi * np.sqrt(k2[ind])) *
-            np.sqrt(self.radius / rho[ind]) *
-            ((1. - k2[ind] / 2.)*K[ind] - E[ind])
+            (self.mu * self.current)
+            / (np.pi * np.sqrt(k2[ind]))
+            * np.sqrt(self.radius / rho[ind])
+            * ((1.0 - k2[ind] / 2.0) * K[ind] - E[ind])
         )
 
         # assume that the z-axis aligns with the polar axis
@@ -328,8 +325,10 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         # rotate the points to aligned with the normal to the source
         A = spatial.rotate_points_from_normals(
-            A, np.r_[0., 0., 1.], np.array(self.orientation),
-            x0=np.array(self.location)
+            A,
+            np.r_[0.0, 0.0, 1.0],
+            np.array(self.orientation),
+            x0=np.array(self.location),
         )
 
         if coordinates.lower() == "cylindrical":
