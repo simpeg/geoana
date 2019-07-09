@@ -7,11 +7,11 @@ import unittest
 import numpy as np
 
 from scipy.constants import mu_0, epsilon_0
-from geoana.em import fdem
+from geoana.electromagnetics import frequency_domain as fdem
 import discretize
 
-from SimPEG.EM import FDEM
-from SimPEG import Maps
+from SimPEG.EM import FDEM as simpeg_fdem
+from SimPEG import Maps as maps
 
 
 def E_from_EDWS(
@@ -275,9 +275,9 @@ class TestFDEMdipole_SimPEG(unittest.TestCase):
         mesh = discretize.CylMesh([hx, hy, hz], x0='00C')
 
         s_e = self.getFaceSrc(mesh)
-        prob = FDEM.Problem3D_h(mesh, sigmaMap=Maps.IdentityMap(mesh))
-        srcList = [FDEM.Src.RawVec_e([], f, s_e) for f in freqs]
-        survey = FDEM.Survey(srcList)
+        prob = simpeg_fdem.Problem3D_h(mesh, sigmaMap=maps.IdentityMap(mesh))
+        srcList = [simpeg_fdem.Src.RawVec_e([], f, s_e) for f in freqs]
+        survey = simpeg_fdem.Survey(srcList)
 
         prob.pair(survey)
 

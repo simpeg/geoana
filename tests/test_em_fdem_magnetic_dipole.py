@@ -6,11 +6,11 @@ from __future__ import unicode_literals
 import unittest
 import numpy as np
 import discretize
-from SimPEG import Maps
-from SimPEG.EM import FDEM
+from SimPEG import Maps as maps
+from SimPEG.EM import FDEM as simpeg_fdem
 
 from scipy.constants import mu_0, epsilon_0
-from geoana.em import fdem
+from geoana.electromagnetics import frequency_domain as fdem
 from discretize.utils import ndgrid, asArray_N_x_Dim
 
 
@@ -414,9 +414,9 @@ class TestFDEMdipole_SimPEG(unittest.TestCase):
 
         mesh = discretize.CylMesh([hx, hy, hz], x0='00C')
 
-        prob = FDEM.Problem3D_e(mesh, sigmaMap=Maps.IdentityMap(mesh))
-        srcList = [FDEM.Src.MagDipole([], loc=np.r_[0., 0., 0.], freq=f) for f in freqs]
-        survey = FDEM.Survey(srcList)
+        prob = simpeg_fdem.Problem3D_e(mesh, sigmaMap=maps.IdentityMap(mesh))
+        srcList = [simpeg_fdem.Src.MagDipole([], loc=np.r_[0., 0., 0.], freq=f) for f in freqs]
+        survey = simpeg_fdem.Survey(srcList)
 
         prob.pair(survey)
 

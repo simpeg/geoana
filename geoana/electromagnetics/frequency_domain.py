@@ -83,7 +83,8 @@ def skin_depth(frequency, sigma, mu=mu_0):
     :param float sigma: electrical conductivity (S/m)
 
     **Optional**
-    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \\times 10^{-7}` H/m
+
+    :param float mu: magnetic permeability (H/m). Default: :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
 
     """
     w = omega(frequency)
@@ -96,7 +97,7 @@ def sigma_hat(frequency, sigma, epsilon=epsilon_0, quasistatic=False):
 
     .. math::
 
-        \hat{\sigma} = \sigma + i \omega \\varepsilon
+        \\hat{\\sigma} = \\sigma + i \\omega \\varepsilon
 
     **Required**
 

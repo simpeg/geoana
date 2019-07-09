@@ -1,5 +1,5 @@
 from . import earthquake
-from . import em
+from . import electromagnetics
 from . import utils
 
 __version__ = '0.0.5'

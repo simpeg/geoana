@@ -9,7 +9,7 @@ from scipy.constants import mu_0, epsilon_0
 import discretize
 import properties
 
-from geoana.em import static, fdem
+from geoana.electromagnetics import static, fdem
 from geoana import spatial
 
 TOL = 0.1
