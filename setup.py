@@ -38,9 +38,7 @@ setup(
         'numpy>=1.7',
         'scipy>=0.13',
         'matplotlib',
-        'ipywidgets',
         'properties[math]',
-        'jupyter',
         'utm'
     ],
     author = 'SimPEG developers',
