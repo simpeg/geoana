@@ -709,7 +709,7 @@ def example():
 
     import requests
     dinar_file = requests.get(
-        'http://storage.googleapis.com/sci3pt-insar/dinar.r4'
+        'https://storage.googleapis.com/simpeg/geoana/dinar.r4'
     )
     data = np.fromstring(dinar_file.content, np.float32)
 
