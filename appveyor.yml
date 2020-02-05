@@ -4,25 +4,9 @@ build: off
 
 environment:
   matrix:
-    - PYTHON: 2.7
-      MINICONDA: C:\Miniconda
-      PYTHON_ARCH: 32
-
-    - PYTHON: 3.5
-      MINICONDA: C:\Miniconda3
-      PYTHON_ARCH: 32
-
     - PYTHON: 3.6
       MINICONDA: C:\Miniconda3
       PYTHON_ARCH: 32
-
-    - PYTHON: 2.7
-      MINICONDA: C:\Miniconda
-      PYTHON_ARCH: 64
-
-    - PYTHON: 3.5
-      MINICONDA: C:\Miniconda3
-      PYTHON_ARCH: 64
 
     - PYTHON: 3.6
       MINICONDA: C:\Miniconda3

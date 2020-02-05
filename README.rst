@@ -34,7 +34,7 @@ Getting started
 
 - If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
 - `Install <installing>`_ geoana
-- Browse the :ref:`gallery <examples>` for ideas and example usage
+- Browse the :ref:`gallery <sphx_glr_auto_examples>` for ideas and example usage
 - Read the `documentation <http://geoana.readthedocs.io/en/latest/>`_ for more information on the library and what it can do
 
 .. - See the `contributor guide` and `code of conduct` if you are interested in helping develop or maintain geoana
@@ -44,7 +44,7 @@ Getting started
 Connecting with the community
 -----------------------------
 
-geoana is a part of the larger `SimPEG <https://www.simpeg.xyz>`_ ecosystem. There are several avenues for connecting:
+geoana is a part of the larger `SimPEG <https://simpeg.xyz>`_ ecosystem. There are several avenues for connecting:
 
 - a mailing list for questions and general news items: https://groups.google.com/forum/#!forum/simpeg
 - a newsletter where meeting notices and re-caps are posted: http://eepurl.com/bVUoOL
@@ -75,4 +75,3 @@ License
 -------
 
 geoana is licensed under the `MIT license <https://github.com/simpeg/geoana/blob/master/LICENSE>`_ .
-
