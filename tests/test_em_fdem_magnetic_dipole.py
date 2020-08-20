@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 import unittest
 import numpy as np
 import discretize
-from SimPEG import Maps
-from SimPEG.EM import FDEM
+# from SimPEG import Maps
+# from SimPEG.EM import FDEM
 
 from scipy.constants import mu_0, epsilon_0
 from geoana.em import fdem
@@ -345,127 +345,126 @@ class TestFDEMdipole(unittest.TestCase):
         self.compare_fields(e, np.vstack([extest, eytest, eztest]).T)
 
 
-class TestFDEMdipole_SimPEG(unittest.TestCase):
-
-    tol = 1e-1 # error must be an order of magnitude smaller than results
-
-    def getProjections(self, mesh):
-        ignore_inside_radius = 10*mesh.hx.min()
-        ignore_outside_radius = 40*mesh.hx.min()
-
-        def ignoredGridLocs(grid):
-            return (
-                (
-                    grid[:, 0]**2 + grid[:, 1]**2 + grid[:, 2]**2  <
-                    ignore_inside_radius**2
-                ) | (
-                    grid[:, 0]**2 + grid[:, 1]**2 + grid[:, 2]**2 >
-                    ignore_outside_radius**2
-                )
-            )
-
-        # Faces
-        ignore_me_Fx = ignoredGridLocs(mesh.gridFx)
-        ignore_me_Fz = ignoredGridLocs(mesh.gridFz)
-        ignore_me = np.hstack([ignore_me_Fx, ignore_me_Fz])
-        keep_me = np.array(~ignore_me, dtype=float)
-        Pf = discretize.utils.sdiag(keep_me)
-
-        # Edges
-        ignore_me_Ey = ignoredGridLocs(mesh.gridEy)
-        keep_me_Ey = np.array(~ignore_me_Ey, dtype=float)
-        Pe = discretize.utils.sdiag(keep_me_Ey)
-
-        return Pf, Pe
-
-    def test_b_dipole_v_SimPEG(self):
-
-        def compare_w_SimPEG(name, geoana, simpeg):
-
-            norm_geoana = np.linalg.norm(geoana)
-            norm_simpeg = np.linalg.norm(simpeg)
-            diff = np.linalg.norm(geoana - simpeg)
-            passed = diff < self.tol * 0.5 * (norm_geoana + norm_simpeg)
-            print(
-                "  {} ... geoana: {:1.4e}, SimPEG: {:1.4e}, diff: {:1.4e}, "
-                "passed?: {}".format(
-                    name, norm_geoana, norm_simpeg, diff, passed
-                )
-            )
-
-            return passed
-
-        print("\n\nComparing Magnetic dipole with SimPEG")
-
-        sigma_back = 1.
-        freqs = np.r_[10., 100.]
-
-        csx, ncx, npadx = 1, 50, 50
-        ncy = 1
-        csz, ncz, npadz = 1, 50, 50
-
-        hx = discretize.utils.meshTensor(
-            [(csx, ncx), (csx, npadx, 1.3)]
-        )
-        hy = 2*np.pi / ncy * np.ones(ncy)
-        hz = discretize.utils.meshTensor(
-            [(csz, npadz, -1.3), (csz, ncz), (csz, npadz, 1.3)]
-        )
-
-        mesh = discretize.CylMesh([hx, hy, hz], x0='00C')
-
-        prob = FDEM.Problem3D_e(mesh, sigmaMap=Maps.IdentityMap(mesh))
-        srcList = [FDEM.Src.MagDipole([], loc=np.r_[0., 0., 0.], freq=f) for f in freqs]
-        survey = FDEM.Survey(srcList)
-
-        prob.pair(survey)
-
-        fields = prob.fields(sigma_back*np.ones(mesh.nC))
-
-        moment = 1.
-        mdws = fdem.MagneticDipoleWholeSpace(
-            sigma=sigma_back, moment=moment, orientation="z"
-        )
-
-        Pf, Pe = self.getProjections(mesh)
-
-        e_passed = []
-        b_passed = []
-        for i, f in enumerate(freqs):
-            mdws.frequency = f
-
-            b_xz = []
-            for b, component in zip([0, 2], ['x', 'z']):
-                grid = getattr(mesh, "gridF{}".format(component))
-                b_xz.append(
-                    mdws.magnetic_flux_density(grid)[:, b]
-                )
-            b_geoana = np.hstack(b_xz)
-            e_geoana = mdws.electric_field(mesh.gridEy)[:, 1]
-
-            P_e_geoana = Pe*e_geoana
-            P_e_simpeg = Pe*discretize.utils.mkvc(fields[srcList[i], 'e'])
-
-            P_b_geoana = Pf*b_geoana
-            P_b_simpeg = Pf*discretize.utils.mkvc(fields[srcList[i], 'b'])
-
-            print("Testing {} Hz".format(f))
-
-            for comp in ['real', 'imag']:
-                e_passed.append(compare_w_SimPEG(
-                    'E {}'.format(comp),
-                    getattr(P_e_geoana, comp),
-                    getattr(P_e_simpeg, comp)
-                ))
-                b_passed.append(compare_w_SimPEG(
-                    'B {}'.format(comp),
-                    getattr(P_b_geoana, comp),
-                    getattr(P_b_simpeg, comp)
-                ))
-        assert(all(e_passed))
-        assert(all(b_passed))
+# class TestFDEMdipole_SimPEG(unittest.TestCase):
+#
+#     tol = 1e-1 # error must be an order of magnitude smaller than results
+#
+#     def getProjections(self, mesh):
+#         ignore_inside_radius = 10*mesh.hx.min()
+#         ignore_outside_radius = 40*mesh.hx.min()
+#
+#         def ignoredGridLocs(grid):
+#             return (
+#                 (
+#                     grid[:, 0]**2 + grid[:, 1]**2 + grid[:, 2]**2  <
+#                     ignore_inside_radius**2
+#                 ) | (
+#                     grid[:, 0]**2 + grid[:, 1]**2 + grid[:, 2]**2 >
+#                     ignore_outside_radius**2
+#                 )
+#             )
+#
+#         # Faces
+#         ignore_me_Fx = ignoredGridLocs(mesh.gridFx)
+#         ignore_me_Fz = ignoredGridLocs(mesh.gridFz)
+#         ignore_me = np.hstack([ignore_me_Fx, ignore_me_Fz])
+#         keep_me = np.array(~ignore_me, dtype=float)
+#         Pf = discretize.utils.sdiag(keep_me)
+#
+#         # Edges
+#         ignore_me_Ey = ignoredGridLocs(mesh.gridEy)
+#         keep_me_Ey = np.array(~ignore_me_Ey, dtype=float)
+#         Pe = discretize.utils.sdiag(keep_me_Ey)
+#
+#         return Pf, Pe
+#
+#     def test_b_dipole_v_SimPEG(self):
+#
+#         def compare_w_SimPEG(name, geoana, simpeg):
+#
+#             norm_geoana = np.linalg.norm(geoana)
+#             norm_simpeg = np.linalg.norm(simpeg)
+#             diff = np.linalg.norm(geoana - simpeg)
+#             passed = diff < self.tol * 0.5 * (norm_geoana + norm_simpeg)
+#             print(
+#                 "  {} ... geoana: {:1.4e}, SimPEG: {:1.4e}, diff: {:1.4e}, "
+#                 "passed?: {}".format(
+#                     name, norm_geoana, norm_simpeg, diff, passed
+#                 )
+#             )
+#
+#             return passed
+#
+#         print("\n\nComparing Magnetic dipole with SimPEG")
+#
+#         sigma_back = 1.
+#         freqs = np.r_[10., 100.]
+#
+#         csx, ncx, npadx = 1, 50, 50
+#         ncy = 1
+#         csz, ncz, npadz = 1, 50, 50
+#
+#         hx = discretize.utils.meshTensor(
+#             [(csx, ncx), (csx, npadx, 1.3)]
+#         )
+#         hy = 2*np.pi / ncy * np.ones(ncy)
+#         hz = discretize.utils.meshTensor(
+#             [(csz, npadz, -1.3), (csz, ncz), (csz, npadz, 1.3)]
+#         )
+#
+#         mesh = discretize.CylMesh([hx, hy, hz], x0='00C')
+#
+#         prob = FDEM.Problem3D_e(mesh, sigmaMap=Maps.IdentityMap(mesh))
+#         srcList = [FDEM.Src.MagDipole([], loc=np.r_[0., 0., 0.], freq=f) for f in freqs]
+#         survey = FDEM.Survey(srcList)
+#
+#         prob.pair(survey)
+#
+#         fields = prob.fields(sigma_back*np.ones(mesh.nC))
+#
+#         moment = 1.
+#         mdws = fdem.MagneticDipoleWholeSpace(
+#             sigma=sigma_back, moment=moment, orientation="z"
+#         )
+#
+#         Pf, Pe = self.getProjections(mesh)
+#
+#         e_passed = []
+#         b_passed = []
+#         for i, f in enumerate(freqs):
+#             mdws.frequency = f
+#
+#             b_xz = []
+#             for b, component in zip([0, 2], ['x', 'z']):
+#                 grid = getattr(mesh, "gridF{}".format(component))
+#                 b_xz.append(
+#                     mdws.magnetic_flux_density(grid)[:, b]
+#                 )
+#             b_geoana = np.hstack(b_xz)
+#             e_geoana = mdws.electric_field(mesh.gridEy)[:, 1]
+#
+#             P_e_geoana = Pe*e_geoana
+#             P_e_simpeg = Pe*discretize.utils.mkvc(fields[srcList[i], 'e'])
+#
+#             P_b_geoana = Pf*b_geoana
+#             P_b_simpeg = Pf*discretize.utils.mkvc(fields[srcList[i], 'b'])
+#
+#             print("Testing {} Hz".format(f))
+#
+#             for comp in ['real', 'imag']:
+#                 e_passed.append(compare_w_SimPEG(
+#                     'E {}'.format(comp),
+#                     getattr(P_e_geoana, comp),
+#                     getattr(P_e_simpeg, comp)
+#                 ))
+#                 b_passed.append(compare_w_SimPEG(
+#                     'B {}'.format(comp),
+#                     getattr(P_b_geoana, comp),
+#                     getattr(P_b_simpeg, comp)
+#                 ))
+#         assert(all(e_passed))
+#         assert(all(b_passed))
 
 
 if __name__ == '__main__':
     unittest.main()
-
