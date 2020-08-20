@@ -137,7 +137,7 @@ sphinx_gallery_conf = {
     # path to your examples scripts
     'examples_dirs' : '../examples',
     'gallery_dirs'  : 'auto_examples',
-    'backreferences_dir' : False
+    'backreferences_dir' : None
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
