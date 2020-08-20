@@ -2,3 +2,4 @@ sphinx_rtd_theme
 sphinx-gallery
 sphinx
 nose
+nose-cov

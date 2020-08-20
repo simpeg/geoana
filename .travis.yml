@@ -31,7 +31,7 @@ install:
 
 # Run test
 script:
-  - nosetests $TEST_DIR --with-cov --cov geoana -v -s;
+  - nosetests $TEST_DIR --with-coverage --cover-package=geoana -v -s;
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
