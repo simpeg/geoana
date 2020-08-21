@@ -23,16 +23,15 @@ before_install:
   - conda update --yes conda
 
 install:
-  - conda install --quiet --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib pillow cython ipython;
-  - pip install --upgrade pip;
-  - pip install -r requirements.txt
+  - conda install --quiet --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib ipython;
+  - conda install --quiet --yes -c conda-forge discretize properties vectormath utm
   - pip install -r requirements_dev.txt
-  - cd geoana; python setup.py install; cd ..
+  - python setup.py install
   - export MPLBACKEND="agg"
 
 # Run test
 script:
-  - nosetests $TEST_DIR --with-coverage --cover-package=geoana
+  - nosetests $TEST_DIR --with-coverage --cover-package=geoana -v -s;
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

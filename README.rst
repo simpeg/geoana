@@ -30,8 +30,8 @@ Getting started
 ---------------
 
 - If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
-- `Install <installing>`_ geoana
-- Browse the `gallery <http://geoana.readthedocs.io/en/latest/auto_examples>` for ideas and example usage
+- :ref:`installing` geoana
+- Browse the `gallery <http://geoana.readthedocs.io/en/latest/auto_examples/>`_ for ideas and example usage
 - Read the `documentation <http://geoana.readthedocs.io/en/latest/>`_ for more information on the library and what it can do
 
 .. - See the `contributor guide` and `code of conduct` if you are interested in helping develop or maintain geoana
@@ -43,8 +43,8 @@ Connecting with the community
 
 geoana is a part of the larger `SimPEG <https://simpeg.xyz>`_ ecosystem. There are several avenues for connecting:
 
-- a mailing list for questions and general news items: https://groups.google.com/forum/#!forum/simpeg
-- a newsletter where meeting notices and re-caps are posted: http://eepurl.com/bVUoOL
+- a discourse website for questions: https://simpeg.discourse.group/
+- a youtube channel where meeting recordings are posted: `GeoSci.xyz <https://www.youtube.com/channel/UCBrC4M8_S4GXhyHht7FyQqw>`_
 - a slack group for real-time chat with users and developers of SimPEG: http://slack.simpeg.xyz/
 
 .. _installing:
@@ -52,7 +52,13 @@ geoana is a part of the larger `SimPEG <https://simpeg.xyz>`_ ecosystem. There a
 Installing
 ----------
 
-geoana is available on `pypi <https://pypi.org/project/geoana/>`_ and can be installed by opening a command window and running:
+**geoana** is on conda-forge
+
+.. code:: shell
+
+    conda install -c conda-forge geoana
+
+**geoana** is available on `pypi <https://pypi.org/project/geoana/>`_ and can be installed by opening a command window and running:
 
 .. code::
 
