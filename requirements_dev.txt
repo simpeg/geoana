@@ -3,3 +3,4 @@ sphinx-gallery
 sphinx
 nose
 nose-cov
+discretize

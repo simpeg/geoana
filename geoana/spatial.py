@@ -96,6 +96,7 @@ def cartesian_2_cylindrical(grid, vec=None):
         mkvc(vec[:, 2], 2)
     ])
 
+
 def spherical_2_cartesian(grid, vec=None):
     """
     Take a grid or vector (if provided)
@@ -149,6 +150,7 @@ def spherical_2_cartesian(grid, vec=None):
     newvec = [x, y, z]
 
     return np.vstack(newvec).T
+
 
 def cartesian_2_spherical(grid, vec=None):
     """
@@ -208,6 +210,7 @@ def cartesian_2_spherical(grid, vec=None):
     newvec = [r, theta, phi]
 
     return np.vstack(newvec).T
+
 
 def vector_magnitude(v):
     """
