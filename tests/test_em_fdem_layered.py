@@ -6,7 +6,7 @@ from geoana.kernels.tranverse_electric_reflections import (
     rTE_forward, rTE_gradient, _rTE_forward, _rTE_gradient
 )
 
-from discretize.tests import check_derivative
+from discretize.Tests import check_derivative
 
 class TestLayeredHalfspace(unittest.TestCase):
 
