@@ -4,3 +4,4 @@ sphinx
 nose
 nose-cov
 discretize
+numpydoc
