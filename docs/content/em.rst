@@ -26,6 +26,7 @@ Frequency Domain
 
 .. automodule:: geoana.em.fdem
     :members:
+    :imported-members:
     :undoc-members:
     :show-inheritance:
 
