@@ -54,6 +54,6 @@ after_success:
 
   # deploy to pypi
   - mv credentials/.pypirc ~/.pypirc ;
-  - export BUILD_GEOANA_EXT=0
+  - export BUILD_GEOANA_EXT=1 # include cython and cpp files in source distribution
   - python setup.py sdist ;
   - twine upload dist/* --skip-existing ;

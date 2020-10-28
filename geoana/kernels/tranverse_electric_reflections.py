@@ -128,6 +128,7 @@ def _rTE_gradient(frequencies, lamb, sigma, chi, thicknesses):
 
     return rTE_dsigma, rTE_dh, rTE_dchi
 
+
 try:
     from geoana.kernels._extensions.rTE import rTE_forward, rTE_gradient
 except ImportError:
