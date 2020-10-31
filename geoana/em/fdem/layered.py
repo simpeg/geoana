@@ -130,7 +130,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
             C0y += src_x*(dxyz[:, 0]*dxyz[:, 1]/offsets**2)[:, None]*lambd**2
             C1y -= src_x*(2*dxyz[:, 0]*dxyz[:, 1]/offsets**3)[:, None]*lambd
             # C0z += 0.0
-            C1z += (src_x*dxyz[:, 0]/offsets)[:, None]*lambd**2
+            C1z -= (src_x*dxyz[:, 0]/offsets)[:, None]*lambd**2
 
         if src_y != 0.0:
             C0x += src_y*(dxyz[:, 0]*dxyz[:, 1]/offsets**2)[:, None]*lambd**2
@@ -138,13 +138,13 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
             C0y += src_y*(dxyz[:, 1]**2/offsets**2)[:, None]*lambd**2
             C1y += src_y*(1/offsets - 2*dxyz[:, 1]**2/offsets**3)[:, None]*lambd
             # C0z += 0.0
-            C1z += (src_y*dxyz[:, 1]/offsets)[:, None]*lambd**2
+            C1z -= (src_y*dxyz[:, 1]/offsets)[:, None]*lambd**2
 
         if src_z != 0.0:
             # C0x += 0.0
-            C1x -= (src_z*dxyz[:, 0]/offsets)[:, None]*lambd**2
+            C1x += (src_z*dxyz[:, 0]/offsets)[:, None]*lambd**2
             # C0y += 0.0
-            C1y -= (src_z*dxyz[:, 1]/offsets)[:, None]*lambd**2
+            C1y += (src_z*dxyz[:, 1]/offsets)[:, None]*lambd**2
             C0z += src_z*lambd**2
             # C1z += 0.0
 
