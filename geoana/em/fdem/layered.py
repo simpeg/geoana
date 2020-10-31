@@ -46,6 +46,9 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
     def _get_valid_properties(self):
         thick = self.thickness
         n_layer = len(thick)+1
+        sigma = self.sigma
+        epsilon = self.epsilon
+        mu = self.mu
         if n_layer != 1:
             sigma = self.sigma
             if len(sigma) == 1:
