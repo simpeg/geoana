@@ -10,7 +10,7 @@ void funcs::rTE(
     double * frequencies,
     double * lambdas,
     complex_t * sigmas,
-    double * chis,
+    double * mus,
     double * h,
     size_t n_frequency,
     size_t n_filter,
@@ -21,22 +21,22 @@ void funcs::rTE(
 
     complex_t k2, u, Yh, Y, tanhuh, Y0;
     complex_t *sigi;
-    double *chii;
+    double *mui;
     double omega, mu_c, l2;
 
     for(size_t i_filt=0, i=0; i_filt<n_filter; ++i_filt){
         l2 = lambdas[i_filt] * lambdas[i_filt];
         for(size_t i_freq=0; i_freq<n_frequency; ++i_freq, ++i){
             sigi = sigmas + i_freq*n_layers;
-            chii = chis + i_freq*n_layers;
+            mui = mus + i_freq*n_layers;
             omega = 2.0*M_PI*frequencies[i_freq];
-            mu_c = mu_0*(1.0 - chii[n_layers-1]);
+            mu_c = mui[n_layers-1];
 
             k2 = -j * omega * mu_c * sigi[n_layers-1];
             u = std::sqrt(l2 - k2);
             Yh = u/(j * omega * mu_c);
             for(size_t k=n_layers-2; k<n_layers-1; --k){
-                mu_c = mu_0*(1.0 - chii[k]);
+                mu_c = mui[k];
                 k2 = -j * omega * mu_c * sigi[k];
                 u = std::sqrt(l2 - k2);
                 Y = u / (j * omega * mu_c);
@@ -51,12 +51,12 @@ void funcs::rTE(
 
 void funcs::rTEgrad(
     complex_t * TE_dsigma,
-    complex_t * TE_dchi,
+    complex_t * TE_dmu,
     complex_t * TE_dh,
     double * frequencies,
     double * lambdas,
     complex_t * sigmas,
-    double * chis,
+    double * mus,
     double * h,
     size_t n_frequency,
     size_t n_filter,
@@ -72,12 +72,11 @@ void funcs::rTEgrad(
     // only really "need" to store the recursive variable,
     // the others could be recalculated (with extra computing cost)
     // but want to avoid calculating sqrt and tanh wherever possible
-    std::vector<double> mu_cs(n_layers);
     vec_complex_t k2s(n_layers), us(n_layers), Yhs(n_layers);
     vec_complex_t Ys(n_layers-1), tanhs(n_layers-1);
 
-    double *chii;
-    complex_t *sigi, *TE_dhi, *TE_dchii, *TE_dsigmai;
+    double *mui;
+    complex_t *sigi, *TE_dhi, *TE_dmui, *TE_dsigmai;
     complex_t gyh0, bot, gy, gtanh, Y0;
     complex_t gu, gmu, gk2;
 
@@ -85,24 +84,22 @@ void funcs::rTEgrad(
         l2 = lambdas[i_filt] * lambdas[i_filt];
         for(size_t i_freq=0; i_freq<n_frequency; ++i_freq, ++i){
             sigi = sigmas + i_freq*n_layers;
-            chii = chis + i_freq*n_layers;
+            mui = mus + i_freq*n_layers;
             if (TE_dh != NULL){
                 TE_dhi = TE_dh + i*(n_layers-1);
             }
-            TE_dchii = TE_dchi + i*n_layers;
+            TE_dmui = TE_dmu + i*n_layers;
             TE_dsigmai = TE_dsigma + i*n_layers;
             omega = 2.0*M_PI*frequencies[i_freq];
 
-            mu_cs[n_layers-1] = mu_0*(1.0 - chii[n_layers-1]);
-            k2s[n_layers-1] = -j * omega * mu_cs[n_layers-1] * sigi[n_layers-1];
+            k2s[n_layers-1] = -j * omega * mui[n_layers-1] * sigi[n_layers-1];
             us[n_layers-1] = std::sqrt(l2 - k2s[n_layers-1]);
-            Yhs[n_layers-1] = us[n_layers-1]/(j * omega * mu_cs[n_layers-1]);
+            Yhs[n_layers-1] = us[n_layers-1]/(j * omega * mui[n_layers-1]);
 
             for(size_t k=n_layers-2; k<n_layers-1; --k){
-                mu_cs[k] = mu_0*(1.0 - chii[k]);
-                k2s[k] = -j * omega * mu_cs[k] * sigi[k];
+                k2s[k] = -j * omega * mui[k] * sigi[k];
                 us[k] = std::sqrt(l2 - k2s[k]);
-                Ys[k] = us[k] / (j * omega * mu_cs[k]);
+                Ys[k] = us[k] / (j * omega * mui[k]);
                 tanhs[k] = std::tanh(us[k] * h[k]);
                 Yhs[k] = Ys[k] * (Yhs[k+1] + Ys[k]*tanhs[k])/(Ys[k] + Yhs[k+1]*tanhs[k]);
             }
@@ -128,22 +125,22 @@ void funcs::rTEgrad(
                 TE_dhi[k] = gtanh * us[k] * (1.0 - tanhs[k]*tanhs[k]);
                 gu = gtanh * h[k] * (1.0 - tanhs[k]*tanhs[k]);
 
-                gu += gy/(j * omega * mu_cs[k]);
+                gu += gy/(j * omega * mui[k]);
 
-                gmu = gy * (-Ys[k]/mu_cs[k]);
+                gmu = gy * (-Ys[k]/mui[k]);
                 gk2 = gu * -0.5 / us[k];
 
                 gmu -= gk2 * (j * omega * sigi[k]);
-                TE_dsigmai[k] = gk2 * (-j * omega * mu_cs[k]);
-                TE_dchii[k] = gmu * -mu_0;
+                TE_dsigmai[k] = gk2 * (-j * omega * mui[k]);
+                TE_dmui[k] = gmu;
             }
-            gu = gyh0 / (j * omega * mu_cs[n_layers-1]);
-            gmu = gyh0 *(-Yhs[n_layers-1]/mu_cs[n_layers-1]);
+            gu = gyh0 / (j * omega * mui[n_layers-1]);
+            gmu = gyh0 *(-Yhs[n_layers-1]/mui[n_layers-1]);
             gk2 = gu * -0.5 / us[n_layers-1];
             gmu += gk2 * -j * omega * sigi[n_layers-1];
 
-            TE_dsigmai[n_layers-1] = gk2 * -j * omega * mu_cs[n_layers-1];
-            TE_dchii[n_layers-1] = gmu * -mu_0;
+            TE_dsigmai[n_layers-1] = gk2 * -j * omega * mui[n_layers-1];
+            TE_dchii[n_layers-1] = gmu;
         }
     }
 }

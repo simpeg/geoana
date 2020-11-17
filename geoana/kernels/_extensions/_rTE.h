@@ -14,7 +14,7 @@ namespace funcs {
         double *frequencies,
         double *lambdas,
         complex_t *sigmas,
-        double *chis,
+        double *mus,
         double *depths,
         size_t n_frequency,
         size_t n_filter,
@@ -23,12 +23,12 @@ namespace funcs {
 
     void rTEgrad(
         complex_t * TE_dsigma,
-        complex_t * TE_dchi,
+        complex_t * TE_dmu,
         complex_t * TE_dh,
         double * frequencies,
         double * lambdas,
         complex_t * sigmas,
-        double * chis,
+        double * mus,
         double * h,
         size_t n_frequency,
         size_t n_filter,

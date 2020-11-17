@@ -52,13 +52,13 @@ class TestrTEGradient(unittest.TestCase):
         thicknesses = np.ones(n_layer-1)
         lamb = np.logspace(0, 3, n_lambda)
         sigma = np.random.rand(n_layer, n_frequency)
-        chi = np.random.rand(n_layer, n_frequency)
+        mu = np.random.rand(n_layer, n_frequency)
 
         def rte_sigma(x):
             sigma = x.reshape(n_layer, n_frequency)
-            rTE = rTE_forward(frequencies, lamb, sigma, chi, thicknesses)
+            rTE = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
 
-            J_sigma, _, _ = rTE_gradient(frequencies, lamb, sigma, chi, thicknesses)
+            J_sigma, _, _ = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
 
             def J(y):
                 y = y.reshape(n_layer, n_frequency)
@@ -72,8 +72,8 @@ class TestrTEGradient(unittest.TestCase):
 
         def rte_h(x):
             thicknesses = x
-            rTE = rTE_forward(frequencies, lamb, sigma, chi, thicknesses)
-            _, J_h, _ = rTE_gradient(frequencies, lamb, sigma, chi, thicknesses)
+            rTE = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
+            _, J_h, _ = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
 
             def J(y):
                 #(J_h.T@y).T
@@ -83,21 +83,21 @@ class TestrTEGradient(unittest.TestCase):
 
             return rTE, J
 
-        def rte_chi(x):
-            chi = x.reshape(n_layer, n_frequency)
-            rTE = rTE_forward(frequencies, lamb, sigma, chi, thicknesses)
+        def rte_mu(x):
+            mu = x.reshape(n_layer, n_frequency)
+            rTE = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
 
-            _, _, J_chi = rTE_gradient(frequencies, lamb, sigma, chi, thicknesses)
+            _, _, J_mu = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
 
             def J(y):
                 y = y.reshape(n_layer, n_frequency)
                 # do summation over layers, broadcast over frequencies only
-                return np.einsum('i...k,i...', J_chi, y)
+                return np.einsum('i...k,i...', J_mu, y)
             return rTE, J
 
         self.assertTrue(check_derivative(rte_sigma, sigma.reshape(-1), num=4, plotIt=False))
         self.assertTrue(check_derivative(rte_h, thicknesses, num=4, plotIt=False))
-        self.assertTrue(check_derivative(rte_chi, chi.reshape(-1), num=4, plotIt=False))
+        self.assertTrue(check_derivative(rte_mu, mu.reshape(-1), num=4, plotIt=False))
 
 class TestCompiledVsNumpy(unittest.TestCase):
 
@@ -110,16 +110,16 @@ class TestCompiledVsNumpy(unittest.TestCase):
         thicknesses = np.ones(n_layer-1)
         lamb = np.logspace(0, 3, n_lambda)
         sigma = np.random.rand(n_layer, n_frequency)
-        chi = np.random.rand(n_layer, n_frequency)
+        mu = np.random.rand(n_layer, n_frequency)
 
-        rTE1 = rTE_forward(frequencies, lamb, sigma, chi, thicknesses)
-        rTE2 = _rTE_forward(frequencies, lamb, sigma, chi, thicknesses)
+        rTE1 = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
+        rTE2 = _rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
 
         assert_allclose(rTE1, rTE1)
 
-        rTE1_dsigma, rTE1_dh, rTE1_dchi = rTE_gradient(frequencies, lamb, sigma, chi, thicknesses)
-        rTE2_dsigma, rTE2_dh, rTE2_dchi = _rTE_gradient(frequencies, lamb, sigma, chi, thicknesses)
+        rTE1_dsigma, rTE1_dh, rTE1_dmu = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
+        rTE2_dsigma, rTE2_dh, rTE2_dmu = _rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
 
         assert_allclose(rTE1_dsigma, rTE2_dsigma)
         assert_allclose(rTE1_dh, rTE2_dh)
-        assert_allclose(rTE1_dchi, rTE2_dchi)
+        assert_allclose(rTE1_dmu, rTE2_dmu)

@@ -115,14 +115,14 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
             self.frequency[:, None], sigma, epsilon,
             quasistatic=self.quasistatic
         ).T  # this gets sigh with proper shape (n_layer x n_freq) and fortran ordering.
-        mu = np.tile(mu, (n_frequency, 1)).T  # shape(n_layer x n_freq) (rTE_forward accepts frequency dependant chi)
-        chi = 1 - mu/mu_0
+        mu = np.tile(mu, (n_frequency, 1)).T  # shape(n_layer x n_freq)
 
-        rTE = rTE_forward(f, lambd.reshape(-1), sigh, chi, thick)
+        rTE = rTE_forward(f, lambd.reshape(-1), sigh, mu, thick)
         rTE = rTE.reshape((n_frequency, *lambd.shape))
 
         # secondary is height of receiver plus height of source
-        rTE *= np.exp(-lambd*(xyz[:, -1] + h)[:, None]) # works for variable xyz because each point has it's own lambdas
+        rTE *= np.exp(-lambd*(xyz[:, -1] + h)[:, None])
+        # works for variable xyz because each point has it's own lambdas
 
         src_x, src_y, src_z = self.orientation
         C0x = C0y = C0z = 0.0

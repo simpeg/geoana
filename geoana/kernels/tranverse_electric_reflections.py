@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.constants import mu_0
 
-def _rTE_forward(frequencies, lamb, sigma, chi, thicknesses):
+def _rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     """Compute reflection coefficients for Transverse Electric (TE) mode.
 
     The first layer is considered to be the top most layer. The last
@@ -15,8 +15,8 @@ def _rTE_forward(frequencies, lamb, sigma, chi, thicknesses):
         Spatial wavenumber (1/m), shape = (n_filter, ).
     sigma: complex, numpy.ndarray
         Conductivity (S/m), shape = (n_layer, n_frequency).
-    chi: complex, numpy.ndarray
-        Susceptibility (SI), shape = (n_layer, n_frequency).
+    mu: complex, numpy.ndarray
+        Magnetic permeability (H/m), shape = (n_layer, n_frequency).
     thicknesses: float, numpy.ndarray
         Thickness (m) of each layer, shape = (n_layer-1,).
 
@@ -29,8 +29,6 @@ def _rTE_forward(frequencies, lamb, sigma, chi, thicknesses):
 
     omega = 2*np.pi*frequencies
     l2 = lamb**2
-
-    mu = mu_0*(1.0 - chi)
 
     k2 = -1j * omega * mu * sigma
     u = np.sqrt(l2 - k2[:, :, None])
@@ -45,7 +43,7 @@ def _rTE_forward(frequencies, lamb, sigma, chi, thicknesses):
 
     return TE
 
-def _rTE_gradient(frequencies, lamb, sigma, chi, thicknesses):
+def _rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     """Compute reflection coefficients for Transverse Electric (TE) mode.
 
     The first layer is considered to be the top most layer. The last
@@ -59,8 +57,8 @@ def _rTE_gradient(frequencies, lamb, sigma, chi, thicknesses):
         Spatial wavenumber (1/m), shape = (n_filter, ).
     sigma: complex, numpy.ndarray
         Conductivity (S/m), shape = (n_layer, n_frequency).
-    chi: complex, numpy.ndarray
-        Susceptibility (SI), shape = (n_layer, n_frequency).
+    mu: complex, numpy.ndarray
+        Magnetic permeability (H/m), shape = (n_layer, n_frequency).
     thicknesses: float, numpy.ndarray
         Thickness (m) of each layer, shape = (n_layer-1,).
 
@@ -83,8 +81,6 @@ def _rTE_gradient(frequencies, lamb, sigma, chi, thicknesses):
     omega = 2*np.pi*frequencies
     l2 = lamb**2
 
-    mu = mu_0*(1.0 - chi)
-
     k2 = -1j * omega * mu * sigma
     u = np.sqrt(l2 - k2[:, :, None])
     Y = u/(1j*omega*mu)[:, :, None]
@@ -98,7 +94,7 @@ def _rTE_gradient(frequencies, lamb, sigma, chi, thicknesses):
 
     rTE_dsigma = np.empty((n_layer, n_frequency, n_filter), dtype=np.complex128)
     rTE_dh = np.empty((n_layer-1, n_frequency, n_filter), dtype=np.complex128)
-    rTE_dchi = np.empty((n_layer, n_frequency, n_filter), dtype=np.complex128)
+    rTE_dmu = np.empty((n_layer, n_frequency, n_filter), dtype=np.complex128)
 
     gyh0 = -2.0*Y0/((Y0 + Yh[0])*(Y0 + Yh[0]))
     for k in range(n_layer-1):
@@ -117,16 +113,16 @@ def _rTE_gradient(frequencies, lamb, sigma, chi, thicknesses):
 
         gmu -= gk2 * (1j * omega * sigma[k])[:, None]
         rTE_dsigma[k] = gk2 * (-1j * omega * mu[k])[:, None]
-        rTE_dchi[k] = gmu * -mu_0
+        rTE_dmu[k] = gmu
     gu = gyh0 / (1j * omega * mu[-1])[:, None]
-    gmu = gyh0 *(-Yh[-1]/mu[-1][:, None])
+    gmu = gyh0 * (-Yh[-1]/mu[-1][:, None])
     gk2 = gu * -0.5 / u[-1]
     gmu += gk2 * (-1j * omega * sigma[-1])[:, None]
 
     rTE_dsigma[-1] = gk2 * (-1j * omega * mu[-1])[:, None]
-    rTE_dchi[-1] = gmu * -mu_0
+    rTE_dmu[-1] = gmu
 
-    return rTE_dsigma, rTE_dh, rTE_dchi
+    return rTE_dsigma, rTE_dh, rTE_dmu
 
 
 try:
