@@ -70,8 +70,8 @@ def _rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     rTE_dh: complex numpy.ndarray
         Reflection coefficients gradient w.r.t. thicknesses
         shape = (n_layer-1, n_frequency, n_filter)
-    rTE_dchi: complex numpy.ndarray
-        Reflection coefficients gradient w.r.t. susceptibility
+    rTE_dmu: complex numpy.ndarray
+        Reflection coefficients gradient w.r.t. magnetic permeability
         shape = (n_layer, n_frequency, n_filter)
     """
     n_frequency = len(frequencies)

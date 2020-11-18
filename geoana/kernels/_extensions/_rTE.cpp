@@ -140,7 +140,7 @@ void funcs::rTEgrad(
             gmu += gk2 * -j * omega * sigi[n_layers-1];
 
             TE_dsigmai[n_layers-1] = gk2 * -j * omega * mui[n_layers-1];
-            TE_dchii[n_layers-1] = gmu;
+            TE_dmui[n_layers-1] = gmu;
         }
     }
 }

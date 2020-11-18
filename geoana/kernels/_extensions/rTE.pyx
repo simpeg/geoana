@@ -60,8 +60,7 @@ def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     Returns
     -------
     rTE: complex numpy.ndarray
-        Reflection coefficients;
-        shape = (n_frequency x n_lamba)
+        Reflection coefficients, shape = (n_frequency, n_filter)
     """
     # Sigma and mu must be fortran contiguous
     sigma = np.require(sigma, dtype=np.complex128, requirements="F")
@@ -139,13 +138,13 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     -------
     rTE_dsigma: complex numpy.ndarray
         Reflection coefficients gradient w.r.t. conductivity
-        shape = (n_layer, n_frequency, n_lamba)
+        shape = (n_layer, n_frequency, n_filter)
     rTE_dh: complex numpy.ndarray
         Reflection coefficients gradient w.r.t. thicknesses
-        shape = (n_layer-1, n_frequency, n_lamba)
+        shape = (n_layer-1, n_frequency, n_filter)
     rTE_dmu: complex numpy.ndarray
-        Reflection coefficients gradient w.r.t. susceptibility
-        shape = (n_layer, n_frequency, n_lamba)
+        Reflection coefficients gradient w.r.t. magnetic permeability
+        shape = (n_layer, n_frequency, n_filter)
     """
     # Require that they are all the same ordering as sigma
     sigma = np.require(sigma, dtype=np.complex128, requirements="F")
