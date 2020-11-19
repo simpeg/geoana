@@ -11,13 +11,13 @@ from geoana.kernels.tranverse_electric_reflections import rTE_forward
 class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
 
     thickness = properties.Array(
-        "Layer thicknesses (m)",
+        "Layer thicknesses (m) starting from the top-most layer. The bottom layer is assumed to be infinite.",
         shape=('*', ),
         dtype=float
     )
 
     sigma = properties.Array(
-        "Electrical conductivity (S/m)",
+        "Electrical conductivity (S/m), defined starting from the top most layer",
         shape=('*', ),
         dtype=complex,
         coerce=True
@@ -30,14 +30,14 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
     )
 
     mu = properties.Array(
-        "Magnetic permeability (H/m)",
+        "Magnetic permeability (H/m), defined starting from the top most layer",
         shape=('*', ),
         dtype=complex,
         default=np.array([mu_0], dtype=np.complex128)
     )
 
     epsilon = properties.Array(
-        "Permitivity value (F/m)",
+        "Permitivity value (F/m), defined starting from the top most layer",
         shape=('*', ),
         dtype=float,
         default=np.array([epsilon_0], dtype=np.float64)

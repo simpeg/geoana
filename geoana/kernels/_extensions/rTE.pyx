@@ -42,7 +42,8 @@ def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     """Compute reflection coefficients for Transverse Electric (TE) mode.
 
     The first layer is considered to be the top most layer. The last
-    layer is considered to have infinite thickness.
+    layer is considered to have infinite thickness. All physical properties 
+    are defined starting from the top most layer. 
 
     Parameters
     ----------
@@ -119,7 +120,8 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     """Compute reflection coefficients for Transverse Electric (TE) mode.
 
     The first layer is considered to be the top most layer. The last
-    layer is considered to have infinite thickness.
+    layer is considered to have infinite thickness. All physical properties 
+    are defined starting from the top most layer. 
 
     Parameters
     ----------
