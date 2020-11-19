@@ -96,6 +96,7 @@ def cartesian_2_cylindrical(grid, vec=None):
         mkvc(vec[:, 2], 2)
     ])
 
+
 def spherical_2_cartesian(grid, vec=None):
     """
     Take a grid or vector (if provided)
@@ -149,6 +150,7 @@ def spherical_2_cartesian(grid, vec=None):
     newvec = [x, y, z]
 
     return np.vstack(newvec).T
+
 
 def cartesian_2_spherical(grid, vec=None):
     """
@@ -208,6 +210,7 @@ def cartesian_2_spherical(grid, vec=None):
     newvec = [r, theta, phi]
 
     return np.vstack(newvec).T
+
 
 def vector_magnitude(v):
     """
@@ -418,10 +421,4 @@ def rotate_points_from_normals(xyz, n0, n1, x0=np.r_[0., 0., 0.]):
     if xyz.shape[1] != 3:
         raise AssertionError("Grid xyz should be 3 wide")
 
-    if len(x0) != 3:
-        raise AssertionError("x0 should have length 3")
-
-    x0 = np.array(x0.flatten())  # ensure it is an array not a vector3
-
-    X0 = np.ones([xyz.shape[0], 1])*mkvc(x0)
-    return np.dot(xyz - X0, R.T) + X0  # equivalent to (R*(XYZ - X0)).T + X0
+    return (xyz - x0)@R.T + x0

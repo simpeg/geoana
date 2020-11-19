@@ -38,6 +38,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'matplotlib.sphinxext.plot_directive',
     'sphinx_gallery.gen_gallery',
+    'numpydoc',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
