@@ -121,7 +121,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         rTE = rTE.reshape((n_frequency, *lambd.shape))
 
         # secondary is height of receiver plus height of source
-        rTE *= np.exp(-lambd*(dxyz[:, -1] + 2*h)[:, None])
+        rTE *= np.exp(-lambd*(xyz[:, -1] + h)[:, None])
         # works for variable xyz because each point has it's own lambdas
 
         src_x, src_y, src_z = self.orientation
