@@ -92,7 +92,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
 
         if np.any(xyz[:, 2] < 0.0):
             raise ValueError("Cannot compute fields below the surface")
-        h = self.location[0]
+        h = self.location[2]
         dxyz = xyz - self.location
         offsets = np.linalg.norm(dxyz[:, :-1], axis=-1)
 
