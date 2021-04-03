@@ -46,7 +46,7 @@ jobs:
       shell: bash
       run: |
         source activate geoana-test
-        pytest --cov=./ --cov-report=xml --geoana
+        pytest --cov=./ --cov-report=xml --cov=geoana
 
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v1
