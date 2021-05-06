@@ -13,7 +13,7 @@ def _rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     frequencies : float, numpy.ndarray
         Frequency (Hz); shape = (n_frequency, ).
     lamb : float, numpy.ndarray
-        Spatial wavenumber (1/m), shape = (n_filter, ).
+        Spatial wavenumber (1/m), shape = (n_frequency, n_filter).
     sigma: complex, numpy.ndarray
         Conductivity (S/m), shape = (n_layer, n_frequency).
     mu: complex, numpy.ndarray
@@ -56,7 +56,7 @@ def _rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     frequencies : float, numpy.ndarray
         Frequency (Hz); shape = (n_frequency, ).
     lamb : float, numpy.ndarray
-        Spatial wavenumber (1/m), shape = (n_filter, ).
+        Spatial wavenumber (1/m), shape = (n_frequency, n_filter).
     sigma: complex, numpy.ndarray
         Conductivity (S/m), shape = (n_layer, n_frequency).
     mu: complex, numpy.ndarray
@@ -77,7 +77,8 @@ def _rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
         shape = (n_layer, n_frequency, n_filter)
     """
     n_frequency = len(frequencies)
-    n_filter = len(lamb)
+    n_filter = lamb.shape[1]
+    # n_filter = len(lamb)
     n_layer = len(thicknesses)+1
 
     omega = 2*np.pi*frequencies
