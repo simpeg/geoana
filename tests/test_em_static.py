@@ -113,6 +113,16 @@ class TestEM_Static(unittest.TestCase):
                     b_clws = mesh.edgeCurl * a_clws
                     b_mdws = mesh.edgeCurl * a_mdws
 
+                    b_clws_true = np.hstack([
+                        self.clws.magnetic_flux_density(mesh.gridFx)[:, 0],
+                        self.clws.magnetic_flux_density(mesh.gridFy)[:, 1],
+                        self.clws.magnetic_flux_density(mesh.gridFz)[:, 2]
+                    ])
+                    b_mdws_true = np.hstack([
+                        self.mdws.magnetic_flux_density(mesh.gridFx)[:, 0],
+                        self.mdws.magnetic_flux_density(mesh.gridFy)[:, 1],
+                        self.mdws.magnetic_flux_density(mesh.gridFz)[:, 2]
+                    ])
                     b_fdem = np.hstack([
                         fdem_dipole.magnetic_flux_density(mesh.gridFx)[:, 0],
                         fdem_dipole.magnetic_flux_density(mesh.gridFy)[:, 1],
@@ -134,11 +144,19 @@ class TestEM_Static(unittest.TestCase):
                         (np.absolute(mesh.gridFz[:, 2]) > h*2 + location[2])
                     ]))
 
-                    loop_passed = (
+                    loop_passed_1 = (
                         np.linalg.norm(b_fdem[inds] - b_clws[inds]) <
                         0.5 * TOL * (
                             np.linalg.norm(b_fdem[inds]) +
                             np.linalg.norm(b_clws[inds])
+                        )
+                    )
+
+                    loop_passed_2 = (
+                        np.linalg.norm(b_fdem[inds] - b_clws_true[inds]) <
+                        0.5 * TOL * (
+                            np.linalg.norm(b_fdem[inds]) +
+                            np.linalg.norm(b_clws_true[inds])
                         )
                     )
 
@@ -160,11 +178,13 @@ class TestEM_Static(unittest.TestCase):
                             np.linalg.norm(b_fdem[inds]),
                             np.linalg.norm(b_clws[inds]),
                             np.linalg.norm(b_mdws[inds]),
-                            loop_passed,
+                            loop_passed_1,
+                            loop_passed_2,
                             dipole_passed
                         )
                     )
-                    self.assertTrue(loop_passed)
+                    self.assertTrue(loop_passed_1)
+                    self.assertTrue(loop_passed_2)
                     self.assertTrue(dipole_passed)
 
     def test_magnetic_field_3Dcyl(self):
