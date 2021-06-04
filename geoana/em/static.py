@@ -151,7 +151,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         :return: The magnetic field at each observation location
 
         """
-        return self.magnetic_flux(xyz, coordinates=coordinates) / self.mu
+        return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
 
 
 class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
@@ -222,7 +222,7 @@ class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
         :return: The magnetic field at each observation location
 
         """
-        return self.magnetic_flux(xyz, coordinates=coordinates) / self.mu
+        return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
 
 
 class CircularLoopWholeSpace(BaseDipole, BaseEM):
@@ -336,3 +336,97 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
             A = spatial.cartesian_2_cylindrical(xyz, A)
 
         return A
+
+    def magnetic_flux_density(self, xyz, coordinates="cartesian"):
+        """Calculates the magnetic flux density (B) due to a circular current loop
+
+        Parameters
+        ----------
+        xyz : np.ndarray
+            locations to evaluate the function at shape (3, ) or (*, 3)
+        coordinates : {cartesian, cylindrical}
+            which coordinate system the input and output points are defined in.
+
+        Returns
+        -------
+        B_field : np.ndarray
+            Magnetic Flux Density vector at the given points, shape (*, 3)
+        """
+        xyz = np.atleast_2d(xyz)
+        # convert coordinates if not cartesian
+        if coordinates.lower() == "cylindrical":
+            xyz = spatial.cylindrical_2_cartesian(xyz)
+        elif coordinates.lower() != "cartesian":
+            raise TypeError(
+                f"coordinates must be 'cartesian' or 'cylindrical', the coordinate "
+                f"system you provided, {coordinates}, is not yet supported."
+            )
+
+        xyz = spatial.rotate_points_from_normals(
+            xyz, np.array(self.orientation),  # work around for a properties issue
+            np.r_[0., 0., 1.], x0=np.array(self.location)
+        )
+        # rotate all the points such that the orientation is directly vertical
+
+        dxyz = self.vector_distance(xyz)
+        r = self.distance(xyz)
+
+        rho = np.linalg.norm(dxyz[:, :2], axis=-1)
+
+        B = np.zeros((len(rho), 3))
+
+        # for On axis points
+        inds_axial = rho==0.0
+
+        B[inds_axial, -1] = self.mu * self.current * self.radius**2 / (
+            2 * (self.radius**2 + dxyz[inds_axial, 2]**2)**(1.5)
+        )
+
+        # Off axis
+        alpha = rho[~inds_axial]/self.radius
+        beta = dxyz[~inds_axial, 2]/self.radius
+        gamma = dxyz[~inds_axial, 2]/rho[~inds_axial]
+
+        Q = ((1+alpha)**2 + beta**2)
+        k2 =  4 * alpha/Q
+
+        # axial part:
+        B[~inds_axial, -1] = self.mu * self.current / (2 * self.radius * np.pi * np.sqrt(Q)) * (
+            ellipe(k2)*(1 - alpha**2 - beta**2)/(Q  - 4 * alpha) + ellipk(k2)
+        )
+
+        # radial part:
+        B_rad = self.mu * self.current * gamma / (2 * self.radius * np.pi * np.sqrt(Q)) * (
+            ellipe(k2)*(1 + alpha**2 + beta**2)/(Q  - 4 * alpha) - ellipk(k2)
+        )
+
+        # convert radial component to x and y..
+        B[~inds_axial, 0] = B_rad * (dxyz[~inds_axial, 0]/rho[~inds_axial])
+        B[~inds_axial, 1] = B_rad * (dxyz[~inds_axial, 1]/rho[~inds_axial])
+
+        # rotate the vectors to be aligned with the normal to the source
+        B = spatial.rotate_points_from_normals(
+           B, np.r_[0., 0., 1.], np.array(self.orientation),
+        )
+
+        if coordinates.lower() == "cylindrical":
+            B = spatial.cartesian_2_cylindrical(xyz, B)
+
+        return B
+
+    def magnetic_field(self, xyz, coordinates="cartesian"):
+        """Calculates the magnetic field (H) due to a circular current loop
+
+        Parameters
+        ----------
+        xyz : np.ndarray
+            locations to evaluate the function at shape (3, ) or (*, 3)
+        coordinates : {cartesian, cylindrical}
+            which coordinate system the input and output points are defined in.
+
+        Returns
+        -------
+        H_field : np.ndarray
+            Magnetic Field vector at the given points, shape (*, 3)
+        """
+        return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu

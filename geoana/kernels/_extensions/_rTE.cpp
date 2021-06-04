@@ -1,9 +1,8 @@
-#include "_rTE.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include "_rTE.h"
 #include <complex>
 #include <vector>
-#include <iostream>
 
 void funcs::rTE(
     complex_t * TE,

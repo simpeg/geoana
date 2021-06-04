@@ -30,7 +30,7 @@ Getting started
 ---------------
 
 - If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
-- `Install <https://geoana.readthedocs.io/en/latest/#installing>`_ `geoana`
+- `installing`_ `geoana`
 - Browse the `gallery <http://geoana.readthedocs.io/en/latest/auto_examples/>`_ for ideas and example usage
 - Read the `documentation <http://geoana.readthedocs.io/en/latest/>`_ for more information on the library and what it can do
 
