@@ -1,6 +1,6 @@
+from geoana.em.base import BaseEM
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
-from geoana.em.base import BaseEM
 import properties
 
 ###############################################################################
@@ -111,6 +111,12 @@ class BaseFDEM(BaseEM):
     """
     Base frequency domain electromagnetic class
     """
+    sigma = properties.Complex(
+        "Electrical conductivity (S/m)",
+        default=1.0,
+        cast=True
+    )
+
     frequency = properties.Float(
         "Source frequency (Hz)",
         default=1.,
@@ -121,6 +127,11 @@ class BaseFDEM(BaseEM):
         "Use the quasi-static approximation and ignore displacement current?",
         default=False
     )
+
+    @properties.validator('sigma')
+    def _validate_real_part(self, change):
+        if not np.real(change['value']) > 0:
+            raise properties.ValidationError("The real part of sigma must be positive")
 
     @property
     def omega(self):
@@ -144,10 +155,13 @@ class BaseFDEM(BaseEM):
             \\hat{\\sigma} = \\sigma + i \\omega \\varepsilon
 
         """
-        return sigma_hat(
+        sigma = sigma_hat(
             self.frequency, self.sigma, epsilon=self.epsilon,
             quasistatic=self.quasistatic
         )
+        if np.all(np.imag(sigma) == 0):
+            sigma = np.real(sigma)
+        return sigma
 
     @property
     def wavenumber(self):

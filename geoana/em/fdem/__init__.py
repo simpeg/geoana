@@ -9,3 +9,7 @@ from geoana.em.fdem.wholespace import (
 from geoana.em.fdem.halfspace import MagneticDipoleHalfSpace
 
 from geoana.em.fdem.layered import MagneticDipoleLayeredHalfSpace
+
+from geoana.em.fdem.simple_functions import (
+    vertical_magnetic_field_horizontal_loop, vertical_magnetic_flux_horizontal_loop
+)
