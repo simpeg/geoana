@@ -37,14 +37,13 @@ def vertical_magnetic_flux_time_deriv_horizontal_loop(
 def magnetic_field_vertical_magnetic_dipole(
     t, xy, sigma=1.0, mu=mu_0, moment=1.0
 ):
-    r = np.linalg.norm(xy, axis=-1)
+    r = np.linalg.norm(xy[:, :2], axis=-1)
     x = xy[:, 0]
     y = xy[:, 1]
     thr = theta(t, sigma, mu=mu)[:, None] * r
 
-    h_z = -1.0 / r**3 * (
-        9 / (2 * thr**2) * erf(thr)
-        + erfc(thr)
+    h_z = 1.0 / r**3 * (
+        (9 / (2 * thr**2) - 1) * erf(thr)
         - (9 / thr + 4 * thr) / np.sqrt(np.pi) * np.exp(-thr**2)
     )
     # positive here because z+ up
@@ -61,26 +60,24 @@ def magnetic_field_vertical_magnetic_dipole(
 def magnetic_field_time_deriv_magnetic_dipole(
     t, xy, sigma=1.0, mu=mu_0, moment=1.0
 ):
-    r = np.linalg.norm(xy, axis=-1)
+    r = np.linalg.norm(xy[:, :2], axis=-1)
     x = xy[:, 0]
     y = xy[:, 1]
-    thr = theta(t, sigma, mu)[:, None] * r
+    tr = theta(t, sigma, mu)[:, None] * r
 
-    dhz_dt = - 1.0 / (mu * sigma * r**5) * (
-        9 * erf(thr)
-        - 2 * thr / np.sqrt(np.pi) * (
-            9 + 6 * thr**2 + 4*thr**4
-        ) * np.exp(-thr**2)
+    dhz_dt = 1 / (r**3 * t[:, None]) * (
+        9 / (2 * tr**2) * erf(tr)
+        - (4 * tr**3 + 6 * tr + 9/tr)/np.sqrt(np.pi)*np.exp(-tr**2)
     )
 
-    dhr_dt = -thr**2 / (r**3 * t[:, None]) * np.exp(-thr**2 / 2) * (
-        (1 + thr**2) * iv(0, thr**2 / 2) -
-        (2 + thr**2 + 4 / thr**2) * iv(1, thr**2 / 2)
+    dhr_dt = - 2 * tr**2 / (r**3 * t[:, None]) * np.exp(-tr**2 / 2) * (
+        (1 + tr**2) * iv(0, tr**2 / 2) -
+        (2 + tr**2 + 4 / tr**2) * iv(1, tr**2 / 2)
     )
     angle = np.arctan2(y, x)
     dhx_dt = np.cos(angle) * dhr_dt
     dhy_dt = np.sin(angle) * dhr_dt
-    return moment / (2 * np.pi) * np.stack((dhx_dt, dhy_dt, dhz_dt), axis=-1)
+    return moment / (4 * np.pi) * np.stack((dhx_dt, dhy_dt, dhz_dt), axis=-1)
 
 
 def magnetic_flux_vertical_magnetic_dipole(
