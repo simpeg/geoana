@@ -23,8 +23,13 @@ class VerticalMagneticDipoleHalfSpace(BaseMagneticDipole, BaseTDEM):
 
         Parameters
         ----------
-        xy : numpy.ndarray
-            receiver locations of shape (n_locations, 2)
+        xy : (n_locations, 2) numpy.ndarray
+            receiver locations
+
+        Returns
+        -------
+        numpy.ndarray
+            magnetic field for each xy location
         """
         dxy = xy - self.location
         h = magnetic_field_vertical_magnetic_dipole(
@@ -33,9 +38,39 @@ class VerticalMagneticDipoleHalfSpace(BaseMagneticDipole, BaseTDEM):
         return h[0]  # because time was a 1 element array
 
     def magnetic_flux_density(self, xy):
+        """Magnetic flux due to a step off magnetic dipole over a half space
+
+        The analytic expression is only valid for a source and receiver at the
+        surface of the earth.
+
+        Parameters
+        ----------
+        xy : (n_locations, 2) numpy.ndarray
+            receiver locations
+
+        Returns
+        -------
+        numpy.ndarray
+            magnetic flux for each xy location
+        """
         return self.mu * self.magnetic_field(xy)
 
     def magnetic_field_time_derivative(self, xy):
+        """Magnetic flux time derivative due to a step off magnetic dipole over a half space
+
+        The analytic expression is only valid for a source and receiver at the
+        surface of the earth.
+
+        Parameters
+        ----------
+        xy : (n_locations, 2) numpy.ndarray
+            receiver locations
+
+        Returns
+        -------
+        numpy.ndarray
+            Magnetic flux time derivative for each xy location
+        """
 
         dxy = xy - self.location
         dh_dt = magnetic_field_time_deriv_magnetic_dipole(
@@ -44,4 +79,19 @@ class VerticalMagneticDipoleHalfSpace(BaseMagneticDipole, BaseTDEM):
         return dh_dt[0]
 
     def magnetic_flux_time_derivative(self, xy):
+        """Magnetic flux due to a step off magnetic dipole over a half space
+
+        The analytic expression is only valid for a source and receiver at the
+        surface of the earth.
+
+        Parameters
+        ----------
+        xy : (n_locations, 2) numpy.ndarray
+            receiver locations
+
+        Returns
+        -------
+        numpy.ndarray
+            magnetic flux for each xy location
+        """
         return self.mu * self.magnetic_field_time_derivative(xy)

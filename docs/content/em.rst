@@ -36,5 +36,6 @@ Time Domain
 
 .. automodule:: geoana.em.tdem
     :members:
+    :imported-members:
     :undoc-members:
     :show-inheritance:
