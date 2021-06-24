@@ -34,8 +34,8 @@ jobs:
         conda info
         conda list
         conda config --show
-        conda install --quiet --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib ipython;
-        conda install --quiet --yes discretize properties vectormath utm pytest pytest-cov
+        conda install --quiet --yes pip numpy scipy matplotlib ipython;
+        conda install --quiet --yes discretize properties vectormath geoana utm pytest pytest-cov
         pip install -r requirements_dev.txt
     - name: Install Our Package
       run: |
@@ -44,7 +44,6 @@ jobs:
         conda list
     - name: Run Tests
       run: |
-        source activate geoana-test
         pytest --cov=./ --cov-report=xml --cov=geoana -s -v -W ignore::DeprecationWarning
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v1
