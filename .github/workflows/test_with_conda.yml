@@ -51,7 +51,7 @@ jobs:
       with:
         fail_ci_if_error: true
   distribute:
-    name: Publish Source (${{ matrix.python-version }}, ${{ matrix.os }})
+    name: Publish Source to Pypi
     needs: build_and_test
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
