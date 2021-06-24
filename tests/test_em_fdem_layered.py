@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 from numpy.testing import assert_allclose
+from scipy.constants import mu_0
 from geoana.em.fdem import MagneticDipoleHalfSpace, MagneticDipoleLayeredHalfSpace
 from geoana.kernels.tranverse_electric_reflections import (
     rTE_forward, rTE_gradient, _rTE_forward, _rTE_gradient
@@ -51,8 +52,10 @@ class TestrTEGradient(unittest.TestCase):
         frequencies = np.logspace(1, 4, 5)
         thicknesses = np.ones(n_layer-1)
         lamb = np.logspace(0, 3, n_lambda)
-        sigma = np.random.rand(n_layer, n_frequency)
-        mu = np.random.rand(n_layer, n_frequency)
+        np.random.seed(0)
+        sigma = 1E-1*(1 + 0.1 * np.random.rand(n_layer, n_frequency))
+        mu = mu_0 * (1 + 0.1 * np.random.rand(n_layer, n_frequency))
+        dmu = mu_0 * 0.1 * np.random.rand(n_layer, n_frequency)
 
         def rte_sigma(x):
             sigma = x.reshape(n_layer, n_frequency)
@@ -97,29 +100,45 @@ class TestrTEGradient(unittest.TestCase):
 
         self.assertTrue(check_derivative(rte_sigma, sigma.reshape(-1), num=4, plotIt=False))
         self.assertTrue(check_derivative(rte_h, thicknesses, num=4, plotIt=False))
-        self.assertTrue(check_derivative(rte_mu, mu.reshape(-1), num=4, plotIt=False))
+        self.assertTrue(check_derivative(rte_mu, mu.reshape(-1), dx=dmu.reshape(-1), num=4, plotIt=False))
+
 
 class TestCompiledVsNumpy(unittest.TestCase):
-
-    def test_rTE(self):
+    def setUp(self):
         """Test to make sure numpy and compiled give same results"""
         n_layer = 11
         n_frequency = 5
         n_lambda = 8
-        frequencies = np.logspace(1, 4, 5)
+        frequencies = np.logspace(-4, -2, n_frequency)
         thicknesses = np.ones(n_layer-1)
-        lamb = np.logspace(0, 3, n_lambda)
-        sigma = np.random.rand(n_layer, n_frequency)
-        mu = np.random.rand(n_layer, n_frequency)
+        lamb = np.logspace(-5, -3, n_lambda)
+        np.random.seed(123)
+        sigma = 1E-1 * (1 + 1.0/(n_layer*n_frequency) * np.arange(n_layer*n_frequency).reshape(n_layer, n_frequency))
+        mu = mu_0 * (1 + 1.0/(n_layer*n_frequency) * np.arange(n_layer*n_frequency).reshape(n_layer, n_frequency))
 
-        rTE1 = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
-        rTE2 = _rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
+        self.rTE1 = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
+        self.rTE2 = _rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
 
-        assert_allclose(rTE1, rTE1)
+        self.rTE1_dsigma, self.rTE1_dh, self.rTE1_dmu = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
+        self.rTE2_dsigma, self.rTE2_dh, self.rTE2_dmu = _rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
 
-        rTE1_dsigma, rTE1_dh, rTE1_dmu = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
-        rTE2_dsigma, rTE2_dh, rTE2_dmu = _rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
+    def test_rTE(self):
+        assert_allclose(self.rTE1, self.rTE2, atol=1E-15)
 
-        assert_allclose(rTE1_dsigma, rTE2_dsigma)
-        assert_allclose(rTE1_dh, rTE2_dh)
-        assert_allclose(rTE1_dmu, rTE2_dmu)
+    def test_rTE_dsigma(self):
+        non_zeros2 = np.abs(self.rTE2_dsigma) != 0.0
+        # only compare non-zeros in derivatives rTE2
+        # (the compiled routine (rTE1) is slightly more accurate)
+        assert_allclose(self.rTE1_dsigma[non_zeros2], self.rTE2_dsigma[non_zeros2])
+
+    def test_rTE_dh(self):
+        non_zeros2 = np.abs(self.rTE2_dh) != 0.0
+        # only compare non-zeros in derivatives rTE2
+        # (the compiled routine (rTE1) is slightly more accurate)
+        assert_allclose(self.rTE1_dh[non_zeros2], self.rTE2_dh[non_zeros2])
+
+    def test_rTE_dmu(self):
+        non_zeros2 = np.abs(self.rTE2_dmu) != 0.0
+        # only compare non-zeros in derivatives rTE2
+        # (the compiled routine (rTE1) is slightly more accurate)
+        assert_allclose(self.rTE1_dmu[non_zeros2], self.rTE2_dmu[non_zeros2])

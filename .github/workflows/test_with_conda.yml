@@ -1,0 +1,72 @@
+name: TestingWithConda
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+jobs:
+  build_and_test:
+    name: Testing (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: [3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Conda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        activate-environment: geoana-test
+        channels: conda-forge
+        python-version: ${{ matrix.python-version }}
+    - name: Install Env
+      run: |
+        conda info
+        conda list
+        conda config --show
+        conda install --quiet --yes pip numpy scipy matplotlib ipython;
+        conda install --quiet --yes discretize properties vectormath geoana utm pytest pytest-cov
+        pip install -r requirements_dev.txt
+    - name: Install Our Package
+      run: |
+        export BUILD_GEOANA_EXT=1
+        pip install -e .
+        conda list
+    - name: Run Tests
+      run: |
+        pytest --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning
+    - name: "Upload coverage to Codecov"
+      if: ${{ matrix.python-version }} == '3.8'
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
+  distribute:
+    name: Publish Source to Pypi
+    needs: build_and_test
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Prepare source distribution
+      run: |
+        export Build_GEOANA_EXT=1
+        python setup.py sdist
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
