@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 from numpy.testing import assert_allclose
+from scipy.constants import mu_0
 from geoana.em.fdem import MagneticDipoleHalfSpace, MagneticDipoleLayeredHalfSpace
 from geoana.kernels.tranverse_electric_reflections import (
     rTE_forward, rTE_gradient, _rTE_forward, _rTE_gradient
@@ -51,8 +52,10 @@ class TestrTEGradient(unittest.TestCase):
         frequencies = np.logspace(1, 4, 5)
         thicknesses = np.ones(n_layer-1)
         lamb = np.logspace(0, 3, n_lambda)
-        sigma = np.random.rand(n_layer, n_frequency)
-        mu = np.random.rand(n_layer, n_frequency)
+        np.random.seed(0)
+        sigma = 1E-1*(1 + 0.1 * np.random.rand(n_layer, n_frequency))
+        mu = mu_0 * (1 + 0.1 * np.random.rand(n_layer, n_frequency))
+        dmu = mu_0 * 0.1 * np.random.rand(n_layer, n_frequency)
 
         def rte_sigma(x):
             sigma = x.reshape(n_layer, n_frequency)
@@ -97,7 +100,7 @@ class TestrTEGradient(unittest.TestCase):
 
         self.assertTrue(check_derivative(rte_sigma, sigma.reshape(-1), num=4, plotIt=False))
         self.assertTrue(check_derivative(rte_h, thicknesses, num=4, plotIt=False))
-        self.assertTrue(check_derivative(rte_mu, mu.reshape(-1), num=4, plotIt=False))
+        self.assertTrue(check_derivative(rte_mu, mu.reshape(-1), dx=dmu.reshape(-1), num=4, plotIt=False))
 
 class TestCompiledVsNumpy(unittest.TestCase):
 
