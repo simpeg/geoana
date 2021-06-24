@@ -44,7 +44,7 @@ jobs:
         conda list
     - name: Run Tests
       run: |
-        pytest --cov=./ --cov-report=xml --cov=geoana -s -v -W ignore::DeprecationWarning
+        pytest --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v1
       with:
