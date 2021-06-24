@@ -23,30 +23,31 @@ jobs:
       uses: s-weigand/setup-conda@v1
       with:
         update-conda: true
-        conda-channels: conda-forge
+        activate-environment: geoana-test
+        channels: conda-forge
         python-version: ${{ matrix.python-version }}
 
     - name: Install Env
       shell: bash
       run: |
-        python --version
-        conda create -n geoana-test
-        source activate geoana-test
-        conda config --add channels conda-forge
-        conda install pytest
-        conda install pytest-cov
+        conda info
+        conda list
+        conda config --show
+        conda install --quiet --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib ipython;
+        conda install --quiet --yes discretize properties vectormath utm pytest pytest-cov
+        pip install -r requirements_dev.txt
 
     - name: Install Our Package
       shell: bash
       run: |
-        source activate geoana-test
+        export BUILD_GEOANA_EXT=1
         pip install -e .
         conda list
     - name: Run Tests
       shell: bash
       run: |
         source activate geoana-test
-        pytest --cov=./ --cov-report=xml --cov=geoana
+        pytest --cov=./ --cov-report=xml --cov=geoana -s -v -W ignore::DeprecationWarning
 
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v1
