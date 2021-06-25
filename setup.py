@@ -47,7 +47,7 @@ with open('README.rst') as f:
 
 metadata = dict(
     name = 'geoana',
-    version = '0.1.1',
+    version = '0.1.2',
     python_requires=">=3.6",
     setup_requires=[
         "numpy>=1.8",
