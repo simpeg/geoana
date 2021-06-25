@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.special import erf, iv, ive
+from scipy.special import erf, ive
 from scipy.constants import mu_0
 from geoana.em.tdem.base import theta
 
