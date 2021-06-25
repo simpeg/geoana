@@ -52,7 +52,7 @@ class testExamples(unittest.TestCase):
         np.testing.assert_allclose(
             hz[-1],
             radius**2/(30*np.sqrt(np.pi))*(sigma*mu_0/times[-1])**(1.5),
-            rtol=1E-4
+            rtol=1E-3
         )
 
         bz = t_bz_loop(times, sigma=sigma, radius=radius)
@@ -65,7 +65,7 @@ class testExamples(unittest.TestCase):
         np.testing.assert_allclose(
             dhz_dt[-1],
             -radius**2/(20*np.sqrt(np.pi))*(sigma*mu_0/times[-1])**(1.5)/times[-1],
-            rtol=1E-4
+            rtol=1E-3
         )
 
         dbz_dt = t_bzdt_loop(times, sigma=sigma, radius=radius)
@@ -89,7 +89,7 @@ class testExamples(unittest.TestCase):
         np.testing.assert_allclose(
             h[-1, 2],
             1/30 * (sigma * mu_0 /np.pi)**1.5*times[-1]**-1.5,
-            rtol=1E-5,
+            rtol=1E-3,
         )
 
 
@@ -105,12 +105,12 @@ class testExamples(unittest.TestCase):
         np.testing.assert_allclose(
             dh_dt[-1, 0],
             -offset/(64*np.pi)*(mu_0*sigma/times[-1])**2/times[-1],
-            rtol=1E-5,
+            rtol=1E-3,
         )
         np.testing.assert_allclose(
             dh_dt[-1, 2],
             -1/20 * (sigma * mu_0 / np.pi)**1.5*times[-1]**-2.5,
-            rtol=1E-4
+            rtol=1E-3
         )
 
         db_dt = bdt_dipv(times, xy, sigma=sigma)[:, 0, :]
