@@ -4,12 +4,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import numpy as np
-import warnings
 import properties
 from scipy.special import ellipk, ellipe
-from scipy.constants import mu_0
 
-from .base import BaseEM, BaseDipole, BaseMagneticDipole, BaseElectricDipole
+from .base import BaseEM, BaseDipole, BaseMagneticDipole
 from .. import spatial
 
 __all__ = [

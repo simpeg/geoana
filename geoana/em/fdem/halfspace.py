@@ -38,10 +38,10 @@ class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
         field : ("secondary", "total")
             Flag for the type of field to return.
         """
-        sig = self.sigma_hat # (n_freq, )
+        sig = self.sigma_hat
         f = self.frequency
         w = 2*np.pi*f
-        k = np.sqrt(-1j*w*mu_0*sig)[:, None] # This will get it to broadcast over locations
+        k = np.sqrt(-1j*w*mu_0*sig)[:, None]
         dxy = xy[:, :2] - self.location[:2]
         r = np.linalg.norm(dxy, axis=-1)
         x = dxy[:, 0]
