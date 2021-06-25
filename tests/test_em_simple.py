@@ -40,7 +40,7 @@ class testExamples(unittest.TestCase):
         np.testing.assert_equal(mu_0 * hz_secondary, bz_secondary)
 
     def test_time_loop(self):
-        times = np.logspace(-14, -1, 200)
+        times = np.logspace(-14, 0, 200)
         radius = 50
         sigma = 1E-2
         hz = t_hz_loop(times, sigma=sigma, radius=radius)
@@ -48,18 +48,31 @@ class testExamples(unittest.TestCase):
         # test 0 time limit
         np.testing.assert_allclose(hz[0], 1/(2 * radius))
 
+        # test late time limit
+        np.testing.assert_allclose(
+            hz[-1],
+            radius**2/(30*np.sqrt(np.pi))*(sigma*mu_0/times[-1])**(1.5),
+            rtol=1E-6
+        )
+
         bz = t_bz_loop(times, sigma=sigma, radius=radius)
         np.testing.assert_equal(mu_0 * hz, bz)
 
         dhz_dt = t_hzdt_loop(times, sigma=sigma, radius=radius)
         # test 0 time limit
         np.testing.assert_allclose(dhz_dt[0], -3/(mu_0 * sigma * radius**3))
+        # test late time limit
+        np.testing.assert_allclose(
+            dhz_dt[-1],
+            -radius**2/(20*np.sqrt(np.pi))*(sigma*mu_0/times[-1])**(1.5)/times[-1],
+            rtol=1E-6
+        )
 
         dbz_dt = t_bzdt_loop(times, sigma=sigma, radius=radius)
         np.testing.assert_allclose(mu_0 * dhz_dt, dbz_dt)
 
     def test_time_vertical_dipole(self):
-        times = np.logspace(-14, 0, 200)
+        times = np.logspace(-14, 1, 200)
         offset = 100
         xy = np.array([[offset, 0, 0]])
         sigma = 1E-2
@@ -67,16 +80,38 @@ class testExamples(unittest.TestCase):
 
         # test 0 time limit
         np.testing.assert_allclose(h[0, 2], -1/(4*np.pi * offset ** 3))
-        # the first three are nans (due to stability)
-        np.testing.assert_allclose(h[3, 0], 0.0, atol=1E-9)
+        # test late time limit
+        np.testing.assert_allclose(
+            h[-1, 0],
+            offset/(128*np.pi)*(mu_0*sigma/times[-1])**2,
+            rtol=1E-5,
+        )
+        np.testing.assert_allclose(
+            h[-1, 2],
+            1/30 * (sigma * mu_0 /np.pi)**1.5*times[-1]**-1.5,
+            rtol=1E-5,
+        )
+
 
         b = b_dipv(times, xy, sigma=sigma)[:, 0, :]
         np.testing.assert_equal(mu_0 * h, b)
 
         dh_dt = hdt_dipv(times, xy, sigma=sigma)[:, 0, :]
         # test 0 time limit
-        np.testing.assert_allclose(dh_dt[0, 2], 9/(2 * np.pi * mu_0 * sigma * offset**5))
-        np.testing.assert_allclose(dh_dt[3, 0], 0.0)
+        np.testing.assert_allclose(
+            dh_dt[0, 2], 9/(2 * np.pi * mu_0 * sigma * offset**5)
+        )
+        # test late times
+        np.testing.assert_allclose(
+            dh_dt[-1, 0],
+            -offset/(64*np.pi)*(mu_0*sigma/times[-1])**2/times[-1],
+            rtol=1E-5,
+        )
+        np.testing.assert_allclose(
+            dh_dt[-1, 2],
+            -1/20 * (sigma * mu_0 / np.pi)**1.5*times[-1]**-2.5,
+            rtol=1E-4
+        )
 
         db_dt = bdt_dipv(times, xy, sigma=sigma)[:, 0, :]
         np.testing.assert_allclose(mu_0 * dh_dt, db_dt)
