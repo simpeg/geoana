@@ -435,6 +435,19 @@ class ElectrostaticSphere():
     """
     Calculates static responses of a sphere in a halfspace given an x-directed
     static electric field.
+
+    Parameters
+    ----------
+    radius : float
+        radius of sphere (m)
+    sigma_sphere : float
+        conductivity of target sphere (S/m)
+    sigma_background : float
+        background conductivity (S/m)
+    amplitude : float, optional
+        amplitude of electric field (V/m)
+    location : (3, ) np.ndarray, optional
+        Center of the sphere, defaults to origin (0, 0, 0).
     """
 
     def __init__(self, radius, sigma_sphere, sigma_background, amplitude=1.0, location=None):
@@ -502,22 +515,48 @@ class ElectrostaticSphere():
             raise ValueError("location must be length 3 array")
         self._loc = item
 
+    def _check_XYZ(self, XYZ):
+        if len(XYZ) == 3:
+            x, y, z = XYZ
+            x = np.asarray(x, dtype=float)
+            y = np.asarray(y, dtype=float)
+            z = np.asarray(z, dtype=float)
+        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
+            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
+        else:
+            raise TypeError(
+                "XYZ must be either a length three tuple of each dimension, "
+                "or a numpy.ndarray of shape (..., 3)."
+                )
+        if not x.shape == y.shape and x.shape == z.shape:
+            raise ValueError(
+                "x, y, z must all have the same shape"
+            )
+        return x, y, z
+
     def potential(self, XYZ, field='all'):
+        """Electric potential for a sphere in a uniform wholespace
+
+        Parameters
+        ----------
+        XYZ : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+        field : {'all', 'total', 'primary', 'secondary'}
+
+        Returns
+        -------
+        Vt, Vp, Vs : (..., ) np.ndarray
+            If field == "all"
+        V : (..., ) np.ndarray
+            If only requesting a single field.
+        """
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         E0 = self.amplitude
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
-
-        if len(XYZ) == 3:
-            x, y, z = XYZ
-        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
-            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
-        else:
-            raise ValueError(
-                "XYZ must be either a length three tuple of each dimension, "
-                "or a numpy.ndarray of shape (..., 3)."
-                )
         x0, y0, z0 = self.location
+        x, y, z = self._check_XYZ(XYZ)
         x = x-x0
         y = y-y0
         z = z-z0
@@ -544,20 +583,28 @@ class ElectrostaticSphere():
         return Vt, Vp, Vs
 
     def electric_field(self, XYZ, field='all'):
+        """Electric field for a sphere in a uniform wholespace
+
+        Parameters
+        ----------
+        XYZ : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+        field : {'all', 'total', 'primary', 'secondary'}
+
+        Returns
+        -------
+        Et, Ep, Es : (..., 3) np.ndarray
+            If field == "all"
+        E : (..., 3) np.ndarray
+            If only requesting a single field.
+        """
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         E0 = self.amplitude
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
 
-        if len(XYZ) == 3:
-            x, y, z = XYZ
-        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
-            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
-        else:
-            raise ValueError(
-                "XYZ must be either a length three tuple of each dimension, "
-                "or a numpy.ndarray of shape (..., 3)."
-                )
+        x, y, z = self._check_XYZ(XYZ)
         x0, y0, z0 = self.location
         x = x-x0
         y = y-y0
@@ -588,16 +635,30 @@ class ElectrostaticSphere():
         return Et, Ep, Es
 
     def current_density(self, XYZ, field='all'):
+        """Current density for a sphere in a uniform wholespace
+
+        Parameters
+        ----------
+        XYZ : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+        field : {'all', 'total', 'primary', 'secondary'}
+
+        Returns
+        -------
+        Jt, Jp, Js : (..., 3) np.ndarray
+            If field == "all"
+        J : (..., 3) np.ndarray
+            If only requesting a single field.
+        """
+
         Et, Ep, Es = self.electric_field(XYZ, field='all')
         if field != 'total':
             Jp = self.sigma_background * Ep
             if field == 'primary':
                 return Jp
 
-        if len(XYZ) == 3:
-            x, y, z = XYZ
-        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
-            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
+        x, y, z = self._check_XYZ(XYZ)
         x0, y0, z0 = self.location
         x = x-x0
         y = y-y0
@@ -617,15 +678,28 @@ class ElectrostaticSphere():
         return Jt, Jp, Js
 
     def charge_density(self, XYZ, dr=None):
+        """charge density on the surface of a sphere in a uniform wholespace
+
+        Parameters
+        ----------
+        XYZ : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+        dr : float, optional
+            Buffer around the edge of the sphere to calculate
+            current density. Defaults to 5 % of the sphere radius
+
+        Returns
+        -------
+        rho: (..., ) np.ndarray
+        """
+
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
         Ep = self.electric_field(XYZ, field='primary')
 
-        if len(XYZ) == 3:
-            x, y, z = XYZ
-        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
-            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
+        x, y, z = self._check_XYZ(XYZ)
         x0, y0, z0 = self.location
         x = x-x0
         y = y-y0
