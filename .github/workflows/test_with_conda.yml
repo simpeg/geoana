@@ -79,7 +79,7 @@ jobs:
         pip install -r requirements_dev.txt
     - name: Prepare source distribution
       run: |
-        export Build_GEOANA_EXT=1
+        export BUILD_GEOANA_EXT=1
         python setup.py sdist
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1
