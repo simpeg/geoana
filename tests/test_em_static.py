@@ -14,7 +14,7 @@ from geoana import spatial
 
 TOL = 0.1
 
-"""
+
 class TestEM_Static(unittest.TestCase):
 
     def setUp(self):
@@ -308,7 +308,7 @@ class TestEM_Static(unittest.TestCase):
                     self.assertTrue(loop_passed)
                     self.assertTrue(dipole_passed)
 
-"""
+
 class Test_StaticSphere(unittest.TestCase):
 
     def testV(self):
