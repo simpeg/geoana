@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import numpy as np
 import properties
 from scipy.special import ellipk, ellipe
+from scipy.constants import epsilon_0
 
 from .base import BaseEM, BaseDipole, BaseMagneticDipole
 from .. import spatial
@@ -428,3 +429,289 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
             Magnetic Field vector at the given points, shape (*, 3)
         """
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
+
+
+class ElectrostaticSphere():
+    """
+    Calculates static responses of a sphere in a halfspace given an x-directed
+    static electric field.
+
+    Parameters
+    ----------
+    radius : float
+        radius of sphere (m)
+    sigma_sphere : float
+        conductivity of target sphere (S/m)
+    sigma_background : float
+        background conductivity (S/m)
+    amplitude : float, optional
+        amplitude of electric field (V/m)
+    location : (3, ) np.ndarray, optional
+        Center of the sphere, defaults to origin (0, 0, 0).
+    """
+
+    def __init__(self, radius, sigma_sphere, sigma_background, amplitude=1.0, location=None):
+
+        self.radius = radius
+        self.sigma_sphere = sigma_sphere
+        self.sigma_background = sigma_background
+        self.amplitude = amplitude
+        self.location = location
+
+    @property
+    def sigma_sphere(self):
+        return self._sig_sph
+
+    @sigma_sphere.setter
+    def sigma_sphere(self, item):
+        item = float(item)
+        if item <= 0.0:
+            raise ValueError('Conductiviy must be positive')
+        self._sig_sph = item
+
+    @property
+    def sigma_background(self):
+        return self._sig_back
+
+    @sigma_background.setter
+    def sigma_background(self, item):
+        item = float(item)
+        if item <= 0.0:
+            raise ValueError('Conductiviy must be positive')
+        self._sig_back = item
+
+    @property
+    def radius(self):
+        return self._r
+
+    @radius.setter
+    def radius(self, item):
+        item = float(item)
+        if item < 0.0:
+            raise ValueError('radius must be non-negative')
+        self._r = item
+
+    @property
+    def amplitude(self):
+        return self._amp
+
+    @amplitude.setter
+    def amplitude(self, item):
+        self._amp = float(item)
+
+    @property
+    def location(self):
+        return self._loc
+
+    @location.setter
+    def location(self, item):
+        if item is None:
+            item = np.array([0, 0, 0])
+
+        item = np.squeeze(np.asanyarray(item))
+        if len(item.shape) != 1:
+            raise ValueError("location must be a 1D array")
+        if len(item) != 3:
+            raise ValueError("location must be length 3 array")
+        self._loc = item
+
+    def _check_XYZ(self, XYZ):
+        if len(XYZ) == 3:
+            x, y, z = XYZ
+            x = np.asarray(x, dtype=float)
+            y = np.asarray(y, dtype=float)
+            z = np.asarray(z, dtype=float)
+        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
+            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
+        else:
+            raise TypeError(
+                "XYZ must be either a length three tuple of each dimension, "
+                "or a numpy.ndarray of shape (..., 3)."
+                )
+        if not (x.shape == y.shape and x.shape == z.shape):
+            raise ValueError(
+                "x, y, z must all have the same shape"
+            )
+        return x, y, z
+
+    def potential(self, XYZ, field='all'):
+        """Electric potential for a sphere in a uniform wholespace
+
+        Parameters
+        ----------
+        XYZ : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+        field : {'all', 'total', 'primary', 'secondary'}
+
+        Returns
+        -------
+        Vt, Vp, Vs : (..., ) np.ndarray
+            If field == "all"
+        V : (..., ) np.ndarray
+            If only requesting a single field.
+        """
+        sig0 = self.sigma_background
+        sig1 = self.sigma_sphere
+        E0 = self.amplitude
+        sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
+        x0, y0, z0 = self.location
+        x, y, z = self._check_XYZ(XYZ)
+        x = x-x0
+        y = y-y0
+        z = z-z0
+        r = np.sqrt(x**2 + y**2 + z**2)
+
+        if field != 'total':
+            Vp = -E0 * x
+            if field == 'primary':
+                return Vp
+
+        Vt = np.zeros_like(r)
+        ind0 = r > self.radius
+        # total potential outside the sphere
+        Vt[ind0] = -E0*x[ind0]*(1.-sig_cur*self.radius**3./r[ind0]**3.)
+        # inside the sphere
+        Vt[~ind0] = -E0*x[~ind0]*3.*sig0/(sig1+2.*sig0)
+
+        if field == 'total':
+            return Vt
+        # field was not primary or total
+        Vs = Vt - Vp
+        if field == 'secondary':
+            return Vs
+        return Vt, Vp, Vs
+
+    def electric_field(self, XYZ, field='all'):
+        """Electric field for a sphere in a uniform wholespace
+
+        Parameters
+        ----------
+        XYZ : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+        field : {'all', 'total', 'primary', 'secondary'}
+
+        Returns
+        -------
+        Et, Ep, Es : (..., 3) np.ndarray
+            If field == "all"
+        E : (..., 3) np.ndarray
+            If only requesting a single field.
+        """
+        sig0 = self.sigma_background
+        sig1 = self.sigma_sphere
+        E0 = self.amplitude
+        sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
+
+        x, y, z = self._check_XYZ(XYZ)
+        x0, y0, z0 = self.location
+        x = x-x0
+        y = y-y0
+        z = z-z0
+        r = np.sqrt(x**2 + y**2 + z**2)
+
+        if field != 'total':
+            Ep = np.zeros((*x.shape, 3))
+            Ep[..., 0] = E0
+            if field == 'primary':
+                return Ep
+
+        Et = np.zeros((*x.shape, 3))
+        ind0 = r > self.radius
+        # total field outside the sphere
+        Et[ind0, 0] = E0 + E0*self.radius**3./(r[ind0]**5.)*sig_cur*(2.*x[ind0]**2.-y[ind0]**2.-z[ind0]**2.)
+        Et[ind0, 1] = E0*self.radius**3./(r[ind0]**5.)*3.*x[ind0]*y[ind0]*sig_cur
+        Et[ind0, 2] = E0*self.radius**3./(r[ind0]**5.)*3.*x[ind0]*z[ind0]*sig_cur
+        # inside the sphere
+        Et[~ind0, 0] = 3.*sig0/(sig1+2.*sig0)*E0
+
+        if field == 'total':
+            return Et
+        # field was not primary or total
+        Es = Et - Ep
+        if field == 'secondary':
+            return Es
+        return Et, Ep, Es
+
+    def current_density(self, XYZ, field='all'):
+        """Current density for a sphere in a uniform wholespace
+
+        Parameters
+        ----------
+        XYZ : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+        field : {'all', 'total', 'primary', 'secondary'}
+
+        Returns
+        -------
+        Jt, Jp, Js : (..., 3) np.ndarray
+            If field == "all"
+        J : (..., 3) np.ndarray
+            If only requesting a single field.
+        """
+
+        Et, Ep, Es = self.electric_field(XYZ, field='all')
+        if field != 'total':
+            Jp = self.sigma_background * Ep
+            if field == 'primary':
+                return Jp
+
+        x, y, z = self._check_XYZ(XYZ)
+        x0, y0, z0 = self.location
+        x = x-x0
+        y = y-y0
+        z = z-z0
+        r = np.sqrt(x**2 + y**2 + z**2)
+
+        sigma = np.full(r.shape, self.sigma_background)
+        sigma[r <= self.radius] = self.sigma_sphere
+
+        Jt = sigma[..., None] * Et
+        if field == 'total':
+            return Jt
+
+        Js = Jt - Jp
+        if field == 'secondary':
+            return Js
+        return Jt, Jp, Js
+
+    def charge_density(self, XYZ, dr=None):
+        """charge density on the surface of a sphere in a uniform wholespace
+
+        Parameters
+        ----------
+        XYZ : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+        dr : float, optional
+            Buffer around the edge of the sphere to calculate
+            current density. Defaults to 5 % of the sphere radius
+
+        Returns
+        -------
+        rho: (..., ) np.ndarray
+        """
+
+        sig0 = self.sigma_background
+        sig1 = self.sigma_sphere
+        sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
+        Ep = self.electric_field(XYZ, field='primary')
+
+        x, y, z = self._check_XYZ(XYZ)
+        x0, y0, z0 = self.location
+        x = x-x0
+        y = y-y0
+        z = z-z0
+        r = np.sqrt(x**2 + y**2 + z**2)
+
+        if dr is None:
+            dr = 0.05 * self.radius
+
+        ind = (r < self.radius + 0.5*dr) & (r > self.radius - 0.5*dr)
+
+        rho = np.zeros_like(r)
+        rho[ind] = epsilon_0*3.*Ep[ind, 0]*sig_cur*x[ind]/(np.sqrt(x[ind]**2.+y[ind]**2.))
+
+        return rho

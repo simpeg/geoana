@@ -35,7 +35,7 @@ jobs:
         conda list
         conda config --show
         conda install --quiet --yes pip numpy scipy matplotlib ipython;
-        conda install --quiet --yes discretize properties vectormath geoana utm pytest pytest-cov
+        conda install --quiet --yes discretize properties vectormath utm pytest pytest-cov
         pip install -r requirements_dev.txt
     - name: Install Our Package
       run: |

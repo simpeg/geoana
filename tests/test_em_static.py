@@ -14,6 +14,7 @@ from geoana import spatial
 
 TOL = 0.1
 
+
 class TestEM_Static(unittest.TestCase):
 
     def setUp(self):
@@ -306,6 +307,76 @@ class TestEM_Static(unittest.TestCase):
                     )
                     self.assertTrue(loop_passed)
                     self.assertTrue(dipole_passed)
+
+
+class Test_StaticSphere(unittest.TestCase):
+
+    def testV(self):
+        x, y, z = np.mgrid[-10:10:5j, -10:10:5j, -10:10:5j]
+        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0)
+        np.testing.assert_equal(sphere.location, np.r_[0, 0, 0])
+        sphere.location = [0.1, 0.3, 0.5]
+        XYZ = np.stack([x, y, z], axis=-1)
+
+        Vt1 = sphere.potential((x, y, z), field='total')
+        Vt2 = sphere.potential(XYZ, field='total')
+        np.testing.assert_equal(Vt1, Vt2)
+
+        with self.assertRaises(ValueError):
+            Vt = sphere.potential((x[0:3], y, z))
+        with self.assertRaises(TypeError):
+            Vt = sphere.potential("xyzd")
+
+        Vt1 = sphere.potential((x, y, z), field='total')
+        Vp1 = sphere.potential((x, y, z), field='primary')
+        Vs1 = sphere.potential((x, y, z), field='secondary')
+        Vt2, Vp2, Vs2 = sphere.potential((x, y, z), field='all')
+        np.testing.assert_equal(Vt1, Vt2)
+        np.testing.assert_equal(Vp1, Vp2)
+        np.testing.assert_equal(Vs1, Vs2)
+
+    def testE(self):
+        x, y, z = np.mgrid[-10:10:5j, -10:10:5j, -10:10:5j]
+        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
+
+        Vt1 = sphere.electric_field((x, y, z), field='total')
+        Vp1 = sphere.electric_field((x, y, z), field='primary')
+        Vs1 = sphere.electric_field((x, y, z), field='secondary')
+        Vt2, Vp2, Vs2 = sphere.electric_field((x, y, z), field='all')
+        np.testing.assert_equal(Vt1, Vt2)
+        np.testing.assert_equal(Vp1, Vp2)
+        np.testing.assert_equal(Vs1, Vs2)
+
+    def testJ(self):
+        x, y, z = np.mgrid[-10:10:5j, -10:10:5j, -10:10:5j]
+        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
+
+        Vt1 = sphere.current_density((x, y, z), field='total')
+        Vp1 = sphere.current_density((x, y, z), field='primary')
+        Vs1 = sphere.current_density((x, y, z), field='secondary')
+        Vt2, Vp2, Vs2 = sphere.current_density((x, y, z), field='all')
+        np.testing.assert_equal(Vt1, Vt2)
+        np.testing.assert_equal(Vp1, Vp2)
+        np.testing.assert_equal(Vs1, Vs2)
+
+    def testQ(self):
+        x, y, z = np.mgrid[-10:10:51j, -10:10:51j, -10:10:51j]
+        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
+        q = sphere.charge_density((x, y, z))
+        print(np.sum(q))
+
+    def test_errors(self):
+        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
+        with self.assertRaises(ValueError):
+            sphere.location = [[0, 0, 1],[0, 1, 0]]
+        with self.assertRaises(ValueError):
+            sphere.location = [0, 1, 2, 3]
+        with self.assertRaises(ValueError):
+            sphere.radius = -1
+        with self.assertRaises(ValueError):
+            sphere.sigma_sphere = -1
+        with self.assertRaises(ValueError):
+            sphere.sigma_background = -1
 
 if __name__ == '__main__':
     unittest.main()
