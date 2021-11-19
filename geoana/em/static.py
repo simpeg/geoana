@@ -528,7 +528,7 @@ class ElectrostaticSphere():
                 "XYZ must be either a length three tuple of each dimension, "
                 "or a numpy.ndarray of shape (..., 3)."
                 )
-        if not x.shape == y.shape and x.shape == z.shape:
+        if not (x.shape == y.shape and x.shape == z.shape):
             raise ValueError(
                 "x, y, z must all have the same shape"
             )

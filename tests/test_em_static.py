@@ -313,7 +313,9 @@ class Test_StaticSphere(unittest.TestCase):
 
     def testV(self):
         x, y, z = np.mgrid[-10:10:5j, -10:10:5j, -10:10:5j]
-        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
+        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0)
+        np.testing.assert_equal(sphere.location, np.r_[0, 0, 0])
+        sphere.location = [0.1, 0.3, 0.5]
         XYZ = np.stack([x, y, z], axis=-1)
 
         Vt1 = sphere.potential((x, y, z), field='total')
