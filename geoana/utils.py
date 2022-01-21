@@ -1,22 +1,55 @@
 import numpy as np
 
 
-def mkvc(x, numDims=1):
-    """Creates a vector with the number of dimension specified
+def mkvc(x, n_dims=1):
+    """Creates a vector with specified dimensionality.
 
-    e.g.::
+    This function converts a :class:`numpy.ndarray` to a vector. In general,
+    the output vector has a dimension of 1. However, the dimensionality
+    can be specified if the user intends to carry out a dot product with
+    a higher order array.
 
-        a = np.array([1, 2, 3])
+    Parameters
+    ----------
+    x : array_like
+        An array that will be reorganized and output as a vector. The input array
+        will be flattened on input in Fortran order.
+    n_dims : int
+        The dimension of the output vector. :data:`numpy.newaxis` are appened to the
+        output array until it has this many axes.
 
-        mkvc(a, 1).shape
-            > (3, )
+    Returns
+    -------
+    numpy.ndarray
+        The output vector, with at least ``n_dims`` axes.
 
-        mkvc(a, 2).shape
-            > (3, 1)
+    Examples
+    --------
+    Here, we reorganize a simple 2D array as a vector and demonstrate the
+    impact of the *n_dim* argument.
 
-        mkvc(a, 3).shape
-            > (3, 1, 1)
+    >>> from geoana.utils import mkvc
+    >>> import numpy as np
 
+    >>> a = np.random.rand(3, 2)
+    >>> a
+    array([[0.33534155, 0.25334363],
+           [0.07147884, 0.81080958],
+           [0.85892774, 0.74357806]])
+
+    >>> v = mkvc(a)
+    >>> v
+    array([0.33534155, 0.07147884, 0.85892774, 0.25334363, 0.81080958,
+           0.74357806])
+
+    In Higher dimensions:
+
+    >>> for ii in range(1, 4):
+    ...     v = mkvc(a, ii)
+    ...     print('Shape of output with n_dim =', ii, ': ', v.shape)
+    Shape of output with n_dim = 1 :  (6,)
+    Shape of output with n_dim = 2 :  (6, 1)
+    Shape of output with n_dim = 3 :  (6, 1, 1)
     """
     if isinstance(x, np.matrix):
         x = np.array(x)
@@ -26,11 +59,11 @@ def mkvc(x, numDims=1):
 
     assert isinstance(x, np.ndarray), "Vector must be a numpy array"
 
-    if numDims == 1:
+    if n_dims == 1:
         return x.flatten(order='F')
-    elif numDims == 2:
+    elif n_dims == 2:
         return x.flatten(order='F')[:, np.newaxis]
-    elif numDims == 3:
+    elif n_dims == 3:
         return x.flatten(order='F')[:, np.newaxis, np.newaxis]
 
 
