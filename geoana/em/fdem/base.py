@@ -11,15 +11,24 @@ import properties
 
 
 def omega(frequency):
-    """
-    Angular frequency
+    """Compute angular frequency.
+
+    For an input frequency :math:`f`, this function returns the
+    corresponding angular frequency:
 
     .. math::
 
         \\omega = 2 \\pi f
 
-    **Required**
-    :param frequency float: frequency (Hz)
+    Parameters
+    ----------
+    frequency : float
+        frequency (Hz)
+
+    Returns:
+    --------
+    float
+        Angular frequency (rad/s)
 
     """
     return 2*np.pi*frequency
@@ -28,25 +37,39 @@ def omega(frequency):
 def wavenumber(
     frequency, sigma, mu=mu_0, epsilon=epsilon_0, quasistatic=False
 ):
-    """
-    Wavenumber of an electromagnetic wave in a medium with constant physical
-    properties
+    """Compute wavenumber of an electromagnetic wave in a homogeneous isotropic medium.
+
+    Where :math:`f` is the frequency of the EM wave in Hertz, :math:`\\sigma` is the
+    electrical conductivity in S/m, :math:`\\mu` is the magnetic permeability in
+    H/m and :math:`\\varepsilon` is the dielectric permittivity in F/m, the
+    wavenumber is given by:
 
     .. math::
-
         k = \\sqrt{\\omega^2 \\mu \\varepsilon - i \\omega \\mu \\sigma}
 
+    where
 
-    **Required**
+    .. math::
+        \\omega = 2 \\pi f
 
-    :param (float, numpy.ndarray) frequency: frequency (Hz)
-    :param float sigma: electrical conductivity (S/m)
 
-    **Optional**
+    Parameters
+    ----------
+    frequency : (float, numpy.ndarray)
+        frequency or frequencies (Hz)
+    sigma : float
+        electrical conductivity (S/m)
+    mu : float (optional)
+        magnetic permeability (H/m). Default: :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
+    epsilon : float (optional)
+        dielectric permittivity (F/m). Default: :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
+    quasistatic : bool (optional)
+        use the quasi-static assumption; i.e. ignore the dielectric term. Default: False
 
-    :param float mu: magnetic permeability (H/m). Default: :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
-    :param float epsilon: dielectric permittivity (F/m). Default: :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
-    :param bool quasistatic: use the quasi-static assumption? Default: False
+    Returns
+    -------
+    float, (n_frequencies) numpy.ndarray
+        Wavenumber for all frequencies provided
 
     """
     w = omega(frequency)
@@ -56,21 +79,34 @@ def wavenumber(
 
 
 def skin_depth(frequency, sigma, mu=mu_0):
-    """
-    Distance at which an em wave has decayed by a factor of :math:`1/e` in a
-    medium with constant physical properties
+    """Compute skin depth for an electromagnetic wave in a homogeneous isotropic medium.
+
+    The skin depth propagation distance at which an EM planewave has decayed by a factor of :math:`1/e`.
+    For a homogeneous medium with electrical conductivity :math:`\\sigma` and magnetic permeability
+    :math:`\\mu`, the skin depth for a wave at frequency :math:`f` is given by:
 
     .. math::
 
         \\sqrt{\\frac{2}{\\omega \\sigma \\mu}}
 
-    **Required**
+    where
 
-    :param float frequency: frequency (Hz)
-    :param float sigma: electrical conductivity (S/m)
+    .. math::
+        \\omega = 2 \\pi f
 
-    **Optional**
-    :param float mu: magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \\times 10^{-7}` H/m
+    Parameters
+    ----------
+    frequency : (float, numpy.ndarray)
+        frequency or frequencies (Hz)
+    sigma : float
+        electrical conductivity (S/m)
+    mu : float (optional)
+        magnetic permeability (H/m). Default: :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
+
+    Returns
+    -------
+    float, (n_frequencies) numpy.ndarray
+        Skin depth for all frequencies provided
 
     """
     w = omega(frequency)
@@ -78,22 +114,31 @@ def skin_depth(frequency, sigma, mu=mu_0):
 
 
 def sigma_hat(frequency, sigma, epsilon=epsilon_0, quasistatic=False):
-    """
-    conductivity with displacement current contribution
+    """Compute the conductivity which includes electric displacement.
+
+    Where :math:`\\sigma` is the electrical conductivity, :math:`\\varepsilon` is the
+    dielectric permittivity and :math:`\\omega` is the angular frequency, this function
+    returns:
 
     .. math::
 
-        \hat{\sigma} = \sigma + i \omega \\varepsilon
+        \\hat{\\sigma} = \\sigma + i \\omega \\varepsilon
 
-    **Required**
+    Parameters
+    ----------
+    frequency : (float, numpy.ndarray)
+        frequency or frequencies (Hz)
+    sigma : float
+        electrical conductivity (S/m)
+    epsilon : float (optional)
+        dielectric permittivity (F/m). Default: :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
+    quasistatic : bool (optional)
+        use the quasi-static assumption; i.e. ignore the dielectric term. Default: False
 
-    :param (float, numpy.array) frequency: frequency (Hz)
-    :param float sigma: electrical conductivity (S/m)
-
-    **Optional**
-
-    :param float epsilon: dielectric permittivity. Default :math:`\\varepsilon_0`
-    :param bool quasistatic: use the quasi-static assumption? Default: False
+    Returns
+    -------
+    float, (n_frequencies) numpy.ndarray
+        Conductivity with electric displacement for all frequencies provided
 
     """
     if quasistatic is True:

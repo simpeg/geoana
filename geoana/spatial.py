@@ -365,17 +365,17 @@ def cartesian_to_spherical(grid, vec=None):
 
 
 def vector_magnitude(v):
-    """
-    Amplitude of a vector, v.
+    """Compute the amplitudes of the set of input vectors.
 
-    **Required**
+    Parameters
+    ----------
+    (*, dim) numpy.ndarray
+        A set of input vectors (2D or 3D)
 
-    :param numpy.ndarray v: vector array
-
-    **Returns**
-
-    :returns: magnitude of a vector (n, 1)
-    :rtype: numpy.ndarray
+    Returns
+    -------
+    (*) numpy.ndarray
+        Magnitudes of the vectors
     """
 
     v = np.atleast_2d(v)
@@ -384,22 +384,28 @@ def vector_magnitude(v):
 
 
 def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
-    """
-    Vector distance of a grid, xyz from an origin origin.
+    r"""Vector distances from a reference location to a set of xyz locations.
 
-    **Required**
+    Where :math:`\mathbf{p}` is an reference location (origin), this method
+    returns the vector distance:
 
-    :param numpy.ndarray xyz: grid (npoints x 3)
+    .. math::
+        \mathbf{v} = \mathbf{q} - \mathbf{p}
 
-    **Optional**
+    for all xyz locations (:math:`\mathbf{q}`) supplied. By default, the reference
+    location is (0,0,0). However this can be changed.
+    
+    Parameters
+    ----------
+    xyz : (*, 3) numpy.ndarray
+        Gridded xyz locations
+    origin : (3) array_like (optional)
+        Reference location. Default = np.r_[0,0,0]
 
-    :param numpy.ndarray origin: origin (default: [0., 0., 0.])
-
-    **Returns**
-
-    :returns: vector distance from a grid of points from the origin
-              (npoints x 3)
-    :rtype: numpy.ndarray
+    Returns
+    -------
+    (*, 3) numpy.ndarray
+        Vector distances along x, y and z directions
     """
     assert(xyz.shape[1] == 3), (
         "the xyz grid should be npoints by 3, the shape provided is {}".format(
@@ -423,40 +429,53 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
 
 
 def distance(xyz, origin=np.r_[0., 0., 0.]):
-    """
-    Radial distance from an grid of points to the origin
+    r"""Scalar distances between a reference location to a set of xyz locations.
 
-    **Required**
+    Where :math:`\mathbf{p}` is an reference location (origin), this method
+    returns the scalar distance:
 
-    :param numpy.ndarray xyz: grid (npoints x 3)
+    .. math::
+        d = \big | \mathbf{q} - \mathbf{p} \big |
 
-    **Optional**
+    for all xyz locations (:math:`\mathbf{q}`) supplied. By default, the reference
+    location is (0,0,0). However this can be changed.
+    
+    Parameters
+    ----------
+    xyz : (*, 3) numpy.ndarray
+        Gridded xyz locations
+    origin : (3) array_like (optional)
+        Reference location. Default = np.r_[0,0,0]
 
-    :param numpy.ndarray origin: origin (default: [0., 0., 0.])
-
-    **Returns**
-
-    :returns: distance between each point and the origin (npoints x 1)
-    :rtype: numpy.ndarray
+    Returns
+    -------
+    (*) numpy.ndarray
+        Scalar distances
     """
     dxyz = vector_distance(xyz, origin)
     return vector_magnitude(dxyz)
 
 
 def vector_dot(xyz, vector):
-    """
-    Take a dot product between an array of vectors, xyz and a vector [x, y, z]
+    r"""Dot product between a single vector and a gridded set of vectors.
 
-    **Required**
+    Where :math:`\mathbf{u}` is a vector, this method returns the dot products
+    between :math:`\mathbf{u}` and a gridded set of vectors, i.e.:
 
-    :param numpy.ndarray xyz: grid (npoints x 3)
-    :param numpy.ndarray vector: vector (1 x 3)
+    .. math::
+        \mathbf{u} \cdot \mathbf{v} 
 
-    **Returns**
+    for all vectors :math:`\mathbf{v}` supplied.
 
-    :returns: dot product between the grid and the (1 x 3) vector, returns an
-              (npoints x 1) array
-    :rtype: numpy.ndarray
+    Parameters
+    ----------
+    vecs : (*, 3) numpy.ndarray
+        A set of 3D vectors
+
+    Returns
+    -------
+    (*) numpy.ndarray
+        Dot product between a single vector and a gridded set of vectors.
     """
     if len(vector) != 3:
         raise Exception(
@@ -468,22 +487,23 @@ def vector_dot(xyz, vector):
 
 
 def repeat_scalar(scalar, dim=3):
-    """
-    Repeat a spatially distributed scalar value dim times to simplify
-    multiplication with a vector.
+    """Stack spatially distributed scalar values to simplify multiplication with a vector.
 
-    **Required**
+    Where the input argument *scalar* defines a set of *n* spatially distributed scalar
+    values, **repeat_scalar** repeats and stacks the input a array to product an
+    (*n*, *dim*) array which is better for multiplying the scalar values with vector arrays.
 
-    :param numpy.ndarray scalar: (n x 1) array of scalars
+    Parameters
+    ----------
+    scalar : (*) numpy.ndarray
+        The set of scalar values
+    dim : int, optional
+        The dimension. Default=3
 
-    **Optional**
-
-    :param int dim: dimension of the second axis for the output (default = 3)
-
-    **Returns**
-
-    :returns: (n x dim) array of the repeated vector
-    :rtype: numpy.ndarray
+    Returns
+    -------
+    (*, dim) numpy.ndarray
+        The repeated and stacked set of scalar values
     """
     assert len(scalar) in scalar.shape, (
         "input must be a scalar. The shape you provided is {}".format(
