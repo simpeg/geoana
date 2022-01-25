@@ -13,10 +13,10 @@ from .. import spatial
 
 
 class BaseEM:
-    """Base class for electromanetics.
+    """Base electromagnetics class.
 
     The base EM class stores the physical properties that are relevant to all problems
-    that solve Maxwell's equations. The base EM class assumes that all physical properties
+    which solve Maxwell's equations. The base EM class assumes that all physical properties
     (conductivity, magnetic permeability and dielectric permittivity) are homogeneously
     distributed within a wholespace and are non-dispersive. These properties are
     overwritten in child classes as necessary.
@@ -24,11 +24,11 @@ class BaseEM:
     Parameters
     ----------
     sigma : float, int
-        Electrical conductivity (S/m). Default: 1 S/m
+        Electrical conductivity in S/m. Default: 1 S/m
     mu : float
-        Magnetic permeability (H/m). Default: :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
+        Magnetic permeability in H/m. Default: :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
     epsilon : float
-        Dielectric permittivity (F/m). Default: :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
+        Dielectric permittivity F/m. Default: :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
     """
 
     def __init__(self, sigma=1., mu=mu_0, epsilon=epsilon_0):
@@ -40,12 +40,12 @@ class BaseEM:
 
     @property
     def sigma(self):
-        """Electrical conductivity (S/m)
+        """Electrical conductivity in S/m
 
         Returns
         -------
         float
-            electrical conductivity (S/m)
+            Electrical conductivity in S/m
         """
         return self._sigma
 
@@ -64,12 +64,12 @@ class BaseEM:
 
     @property
     def mu(self):
-        """Magnetic permeability (H/m)
+        """Magnetic permeability in H/m
 
         Returns
         -------
         float
-            Magnetic permeability (H/m)
+            Magnetic permeability in H/m
         """
         return self._mu
 
@@ -88,12 +88,12 @@ class BaseEM:
 
     @property
     def epsilon(self):
-        """Dielectric permittivity (F/m)
+        """Dielectric permittivity in F/m
 
         Returns
         -------
         float
-            dielectric permittivity (F/m)
+            dielectric permittivity in F/m
         """
         return self._epsilon
 
@@ -129,7 +129,7 @@ class BaseEM:
     # )
 
 
-class BaseDipole(BaseEM):
+class BaseDipole:
     """Base class for dipoles.
 
     Parameters
@@ -141,12 +141,10 @@ class BaseDipole(BaseEM):
         or by using one of {'X','Y','Z'} to define a unit dipole along the x, y or z direction.
     """
 
-    def __init__(self, location=np.zeros(3), orientation='X', sigma=1., mu=mu_0, epsilon=epsilon_0):
+    def __init__(self, location, orientation):
 
         self.location = locations
         self.orientation = orientation
-
-        super().__init__(sigma, mu, epsilon)
 
 
     @property
@@ -179,12 +177,12 @@ class BaseDipole(BaseEM):
 
     @property
     def orientation(self):
-        """Orientation of the dipole
+        """Orientation of the dipole as a normalized vector
 
         Returns
         -------
         (3) numpy.ndarray of float
-            dipole orientation
+            dipole orientation, normalized to unit magnitude
         """
         return self._orientation
 
@@ -210,6 +208,9 @@ class BaseDipole(BaseEM):
                     f"orientation must be array_like with shape (3,), got {len(var)}"
                 )
 
+        # Normalize the orientation
+        var /= np.sqrt(np.sum(var**2))
+
         self._orientation = var
 
 
@@ -228,7 +229,7 @@ class BaseDipole(BaseEM):
     
 
     def vector_distance(self, xyz):
-        r"""Vector distance from dipole location to a set of xyz locations.
+        r"""Vector distance from dipole location to a set of gridded xyz locations.
 
         Where :math:`\mathbf{p}` is the location of the dipole and :math:`\mathbf{q}`
         is a point in 3D space, this method returns the vector distance:
@@ -236,22 +237,22 @@ class BaseDipole(BaseEM):
         .. math::
             \mathbf{v} = \mathbf{q} - \mathbf{p}
 
-        for all *xyz* locations supplied.
+        for all locations :math:`\mathbf{q}` supplied in the inputed argument `xyz`.
         
         Parameters
         ----------
-        xyz : (*, 3) numpy.ndarray
+        xyz : (n, 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (*, 3) numpy.ndarray
-            Vector distances along x, y and z directions
+        (n, 3) numpy.ndarray
+            Vector distances in the x, y and z directions
         """
         return spatial.vector_distance(xyz, np.array(self.location))
 
     def distance(self, xyz):
-        r"""Scalar distance from dipole to xyz locations
+        r"""Scalar distance from dipole to a set of gridded xyz locations
 
         Where :math:`\mathbf{p}` is the location of the dipole and :math:`\mathbf{q}`
         is a point in 3D space, this method returns the scalar distance:
@@ -259,16 +260,16 @@ class BaseDipole(BaseEM):
         .. math::
             d = \sqrt{(q_x - p_x)^2 + (q_y - p_y)^2 + (q_z - p_z)^2}
 
-        for all *xyz* locations supplied.
+        for all locations :math:`\mathbf{q}` supplied in the input argument `xyz`.
 
         Parameters
         ----------
-        xyz : (*, 3) numpy.ndarray
+        xyz : (n, 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (*) numpy.ndarray
+        (n) numpy.ndarray
             Scalar distances from dipole to xyz locations
         """
         return spatial.distance(xyz, np.array(self.location))
@@ -282,16 +283,16 @@ class BaseDipole(BaseEM):
         .. math::
             \mathbf{p} \cdot \mathbf{v} 
 
-        for all vectors (*vecs*) supplied.
+        for all vectors :math:`\mathbf{v}` supplied in the input argument *vecs*.
 
         Parameters
         ----------
-        vecs : (*, 3) numpy.ndarray
+        vecs : (n, 3) numpy.ndarray
             A set of 3D vectors
 
         Returns
         -------
-        (*) numpy.ndarray
+        (n) numpy.ndarray
             Dot product between the dipole orientation and each vector supplied.
         """
         return spatial.vector_dot(vecs, np.array(self.orientation))
@@ -305,7 +306,7 @@ class BaseDipole(BaseEM):
         .. math::
             \mathbf{v} \times \mathbf{p} 
 
-        for all vectors (*vecs*) supplied.
+        for all vectors :math:`\mathbf{v}` supplied in the input argument *vecs*.
 
         Parameters
         ----------
@@ -335,6 +336,14 @@ class BaseElectricDipole(BaseDipole):
     current : float, int
         Current of the electric current dipole (A)
     """
+
+    def __init__(self, location, orientation, length, current):
+
+        self.length = length
+        self.current = current
+
+        super().__init__(location, orientation)
+
 
     @property
     def length(self):
@@ -407,17 +416,23 @@ class BaseMagneticDipole(BaseDipole):
     Parameters
     ----------
     moment : float, int
-        Dipole moment for the magnetic dipole (A/m^2)
+        Amplitude of the dipole moment for the magnetic dipole (:math:`A/m^2`)
     """
+
+    def __init__(self, location, orientation, moment=1.):
+
+        self.moment = moment
+
+        super().__init__(location, orientation)
 
     @property
     def moment(self):
-        """Dipole moment of the magnetic dipole (A/m^2)
+        """Amplitude of the dipole moment of the magnetic dipole (:math:`A/m^2`)
 
         Returns
         -------
         float
-            Dipole moment of the magnetic dipole (A/m^2)
+            Amplitude of the dipole moment of the magnetic dipole (:math:`A/m^2`)
         """
         return self._moment
 

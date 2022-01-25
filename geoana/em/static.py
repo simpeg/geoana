@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import numpy as np
 import properties
 from scipy.special import ellipk, ellipe
-from scipy.constants import epsilon_0
+from scipy.constants import mu_0, epsilon_0
 
 from .base import BaseEM, BaseDipole, BaseMagneticDipole
 from .. import spatial
@@ -18,35 +18,60 @@ __all__ = [
 
 
 class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
-    """
-    Static magnetic dipole in a wholespace.
+    """Class for a static magnetic dipole in a wholespace.
+
+    The ``MagneticDipoleWholeSpace`` class is used to analytically compute the
+    fields and potentials within a wholespace due to a static magnetic dipole.
     """
 
+    def __init__(self, location, orientation, moment=1., sigma=1., mu=mu_0, epsilon=epsilon_0):
+
+        super().__init__(
+            location=location,
+            orientation=orientation,
+            moment=moment,
+            sigma=sigma,
+            mu=mu,
+            epsilon=epsilon
+        )
+
+
     def vector_potential(self, xyz, coordinates="cartesian"):
-        """Vector potential of a static magnetic dipole. See Griffiths, 1999
-        equation 5.83
+        r"""Compute the vector potential for the static magnetic dipole.
+
+        This method computes the vector potential for the magnetic dipole at 
+        the set of gridded xyz locations provided. Where :math:`\mu` is the
+        magnetic permeability, :math:`\mathbf{m}` is the dipole moment,
+        :math:`\mathbf{r_0}` the dipole location and :math:`\mathbf{r}`
+        is the location at which we want to evaluate
+        the vector potential :math:`\mathbf{a}`:
 
         .. math::
 
-            \\vec{A}(\\vec{r}) = \\frac{\mu_0}{4\pi}
-            \\frac{\\vec{m}\\times\\vec{r}}{r^3}
+            \mathbf{a}(\mathbf{r}) = \frac{\mu}{4\pi}
+            \frac{\mathbf{m} \times \, \Delta \mathbf{r}}{| \Delta r |^3}
 
-        **Required**
+        where
 
-        :param numpy.ndarray xyz: Location at which we calculate the vector
-                                potential
+        .. math::
+            \mathbf{\Delta r} = \mathbf{r} - \mathbf{r_0}
 
-        **Optional**
+        For reference, see equation 5.83 in Griffiths (1999).
 
-        :param str coordinates: coordinate system that the xyz is provided
-                                in and that the solution will be returned
-                                in (cartesian or cylindrical).
-                                Default: `"cartesian"`
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray xyz
+            gridded locations at which we are calculating the vector potential
+        coordinates: str {'cartesian', 'cylindrical'}
+            coordinate system that the location (xyz) are provided.
+            The solution is also returned in this coordinate system.
+            Default: `"cartesian"`
 
-        **Returns**
-
-        :rtype: numpy.ndarray
-        :return: The magnetic vector potential at each observation location
+        Returns
+        -------
+        (n, 3) numpy.ndarray
+            The magnetic vector potential at each observation location in the
+            coordinate system specified in units *Tm*.
 
         """
         supported_coordinates = ["cartesian", "cylindrical"]
@@ -76,23 +101,42 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         return a
 
     def magnetic_flux_density(self, xyz, coordinates="cartesian"):
-        """Magnetic flux (:math:`\\vec{b}`) of a static magnetic dipole
+        r"""Compute magnetic flux density produced by the static magnetic dipole.
 
-        **Required**
+        This method computes the magnetic flux density produced by the static magnetic
+        dipole at gridded xyz locations provided. Where :math:`\mu` is the magnetic
+        permeability of the wholespace, :math:`\mathbf{m}` is the dipole moment,
+        :math:`\mathbf{r_0}` the dipole location and :math:`\mathbf{r}` is the location
+        at which we want to evaluate the magnetic flux density :math:`\mathbf{B}`:
 
-        :param numpy.ndarray xyz: Location of the receivers(s)
+        .. math::
 
-        **Optional**
+            \mathbf{B}(\mathbf{r}) = \frac{\mu}{4\pi} \bigg [
+            \frac{3 \Delta \mathbf{r} big ( \mathbf{m} \cdot \, \Delta \mathbf{r} \big ) }{| \Delta \mathbf{r} |^5}
+            - \frac{\mathbf{m}}{| \Delta \mathbf{r} |^3}
 
-        :param str coordinates: coordinate system that the xyz is provided
-                                in and that the solution will be returned
-                                in (cartesian or cylindrical).
-                                Default: `"cartesian"`
+        where
 
-        **Returns**
+        .. math::
+            \mathbf{\Delta r} = \mathbf{r} - \mathbf{r_0}
 
-        :rtype: numpy.ndarray
-        :return: The magnetic flux at each observation location
+        For reference, see equation Griffiths (1999).
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray
+            gridded locations at which we calculate the magnetic flux density
+        coordinates: str {'cartesian', 'cylindrical'}
+            coordinate system that the location (xyz) are provided.
+            The solution is also returned in this coordinate system.
+            Default: `"cartesian"`
+
+        Returns
+        -------
+        (n, 3) numpy.ndarray
+            The magnetic flux density at each observation location in the
+            coordinate system specified in Teslas.
+
         """
 
         supported_coordinates = ["cartesian", "cylindrical"]
@@ -131,51 +175,98 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         return b
 
     def magnetic_field(self, xyz, coordinates="cartesian"):
-        """Magnetic field (:math:`\\vec{h}`) of a static magnetic dipole
+        r"""Compute the magnetic field produced by a static magnetic dipole.
 
-        **Required**
+        This method computes the magnetic field produced by the static magnetic dipole at 
+        the set of gridded xyz locations provided. Where :math:`\mathbf{m}` is the dipole
+        moment, :math:`\mathbf{r_0}` is the dipole location and :math:`\mathbf{r}` is the
+        location at which we want to evaluate the magnetic field :math:`\mathbf{H}`:
 
-        :param numpy.ndarray xyz: Location of the receivers(s)
+        .. math::
 
-        **Optional**
+            \mathbf{H}(\mathbf{r}) = \frac{1}{4\pi} \bigg [
+            \frac{3 \Delta \mathbf{r} big ( \mathbf{m} \cdot \, \Delta \mathbf{r} \big ) }{| \Delta \mathbf{r} |^5}
+            - \frac{\mathbf{m}}{| \Delta \mathbf{r} |^3}
 
-        :param str coordinates: coordinate system that the xyz is provided
-                                in and that the solution will be returned
-                                in (cartesian or cylindrical).
-                                Default: `"cartesian"`
+        where
 
-        **Returns**
+        .. math::
+            \mathbf{\Delta r} = \mathbf{r} - \mathbf{r_0}
 
-        :rtype: numpy.ndarray
-        :return: The magnetic field at each observation location
+        For reference, see equation Griffiths (1999).
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray xyz
+            gridded locations at which we calculate the magnetic field
+        coordinates: str {'cartesian', 'cylindrical'}
+            coordinate system that the location (xyz) are provided.
+            The solution is also returned in this coordinate system.
+            Default: `"cartesian"`
+
+        Returns
+        -------
+        (*, 3) numpy.ndarray
+            The magnetic field at each observation location in the
+            coordinate system specified in units A/m.
 
         """
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
 
 
 class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
+    """Class for a static magnetic pole in a wholespace.
+
+    The ``MagneticPoleWholeSpace`` class is used to analytically compute the
+    fields and potentials within a wholespace due to a static magnetic pole.
     """
-    Static magnetic pole in a wholespace.
-    """
+
+    def __init__(self, location, orientation, moment=1., sigma=1., mu=mu_0, epsilon=epsilon_0):
+
+        super().__init__(
+            location=location,
+            orientation=orientation,
+            moment=moment,
+            sigma=sigma,
+            mu=mu,
+            epsilon=epsilon
+        )
 
     def magnetic_flux_density(self, xyz, coordinates="cartesian"):
-        """Magnetic flux (:math:`\\vec{b}`) of a static magnetic dipole
+        r"""Compute the magnetic flux density produced by the static magnetic pole.
 
-        **Required**
+        This method computes the magnetic flux density produced by the static magnetic pole
+        at the set of gridded xyz locations provided. Where :math:`\mu` is the magnetic
+        permeability of the wholespace, :math:`m` is the moment amplitude,
+        :math:`\mathbf{r_0}` the pole's location and :math:`\mathbf{r}` is the location
+        at which we want to evaluate the magnetic flux density :math:`\mathbf{B}`:
 
-        :param numpy.ndarray xyz: Location of the receivers(s)
+        .. math::
 
-        **Optional**
+            \mathbf{B}(\mathbf{r}) = \frac{\mu m}{4\pi} \frac{\Delta \mathbf{r}}{| \Delta \mathbf{r}|^3}
 
-        :param str coordinates: coordinate system that the xyz is provided
-                                in and that the solution will be returned
-                                in (cartesian or cylindrical).
-                                Default: `"cartesian"`
+        where
 
-        **Returns**
+        .. math::
+            \mathbf{\Delta r} = \mathbf{r} - \mathbf{r_0}
 
-        :rtype: numpy.ndarray
-        :return: The magnetic flux at each observation location
+        For reference, see equation Griffiths (1999).
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray xyz
+            gridded xyz locations at which we calculate the magnetic flux density
+        coordinates: str {'cartesian', 'cylindrical'}
+            coordinate system that the location (xyz) are provided.
+            The solution is also returned in this coordinate system.
+            Default: `"cartesian"`
+
+        Returns
+        -------
+        (n, 3) numpy.ndarray
+            The magnetic flux density at each observation location in the
+            coordinate system specified in units T.
+
         """
 
         supported_coordinates = ["cartesian", "cylindrical"]
@@ -202,84 +293,188 @@ class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
         return b
 
     def magnetic_field(self, xyz, coordinates="cartesian"):
-        """Magnetic field (:math:`\\vec{h}`) of a static magnetic dipole
+        r"""Compute the magnetic field produced by the static magnetic pole.
 
-        **Required**
+        This method computes the magnetic field produced by the static magnetic pole at 
+        the set of gridded xyz locations provided. Where :math:`\mu` is the magnetic
+        permeability of the wholespace, :math:`m` is the moment amplitude,
+        :math:`\mathbf{r_0}` the pole's location and :math:`\mathbf{r}` is the location
+        at which we want to evaluate the magnetic field :math:`\mathbf{H}`:
 
-        :param numpy.ndarray xyz: Location of the receivers(s)
+        .. math::
 
-        **Optional**
+            \mathbf{G}(\mathbf{r}) = \frac{m}{4\pi} \frac{\Delta \mathbf{r}}{| \Delta \mathbf{r}|^3}
 
-        :param str coordinates: coordinate system that the xyz is provided
-                                in and that the solution will be returned
-                                in (cartesian or cylindrical).
-                                Default: `"cartesian"`
+        where
 
-        **Returns**
+        .. math::
+            \mathbf{\Delta r} = \mathbf{r} - \mathbf{r_0}
 
-        :rtype: numpy.ndarray
-        :return: The magnetic field at each observation location
+        For reference, see equation Griffiths (1999).
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray xyz
+            gridded locations at which we calculate the magnetic field
+        coordinates: str {'cartesian', 'cylindrical'}
+            coordinate system that the location (xyz) are provided.
+            The solution is also returned in this coordinate system.
+            Default: `"cartesian"`
+
+        Returns
+        -------
+        (n, 3) numpy.ndarray
+            The magnetic field at each observation location in the
+            coordinate system specified in units A/m.
 
         """
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
 
 
 class CircularLoopWholeSpace(BaseDipole, BaseEM):
+    """Class for a circular loop of static current in a wholespace.
 
+    The ``CircularLoopWholeSpace`` class is used to analytically compute the
+    fields and potentials within a wholespace due to a circular loop carrying
+    static current.
+    
+    Parameters
+    ----------
+    current : float
+        Electrical current in the loop in Amps. Default=1.
+    radius : float
+        Radius of the loop in meters
     """
-    Static magnetic field from a circular loop in a wholespace.
-    """
 
-    current = properties.Float(
-        "Electric current through the loop (A)", default=1.
-    )
+    def __init__(self, location, orientation, radius, current=1., sigma=1., mu=mu_0, epsilon=epsilon_0):
 
-    radius = properties.Float(
-        "radius of the loop (m)", default=1., min=0.
-    )
+        self.radius = radius
+        self.current = current
+
+        super().__init__(
+            location=location,
+            orientation=orientation,
+            sigma=sigma,
+            mu=mu,
+            epsilon=epsilon
+        )
+
+
+    @property
+    def current(self):
+        """Current in the loop in Amps
+
+        Returns
+        -------
+        float
+            Current in the loop Amps
+        """
+        return self._current
+
+    @current.setter
+    def current(self, value):
+        
+        try:
+            value = float(value)
+        except:
+            raise TypeError(f"current must be a number, got {type(value)}")
+        
+        if value <= 0.0:
+            raise ValueError("current must be greater than 0")
+
+        self._current = value
+
+
+    @property
+    def radius(self):
+        """Radius of the loop in meters
+
+        Returns
+        -------
+        float
+            Radius of the loop in meters
+        """
+        return self._current
+
+    @radius.setter
+    def radius(self, value):
+        
+        try:
+            value = float(value)
+        except:
+            raise TypeError(f"radius must be a number, got {type(value)}")
+        
+        if value <= 0.0:
+            raise ValueError("radius must be greater than 0")
+
+        self._radius = value
+
+
+    # current = properties.Float(
+    #     "Electric current through the loop (A)", default=1.
+    # )
+
+    # radius = properties.Float(
+    #     "radius of the loop (m)", default=1., min=0.
+    # )
 
     def vector_potential(self, xyz, coordinates="cartesian"):
-        """Vector potential due to the a steady-state current through a
-        circular loop. We solve in cylindrical coordinates
+        r"""Compute the vector potential for the static loop in a wholespace.
+
+        This method computes the vector potential for the cirular current loop
+        at the set of gridded xyz locations provided. Where :math:`\mu` is the magnetic
+        permeability, :math:`I d\mathbf{s}` represents an infinitessimal segment
+        of current at location :math:`\mathbf{r_s}` and :math:`\mathbf{r}` is the location
+        at which we want to evaluate the vector potential :math:`\mathbf{a}`:
 
         .. math::
 
-            A_\\theta(\\rho, z) = \\frac{\mu_0 I}{\pi k}
-            \sqrt{R / \\rho^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
+            \mathbf{a}(\mathbf{r}) = \frac{\mu I}{4\pi} \oint
+            \frac{1}{|\mathbf{r} - \mathbf{r_s}|} d\mathbf{s}
+
+
+        The above expression can be solve analytically by using the appropriate
+        change of coordinate transforms and the solution for a horizontal current
+        loop. For a horizontal current loop centered at (0,0,0), the solution in
+        radial coordinates is given by:
+
+        .. math::
+
+            a_\theta (\rho, z) = \frac{\mu_0 I}{\pi k}
+            \sqrt{R / \rho^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
 
         where
 
         .. math::
 
-            k^2 = \\frac{4 R \\rho}{(R + \\rho)^2 + z^2}
+            k^2 = \frac{4 R \rho}{(R + \rho)^2 + z^2}
 
         and
 
-        - :math:`\\rho = \sqrt{x^2 + y^2}` is the horizontal distance to the test point
-        - :math:`r` is the distance to a test point
+        - :math:`\rho = \sqrt{x^2 + y^2}` is the horizontal distance to the test point
         - :math:`I` is the current through the loop
         - :math:`R` is the radius of the loop
         - :math:`E(k^2)` and :math:`K(k^2)` are the complete elliptic integrals
 
 
-        **Required**
 
-        :param numpy.ndarray xyz: Location where we calculate the vector
-                                potential
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray xyz
+            gridded locations at which we calculate the vector potential
+        coordinates: str {'cartesian', 'cylindrical'}
+            coordinate system that the location (xyz) are provided.
+            The solution is also returned in this coordinate system.
+            Default: `"cartesian"`
 
-        **Optional**
-
-        :param str coordinates: coordinate system that the xyz is provided
-                                in and that the solution will be returned
-                                in (cartesian or cylindrical).
-                                Default: `"cartesian"`
-
-        **Returns**
-
-        :rtype: numpy.ndarray
-        :return: The magnetic vector potential at each observation location
+        Returns
+        -------
+        (n, 3) numpy.ndarray
+            The magnetic vector potential at each observation location in the
+            coordinate system specified in units *Tm*.
 
         """
+
         eps = 1e-10
         supported_coordinates = ["cartesian", "cylindrical"]
         assert coordinates.lower() in supported_coordinates, (
@@ -337,19 +532,60 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         return A
 
     def magnetic_flux_density(self, xyz, coordinates="cartesian"):
-        """Calculates the magnetic flux density (B) due to a circular current loop
+        r"""Compute the magnetic flux density for the current loop in a wholespace.
+
+        This method computes the magnetic flux density for the cirular current loop
+        at the set of gridded xyz locations provided. Where :math:`\mu` is the magnetic
+        permeability, :math:`I d\mathbf{s}` represents an infinitessimal segment
+        of current at location :math:`\mathbf{r_s}` and :math:`\mathbf{r}` is the location
+        at which we want to evaluate the magnetic flux density :math:`\mathbf{B}`:
+
+        .. math::
+
+            \mathbf{B}(\mathbf{r}) = - \frac{\mu I}{4\pi} \oint
+            \frac{(\mathbf{r}-\mathbf{r_s}) \times d\mathbf{s}}{|\mathbf{r} - \mathbf{r_0}|^3}
+
+
+        # The above expression can be solve analytically by using the appropriate
+        # change of coordinates transforms and the solution for a horizontal current
+        # loop. For a horizontal current loop centered at (0,0,0), the solution in
+        # radial coordinates is given by:
+
+        # .. math::
+
+        #     a_\theta (\rho, z) = \frac{\mu_0 I}{\pi k}
+        #     \sqrt{R / \rho^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
+
+        # where
+
+        # .. math::
+
+        #     k^2 = \frac{4 R \rho}{(R + \rho)^2 + z^2}
+
+        # and
+
+        # - :math:`\rho = \sqrt{x^2 + y^2}` is the horizontal distance to the test point
+        # - :math:`I` is the current through the loop
+        # - :math:`R` is the radius of the loop
+        # - :math:`E(k^2)` and :math:`K(k^2)` are the complete elliptic integrals
+
+
 
         Parameters
         ----------
-        xyz : np.ndarray
-            locations to evaluate the function at shape (3, ) or (*, 3)
-        coordinates : {cartesian, cylindrical}
-            which coordinate system the input and output points are defined in.
+        xyz : (n, 3) numpy.ndarray xyz
+            gridded locations at which we calculate the magnetic flux density
+        coordinates: str {'cartesian', 'cylindrical'}
+            coordinate system that the location (xyz) are provided.
+            The solution is also returned in this coordinate system.
+            Default: `"cartesian"`
 
         Returns
         -------
-        B_field : np.ndarray
-            Magnetic Flux Density vector at the given points, shape (*, 3)
+        (n, 3) numpy.ndarray
+            The magnetic flux density at each observation location in the
+            coordinate system specified in units *T*.
+
         """
         xyz = np.atleast_2d(xyz)
         # convert coordinates if not cartesian
@@ -414,27 +650,71 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         return B
 
     def magnetic_field(self, xyz, coordinates="cartesian"):
-        """Calculates the magnetic field (H) due to a circular current loop
+        r"""Compute the magnetic field for the current loop in a wholespace.
+
+        This method computes the magnetic field for the cirular current loop
+        at the set of gridded xyz locations provided. Where :math:`\mu` is the magnetic
+        permeability, :math:`I d\mathbf{s}` represents an infinitessimal segment
+        of current at location :math:`\mathbf{r_s}` and :math:`\mathbf{r}` is the location
+        at which we want to evaluate the magnetic field :math:`\mathbf{H}`:
+
+        .. math::
+
+            \mathbf{H}(\mathbf{r}) = - \frac{I}{4\pi} \oint
+            \frac{(\mathbf{r}-\mathbf{r_s}) \times d\mathbf{s}}{|\mathbf{r} - \mathbf{r_0}|^3}
+
+
+        # The above expression can be solve analytically by using the appropriate
+        # change of coordinates transforms and the solution for a horizontal current
+        # loop. For a horizontal current loop centered at (0,0,0), the solution in
+        # radial coordinates is given by:
+
+        # .. math::
+
+        #     a_\theta (\rho, z) = \frac{\mu_0 I}{\pi k}
+        #     \sqrt{R / \rho^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
+
+        # where
+
+        # .. math::
+
+        #     k^2 = \frac{4 R \rho}{(R + \rho)^2 + z^2}
+
+        # and
+
+        # - :math:`\rho = \sqrt{x^2 + y^2}` is the horizontal distance to the test point
+        # - :math:`I` is the current through the loop
+        # - :math:`R` is the radius of the loop
+        # - :math:`E(k^2)` and :math:`K(k^2)` are the complete elliptic integrals
+
+
 
         Parameters
         ----------
-        xyz : np.ndarray
-            locations to evaluate the function at shape (3, ) or (*, 3)
-        coordinates : {cartesian, cylindrical}
-            which coordinate system the input and output points are defined in.
+        xyz : (n, 3) numpy.ndarray xyz
+            gridded locations at which we calculate the magnetic field
+        coordinates: str {'cartesian', 'cylindrical'}
+            coordinate system that the location (xyz) are provided.
+            The solution is also returned in this coordinate system.
+            Default: `"cartesian"`
 
         Returns
         -------
-        H_field : np.ndarray
-            Magnetic Field vector at the given points, shape (*, 3)
+        (n, 3) numpy.ndarray
+            The magnetic field at each observation location in the
+            coordinate system specified in units A/m.
+
         """
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
 
 
-class ElectrostaticSphere():
-    """
-    Calculates static responses of a sphere in a halfspace given an x-directed
-    static electric field.
+class ElectrostaticSphere:
+    """Class for electrostatic solutions for a sphere in a wholespace.
+
+    The ``ElectrostaticSphere`` class is used to analytically compute the electric
+    potentials, fields, currents and change densities for a sphere in a wholespace.
+    For this class, we assume a homogeneous primary electric field along the
+    :math:`\\hat{x}` direction.
 
     Parameters
     ----------
@@ -445,12 +725,12 @@ class ElectrostaticSphere():
     sigma_background : float
         background conductivity (S/m)
     amplitude : float, optional
-        amplitude of electric field (V/m)
-    location : (3, ) np.ndarray, optional
+        amplitude of primary electric field along the :math:`\\hat{x}` direction (V/m)
+    location : (3) array_like, optional
         Center of the sphere, defaults to origin (0, 0, 0).
     """
 
-    def __init__(self, radius, sigma_sphere, sigma_background, amplitude=1.0, location=None):
+    def __init__(self, radius, sigma_sphere, sigma_background, amplitude=1.0, location=np.r_[0.,0.,0.]):
 
         self.radius = radius
         self.sigma_sphere = sigma_sphere
@@ -460,60 +740,99 @@ class ElectrostaticSphere():
 
     @property
     def sigma_sphere(self):
-        return self._sig_sph
+        """Electrical conductivity of the sphere in S/m
+
+        Returns
+        -------
+        float
+            Electrical conductivity of the sphere in S/m
+        """
+        return self._sigma_sphere
 
     @sigma_sphere.setter
     def sigma_sphere(self, item):
         item = float(item)
         if item <= 0.0:
             raise ValueError('Conductiviy must be positive')
-        self._sig_sph = item
+        self._sigma_sphere = item
 
     @property
     def sigma_background(self):
-        return self._sig_back
+        """Electrical conductivity of the background in S/m
+
+        Returns
+        -------
+        float
+            Electrical conductivity of the background in S/m
+        """
+        return self._sigma_background
 
     @sigma_background.setter
     def sigma_background(self, item):
         item = float(item)
         if item <= 0.0:
             raise ValueError('Conductiviy must be positive')
-        self._sig_back = item
+        self._sigma_background = item
 
     @property
     def radius(self):
-        return self._r
+        """Radius of the sphere in meters
+
+        Returns
+        -------
+        float
+            Radius of the sphere in meters
+        """
+        return self._radius
 
     @radius.setter
     def radius(self, item):
         item = float(item)
         if item < 0.0:
             raise ValueError('radius must be non-negative')
-        self._r = item
+        self._radius = item
 
     @property
     def amplitude(self):
-        return self._amp
+        """Amplitude of the primary current density along the x-direction.
+
+        Returns
+        -------
+        float
+            Amplitude of the primary current density along the x-direction in :math:`A/m^2`.
+        """
+        return self._amplitude
 
     @amplitude.setter
     def amplitude(self, item):
-        self._amp = float(item)
+        self._amplitude = float(item)
 
     @property
     def location(self):
-        return self._loc
+        """Center of the sphere
+
+        Returns
+        -------
+        (3) numpy.ndarray of float
+            Center of the sphere. Default = np.r_[0,0,0]
+        """
+        return self._location
 
     @location.setter
-    def location(self, item):
-        if item is None:
-            item = np.array([0, 0, 0])
-
-        item = np.squeeze(np.asanyarray(item))
-        if len(item.shape) != 1:
-            raise ValueError("location must be a 1D array")
-        if len(item) != 3:
-            raise ValueError("location must be length 3 array")
-        self._loc = item
+    def location(self, vec):
+        
+        try:
+            vec = np.asarray(vec, dtype=np.float64)
+            vec = np.atleast_1d(vec)
+        except:
+            raise TypeError(f"location must be array_like, got {type(vec)}")
+        
+        if len(vec) != 3:
+            raise ValueError(
+                f"location must be array_like with shape (3,), got {len(vec)}"
+            )
+        
+        self._location = vec
 
     def _check_XYZ(self, XYZ):
         if len(XYZ) == 3:
@@ -535,7 +854,7 @@ class ElectrostaticSphere():
         return x, y, z
 
     def potential(self, XYZ, field='all'):
-        """Electric potential for a sphere in a uniform wholespace
+        """Compute the electric potential.
 
         Parameters
         ----------

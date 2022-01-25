@@ -9,17 +9,18 @@ from .utils import mkvc
 
 def cylindrical_to_cartesian(grid, vec=None):
     """
-    Transform a grid or a vector from cylindrical coordinates :math:`(r, \\theta, z)` to
-    Cartesian coordinates :math:`(x, y, z)`. :math:`\\theta` is given in radians.
+    Transform gridded locations or a set of vectors from cylindrical coordinates
+    :math:`(r, \\phi, z)` to Cartesian coordinates :math:`(x, y, z)`.
+    The azimuthal angle :math:`\\phi` is given in radians.
 
     Parameters
     ----------
     grid : (n, 3) array_like
-        Location points defined in cylindrical coordinates :math:`(r, \\theta, z)`.
+        Location points defined in cylindrical coordinates :math:`(r, \\phi, z)`.
     vec : (n, 3) array_like, optional
-        Vector defined in cylindrical coordinates :math:`(r, \\theta, z)` at the
-        locations grid. Will also except a flattend array in column major order with the
-        same number of elements.
+        Vectors defined in cylindrical coordinates :math:`(v_r, v_\\phi, v_z)` at the
+        gridded locations. Will also except a flattend array in column major order
+        with the same number of elements.
 
     Returns
     -------
@@ -91,16 +92,19 @@ def cylindrical_to_cartesian(grid, vec=None):
 
 def cartesian_to_cylindrical(grid, vec=None):
     """
-    Transform a grid or a vector from Cartesian coordinates :math:`(x, y, z)` to
-    cylindrical coordinates :math:`(r, \\theta, z)`.
+    Transform gridded locations or a set of vectors from Cartesian coordinates
+    :math:`(x, y, z)` to cylindrical coordinates :math:`(r, \\phi, z)`. Where
+    the azimuthal angle :math:`\\phi \\in [-\\pi , \\pi ]` will be given output
+    in radians. 
 
     Parameters
     ----------
     grid : (n, 3) array_like
-        Location points defined in Cartesian coordinates :math:`(x, y z)`.
+        Gridded locations defined in Cartesian coordinates :math:`(x, y z)`.
     vec : (n, 3) array_like, optional
-        Vector defined in Cartesian coordinates. This also accepts a flattened array
-        with the same total elements in column major order.
+        Vectors defined in Cartesian coordinates :math:`(v_x, v_y, v_z)` at the
+        gridded locations. Also accepts a flattened array with the same total
+        elements in column major order.
 
     Returns
     -------
@@ -173,17 +177,18 @@ def cartesian_to_cylindrical(grid, vec=None):
 
 def spherical_to_cartesian(grid, vec=None):
     """
-    Transform a grid or a vector from spherical coordinates :math:`(r, \\phi, \\theta)` to
-    Cartesian coordinates :math:`(x, y, z)`. :math:`\\phi` and :math:`\\theta` are the radial
-    and azimutal angles, respectively. :math:`\\phi` and :math:`\\theta` given in radians.
+    Transform gridded locations of a set of vectors from spherical coordinates
+    :math:`(r, \\phi, \\theta)` to Cartesian coordinates :math:`(x, y, z)`.
+    :math:`\\phi` and :math:`\\theta` are the azimuthal and polar angles, respectively.
+    :math:`\\phi` and :math:`\\theta` are given in radians.
 
     Parameters
     ----------
     grid : (n, 3) array_like
-        Location points defined in spherical coordinates :math:`(r, \\phi, \\theta)`.
+        Gridded locations defined in spherical coordinates :math:`(r, \\phi, \\theta)`.
     vec : (n, 3) array_like, optional
-        Vector defined in spherical coordinates :math:`(r, \\phi, \\theta)` at the
-        locations grid. Will also except a flattend array in column major order with the
+        Vectors defined in spherical coordinates :math:`(v_r, v_\\phi, v_\\theta)` at the
+        gridded locations. Will also except a flattend array in column major order with the
         same number of elements.
 
     Returns
@@ -265,17 +270,18 @@ def spherical_to_cartesian(grid, vec=None):
 
 def cartesian_to_spherical(grid, vec=None):
     """
-    Transform a grid or a vector from Cartesian coordinates :math:`(x, y, z)` to  spherical
-    coordinates :math:`(r, \\phi, \\theta)`. :math:`\\phi` and :math:`\\theta` are the radial
-    and azimutal angles, respectively. :math:`\\phi` and :math:`\\theta` given in radians.
+    Transform gridded locations or a set of vectors from Cartesian coordinates
+    :math:`(x, y, z)` to  spherical coordinates :math:`(r, \\phi, \\theta)`.
+    :math:`\\phi` and :math:`\\theta` are the azimuthal and polar angle, respectively.
+    :math:`\\phi` and :math:`\\theta` are given in radians.
 
     Parameters
     ----------
     grid : (n, 3) array_like
-        Location points defined in Cartesian coordinates :math:`(x, y, z)`.
+        Gridded locations defined in Cartesian coordinates :math:`(x, y, z)`.
     vec : (n, 3) array_like, optional
-        Vector defined in Cartesian coordinates at the
-        locations grid. Will also except a flattend array in column major order with the
+        Vectors defined in Cartesian coordinates :math:`(v_x, v_y, v_z)` at the
+        gridded locations. Will also except a flattend array in column major order with the
         same number of elements.
 
     Returns
@@ -365,16 +371,16 @@ def cartesian_to_spherical(grid, vec=None):
 
 
 def vector_magnitude(v):
-    """Compute the amplitudes of the set of input vectors.
+    """Compute the amplitudes for a set of input vectors in Cartesian coordinates.
 
     Parameters
     ----------
-    (*, dim) numpy.ndarray
+    (n, dim) numpy.ndarray
         A set of input vectors (2D or 3D)
 
     Returns
     -------
-    (*) numpy.ndarray
+    (n) numpy.ndarray
         Magnitudes of the vectors
     """
 
@@ -386,26 +392,26 @@ def vector_magnitude(v):
 def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
     r"""Vector distances from a reference location to a set of xyz locations.
 
-    Where :math:`\mathbf{p}` is an reference location (origin), this method
-    returns the vector distance:
+    Where :math:`\mathbf{p}` is an reference location define by the input argument
+    `origin`, this method returns the vector distance:
 
     .. math::
         \mathbf{v} = \mathbf{q} - \mathbf{p}
 
-    for all xyz locations (:math:`\mathbf{q}`) supplied. By default, the reference
-    location is (0,0,0). However this can be changed.
+    for all locations :math:`\mathbf{q}` supplied in the input argument `xyz`.
+    By default, the reference location is (0,0,0).
     
     Parameters
     ----------
     xyz : (*, 3) numpy.ndarray
         Gridded xyz locations
-    origin : (3) array_like (optional)
+    origin : (3) array_like, optional
         Reference location. Default = np.r_[0,0,0]
 
     Returns
     -------
     (*, 3) numpy.ndarray
-        Vector distances along x, y and z directions
+        Vector distances along the x, y and z directions
     """
     assert(xyz.shape[1] == 3), (
         "the xyz grid should be npoints by 3, the shape provided is {}".format(
@@ -431,25 +437,25 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
 def distance(xyz, origin=np.r_[0., 0., 0.]):
     r"""Scalar distances between a reference location to a set of xyz locations.
 
-    Where :math:`\mathbf{p}` is an reference location (origin), this method
-    returns the scalar distance:
+    Where :math:`\mathbf{p}` is an reference location define by the input argument
+    `origin`, this method returns the scalar distance:
 
     .. math::
         d = \big | \mathbf{q} - \mathbf{p} \big |
 
-    for all xyz locations (:math:`\mathbf{q}`) supplied. By default, the reference
-    location is (0,0,0). However this can be changed.
+    for all locations :math:`\mathbf{q}` supplied in the input argument `xyz`.
+    By default, the reference location is (0,0,0).
     
     Parameters
     ----------
-    xyz : (*, 3) numpy.ndarray
+    xyz : (n, 3) numpy.ndarray
         Gridded xyz locations
     origin : (3) array_like (optional)
         Reference location. Default = np.r_[0,0,0]
 
     Returns
     -------
-    (*) numpy.ndarray
+    (n) numpy.ndarray
         Scalar distances
     """
     dxyz = vector_distance(xyz, origin)
@@ -457,25 +463,27 @@ def distance(xyz, origin=np.r_[0., 0., 0.]):
 
 
 def vector_dot(xyz, vector):
-    r"""Dot product between a single vector and a gridded set of vectors.
+    r"""Dot product between a vector and a set of vectors.
 
-    Where :math:`\mathbf{u}` is a vector, this method returns the dot products
-    between :math:`\mathbf{u}` and a gridded set of vectors, i.e.:
+    Where :math:`\mathbf{u}` is a vector defined by the input argument `vector`,
+    this method returns the dot products between :math:`\mathbf{u}` and every
+    vector supplied in the input argument `xyz`. I.e. for all
+    :math:`\mathbf{v} \\in \mathbf{V}`, we compute:
 
     .. math::
-        \mathbf{u} \cdot \mathbf{v} 
-
-    for all vectors :math:`\mathbf{v}` supplied.
+        \mathbf{u} \cdot \mathbf{v}
 
     Parameters
     ----------
-    vecs : (*, 3) numpy.ndarray
+    xyz : (n, 3) numpy.ndarray
         A set of 3D vectors
+    vector : (3) numpy.array_like
+        A single 3D vector
 
     Returns
     -------
-    (*) numpy.ndarray
-        Dot product between a single vector and a gridded set of vectors.
+    (n) numpy.ndarray
+        Dot products between a vector and a set of vectors.
     """
     if len(vector) != 3:
         raise Exception(
@@ -489,20 +497,20 @@ def vector_dot(xyz, vector):
 def repeat_scalar(scalar, dim=3):
     """Stack spatially distributed scalar values to simplify multiplication with a vector.
 
-    Where the input argument *scalar* defines a set of *n* spatially distributed scalar
-    values, **repeat_scalar** repeats and stacks the input a array to product an
-    (*n*, *dim*) array which is better for multiplying the scalar values with vector arrays.
+    Where the input argument `scalar` defines a set of *n* spatially distributed scalar
+    values, ``repeat_scalar`` repeats and stacks the input array to produce an
+    (`n`, `dim`) array which is better for multiplying the scalar values with vector arrays.
 
     Parameters
     ----------
-    scalar : (*) numpy.ndarray
+    scalar : (n) numpy.ndarray
         The set of scalar values
     dim : int, optional
         The dimension. Default=3
 
     Returns
     -------
-    (*, dim) numpy.ndarray
+    (n, dim) numpy.ndarray
         The repeated and stacked set of scalar values
     """
     assert len(scalar) in scalar.shape, (
