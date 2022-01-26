@@ -1,5 +1,5 @@
 import numpy as np
-import properties
+# import properties
 from scipy.constants import mu_0, epsilon_0
 
 from .. import spatial
@@ -24,11 +24,11 @@ class BaseEM:
     Parameters
     ----------
     sigma : float, int
-        Electrical conductivity in S/m. Default: 1 S/m
+        Electrical conductivity in S/m. Default is 1 S/m
     mu : float
-        Magnetic permeability in H/m. Default: :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
+        Magnetic permeability in H/m. Default is :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
     epsilon : float
-        Dielectric permittivity F/m. Default: :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
+        Dielectric permittivity F/m. Default is :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
     """
 
     def __init__(self, sigma=1., mu=mu_0, epsilon=epsilon_0):
