@@ -7,7 +7,6 @@ import unittest
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
 import discretize
-import properties
 
 from geoana.em import static, fdem
 from geoana import spatial
@@ -22,8 +21,8 @@ class TestEM_Static(unittest.TestCase):
         self.clws = static.CircularLoopWholeSpace()
 
     def test_defaults(self):
-        self.assertTrue(self.mdws.sigma == 1)
-        self.assertTrue(self.clws.sigma == 1)
+        self.assertTrue(self.mdws.sigma == 1.0)
+        self.assertTrue(self.clws.sigma == 1.0)
 
         self.assertTrue(self.mdws.mu == mu_0)
         self.assertTrue(self.clws.mu == mu_0)
@@ -34,9 +33,9 @@ class TestEM_Static(unittest.TestCase):
         self.assertTrue(np.all(self.mdws.orientation == np.r_[1., 0., 0.]))
         self.assertTrue(np.all(self.clws.orientation == np.r_[1., 0., 0.]))
 
-        self.assertTrue(self.mdws.moment == 1)
-        self.assertTrue(self.clws.current == 1)
-        self.assertTrue(self.clws.radius == 1)
+        self.assertTrue(self.mdws.moment == 1.0)
+        self.assertTrue(self.clws.current == 1.0)
+        self.assertTrue(self.clws.radius == np.sqrt(1/np.pi))
 
     def test_vector_potential(self):
         n = 50
@@ -44,28 +43,25 @@ class TestEM_Static(unittest.TestCase):
             [np.ones(n), np.ones(n), np.ones(n)], x0="CCC"
         )
 
-        radius = 1
-        self.clws.radius = radius
-        self.clws.current = 1./(np.pi * radius**2)
+        # radius = 1.0
+        # self.clws.radius = radius
+        # self.clws.current = 1./(np.pi * radius**2)
 
         for orientation in ["x", "y", "z"]:
             self.clws.orientation = orientation
             self.mdws.orientation = orientation
 
             inds = (
-                (np.absolute(mesh.gridCC[:, 0]) > 5) &
-                (np.absolute(mesh.gridCC[:, 1]) > 5) &
-                (np.absolute(mesh.gridCC[:, 2]) > 5)
+                (np.absolute(mesh.cell_centers[:, 0]) > 5) &
+                (np.absolute(mesh.cell_centers[:, 1]) > 5) &
+                (np.absolute(mesh.cell_centers[:, 2]) > 5)
             )
 
-            a_clws = self.clws.vector_potential(mesh.gridCC)[inds]
-            a_mdws = self.mdws.vector_potential(mesh.gridCC)[inds]
+            a_clws = self.clws.vector_potential(mesh.cell_centers)[inds]
+            a_mdws = self.mdws.vector_potential(mesh.cell_centers)[inds]
 
             self.assertTrue(isinstance(a_clws, np.ndarray))
-            self.assertFalse(isinstance(a_clws, properties.Vector3))
-
             self.assertTrue(isinstance(a_mdws, np.ndarray))
-            self.assertFalse(isinstance(a_mdws, properties.Vector3))
 
             self.assertTrue(
                 np.linalg.norm(a_clws - a_mdws) <
@@ -111,8 +107,8 @@ class TestEM_Static(unittest.TestCase):
                         self.mdws.vector_potential(mesh.gridEz)[:, 2]
                     ])
 
-                    b_clws = mesh.edgeCurl * a_clws
-                    b_mdws = mesh.edgeCurl * a_mdws
+                    b_clws = mesh.edge_curl * a_clws
+                    b_mdws = mesh.edge_curl * a_mdws
 
                     b_clws_true = np.hstack([
                         self.clws.magnetic_flux_density(mesh.gridFx)[:, 0],
@@ -131,7 +127,6 @@ class TestEM_Static(unittest.TestCase):
                     ])
 
                     self.assertTrue(isinstance(b_fdem, np.ndarray))
-                    self.assertFalse(isinstance(b_fdem, properties.Vector3))
 
                     inds = (np.hstack([
                         (np.absolute(mesh.gridFx[:, 0]) > h*2 + location[0]) &
@@ -193,15 +188,15 @@ class TestEM_Static(unittest.TestCase):
         n = 50
         ny = 10
         h = 2.
-        mesh = discretize.CylMesh(
+        mesh = discretize.CylindricalMesh(
             [h*np.ones(n), np.ones(ny) * 2 * np.pi / ny, h*np.ones(n)], x0="00C"
         )
 
         for radius in [0.5, 1, 1.5]:
             self.clws.radius = radius
-            self.clws.current = 1./(np.pi * radius**2)
+            self.clws.current = 1./(np.pi * radius**2)  # So that all have moment of 1.0
 
-            fdem_dipole = fdem.MagneticDipoleWholeSpace(frequency=0)
+            fdem_dipole = fdem.MagneticDipoleWholeSpace(frequency=0, quasistatic=True)
 
             for location in [
                 np.r_[0, 0, 0], np.r_[0, 4, 0], np.r_[4, 4., 0],
@@ -240,8 +235,8 @@ class TestEM_Static(unittest.TestCase):
                         )[:, 2]
                     ])
 
-                    b_clws = mesh.edgeCurl * a_clws
-                    b_mdws = mesh.edgeCurl * a_mdws
+                    b_clws = mesh.edge_curl * a_clws
+                    b_mdws = mesh.edge_curl * a_mdws
 
                     b_fdem = np.hstack([
                         spatial.cartesian_2_cylindrical(

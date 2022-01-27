@@ -4,7 +4,7 @@ from geoana.spatial import repeat_scalar
 from geoana.em.base import BaseElectricDipole, BaseMagneticDipole
 
 
-class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
+class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
     r"""Class for a harmonic electric dipole in a wholespace.
 
     Harmonic electric dipole in a whole space. The source is
@@ -17,6 +17,13 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseFDEM):
         - \mathbf{r}_s)\mathbf{\hat{u}}
 
     """
+
+    def __init__(self, frequency, **kwargs):
+
+        BaseFDEM.__init__(self, frequency, **kwargs)
+        BaseElectricDipole.__init__(self, **kwargs)
+
+
     def vector_potential(self, xyz):
         r"""Vector potential for the harmonic current dipole at a set of gridded locations.
 
@@ -212,6 +219,11 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
     """
     Harmonic magnetic dipole in a whole space.
     """
+
+    def __init__(self, frequency, **kwargs):
+
+        BaseFDEM.__init__(self, frequency, **kwargs)
+        BaseMagneticDipole.__init__(self, **kwargs)
 
     def vector_potential(self, xyz):
         r"""Vector potential for the harmonic magnetic dipole at a set of gridded locations.

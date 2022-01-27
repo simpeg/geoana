@@ -629,16 +629,16 @@ def rotate_points_from_normals(xyz, n0, n1, x0=np.r_[0., 0., 0.]):
 # Aliases
 def cylindrical_2_cartesian(grid, vec=None):
     """An alias for cylindrical_to_cartesian"""
-    cylindrical_to_cartesian(grid, vec)
+    return cylindrical_to_cartesian(grid, vec)
 
 def cartesian_2_cylindrical(grid, vec=None):
     """An alias for cartesian_to_cylindrical"""
-    cartesian_to_cylindrical(grid, vec)
+    return cartesian_to_cylindrical(grid, vec)
 
 def spherical_2_cartesian(grid, vec=None):
     """An alias for spherical_to_cartesian"""
-    spherical_to_cartesian(grid, vec)
+    return spherical_to_cartesian(grid, vec)
 
 def cartesian_2_spherical(grid, vec=None):
     """An Alias for cartesian_to_spherical"""
-    cartesian_to_spherical(grid, vec)
+    return cartesian_to_spherical(grid, vec)

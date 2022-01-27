@@ -198,11 +198,11 @@ class BaseFDEM(BaseEM):
     #     default=False
     # )
 
-    def __init__(self, frequency, sigma=1., mu=mu_0, epsilon=epsilon_0, quasistatic=False):
+    def __init__(self, frequency, **kwargs):
 
         self.frequency = frequency
-        self.quasistatic = quasistatic
-        super().__init__(sigma, mu, epsilon)
+        self.quasistatic = kwargs.pop("quasistatic", False)
+        super().__init__(**kwargs)
 
     @property
     def frequency(self):
@@ -220,10 +220,10 @@ class BaseFDEM(BaseEM):
         try:
             value = float(value)
         except:
-            raise TypeError(f"sigma must be a number, got {type(value)}")
+            raise TypeError(f"frequency must be a number, got {type(value)}")
         
-        if value <= 0.0:
-            raise ValueError("sigma must be greater than 0")
+        if value < 0.0:
+            raise ValueError("frequency must be greater than 0")
 
         self._frequency = value
 

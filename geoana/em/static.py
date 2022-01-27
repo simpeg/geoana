@@ -24,16 +24,9 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
     fields and potentials within a wholespace due to a static magnetic dipole.
     """
 
-    def __init__(self, location, orientation, moment=1., sigma=1., mu=mu_0, epsilon=epsilon_0):
-
-        super().__init__(
-            location=location,
-            orientation=orientation,
-            moment=moment,
-            sigma=sigma,
-            mu=mu,
-            epsilon=epsilon
-        )
+    def __init__(self, **kwargs):
+        BaseMagneticDipole.__init__(self, **kwargs)
+        BaseEM.__init__(self, **kwargs)
 
 
     def vector_potential(self, xyz, coordinates="cartesian"):
@@ -221,16 +214,9 @@ class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
     fields and potentials within a wholespace due to a static magnetic pole.
     """
 
-    def __init__(self, location, orientation, moment=1., sigma=1., mu=mu_0, epsilon=epsilon_0):
-
-        super().__init__(
-            location=location,
-            orientation=orientation,
-            moment=moment,
-            sigma=sigma,
-            mu=mu,
-            epsilon=epsilon
-        )
+    def __init__(self, **kwargs):
+        BaseMagneticDipole.__init__(self, **kwargs)
+        BaseEM.__init__(self, **kwargs)
 
     def magnetic_flux_density(self, xyz, coordinates="cartesian"):
         r"""Compute the magnetic flux density produced by the static magnetic pole.
@@ -341,23 +327,18 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
     Parameters
     ----------
     current : float
-        Electrical current in the loop in Amps. Default=1.
+        Electrical current in the loop (A). Default is 1.
     radius : float
-        Radius of the loop in meters
+        Radius of the loop (m). Default is :math:`\\pi^{-1/2}` so that the loop
+        has a default dipole moment of 1 :math:`A/m^2`.
     """
 
-    def __init__(self, location, orientation, radius, current=1., sigma=1., mu=mu_0, epsilon=epsilon_0):
+    def __init__(self, **kwargs):
 
-        self.radius = radius
-        self.current = current
-
-        super().__init__(
-            location=location,
-            orientation=orientation,
-            sigma=sigma,
-            mu=mu,
-            epsilon=epsilon
-        )
+        self.current = kwargs.pop("current", 1.0)
+        self.radius = kwargs.pop("radius", np.sqrt(1.0/np.pi))
+        BaseDipole.__init__(self, **kwargs)
+        BaseEM.__init__(self, **kwargs)
 
 
     @property
@@ -394,7 +375,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         float
             Radius of the loop in meters
         """
-        return self._current
+        return self._radius
 
     @radius.setter
     def radius(self, value):
@@ -719,18 +700,21 @@ class ElectrostaticSphere:
     Parameters
     ----------
     radius : float
-        radius of sphere (m)
+        radius of sphere (m).
     sigma_sphere : float
         conductivity of target sphere (S/m)
     sigma_background : float
         background conductivity (S/m)
     amplitude : float, optional
-        amplitude of primary electric field along the :math:`\\hat{x}` direction (V/m)
+        amplitude of primary electric field along the :math:`\\hat{x}` direction (V/m).
+        Default is 1.
     location : (3) array_like, optional
-        Center of the sphere, defaults to origin (0, 0, 0).
+        Center of the sphere. Defaults is (0, 0, 0).
     """
 
-    def __init__(self, radius, sigma_sphere, sigma_background, amplitude=1.0, location=np.r_[0.,0.,0.]):
+    def __init__(
+        self, radius, sigma_sphere, sigma_background, amplitude=1.0, location=np.r_[0.,0.,0.]
+    ):
 
         self.radius = radius
         self.sigma_sphere = sigma_sphere

@@ -31,7 +31,11 @@ class BaseEM:
         Dielectric permittivity F/m. Default is :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
     """
 
-    def __init__(self, sigma=1., mu=mu_0, epsilon=epsilon_0):
+    def __init__(self, **kwargs):
+
+        sigma = kwargs.pop("sigma", 1.0)
+        mu = kwargs.pop("mu", mu_0)
+        epsilon = kwargs.pop("epsilon", epsilon_0)
 
         self.sigma = sigma
         self.mu = mu
@@ -135,15 +139,19 @@ class BaseDipole:
     Parameters
     ----------
     location: (3) array_like
-        Location of the dipole in 3D space
+        Location of the dipole in 3D space. Default is (0,0,0)
     orientation : (3) array_like or str {'X','Y','Z'}
         Orientation of the dipole. Can be defined using as an ``array_like`` of length 3,
         or by using one of {'X','Y','Z'} to define a unit dipole along the x, y or z direction.
+        Default is 'X'.
     """
 
-    def __init__(self, location, orientation):
+    def __init__(self, **kwargs):
 
-        self.location = locations
+        location = kwargs.pop("location", np.r_[0.,0.,0.])
+        orientation = kwargs.pop("orientation", 'X')
+
+        self.location = location
         self.orientation = orientation
 
 
@@ -190,11 +198,11 @@ class BaseDipole:
     def orientation(self, var):
         
         if isinstance(var, str):
-            if upper(var) == 'X':
+            if var.upper() == 'X':
                 var = np.r_[1., 0., 0.]
-            elif upper(var) == 'Y':
+            elif var.upper() == 'Y':
                 var = np.r_[0., 1., 0.]
-            elif upper(orientation) == 'Z':
+            elif var.upper() == 'Z':
                 var = np.r_[0., 0., 1.]
         else:
             try:
@@ -332,17 +340,20 @@ class BaseElectricDipole(BaseDipole):
     Parameters
     ----------
     length : float, int
-        Length of the electric current dipole (m)
+        Length of the electric current dipole (m). Default is 1.
     current : float, int
-        Current of the electric current dipole (A)
+        Current of the electric current dipole (A). Default is 1.
     """
 
-    def __init__(self, location, orientation, length, current):
+    def __init__(self, **kwargs):
+
+        length = kwargs.pop("length", 1.0)
+        current = kwargs.pop("current", 1.0)
 
         self.length = length
         self.current = current
 
-        super().__init__(location, orientation)
+        super().__init__(**kwargs)
 
 
     @property
@@ -416,14 +427,16 @@ class BaseMagneticDipole(BaseDipole):
     Parameters
     ----------
     moment : float, int
-        Amplitude of the dipole moment for the magnetic dipole (:math:`A/m^2`)
+        Amplitude of the dipole moment for the magnetic dipole (:math:`A/m^2`).
+        Default is 1.
     """
 
-    def __init__(self, location, orientation, moment=1.):
-
+    def __init__(self, **kwargs):
+        
+        moment = kwargs.pop("moment", 1.0)
         self.moment = moment
-
-        super().__init__(location, orientation)
+        
+        super().__init__(**kwargs)
 
     @property
     def moment(self):

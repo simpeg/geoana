@@ -133,7 +133,8 @@ class TestFDEMdipole(unittest.TestCase):
 
     def test_defaults(self):
         TOL = 1e-15
-        mdws = fdem.MagneticDipoleWholeSpace()
+        frequency = 1.0
+        mdws = fdem.MagneticDipoleWholeSpace(frequency)
         assert(mdws.sigma == 1.)
         assert(mdws.mu == mu_0)
         assert(mdws.epsilon == epsilon_0)
@@ -249,11 +250,12 @@ class TestFDEMdipole(unittest.TestCase):
 
     def test_magnetic_dipole_tilted_b(self):
 
+        frequency = 1.0
         orientation = np.random.rand(3)
         orientation = orientation / np.linalg.norm(orientation)
 
         mdws = fdem.MagneticDipoleWholeSpace(
-            orientation=orientation
+            frequency, orientation=orientation
         )
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -302,11 +304,12 @@ class TestFDEMdipole(unittest.TestCase):
 
     def test_magnetic_dipole_tilted_e(self):
 
+        frequency = 1.0
         orientation = np.random.rand(3)
         orientation = orientation / np.linalg.norm(orientation)
 
         mdws = fdem.MagneticDipoleWholeSpace(
-            orientation=orientation
+            frequency, orientation=orientation
         )
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
