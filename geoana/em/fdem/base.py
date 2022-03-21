@@ -174,8 +174,8 @@ class BaseFDEM(BaseEM):
 
     Parameters
     ----------
-    frequency : int, float
-        Frequency (Hz) used for all computations
+    frequency : int, float or (n_freq) numpy.ndarray
+        Frequency or frequencies used for all computations in Hz.
     quasistatic : bool
         If ``True``, we assume the quasistatic approximation and dielectric permittivity
         is neglected in all computations. Default is ``False``.
@@ -198,10 +198,10 @@ class BaseFDEM(BaseEM):
     #     default=False
     # )
 
-    def __init__(self, frequency, **kwargs):
+    def __init__(self, frequency, quasistatic=False, **kwargs):
 
         self.frequency = frequency
-        self.quasistatic = kwargs.pop("quasistatic", False)
+        self.quasistatic = quasistatic
         super().__init__(**kwargs)
 
     @property
@@ -210,20 +210,30 @@ class BaseFDEM(BaseEM):
 
         Returns
         -------
-        float
-            Frequency in Hz used for all computations
+        numpy.ndarray
+            Frequency (or frequencies) in Hz used for all computations
         """
         return self._frequency
 
     @frequency.setter
     def frequency(self, value):
-        try:
-            value = float(value)
-        except:
-            raise TypeError(f"frequency must be a number, got {type(value)}")
         
-        if value < 0.0:
-            raise ValueError("frequency must be greater than 0")
+        # Ensure float or numpy array of float
+        try:
+            if type(value) == np.ndarray:
+                value = value.astype(float)
+            elif type(value) == list:
+                value = np.array(value, dtype=float)
+            else:
+                value = np.array([value], dtype=float)
+        except:
+            raise TypeError(f"frequencies are not a valid type")
+        
+        # Enforce positivity and dimensions
+        if (value < 0.).any():
+            raise ValueError("All frequencies must be greater than 0")
+        if value.ndim > 1:
+            raise TypeError(f"frequencies must be ('*') array")
 
         self._frequency = value
 

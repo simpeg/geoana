@@ -333,10 +333,10 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         has a default dipole moment of 1 :math:`A/m^2`.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, radius=np.sqrt(1.0/np.pi), current=1.0, **kwargs):
 
-        self.current = kwargs.pop("current", 1.0)
-        self.radius = kwargs.pop("radius", np.sqrt(1.0/np.pi))
+        self.current = current
+        self.radius = radius
         BaseDipole.__init__(self, **kwargs)
         BaseEM.__init__(self, **kwargs)
 

@@ -7,22 +7,25 @@ from geoana.em.fdem.base import BaseFDEM
 
 
 class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
-    """Harmonic magnetic dipole in a half space.
-
-    Only valid for source and receivers at the surface. The surface is assumed
-    to be at z=0.
+    r"""Class for a harmonic magnetic dipole in a wholespace.
     """
 
-    frequency = properties.Array(
-        "Source frequency (Hz)",
-        shape=('*', ),
-        dtype=float
-    )
+    # frequency = properties.Array(
+    #     "Source frequency (Hz)",
+    #     shape=('*', ),
+    #     dtype=float
+    # )
 
-    @properties.validator("location")
-    def _check_source_height(self, change):
-        if change["value"][2] != 0.0:
-            raise ValueError("Source must be at the surface of the earth (z=0)")
+    # @properties.validator("location")
+    # def _check_source_height(self, change):
+    #     if change["value"][2] != 0.0:
+    #         raise ValueError("Source must be at the surface of the earth (z=0)")
+
+    def __init__(self, frequency, **kwargs):
+
+        BaseFDEM.__init__(self, frequency, **kwargs)
+        BaseMagneticDipole.__init__(self, **kwargs)
+
 
     def magnetic_field(self, xy, field="secondary"):
         """Magnetic field due to a magnetic dipole over a half space

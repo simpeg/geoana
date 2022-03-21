@@ -31,11 +31,7 @@ class BaseEM:
         Dielectric permittivity F/m. Default is :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
     """
 
-    def __init__(self, **kwargs):
-
-        sigma = kwargs.pop("sigma", 1.0)
-        mu = kwargs.pop("mu", mu_0)
-        epsilon = kwargs.pop("epsilon", epsilon_0)
+    def __init__(self, sigma=1.0, mu=mu_0, epsilon=epsilon_0, **kwargs):
 
         self.sigma = sigma
         self.mu = mu
@@ -146,10 +142,7 @@ class BaseDipole:
         Default is 'X'.
     """
 
-    def __init__(self, **kwargs):
-
-        location = kwargs.pop("location", np.r_[0.,0.,0.])
-        orientation = kwargs.pop("orientation", 'X')
+    def __init__(self, location=np.r_[0.,0.,0.], orientation='X', **kwargs):
 
         self.location = location
         self.orientation = orientation
@@ -345,10 +338,7 @@ class BaseElectricDipole(BaseDipole):
         Current of the electric current dipole (A). Default is 1.
     """
 
-    def __init__(self, **kwargs):
-
-        length = kwargs.pop("length", 1.0)
-        current = kwargs.pop("current", 1.0)
+    def __init__(self, length=1.0, current=1.0, **kwargs):
 
         self.length = length
         self.current = current
@@ -431,11 +421,9 @@ class BaseMagneticDipole(BaseDipole):
         Default is 1.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, moment=1.0, **kwargs):
         
-        moment = kwargs.pop("moment", 1.0)
         self.moment = moment
-        
         super().__init__(**kwargs)
 
     @property

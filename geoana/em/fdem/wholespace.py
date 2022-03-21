@@ -46,17 +46,35 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Magnetic vector potential at the gridded location provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Magnetic vector potential at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
+        # r = self.distance(xyz)
+        # a = (
+        #     (self.current * self.length) / (4*np.pi*r) *
+        #     np.exp(-1j*self.wavenumber*r)
+        # )
+        # a = np.kron(np.ones(1, 3), np.atleast_2d(a).T)
+        # return self.dot_orientation(a)
+
+        n_freq = len(self.frequency)
+        n_loc = np.shape(xyz)[0]
+
         r = self.distance(xyz)
-        a = (
-            (self.current * self.length) / (4*np.pi*r) *
-            np.exp(-1j*self.wavenumber*r)
+        k = self.wavenumber
+        
+        # (n_freq, n_loc) array
+        a = self.current * self.length * (
+            1 / (4*np.pi*np.tile(r.reshape((1, n_loc)), (n_freq, 1))) *
+            np.exp(-1j*np.outer(k, r))
         )
-        a = np.kron(np.ones(1, 3), np.atleast_2d(a).T)
-        return self.dot_orientation(a)
+        
+        v = self.orientation.reshape(1, 1, 3)
+        a = a.reshape((n_freq, n_loc, 1))
+        return np.kron(v, a).squeeze()
 
     def electric_field(self, xyz):
         r"""Electric field for the harmonic current dipole at a set of gridded locations.
@@ -85,28 +103,61 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Electric field at the gridded locations provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Electric field at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
-        dxyz = self.vector_distance(xyz)
-        r = repeat_scalar(self.distance(xyz))
-        kr = self.wavenumber * r
-        ikr = 1j * kr
+        # dxyz = self.vector_distance(xyz)
+        # r = repeat_scalar(self.distance(xyz))
+        # kr = self.wavenumber * r
+        # ikr = 1j * kr
 
-        front_term = (
-            (self.current * self.length) / (4 * np.pi * self.sigma * r**3) *
-            np.exp(-ikr)
-        )
-        symmetric_term = (
-            repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
-            (-kr**2 + 3*ikr + 3) / r**2
-        )
-        oriented_term = (
-            (kr**2 - ikr - 1) *
-            np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
-        )
-        return front_term * (symmetric_term + oriented_term)
+        # front_term = (
+        #     (self.current * self.length) / (4 * np.pi * self.sigma * r**3) *
+        #     np.exp(-ikr)
+        # )
+        # symmetric_term = (
+        #     repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
+        #     (-kr**2 + 3*ikr + 3) / r**2
+        # )
+        # oriented_term = (
+        #     (kr**2 - ikr - 1) *
+        #     np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
+        # )
+        # return front_term * (symmetric_term + oriented_term)
+
+        n_freq = len(self.frequency)
+        n_loc = np.shape(xyz)[0]
+
+        k = self.wavenumber
+        r = self.distance(xyz)
+        dxyz = self.vector_distance(xyz)
+        
+        # (n_freq, n_loc) arrays
+        kr = np.outer(k, r)
+        ikr = 1j * kr
+        tile_r = np.outer(np.ones(n_freq), r)
+        
+        front_term = (self.current * self.length) * (
+            1 / (4 * np.pi * self.sigma * tile_r**3) * np.exp(-ikr)
+        ).reshape((n_freq, n_loc, 1))
+        front_term = np.tile(front_term, (1, 1, 3))
+        
+        temp_1 = repeat_scalar(self.dot_orientation(dxyz)) * dxyz
+        temp_1 = np.tile(temp_1.reshape((1, n_loc, 3)), (n_freq, 1, 1))
+        temp_2 = (-kr**2 + 3*ikr + 3) / tile_r**2
+        temp_2 = np.tile(temp_2.reshape((n_freq, n_loc, 1)), (1, 1, 3))
+        symmetric_term = temp_1 * temp_2
+        
+        temp_1 = (kr**2 - ikr - 1)
+        temp_1 = np.tile(temp_1.reshape((n_freq, n_loc, 1)), (1, 1, 3))
+        temp_2 = np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
+        temp_2 = np.tile(temp_2.reshape((1, n_loc, 3)), (n_freq, 1, 1))
+        oriented_term = temp_1 * temp_2
+
+        return (front_term * (symmetric_term + oriented_term)).squeeze()
 
     def current_density(self, xyz):
         r"""Current density for the harmonic current dipole at a set of gridded locations.
@@ -135,8 +186,10 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Current density at the gridded locations provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Current density at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
         return self.sigma * self.electric_field(xyz)
@@ -167,20 +220,46 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Magnetic field at the gridded locations provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Magnetic field at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
-        dxyz = self.vector_distance(xyz)
-        r = repeat_scalar(self.distance(xyz))
-        kr = self.wavenumber * r
-        ikr = 1j*kr
+        # dxyz = self.vector_distance(xyz)
+        # r = repeat_scalar(self.distance(xyz))
+        # kr = self.wavenumber * r
+        # ikr = 1j*kr
 
-        front_term = (
-            self.current * self.length / (4 * np.pi * r**2) * (ikr + 1) *
-            np.exp(-ikr)
-        )
-        return -front_term * self.cross_orientation(dxyz) / r
+        # front_term = (
+        #     self.current * self.length / (4 * np.pi * r**2) * (ikr + 1) *
+        #     np.exp(-ikr)
+        # )
+        # return -front_term * self.cross_orientation(dxyz) / r
+        
+        n_freq = len(self.frequency)
+        n_loc = np.shape(xyz)[0]
+        
+        k = self.wavenumber
+        r = self.distance(xyz)
+        
+        # (n_freq, n_loc)
+        kr = np.outer(k, r)
+        ikr = 1j * kr
+        tile_r = np.outer(np.ones(n_freq), r)
+        
+        r = repeat_scalar(r)
+        dxyz = self.vector_distance(xyz)
+
+        first_term = self.current * self.length * (
+            1 / (4 * np.pi * tile_r**2) * (ikr + 1) * np.exp(-ikr)
+        ).reshape((n_freq, n_loc, 1))
+        first_term = np.tile(first_term, (1, 1, 3))
+        
+        second_term = (self.cross_orientation(dxyz) / r).reshape((1, n_loc, 3))
+        second_term = np.tile(second_term, (n_freq, 1, 1))
+        
+        return -(first_term * second_term).squeeze()
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density produced by the harmonic current dipole at a set of gridded locations.
@@ -208,8 +287,10 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Magnetic flux density at the gridded locations provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Magnetic flux at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
         return self.mu * self.magnetic_field(xyz)
@@ -248,17 +329,37 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Magnetic vector potential at the gridded location provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Magnetic vector potential at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
+        # r = self.distance(xyz)
+        # f = (
+        #     (1j * self.omega * self.mu * self.moment) / (4 * np.pi * r) *
+        #     np.exp(-1j * self.wavenumber * r)
+        # )
+        # f = np.kron(np.ones(1, 3), np.atleast_2d(f).T)
+        # return self.dot_orientation(f)
+        
+        n_freq = len(self.frequency)
+        n_loc = np.shape(xyz)[0]
+
         r = self.distance(xyz)
-        f = (
-            (1j * self.omega * self.mu * self.moment) / (4 * np.pi * r) *
-            np.exp(-1j * self.wavenumber * r)
+        k = self.wavenumber
+        
+        tile_r = np.tile(r.reshape((1, n_loc)), (n_freq, 1))
+        tile_w = np.tile(self.omega.reshape((n_freq, 1)), (1, n_loc))
+
+        a = (1j * tile_w * self.mu * self.moment) * (
+            1 / (4*np.pi*tile_r) * np.exp(-1j*np.outer(k, r))
         )
-        f = np.kron(np.ones(1, 3), np.atleast_2d(f).T)
-        return self.dot_orientation(f)
+
+        v = self.orientation.reshape(1, 1, 3)
+        a = a.reshape((n_freq, n_loc, 1))
+        
+        return np.kron(v, a).squeeze()
 
     def electric_field(self, xyz):
         r"""Electric field for the harmonic magnetic dipole at a set of gridded locations.
@@ -286,20 +387,48 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Electric field at the gridded locations provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Electric field at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
-        dxyz = self.vector_distance(xyz)
-        r = repeat_scalar(self.distance(xyz))
-        kr = self.wavenumber*r
+        # dxyz = self.vector_distance(xyz)
+        # r = repeat_scalar(self.distance(xyz))
+        # kr = self.wavenumber*r
+        # ikr = 1j * kr
+
+        # front_term = (
+        #     (1j * self.omega * self.mu * self.moment) / (4. * np.pi * r**2) *
+        #     (ikr + 1) * np.exp(-ikr)
+        # )
+        # return front_term * self.cross_orientation(dxyz) / r
+        
+        n_freq = len(self.frequency)
+        n_loc = np.shape(xyz)[0]
+        
+        k = self.wavenumber
+        r = self.distance(xyz)
+        
+        # (n_freq, n_loc)
+        tile_r = np.tile(r.reshape((1, n_loc)), (n_freq, 1))
+        tile_w = np.tile(self.omega.reshape((n_freq, 1)), (1, n_loc))
+        kr = np.outer(k, r)
         ikr = 1j * kr
 
-        front_term = (
-            (1j * self.omega * self.mu * self.moment) / (4. * np.pi * r**2) *
-            (ikr + 1) * np.exp(-ikr)
-        )
-        return front_term * self.cross_orientation(dxyz) / r
+        first_term = (1j * tile_w * self.mu * self.moment) * (
+            1 / (4 * np.pi * tile_r**2) * (ikr + 1) * np.exp(-ikr)
+        ).reshape((n_freq, n_loc, 1))
+        first_term = np.tile(first_term, (1, 1, 3))
+        
+        r = repeat_scalar(r)
+        dxyz = self.vector_distance(xyz)
+        
+        second_term = (self.cross_orientation(dxyz) / r).reshape((1, n_loc, 3))
+        second_term = np.tile(second_term, (n_freq, 1, 1))
+        
+        return (first_term * second_term).squeeze()
+        
 
     def current_density(self, xyz):
         r"""Current density for the harmonic magnetic dipole at a set of gridded locations.
@@ -327,8 +456,10 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Current density at the gridded locations provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Current density at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
         return self.sigma * self.electric_field(xyz)
@@ -360,26 +491,59 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Magnetic field at the gridded locations provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Magnetic field at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
+        # dxyz = self.vector_distance(xyz)
+        # r = repeat_scalar(self.distance(xyz))
+        # kr = self.wavenumber*r
+        # ikr = 1j*kr
+
+        # front_term = self.moment / (4. * np.pi * r**3) * np.exp(-ikr)
+        # symmetric_term = (
+        #     repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
+        #     (-kr**2 + 3*ikr + 3) / r**2
+        # )
+        # oriented_term = (
+        #     (kr**2 - ikr - 1) *
+        #     np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
+        # )
+
+        # return front_term * (symmetric_term + oriented_term)
+        
+        n_freq = len(self.frequency)
+        n_loc = np.shape(xyz)[0]
+
+        k = self.wavenumber
+        r = self.distance(xyz)
         dxyz = self.vector_distance(xyz)
-        r = repeat_scalar(self.distance(xyz))
-        kr = self.wavenumber*r
-        ikr = 1j*kr
+        
+        # (n_freq, n_loc)
+        kr = np.outer(k, r)
+        ikr = 1j * kr
+        tile_r = np.outer(np.ones(n_freq), r)
+        
+        front_term = self.moment * (
+            1 / (4 * np.pi * tile_r**3) * np.exp(-ikr)
+        ).reshape((n_freq, n_loc, 1))
+        front_term = np.tile(front_term, (1, 1, 3))
+        
+        temp_1 = repeat_scalar(self.dot_orientation(dxyz)) * dxyz
+        temp_1 = np.tile(temp_1.reshape((1, n_loc, 3)), (n_freq, 1, 1))
+        temp_2 = (-kr**2 + 3*ikr + 3) / tile_r**2
+        temp_2 = np.tile(temp_2.reshape((n_freq, n_loc, 1)), (1, 1, 3))
+        symmetric_term = temp_1 * temp_2
+        
+        temp_1 = (kr**2 - ikr - 1)
+        temp_1 = np.tile(temp_1.reshape((n_freq, n_loc, 1)), (1, 1, 3))
+        temp_2 = np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
+        temp_2 = np.tile(temp_2.reshape((1, n_loc, 3)), (n_freq, 1, 1))
+        oriented_term = temp_1 * temp_2
 
-        front_term = self.moment / (4. * np.pi * r**3) * np.exp(-ikr)
-        symmetric_term = (
-            repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
-            (-kr**2 + 3*ikr + 3) / r**2
-        )
-        oriented_term = (
-            (kr**2 - ikr - 1) *
-            np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
-        )
-
-        return front_term * (symmetric_term + oriented_term)
+        return (front_term * (symmetric_term + oriented_term)).squeeze()
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the harmonic magnetic dipole at a set of gridded locations.
@@ -408,8 +572,10 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
         Returns
         -------
-        (n, 3) numpy.array of complex
-            Magnetic flux density at the gridded locations provided.
+        (n_freq, n_loc, 3) numpy.array of complex
+            Magnetic flux density at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
 
         """
         return self.mu * self.magnetic_field(xyz)
