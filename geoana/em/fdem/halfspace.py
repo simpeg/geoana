@@ -10,21 +10,15 @@ class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
     r"""Class for a harmonic magnetic dipole in a wholespace.
     """
 
-    # frequency = properties.Array(
-    #     "Source frequency (Hz)",
-    #     shape=('*', ),
-    #     dtype=float
-    # )
-
-    # @properties.validator("location")
-    # def _check_source_height(self, change):
-    #     if change["value"][2] != 0.0:
-    #         raise ValueError("Source must be at the surface of the earth (z=0)")
-
     def __init__(self, frequency, **kwargs):
 
         BaseFDEM.__init__(self, frequency, **kwargs)
         BaseMagneticDipole.__init__(self, **kwargs)
+        self._check_is_valid_location()
+
+    def _check_is_valid_location(self):
+        if self.location[2] != 0.0:
+            raise ValueError("Source must be at the surface of the earth (i.e. z=0.0)")
 
 
     def magnetic_field(self, xy, field="secondary"):
@@ -40,28 +34,48 @@ class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
             receiver locations of shape (n_locations, 2)
         field : ("secondary", "total")
             Flag for the type of field to return.
+
+        Returns
+        -------
+        (n_freq, n_loc, 3) numpy.array of complex
+            Magnetic field at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
         """
-        sig = self.sigma_hat
         f = self.frequency
+        n_freq = len(f)
+        sig = self.sigma_hat
         w = 2*np.pi*f
         k = np.sqrt(-1j*w*mu_0*sig)[:, None]
+
         dxy = xy[:, :2] - self.location[:2]
         r = np.linalg.norm(dxy, axis=-1)
+        n_loc = len(r)
         x = dxy[:, 0]
         y = dxy[:, 1]
 
-        em_x = em_y = em_z = 0
+        em_x = em_y = em_z = np.zeros((n_freq, n_loc), dtype=complex)
         src_x, src_y, src_z = self.orientation
-        # Z component of source
-        alpha = 1j*k*r/2.
+        
+        # tile such that (n_freq, n_loc)
+        alpha = 1j * np.outer(k, r) / 2
+        r = np.tile(r.reshape((1, n_loc)), (n_freq, 1))
+        k = np.tile(k.reshape((n_freq, 1)), (1, n_loc))
+        # alpha = 1j*k*r/2.
         IK1 = iv(1, alpha)*kv(1, alpha)
         IK2 = iv(2, alpha)*kv(2, alpha)
+
         if src_z != 0.0:
+            # Z component of source
             em_z += src_z*2.0/(k**2*r**5)*(9-(9+9*1j*k*r-4*k**2*r**2-1j*k**3*r**3)*np.exp(-1j*k*r))
             Hr = (k**2/r)*(IK1 - IK2)
             angle = np.arctan2(y, x)
+            angle = np.tile(angle.reshape((1, n_loc)), (n_freq, 1))
             em_x += src_z*np.cos(angle)*Hr
             em_y += src_z*np.sin(angle)*Hr
+        
+        x = np.tile(x.reshape((1, n_loc)), (n_freq, 1))
+        y = np.tile(y.reshape((1, n_loc)), (n_freq, 1))
 
         if src_x != 0.0 or src_y != 0.0:
             # X component of source
@@ -86,4 +100,4 @@ class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
             em_y -= 3*y*mdotr/r**5 - src_y/r**3
             em_z -= -src_z/r**3 # + 3*(z=0)*mdotr/r**5
 
-        return self.moment/(4*np.pi)*np.stack((em_x, em_y, em_z), axis=-1)
+        return self.moment/(4*np.pi)*np.stack((em_x, em_y, em_z), axis=-1).squeeze()

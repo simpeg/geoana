@@ -9,57 +9,324 @@ from geoana.kernels.tranverse_electric_reflections import rTE_forward
 
 
 class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
+    """Simulation class for a harmonic magnetic dipole over a layered halfspace.
 
-    thickness = properties.Array(
-        "Layer thicknesses (m) starting from the top-most layer. The bottom layer is assumed to be infinite.",
-        shape=('*', ),
-        dtype=float
-    )
+    This class is used to simulate the fields produced by a harmonic magnetic dipole
+    source over a layered halfspace.
 
-    sigma = properties.Array(
-        "Electrical conductivity (S/m), defined starting from the top most layer",
-        shape=('*', ),
-        dtype=complex,
-        coerce=True
-    )
+    Parameters
+    ----------
+    thickness : None or ('*') numpy.ndarray
+        Layer thicknesses (m) from the top layer downwards. If ``None`` is entered, you are
+        defining a homogeneous halfspace. The bottom layer extends to infinity, thus
+        n_layer = n_thickness + 1.
+    sigma : (n_layer) np.ndarray or (n_layer, n_frequency) np.ndarray
+        Electrical conductivities for all layers (and at all frequencies). For non-dispersive
+        conductivity (no chargeability) or for an instance of **MagneticDipoleLayeredHalfSpace**
+        at a single frequency, *sigma* is assigned with a (n_layer) np.ndarray.
+        For dispersive conductivity and multiple frequencies, *sigma* is assigned with
+        a (n_layer, n_frequency) np.ndarray.
+    mu : (n_layer) np.ndarray or (n_layer, n_frequency) np.ndarray
+        Magnetic permeability for all layers (and at all frequencies). For non-dispersive
+        permeability (no viscous remanent magnetization) or for an instance of
+        **MagneticDipoleLayeredHalfSpace** at a single frequency, *mu* is assigned with a
+        (n_layer) np.ndarray. For dispersive permeability and multiple frequencies, *mu*
+        is assigned with a (n_layer, n_frequency) np.ndarray.
+    epsilon : (n_layer) np.ndarray or (n_layer, n_frequency) np.ndarray
+        Dielectric permittivity for all layers (and at all frequencies). Only applicable when
+        *quasistatic* == ``True``. For non-dispersive permittivity or for an instance of
+        **MagneticDipoleLayeredHalfSpace** at a single frequency, *epsilon* is assigned with
+        a (n_layer) np.ndarray. For dispersive permittivity and multiple frequencies,
+        *epsilon* is assigned with a (n_layer, n_frequency) np.ndarray.
 
-    frequency = properties.Array(
-        "Source frequency (Hz)",
-        shape=('*', ),
-        dtype=float
-    )
+    """
 
-    mu = properties.Array(
-        "Magnetic permeability (H/m), defined starting from the top most layer",
-        shape=('*', ),
-        dtype=complex,
-        default=np.array([mu_0], dtype=np.complex128)
-    )
+    # thickness = properties.Array(
+    #     "Layer thicknesses (m) starting from the top-most layer. The bottom layer is assumed to be infinite.",
+    #     shape=('*', ),
+    #     dtype=float
+    # )
 
-    epsilon = properties.Array(
-        "Permitivity value (F/m), defined starting from the top most layer",
-        shape=('*', ),
-        dtype=float,
-        default=np.array([epsilon_0], dtype=np.float64)
-    )
+    # sigma = properties.Array(
+    #     "Electrical conductivity (S/m), defined starting from the top most layer",
+    #     shape=('*', ),
+    #     dtype=complex,
+    #     coerce=True
+    # )
 
-    def _get_valid_properties(self):
-        thick = self.thickness
-        n_layer = len(thick)+1
+    # frequency = properties.Array(
+    #     "Source frequency (Hz)",
+    #     shape=('*', ),
+    #     dtype=float
+    # )
+
+    # mu = properties.Array(
+    #     "Magnetic permeability (H/m), defined starting from the top most layer",
+    #     shape=('*', ),
+    #     dtype=complex,
+    #     default=np.array([mu_0], dtype=np.complex128)
+    # )
+
+    # epsilon = properties.Array(
+    #     "Permitivity value (F/m), defined starting from the top most layer",
+    #     shape=('*', ),
+    #     dtype=float,
+    #     default=np.array([epsilon_0], dtype=np.float64)
+    # )
+
+    def __init__(self, frequency, thickness, **kwargs):
+
+        self.thickness = thickness
+        BaseFDEM.__init__(self, frequency, **kwargs)
+        BaseMagneticDipole.__init__(self, **kwargs)
+        self._check_is_valid_location()
+
+
+    def _check_is_valid_location(self):
+        if self.location[2] < 0.0:
+            raise ValueError("Source must be above the surface of the earth (i.e. z >= 0.0)")
+
+    @property
+    def frequency(self):
+        """Frequency (Hz) used for all computations
+
+        Returns
+        -------
+        numpy.ndarray
+            Frequency (or frequencies) in Hz used for all computations
+        """
+        return self._frequency
+
+    @frequency.setter
+    def frequency(self, value):
+        
+        # Ensure float or numpy array of float
+        try:
+            if type(value) == np.ndarray:
+                value = value.astype(float)
+            elif type(value) == list:
+                value = np.array(value, dtype=float)
+            else:
+                value = np.array([value], dtype=float)
+        except:
+            raise TypeError(f"frequencies are not a valid type")
+        
+        # Enforce positivity and dimensions
+        if (value < 0.).any():
+            raise ValueError("All frequencies must be greater than 0")
+        if value.ndim > 1:
+            raise TypeError(f"frequencies must be ('*') array")
+
+        self._frequency = value
+
+    @property
+    def thickness(self):
+        """Thicknesses (m) for all layers from top to bottom
+
+        Returns
+        -------
+        numpy.ndarray
+            Thicknesses (m) for all layers from top to bottom
+        """
+        return self._thickness
+
+    @thickness.setter
+    def thickness(self, value):
+        
+        # Ensure float or numpy array of float
+        if value is None:
+            value = []
+        try:
+            if type(value) == np.ndarray:
+                value = value.astype(float)
+            elif type(value) == list:
+                value = np.array(value, dtype=float)
+            else:
+                value = np.array([value], dtype=float)
+        except:
+            raise TypeError(f"thickness are not a valid type")
+        
+        # Enforce positivity and dimensions
+        if (value < 0.).any():
+            raise ValueError("Thicknesses must be greater than 0")
+        if value.ndim > 1:
+            raise TypeError(f"Thicknesses must be ('*') array")
+
+        self._thickness = value
+
+
+    @property
+    def sigma(self):
+        """Electrical conductivity for all layers (and frequencies)
+
+        Returns
+        -------
+        numpy.ndarray (n_layer) or (n_layer, n_frequency)
+            Electrical conductivity  for all layers (and frequencies)
+        """
+        return self._sigma
+
+    @sigma.setter
+    def sigma(self, value):
+
+        n_layer = len(self.thickness) + 1
+        n_frequency = len(self.frequency)
+        
+        # Ensure numpy array of complex
+        try:
+            if type(value) == np.ndarray:
+                value = value.astype(complex)
+            elif type(value) == list:
+                value = np.array(value, dtype=complex)
+            else:
+                value = complex(value) * np.ones(n_layer)
+        except:
+            raise TypeError(f"sigma array is not a valid type")
+        
+        # Error if values are non-physical
+        if (value.imag < 0.).any():
+            raise ValueError("Imaginary components must be >= 0.0")
+        if (value.real <= 0.0).any():
+            raise ValueError("Real components must be > 0.0")
+        
+        # Enforce dimensions
+        if (value.ndim == 1) & (len(value) != n_layer):
+            raise TypeError(f"sigma must be (n_layer) or (n_layer, n_frequency) np.ndarray")
+        elif (value.ndim == 2) & (np.shape(value) != (n_layer, n_frequency)):
+            raise TypeError(f"sigma must be (n_layer) or (n_layer, n_frequency) np.ndarray")
+        elif value.ndim > 2:
+            raise TypeError(f"sigma must be (n_layer) or (n_layer, n_frequency) np.ndarray")
+
+        self._sigma = value
+
+    @property
+    def mu(self):
+        """Magnetic permeability for all layers (and frequencies)
+
+        Returns
+        -------
+        numpy.ndarray (n_layer) or (n_layer, n_frequency)
+            Magnetic permeability for all layers (and frequencies)
+        """
+        return self._mu
+
+    @mu.setter
+    def mu(self, value):
+
+        n_layer = len(self.thickness) + 1
+        n_frequency = len(self.frequency)
+        
+        # Ensure float or numpy array of complex
+        try:
+            if type(value) == np.ndarray:
+                value = value.astype(complex)
+            elif type(value) == list:
+                value = np.array(value, dtype=complex)
+            else:
+                value = complex(value) * np.ones(n_layer)
+        except:
+            raise TypeError(f"mu array is not a valid type")
+        
+        # Error if values are non-physical
+        if (value.imag < 0.).any():
+            raise ValueError("Imaginary components must be >= 0")
+        if (value.real < mu_0).any():
+            raise ValueError("Real components must be >= mu_0")
+        
+        # Enforce dimensions
+        if (value.ndim == 1) & (len(value) != n_layer):
+            raise TypeError(f"mu must be (n_layer) or (n_layer, n_frequency) np.ndarray")
+        elif (value.ndim == 2) & (np.shape(value) != (n_layer, n_frequency)):
+            raise TypeError(f"mu must be (n_layer) or (n_layer, n_frequency) np.ndarray")
+        elif value.ndim > 2:
+            raise TypeError(f"mu must be (n_layer) or (n_layer, n_frequency) np.ndarray")
+
+        self._mu = value
+
+
+    @property
+    def epsilon(self):
+        """Dielectric permittivity for all layers (and frequencies)
+
+        Returns
+        -------
+        numpy.ndarray (n_layer) or (n_layer, n_frequency)
+            Magnetic permeability for all layers (and frequencies)
+        """
+        return self._epsilon
+
+    @epsilon.setter
+    def epsilon(self, value):
+
+        n_layer = len(self.thickness) + 1
+        n_frequency = len(self.frequency)
+        
+        # Ensure float or numpy array of complex
+        try:
+            if type(value) == np.ndarray:
+                value = value.astype(complex)
+            elif type(value) == list:
+                value = np.array(value, dtype=complex)
+            else:
+                value = complex(value) * np.ones(n_layer)
+        except:
+            raise TypeError(f"epsilon array is not a valid type")
+        
+        # Error if values are non-physical
+        if (value.imag < 0.).any():
+            raise ValueError("Imaginary components must be >= 0.0")
+        if (value.real < epsilon_0).any():
+            raise ValueError("Real components must be >= epsilon_0")
+        
+        # Enforce dimensions
+        n_layers = len(self.thickness) + 1
+        n_frequency = len(self.frequency)
+        if (value.ndim == 1) & (len(value) != n_layer):
+            raise TypeError(f"epsilon must be (n_layer) or (n_layer, n_frequency) np.ndarray")
+        elif (value.ndim == 2) & (np.shape(value) != (n_layer, n_frequency)):
+            raise TypeError(f"epsilon must be (n_layer) or (n_layer, n_frequency) np.ndarray")
+        elif value.ndim > 2:
+            raise TypeError(f"epsilon must be (n_layer) or (n_layer, n_frequency) np.ndarray")
+
+        self._epsilon = value
+
+    # def _get_valid_properties(self):
+    #     thick = self.thickness
+    #     n_layer = len(thick)+1
+    #     sigma = self.sigma
+    #     epsilon = self.epsilon
+    #     mu = self.mu
+    #     if n_layer != 1:
+    #         sigma = self.sigma
+    #         if len(sigma) == 1:
+    #             sigma = np.ones(n_layer)*sigma
+    #         epsilon = self.epsilon
+    #         if len(epsilon) == 1:
+    #             epsilon = np.ones(n_layer)*epsilon
+    #         mu = self.mu
+    #         if len(mu) == 1:
+    #             mu = np.ones(n_layer)*mu
+    #     return thick, sigma, epsilon, mu
+
+    def _get_valid_properties_array(self):
+
+        thickness = self.thickness
+        n_layer = len(thickness)+1
+
+        frequency = self.frequency
+        n_frequency = len(frequency)
+
         sigma = self.sigma
-        epsilon = self.epsilon
+        if sigma.ndim == 1:
+            sigma = np.tile(sigma.reshape((n_layer, 1)), (1, n_frequency))
         mu = self.mu
-        if n_layer != 1:
-            sigma = self.sigma
-            if len(sigma) == 1:
-                sigma = np.ones(n_layer)*sigma
-            epsilon = self.epsilon
-            if len(epsilon) == 1:
-                epsilon = np.ones(n_layer)*epsilon
-            mu = self.mu
-            if len(mu) == 1:
-                mu = np.ones(n_layer)*mu
-        return thick, sigma, epsilon, mu
+        if mu.ndim == 1:
+            mu = np.tile(mu.reshape((n_layer, 1)), (1, n_frequency))
+        epsilon = self.epsilon
+        if epsilon.ndim == 1:
+            epsilon = np.tile(epsilon.reshape((n_layer, 1)), (1, n_frequency))
+
+        return thickness, sigma, epsilon, mu
 
     @property
     def sigma_hat(self):
@@ -78,19 +345,53 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         raise NotImplementedError()
 
     def magnetic_field(self, xyz, field="secondary"):
-        """
-        Magnetic field due to a magnetic dipole in a layered halfspace at a specific height z
+        r"""
+        Compute the magnetic field produced by a magnetic dipole over a layered halfspace.
 
         Parameters
         ----------
         xyz : numpy.ndarray
             receiver locations of shape (n_locations, 3).
-            The z component cannot be below the surface (z=0.0).
+            The z component cannot be below the surface (z >= 0.0).
         field : ("secondary", "total")
             Flag for the type of field to return.
+
+        Returns
+        -------
+        (n_freq, n_loc, 3) numpy.array of complex
+            Magnetic field at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
+
+        Notes
+        -----
+        We compute the magnetic using the Hankel transform solutions from Ward and Hohmann.
+        For the vertical component of the magnetic dipole, the vertical and horizontal fields
+        are given by equations 4.45 and 4.46:
+
+        .. math::
+            H_\rho = \frac{m_z}{4\pi} \int_0^\infty \bigg [ e^{-u_0 (z - h)} - r_{te} e^{u_0 (z + h)} \bigg ] \lambda^2 J_1 (\lambda \rho) \, d\lambda
+
+        .. math::
+            H_z = \frac{m_z}{4\pi} \int_0^\infty \bigg [ e^{-u_0 (z - h)} + r_{te} e^{u_0 (z + h)} \bigg ] \frac{\lambda^3}{u_0} J_0 (\lambda \rho) \, d\lambda
+        
+        For the horizontal component of the magnetic dipole, we compute the contribution by adapting
+        Ward and Hohmann equations 4.119-4.121; which is for an x-oriented magnetic dipole:
+
+        .. math::
+            H_x = & -\frac{m_x}{4\pi} \bigg ( \frac{1}{\rho} - \frac{2x^2}{\rho^3} \bigg ) \int_0^\infty \bigg [ e^{-u_0 (z - h)} - r_{te} e^{u_0 (z + h)} \bigg ] \lambda J_1 (\lambda \rho) \, d\lambda \\
+            & -\frac{m_x}{4\pi} \frac{x^2}{\rho^2} \int_0^\infty \bigg [ e^{-u_0 (z - h)} - r_{te} e^{u_0 (z + h)} \bigg ] \lambda^2 J_0 (\lambda \rho) \, d\lambda
+
+        .. math::
+            H_y = & \frac{m_x}{2\pi} \frac{xy}{\rho^3} \int_0^\infty \bigg [ e^{-u_0 (z - h)} - r_{te} e^{u_0 (z + h)} \bigg ] \lambda J_1 (\lambda \rho) \, d\lambda \\
+            & -\frac{m_x}{4\pi} \frac{xy}{\rho^2} \int_0^\infty \bigg [ e^{-u_0 (z - h)} - r_{te} e^{u_0 (z + h)} \bigg ] \lambda^2 J_0 (\lambda \rho) \, d\lambda
+
+        .. math::
+            H_z = \frac{m_x}{4\pi} \frac{x}{\rho}  \int_0^\infty \bigg [ e^{-u_0 (z - h)} + r_{te} e^{u_0 (z + h)} \bigg ] \lambda^2 J_1 (\lambda \rho) \, d\lambda 
+
         """
 
-        if np.any(xyz[:, 2] < 0.0):
+        if (xyz[:, 2] < 0.0).any():
             raise ValueError("Cannot compute fields below the surface")
         h = self.location[2]
         dxyz = xyz - self.location
@@ -110,13 +411,20 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         thick = self.thickness
         n_layer = len(thick) + 1
 
-        thick, sigma, epsilon, mu = self._get_valid_properties()
-        sigh = sigma_hat(
-            self.frequency[:, None], sigma, epsilon,
-            quasistatic=self.quasistatic
-        ).T  # this gets sigh with proper shape (n_layer x n_freq) and fortran ordering.
-        mu = np.tile(mu, (n_frequency, 1)).T  # shape(n_layer x n_freq)
+        thick, sigma, epsilon, mu = self._get_valid_properties_array()
 
+        # sigh = sigma_hat(
+        #     self.frequency[:, None], sigma, epsilon,
+        #     quasistatic=self.quasistatic
+        # ).T  # this gets sigh with proper shape (n_layer x n_freq) and fortran ordering.
+        # mu = np.tile(mu, (n_frequency, 1)).T  # shape(n_layer x n_freq)
+        
+        sigh = sigma_hat(
+            np.tile(self.frequency.reshape((1, n_frequency)), (n_layer, 1)),
+            sigma, epsilon,
+            quasistatic=self.quasistatic
+        )
+        
         rTE = rTE_forward(f, lambd.reshape(-1), sigh, mu, thick)
         rTE = rTE.reshape((n_frequency, *lambd.shape))
 
@@ -165,4 +473,4 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
             em_y += 3*dxyz[:, 1]*mdotr/r**5 - src_y/r**3
             em_z += 3*dxyz[:, 2]*mdotr/r**5 - src_z/r**3
 
-        return self.moment/(4*np.pi)*np.stack((em_x, em_y, em_z), axis=-1)
+        return self.moment/(4*np.pi)*np.stack((em_x, em_y, em_z), axis=-1).squeeze()

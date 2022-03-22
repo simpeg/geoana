@@ -276,7 +276,7 @@ class BaseFDEM(BaseEM):
             self.frequency, self.sigma, epsilon=self.epsilon,
             quasistatic=self.quasistatic
         )
-        if np.all(np.imag(sigma) == 0):
+        if (np.imag(sigma) == 0).all():
             sigma = np.real(sigma)
         return sigma
 
