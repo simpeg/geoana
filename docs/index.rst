@@ -12,7 +12,5 @@ Contents
 
    auto_examples/index
    content/conventions
-   content/em
-   content/earthquake
-   content/utils
+   api/index
 

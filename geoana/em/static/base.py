@@ -8,8 +8,8 @@ import properties
 from scipy.special import ellipk, ellipe
 from scipy.constants import mu_0, epsilon_0
 
-from .base import BaseEM, BaseDipole, BaseMagneticDipole
-from .. import spatial
+from ..base import BaseEM, BaseDipole, BaseMagneticDipole
+from ... import spatial
 
 __all__ = [
     "MagneticDipoleWholeSpace", "CircularLoopWholeSpace",
@@ -199,7 +199,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         Returns
         -------
-        (*, 3) numpy.ndarray
+        (n, 3) numpy.ndarray
             The magnetic field at each observation location in the
             coordinate system specified in units A/m.
 

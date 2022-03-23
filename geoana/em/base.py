@@ -307,17 +307,19 @@ class BaseDipole:
         .. math::
             \mathbf{v} \times \mathbf{p} 
 
+
         for all vectors :math:`\mathbf{v}` supplied in the input argument *vecs*.
 
         Parameters
         ----------
-        vecs : (*, 3) numpy.ndarray
+        vecs : (n, 3) numpy.ndarray
             A set of 3D vectors
 
         Returns
         -------
-        (*) numpy.ndarray
+        (n) numpy.ndarray
             Cross product between each vector supplied and the dipole orientation.
+
         """
         orientation = np.kron(
             np.atleast_2d(

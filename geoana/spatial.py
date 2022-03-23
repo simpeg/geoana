@@ -1,3 +1,27 @@
+"""
+=================================================
+Spatial Utilities (:mod:`geoana.spatial`)
+=================================================
+.. currentmodule:: geoana.spatial
+
+Things about electromagnetics
+
+Utility Functions
+=================
+.. autosummary::
+  :toctree: generated/
+
+  cylindrical_to_cartesian
+  cartesian_to_cylindrical
+  vector_magnitude
+  vector_distance
+  distance
+  vector_dot
+  repeat_scalar
+  rotation_matrix_from_normals
+  rotate_points_from_normals
+
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -403,15 +427,16 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
     
     Parameters
     ----------
-    xyz : (*, 3) numpy.ndarray
+    xyz : (n, 3) numpy.ndarray
         Gridded xyz locations
     origin : (3) array_like, optional
         Reference location. Default = np.r_[0,0,0]
 
     Returns
     -------
-    (*, 3) numpy.ndarray
+    (n, 3) numpy.ndarray
         Vector distances along the x, y and z directions
+    
     """
     assert(xyz.shape[1] == 3), (
         "the xyz grid should be npoints by 3, the shape provided is {}".format(

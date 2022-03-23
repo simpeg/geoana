@@ -1,5 +1,21 @@
-import numpy as np
+"""
+=================================================
+Basic Utilities (:mod:`geoana.utils`)
+=================================================
+.. currentmodule:: geoana.utils
 
+Things about electromagnetics
+
+Utility Functions
+=================
+.. autosummary::
+  :toctree: generated/
+
+  mkvc
+  ndgrid
+
+"""
+import numpy as np
 
 def mkvc(x, n_dims=1):
     """Creates a vector with specified dimensionality.
