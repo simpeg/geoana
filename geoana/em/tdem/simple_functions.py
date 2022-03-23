@@ -7,7 +7,10 @@ from geoana.em.tdem.base import theta
 def vertical_magnetic_field_horizontal_loop(
     t, sigma=1.0, mu=mu_0, radius=1.0, current=1.0, turns=1
 ):
-    """Central vertical magnetic field due to step off of a horizontal loop
+    """Vertical transient magnetic field at the center of a horizontal loop over a halfspace.
+
+    Compute the vertical component of the transient magnetic field at the center
+    of a circular loop on the surface of a conductive and magnetically permeable halfspace.
 
     Parameters
     ----------
@@ -26,7 +29,7 @@ def vertical_magnetic_field_horizontal_loop(
     Returns
     -------
     hz : float, or numpy.ndarray
-        The vertical magnetic field at the center of the loop.
+        The vertical magnetic field in H/m at the center of the loop.
         The shape will match the `t` input.
 
     Notes
@@ -72,7 +75,10 @@ def vertical_magnetic_field_horizontal_loop(
 def vertical_magnetic_flux_horizontal_loop(
     t, sigma=1.0, mu=mu_0, radius=1.0, current=1.0, turns=1
 ):
-    """Central vertical magnetic flux density due to step off of a horizontal loop
+    """Vertical transient magnetic flux density at the center of a horizontal loop over a halfspace.
+
+    Compute the vertical component of the transient magnetic flux density at the center
+    of a circular loop on the surface of a conductive and magnetically permeable halfspace.
 
     Parameters
     ----------
@@ -91,7 +97,7 @@ def vertical_magnetic_flux_horizontal_loop(
     Returns
     -------
     bz : float, or numpy.ndarray
-        The vertical magnetic field at the center of the loop.
+        The vertical magnetic flux density in T/s at the center of the loop.
         The shape will match the `t` input.
 
     See Also
@@ -106,7 +112,10 @@ def vertical_magnetic_flux_horizontal_loop(
 def vertical_magnetic_field_time_deriv_horizontal_loop(
     t, sigma=1.0, mu=mu_0, radius=1.0, current=1.0, turns=1
 ):
-    """Central vertical magnetic field time derivative due to step off horizontal loop
+    """Time-derivative of the vertical transient magnetic field at the center of a horizontal loop over a halfspace.
+
+    Compute the time-derivative of the vertical component of the transient magnetic field at the center
+    of a circular loop on the surface of a conductive and magnetically permeable halfspace.
 
     Parameters
     ----------
@@ -168,7 +177,11 @@ def vertical_magnetic_field_time_deriv_horizontal_loop(
 def vertical_magnetic_flux_time_deriv_horizontal_loop(
     t, sigma=1.0, mu=mu_0, radius=1.0, current=1.0, turns=1
 ):
-    """Central vertical magnetic flux density time derivative due to step off horizontal loop
+    """Time-derivative of the vertical transient magnetic flux density at the center of a horizontal loop over a halfspace.
+
+    Compute the time-derivative of the vertical component of the transient
+    magnetic flux density at the center of a circular loop on the surface
+    of a conductive and magnetically permeable halfspace.
 
     Parameters
     ----------

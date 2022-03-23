@@ -416,8 +416,9 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         kr = np.outer(k, r)
         ikr = 1j * kr
 
-        first_term = (1j * tile_w * self.mu * self.moment) * (
-            1 / (4 * np.pi * tile_r**2) * (ikr + 1) * np.exp(-ikr)
+        first_term = (
+            (1j * tile_w * self.mu * self.moment) *
+            (1 / (4 * np.pi * tile_r**2) * (ikr + 1) * np.exp(-ikr))
         ).reshape((n_freq, n_loc, 1))
         first_term = np.tile(first_term, (1, 1, 3))
         

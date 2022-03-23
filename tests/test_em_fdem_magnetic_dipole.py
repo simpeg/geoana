@@ -311,9 +311,9 @@ class TestFDEMdipole(unittest.TestCase):
         mdws = fdem.MagneticDipoleWholeSpace(
             frequency, orientation=orientation
         )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
+        x = np.linspace(-20., 20., 10)
+        y = np.linspace(-30., 30., 10)
+        z = np.linspace(-40., 40., 10)
 
         xyz = discretize.utils.ndgrid([x, y, z])
 
