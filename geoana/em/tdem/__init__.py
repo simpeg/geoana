@@ -4,7 +4,8 @@ Time-Domain Electromagnetics (:mod:`geoana.em.tdem`)
 ======================================================
 .. currentmodule:: geoana.em.tdem
 
-Init Stuff about tdem electromagnetics
+The ``geoana.em.tdem`` module contains simulation classes for solving
+basic time-domain electromagnetic problems.
 
 Simulation Classes
 ==================

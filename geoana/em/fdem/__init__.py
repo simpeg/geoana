@@ -4,7 +4,8 @@ Frequency-Domain Electromagnetics (:mod:`geoana.em.fdem`)
 ============================================================
 .. currentmodule:: geoana.em.fdem
 
-Init Stuff about fdem electromagnetics
+The ``geoana.em.fdem`` module contains simulation classes for solving
+basic frequency-domain electromagnetic problems.
 
 Simulation Classes
 ==================

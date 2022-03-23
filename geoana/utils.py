@@ -4,10 +4,9 @@ Basic Utilities (:mod:`geoana.utils`)
 =================================================
 .. currentmodule:: geoana.utils
 
-Things about electromagnetics
+The ``geoana.utils`` module provides a set of rudimentary functions that are
+commonly used within the code base.
 
-Utility Functions
-=================
 .. autosummary::
   :toctree: generated/
 

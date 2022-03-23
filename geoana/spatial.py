@@ -4,10 +4,10 @@ Spatial Utilities (:mod:`geoana.spatial`)
 =================================================
 .. currentmodule:: geoana.spatial
 
-Things about electromagnetics
+The ``geoana.spatial`` module provides rudimentary functions for vectors and
+functions for converting between Cartesian, cylindrical and spherical coordinates.
 
-Utility Functions
-=================
+
 .. autosummary::
   :toctree: generated/
 

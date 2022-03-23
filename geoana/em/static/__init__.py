@@ -4,7 +4,8 @@ Static Electromagnetics (:mod:`geoana.em.static`)
 ======================================================
 .. currentmodule:: geoana.em.static
 
-Init Stuff about static electromagnetics
+The ``geoana.em.static`` module contains simulation classes for solving
+basic electrostatic and magnetostatic problems.
 
 Simulation Classes
 ==================

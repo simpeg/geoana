@@ -4,7 +4,7 @@ Base Electromagnetics (:mod:`geoana.em`)
 =================================================
 .. currentmodule:: geoana.em
 
-Things about electromagnetics
+The ``geoana.em.base`` module contains base source and simulation classes for electromagnetics.
 
 Base Classes
 ============
