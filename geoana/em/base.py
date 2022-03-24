@@ -182,7 +182,7 @@ class BaseDipole:
 
         Returns
         -------
-        (3) numpy.ndarray of float
+        (3) numpy.ndarray of float or str in {'X','Y','Z'}
             dipole orientation, normalized to unit magnitude
         """
         return self._orientation
@@ -459,4 +459,82 @@ class BaseMagneticDipole(BaseDipole):
     #     min=0.0
     # )
 
+
+class BaseLineCurrent:
+    """Base class for connected segments of current-carrying wire.
+
+    Parameters
+    ----------
+    nodes : (n, 3) np.ndarray
+        Nodes defining the segments of current-carrying wire segments. For an
+        inductive source, you must close the loop.
+    """
+
+    def __init__(self, nodes, current=1.0, **kwargs):
+        
+        self.nodes = nodes
+        self.current = current
+        super().__init__(**kwargs)
+
+    @property
+    def nodes(self):
+        """Nodes defining the segments of current-carrying wire segments;
+        close the loop if inductive.
+
+        Returns
+        -------
+        (n_nodes, 3) numpy.ndarray of float
+            node locations
+        """
+        return self._nodes
+
+    @nodes.setter
+    def nodes(self, xyz):
+        
+        try:
+            xyz = np.asarray(xyz, dtype=np.float64)
+        except:
+            raise TypeError(f"nodes must be array_like, got {type(xyz)}")
+        
+        if (np.shape(xyz)[1] != 3) | (xyz.ndim != 2):
+            raise ValueError(
+                f"nodes must be array_like with shape (n, 3), got {np.shape(xyz)}"
+            )
+        
+        self._nodes = xyz
+
+
+    @property
+    def n_segments(self):
+        """Number of wire segments
+
+        Returns
+        -------
+        int
+            number of wire segments
+
+        """
+        return np.shape(self.nodes)[0] - 1
+    
+
+    @property
+    def current(self):
+        """Current in wire (A)
+
+        Returns
+        -------
+        float
+            Current in the wire (A)
+        """
+        return self._current
+
+    @current.setter
+    def current(self, value):
+        
+        try:
+            value = float(value)
+        except:
+            raise TypeError(f"current must be a number, got {type(value)}")
+
+        self._current = value
 

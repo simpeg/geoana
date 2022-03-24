@@ -32,4 +32,5 @@ functions for performing useful operations.
 
   geoana.utils
   geoana.spatial
+  geoana.plotting_utils
 
