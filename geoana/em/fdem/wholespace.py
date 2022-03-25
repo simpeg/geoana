@@ -13,8 +13,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
     :math:`\mathbf{\hat{u}}`
 
     .. math::
-        \mathbf{J}(\\mathbf{r}) = I ds \delta(\mathbf{r}
-        - \mathbf{r}_s)\mathbf{\hat{u}}
+        \mathbf{J}(\mathbf{r}) = I ds \delta(\mathbf{r} - \mathbf{r}_s)\mathbf{\hat{u}}
 
     """
 
@@ -37,7 +36,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -50,6 +49,52 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
             Magnetic vector potential at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an z-oriented electric dipole and plot the magnetic
+        vector potential on the xy-plane that intercepts z=0.
+
+        >>> from geoana.em.fdem import ElectricDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[0., 0., 1.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = ElectricDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the vector potential.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> a = simulation.vector_potential(xyz)
+
+        Finally, we plot the real and imaginary components of the vector potential.
+        Given the symmetry, there are only vertical components.
+
+        >>> f_ind = 1
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(xyz[:, 0:2], np.real(a[f_ind, :, 2]), ax=ax1, scale='log', ncontour=25)
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Z')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(xyz[:, 0:2], np.imag(a[f_ind, :, 2]), ax=ax2, scale='log', ncontour=25)
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
+        >>> ax2.autoscale(tight=True)
 
         """
         # r = self.distance(xyz)
@@ -88,13 +133,13 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         :math:`\mathbf{r}` from the current dipole is:
 
         .. math::
-            \mathbf{E}(\mathbf{r}) = \frac{I ds}{4\pi (\sigma + i \omega \varepsilon) r^3} e^{-ikr} \Bigg [ \Bigg ( \frac{x^2}{r^2}\hat{x} + \frac{xy}{r^2}\hat{y} + \frac{xz}{r^2}\hat{z} \Bigg ) ... \\
-            \big ( -k^2r^2 + 3ikr + 3 \big ) \big ( k^2 r^2 - ikr - 1 \big ) \hat{x} \Bigg ]
+            \;\;\;\;\;\; \mathbf{E}(\mathbf{r}) = \frac{I ds}{4\pi (\sigma + i \omega \varepsilon) r^3} & e^{-ikr} ... \\ 
+            & \Bigg [ \Bigg ( \frac{x^2}{r^2}\hat{x} + \frac{xy}{r^2}\hat{y} + \frac{xz}{r^2}\hat{z} \Bigg ) \big ( -k^2r^2 + 3ikr + 3 \big ) + \big ( k^2 r^2 - ikr - 1 \big ) \hat{x} \Bigg ]
         
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -107,6 +152,55 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
             Electric field at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an x-oriented electric dipole and plot the electric
+        field on the xz-plane that intercepts y=0.
+
+        >>> from geoana.em.fdem import ElectricDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[1., 0., 0.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = ElectricDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the electric field.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.array([0]), np.linspace(-1, 1, 20))
+        >>> E = simulation.electric_field(xyz)
+
+        Finally, we plot the real and imaginary components of the electric field
+
+        >>> f_ind = 1
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0::2], np.real(E[f_ind, :, 0::2]), vec=True, ax=ax1, scale='log', ncontour=25
+        >>> )
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Z')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0::2], np.imag(E[f_ind, :, 0::2]), vec=True, ax=ax2, scale='log', ncontour=25
+        >>> )
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.autoscale(tight=True)
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
         # dxyz = self.vector_distance(xyz)
@@ -171,13 +265,13 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         :math:`\mathbf{r}` from the current dipole is:
 
         .. math::
-            \mathbf{J}(\mathbf{r}) = \frac{\sigma I ds}{4\pi (\sigma + i \omega \varepsilon) r^3} e^{-ikr} \Bigg [ \Bigg ( \frac{x^2}{r^2}\hat{x} + \frac{xy}{r^2}\hat{y} + \frac{xz}{r^2}\hat{z} \Bigg ) ... \\
-            \big ( -k^2r^2 + 3ikr + 3 \big ) \big ( k^2 r^2 - ikr - 1 \big ) \hat{x} \Bigg ]
+            \;\;\;\; \mathbf{J}(\mathbf{r}) = \frac{\sigma I ds}{4\pi (\sigma + i \omega \varepsilon) r^3} & e^{-ikr} ... \\
+            & \Bigg [ \Bigg ( \frac{x^2}{r^2}\hat{x} + \frac{xy}{r^2}\hat{y} + \frac{xz}{r^2}\hat{z} \Bigg ) \big ( -k^2r^2 + 3ikr + 3 \big ) \big ( k^2 r^2 - ikr - 1 \big ) \hat{x} \Bigg ]
         
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -190,6 +284,55 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
             Current density at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an x-oriented electric dipole and plot the current
+        density on the xz-plane that intercepts y=0.
+
+        >>> from geoana.em.fdem import ElectricDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[1., 0., 0.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = ElectricDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the current density.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.array([0]), np.linspace(-1, 1, 20))
+        >>> J = simulation.current_density(xyz)
+
+        Finally, we plot the real and imaginary components of the current density.
+
+        >>> f_ind = 1
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0::2], np.real(J[f_ind, :, 0::2]), vec=True, ax=ax1, scale='log', ncontour=25
+        >>> )
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Z')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0::2], np.imag(J[f_ind, :, 0::2]), vec=True, ax=ax2, scale='log', ncontour=25
+        >>> )
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.autoscale(tight=True)
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
         return self.sigma * self.electric_field(xyz)
@@ -211,7 +354,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -224,6 +367,55 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
             Magnetic field at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an z-oriented electric dipole and plot the magnetic field
+        on the xy-plane that intercepts z=0.
+
+        >>> from geoana.em.fdem import ElectricDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[0., 0., 1.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = ElectricDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the magnetic field.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> H = simulation.magnetic_field(xyz)
+
+        Finally, we plot the real and imaginary components of the magnetic field.
+
+        >>> f_ind = 1
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0:2], np.real(H[f_ind, :, 0:2]), vec=True, ax=ax1, scale='log', ncontour=25
+        >>> )
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Y')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0:2], np.imag(H[f_ind, :, 0:2]), vec=True, ax=ax2, scale='log', ncontour=25
+        >>> )
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.autoscale(tight=True)
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
         # dxyz = self.vector_distance(xyz)
@@ -262,7 +454,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         return -(first_term * second_term).squeeze()
 
     def magnetic_flux_density(self, xyz):
-        r"""Magnetic flux density produced by the harmonic current dipole at a set of gridded locations.
+        r"""Magnetic flux density produced by the harmonic electric current dipole at a set of gridded locations.
 
         For an electric current dipole oriented in the :math:`\hat{u}` direction with
         dipole moment :math:`I ds` and harmonic frequency :math:`f`, this method computes the
@@ -273,12 +465,12 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         :math:`\mathbf{r}` from the current dipole is:
 
         .. math::
-            \mathbf{B}(\mathbf{r}) = \frac{\mu I ds}{4\pi r^2} (ikr + 1) e^{-ikr} \big ( - \frac{z}{r}\hat{y} + \frac{y}{r}\hat{z} \big )
+            \mathbf{B}(\mathbf{r}) = \frac{\mu I ds}{4\pi r^2} (ikr + 1) e^{-ikr} \bigg ( - \frac{z}{r}\hat{y} + \frac{y}{r}\hat{z} \bigg )
         
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -291,6 +483,55 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
             Magnetic flux at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an z-oriented electric dipole and plot the magnetic flux density
+        on the xy-plane that intercepts z=0.
+
+        >>> from geoana.em.fdem import ElectricDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[0., 0., 1.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = ElectricDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the magnetic flux density.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> B = simulation.magnetic_flux_density(xyz)
+
+        Finally, we plot the real and imaginary components of the magnetic flux density.
+
+        >>> f_ind = 1
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0:2], np.real(B[f_ind, :, 0:2]), vec=True, ax=ax1, scale='log', ncontour=25
+        >>> )
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Y')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0:2], np.imag(B[f_ind, :, 0:2]), vec=True, ax=ax2, scale='log', ncontour=25
+        >>> )
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.autoscale(tight=True)
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
         return self.mu * self.magnetic_field(xyz)
@@ -320,7 +561,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -333,6 +574,51 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
             Magnetic vector potential at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an z-oriented magnetic dipole and plot the magnetic
+        vector potential on the xy-plane that intercepts z=0.
+
+        >>> from geoana.em.fdem import MagneticDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[0., 0., 1.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = MagneticDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the vector potential.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> a = simulation.vector_potential(xyz)
+
+        Finally, we plot the real and imaginary components of the vector potential.
+
+        >>> f_ind = 1
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(xyz[:, 0:2], np.real(a[f_ind, :, 2]), ax=ax1, scale='log', ncontour=25)
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Z')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(xyz[:, 0:2], np.imag(a[f_ind, :, 2]), ax=ax2, scale='log', ncontour=25)
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.autoscale(tight=True)
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
         # r = self.distance(xyz)
@@ -378,7 +664,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -391,6 +677,55 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
             Electric field at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an z-oriented magnetic dipole and plot the electric
+        field on the xy-plane that intercepts z=0.
+
+        >>> from geoana.em.fdem import MagneticDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[0., 0., 1.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = MagneticDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the electric field.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> E = simulation.electric_field(xyz)
+
+        Finally, we plot the real and imaginary components of the electric field
+
+        >>> f_ind = 1
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0:2], np.real(E[f_ind, :, 0:2]), vec=True, ax=ax1, scale='log', ncontour=25
+        >>> )
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Y')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0:2], np.imag(E[f_ind, :, 0:2]), vec=True, ax=ax2, scale='log', ncontour=25
+        >>> )
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.autoscale(tight=True)
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
         # dxyz = self.vector_distance(xyz)
@@ -448,7 +783,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -461,6 +796,55 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
             Current density at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an z-oriented magnetic dipole and plot the electric
+        current density on the xy-plane that intercepts z=0.
+
+        >>> from geoana.em.fdem import MagneticDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[0., 0., 1.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = MagneticDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the current density.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> J = simulation.current_density(xyz)
+
+        Finally, we plot the real and imaginary components of the current density.
+
+        >>> f_ind = 2
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0:2], np.real(J[f_ind, :, 0:2]), vec=True, ax=ax1, scale='log', ncontour=25
+        >>> )
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Y')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0:2], np.imag(J[f_ind, :, 0:2]), vec=True, ax=ax2, scale='log', ncontour=25
+        >>> )
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.autoscale(tight=True)
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
         return self.sigma * self.electric_field(xyz)
@@ -483,7 +867,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -496,6 +880,55 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
             Magnetic field at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an z-oriented magnetic dipole and plot the magnetic field
+        on the xz-plane that intercepts y=0.
+
+        >>> from geoana.em.fdem import MagneticDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[0., 0., 1.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = MagneticDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the magnetic field.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.array([0]), np.linspace(-1, 1, 20))
+        >>> H = simulation.magnetic_field(xyz)
+
+        Finally, we plot the real and imaginary components of the magnetic field.
+
+        >>> f_ind = 2
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0::2], np.real(H[f_ind, :, 0::2]), vec=True, ax=ax1, scale='log', ncontour=25
+        >>> )
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Z')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0::2], np.imag(H[f_ind, :, 0::2]), vec=True, ax=ax2, scale='log', ncontour=25
+        >>> )
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.autoscale(tight=True)
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
         # dxyz = self.vector_distance(xyz)
@@ -564,7 +997,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         where
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         Parameters
         ----------
@@ -577,6 +1010,55 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
             Magnetic flux density at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
+
+        Examples
+        --------
+        Here, we define an z-oriented magnetic dipole and plot the magnetic flux density
+        on the xz-plane that intercepts y=0.
+
+        >>> from geoana.em.fdem import MagneticDipoleWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the electric current dipole.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> location = np.r_[0., 0., 0.]
+        >>> orientation = np.r_[0., 0., 1.]
+        >>> moment = 1.
+        >>> sigma = 1.0
+        >>> simulation = MagneticDipoleWholeSpace(
+        >>>     frequency, location=location, orientation=orientation,
+        >>>     moment=moment, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the magnetic flux density.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.array([0]), np.linspace(-1, 1, 20))
+        >>> B = simulation.magnetic_field(xyz)
+
+        Finally, we plot the real and imaginary components of the magnetic flux density.
+
+        >>> f_ind = 1
+        >>> fig = plt.figure(figsize=(6, 3))
+        >>> ax1 = fig.add_axes([0.15, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0::2], np.real(B[f_ind, :, 0::2]), vec=True, ax=ax1, scale='log', ncontour=25
+        >>> )
+        >>> ax1.set_xlabel('X')
+        >>> ax1.set_ylabel('Z')
+        >>> ax1.autoscale(tight=True)
+        >>> ax1.set_title('Real component {} Hz'.format(frequency[f_ind]))
+        >>> ax2 = fig.add_axes([0.6, 0.15, 0.40, 0.75])
+        >>> plot2Ddata(
+        >>>     xyz[:, 0::2], np.imag(B[f_ind, :, 0::2]), vec=True, ax=ax2, scale='log', ncontour=25
+        >>> )
+        >>> ax2.set_xlabel('X')
+        >>> ax2.set_yticks([])
+        >>> ax2.autoscale(tight=True)
+        >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
         return self.mu * self.magnetic_field(xyz)

@@ -68,8 +68,8 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         Examples
         --------
-        Here, we define a vertically oriented magnetic dipole and plot the vector
-        potential on the XY-plane that intercepts the origin.
+        Here, we define a z-oriented magnetic dipole and plot the vector
+        potential on the xy-plane that intercepts at z=0.
 
         >>> from geoana.em.static import MagneticDipoleWholeSpace
         >>> from geoana.utils import ndgrid
@@ -94,9 +94,12 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         Finally, we plot the vector potential on the plane. Given the symmetry,
         there are only horizontal components.
 
-        >>> fig = plt.figure(figsize=(6, 6))
-        >>> ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
         >>> plot2Ddata(xyz[:, 0:2], a[:, 0:2], ax=ax, vec=True, scale='log')
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Z')
+        >>> ax.set_title('Vector potential at z=0')
 
         """
         supported_coordinates = ["cartesian", "cylindrical"]
@@ -136,9 +139,9 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         .. math::
 
-            \mathbf{B}(\mathbf{r}) = \frac{\mu}{4\pi} \bigg [
+            \mathbf{B}(\mathbf{r}) = \frac{\mu}{4\pi} \Bigg [
             \frac{3 \Delta \mathbf{r} \big ( \mathbf{m} \cdot \, \Delta \mathbf{r} \big ) }{| \Delta \mathbf{r} |^5}
-            - \frac{\mathbf{m}}{| \Delta \mathbf{r} |^3} \bigg ]
+            - \frac{\mathbf{m}}{| \Delta \mathbf{r} |^3} \Bigg ]
 
         where
 
@@ -165,8 +168,8 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         Examples
         --------
-        Here, we define a vertically oriented magnetic dipole and plot the magnetic
-        flux density on the XZ-plane that intercepts the origin.
+        Here, we define a z-oriented magnetic dipole and plot the magnetic
+        flux density on the xy-plane that intercepts y=0.
 
         >>> from geoana.em.static import MagneticDipoleWholeSpace
         >>> from geoana.utils import ndgrid
@@ -191,9 +194,12 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         Finally, we plot the vector potential on the plane. Given the symmetry,
         there are only horizontal components.
 
-        >>> fig = plt.figure(figsize=(6, 6))
-        >>> ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-        >>> plot2Ddata(xyz[:, [0, 2]], B[:, [0, 2]], ax=ax, vec=True, scale='log')
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
+        >>> plot2Ddata(xyz[:, 0::2], B[:, 0::2], ax=ax, vec=True, scale='log')
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Z')
+        >>> ax.set_title('Magnetic flux density at y=0')
 
         """
 
@@ -242,9 +248,9 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         .. math::
 
-            \mathbf{H}(\mathbf{r}) = \frac{1}{4\pi} \bigg [
+            \mathbf{H}(\mathbf{r}) = \frac{1}{4\pi} \Bigg [
             \frac{3 \Delta \mathbf{r} \big ( \mathbf{m} \cdot \, \Delta \mathbf{r} \big ) }{| \Delta \mathbf{r} |^5}
-            - \frac{\mathbf{m}}{| \Delta \mathbf{r} |^3} \bigg ]
+            - \frac{\mathbf{m}}{| \Delta \mathbf{r} |^3} \Bigg ]
 
         where
 
@@ -270,8 +276,8 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
         Examples
         --------
-        Here, we define a vertically oriented magnetic dipole and plot the magnetic
-        field on the XZ-plane that intercepts the origin.
+        Here, we define a z-oriented magnetic dipole and plot the magnetic
+        field on the xz-plane that intercepts y=0.
 
         >>> from geoana.em.static import MagneticDipoleWholeSpace
         >>> from geoana.utils import ndgrid
@@ -296,9 +302,12 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         Finally, we plot the vector potential on the plane. Given the symmetry,
         there are only horizontal components.
 
-        >>> fig = plt.figure(figsize=(6, 6))
-        >>> ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-        >>> plot2Ddata(xyz[:, [0, 2]], H[:, [0, 2]], ax=ax, vec=True, scale='log')
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
+        >>> plot2Ddata(xyz[:, 0::2], H[:, 0::2], ax=ax, vec=True, scale='log')
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Z')
+        >>> ax.set_title('Magnetic field at y=0')
 
         """
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
@@ -519,7 +528,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         .. math::
 
             a_\theta (\rho, z) = \frac{\mu_0 I}{\pi k}
-            \sqrt{R / \rho^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
+            \sqrt{ \frac{R}{\rho^2}} \bigg [ (1 - k^2/2) \, K(k^2) - K(k^2) \bigg ]
 
         where
 
@@ -552,7 +561,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         Examples
         --------
         Here, we define a horizontal loop and plot the vector
-        potential on the XY-plane that intercepts at Z=0.
+        potential on the xy-plane that intercepts at z=0.
 
         >>> from geoana.em.static import CircularLoopWholeSpace
         >>> from geoana.utils import ndgrid
@@ -577,9 +586,12 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         Finally, we plot the vector potential on the plane. Given the symmetry,
         there are only horizontal components.
 
-        >>> fig = plt.figure(figsize=(6, 6))
-        >>> ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
         >>> plot2Ddata(xyz[:, 0:2], a[:, 0:2], ax=ax, vec=True, scale='log')
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Y')
+        >>> ax.set_title('Vector potential at z=0')
 
         """
 
@@ -653,32 +665,6 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
             \mathbf{B}(\mathbf{r}) = - \frac{\mu I}{4\pi} \oint
             \frac{(\mathbf{r}-\mathbf{r_s}) \times d\mathbf{s}}{|\mathbf{r} - \mathbf{r_0}|^3}
 
-
-        # The above expression can be solve analytically by using the appropriate
-        # change of coordinates transforms and the solution for a horizontal current
-        # loop. For a horizontal current loop centered at (0,0,0), the solution in
-        # radial coordinates is given by:
-
-        # .. math::
-
-        #     a_\theta (\rho, z) = \frac{\mu_0 I}{\pi k}
-        #     \sqrt{R / \rho^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
-
-        # where
-
-        # .. math::
-
-        #     k^2 = \frac{4 R \rho}{(R + \rho)^2 + z^2}
-
-        # and
-
-        # - :math:`\rho = \sqrt{x^2 + y^2}` is the horizontal distance to the test point
-        # - :math:`I` is the current through the loop
-        # - :math:`R` is the radius of the loop
-        # - :math:`E(k^2)` and :math:`K(k^2)` are the complete elliptic integrals
-
-
-
         Parameters
         ----------
         xyz : (n, 3) numpy.ndarray xyz
@@ -697,7 +683,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         Examples
         --------
         Here, we define a horizontal loop and plot the magnetic flux
-        density on the XZ-plane that intercepts at Y=0.
+        density on the xz-plane that intercepts at y=0.
 
         >>> from geoana.em.static import CircularLoopWholeSpace
         >>> from geoana.utils import ndgrid
@@ -721,9 +707,12 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         Finally, we plot the magnetic flux density on the plane.
 
-        >>> fig = plt.figure(figsize=(6, 6))
-        >>> ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-        >>> plot2Ddata(xyz[:, [0, 2]], B[:, [0, 2]], ax=ax, vec=True, scale='log')
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
+        >>> plot2Ddata(xyz[:, 0::2], B[:, 0::2], ax=ax, vec=True, scale='log')
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Y')
+        >>> ax.set_title('Magnetic flux density at y=0')
 
         """
         xyz = np.atleast_2d(xyz)
@@ -802,30 +791,6 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
             \mathbf{H}(\mathbf{r}) = - \frac{I}{4\pi} \oint
             \frac{(\mathbf{r}-\mathbf{r_s}) \times d\mathbf{s}}{|\mathbf{r} - \mathbf{r_0}|^3}
 
-
-        # The above expression can be solve analytically by using the appropriate
-        # change of coordinates transforms and the solution for a horizontal current
-        # loop. For a horizontal current loop centered at (0,0,0), the solution in
-        # radial coordinates is given by:
-
-        # .. math::
-
-        #     a_\theta (\rho, z) = \frac{\mu_0 I}{\pi k}
-        #     \sqrt{R / \rho^2}[(1 - k^2/2) * K(k^2) - K(k^2)]
-
-        # where
-
-        # .. math::
-
-        #     k^2 = \frac{4 R \rho}{(R + \rho)^2 + z^2}
-
-        # and
-
-        # - :math:`\rho = \sqrt{x^2 + y^2}` is the horizontal distance to the test point
-        # - :math:`I` is the current through the loop
-        # - :math:`R` is the radius of the loop
-        # - :math:`E(k^2)` and :math:`K(k^2)` are the complete elliptic integrals
-
         Parameters
         ----------
         xyz : (n, 3) numpy.ndarray xyz
@@ -844,7 +809,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
         Examples
         --------
         Here, we define a horizontal loop and plot the magnetic field
-        on the XZ-plane that intercepts at Y=0.
+        on the xz-plane that intercepts at y=0.
 
         >>> from geoana.em.static import CircularLoopWholeSpace
         >>> from geoana.utils import ndgrid
@@ -868,9 +833,12 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         Finally, we plot the magnetic field on the plane.
 
-        >>> fig = plt.figure(figsize=(6, 6))
-        >>> ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-        >>> plot2Ddata(xyz[:, [0, 2]], H[:, [0, 2]], ax=ax, vec=True, scale='log')
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
+        >>> plot2Ddata(xyz[:, 0::2], H[:, 0::2], ax=ax, vec=True, scale='log')
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Z')
+        >>> ax.set_title('Magnetic field at y=0')
 
         """
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu

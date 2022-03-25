@@ -24,7 +24,7 @@ class BaseEM:
     Parameters
     ----------
     sigma : float, int
-        Electrical conductivity in S/m. Default is 1 S/m
+        Electrical conductivity in S/m. Default is :math:`\\sigma` = 1 S/m
     mu : float
         Magnetic permeability in H/m. Default is :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
     epsilon : float
@@ -130,7 +130,8 @@ class BaseEM:
 
 
 class BaseDipole:
-    """Base class for dipoles.
+    """Base class for dipoles; namely the location and orientation.
+    This class is inherited by both electric current and magnetic dipoles.
 
     Parameters
     ----------
@@ -155,7 +156,7 @@ class BaseDipole:
         Returns
         -------
         (3) numpy.ndarray of float
-            dipole location
+            xyz dipole location
         """
         return self._location
 
@@ -230,15 +231,17 @@ class BaseDipole:
     
 
     def vector_distance(self, xyz):
-        r"""Vector distance from dipole location to a set of gridded xyz locations.
+        r"""Vector distance to a set of gridded xyz locations.
 
-        Where :math:`\mathbf{p}` is the location of the dipole and :math:`\mathbf{q}`
+        Where :math:`\mathbf{p}` is the location of the source and :math:`\mathbf{q}`
         is a point in 3D space, this method returns the vector distance:
 
         .. math::
             \mathbf{v} = \mathbf{q} - \mathbf{p}
 
         for all locations :math:`\mathbf{q}` supplied in the inputed argument `xyz`.
+        For dipoles, :math:`\mathbf{p}` is the dipole location. For circular loops,
+        :math:`\mathbf{p}` defines the center location for the loop.
         
         Parameters
         ----------
@@ -255,13 +258,15 @@ class BaseDipole:
     def distance(self, xyz):
         r"""Scalar distance from dipole to a set of gridded xyz locations
 
-        Where :math:`\mathbf{p}` is the location of the dipole and :math:`\mathbf{q}`
+        Where :math:`\mathbf{p}` is the location of the source and :math:`\mathbf{q}`
         is a point in 3D space, this method returns the scalar distance:
 
         .. math::
             d = \sqrt{(q_x - p_x)^2 + (q_y - p_y)^2 + (q_z - p_z)^2}
 
         for all locations :math:`\mathbf{q}` supplied in the input argument `xyz`.
+        For dipoles, :math:`\mathbf{p}` is the dipole location. For circular loops,
+        :math:`\mathbf{p}` defines the center location for the loop.
 
         Parameters
         ----------
@@ -276,15 +281,15 @@ class BaseDipole:
         return spatial.distance(xyz, np.array(self.location))
 
     def dot_orientation(self, vecs):
-        r"""Dot product between the dipole orientation and a gridded set of vectors.
+        r"""Dot product between the orientation of the source and a gridded set of vectors.
 
-        Where :math:`\mathbf{p}` is the vector defining the dipole's orientation and
+        Where :math:`\mathbf{p}` is the vector defining the dipole moment direction and
         :math:`\mathbf{v}` is a 3D vector, this method returns the dot product:
 
         .. math::
             \mathbf{p} \cdot \mathbf{v} 
 
-        for all vectors :math:`\mathbf{v}` supplied in the input argument *vecs*.
+        for all vectors :math:`\mathbf{v}` supplied in the input argument ``vecs``.
 
         Parameters
         ----------
@@ -294,21 +299,21 @@ class BaseDipole:
         Returns
         -------
         (n) numpy.ndarray
-            Dot product between the dipole orientation and each vector supplied.
+            Dot product between the dipole moment direction (orientation) and each vector supplied.
         """
         return spatial.vector_dot(vecs, np.array(self.orientation))
 
     def cross_orientation(self, xyz):
-        r"""Cross products between a gridded set of vectors and the orientation of the dipole.
+        r"""Cross products between a gridded set of vectors and the orientation of the source.
 
-        Where :math:`\mathbf{p}` is the vector defining the dipole's orientation and
+        Where :math:`\mathbf{p}` is the vector defining the orientation of the source and
         :math:`\mathbf{v}` is a 3D vector, this method returns the cross product:
 
         .. math::
             \mathbf{v} \times \mathbf{p} 
 
 
-        for all vectors :math:`\mathbf{v}` supplied in the input argument *vecs*.
+        for all vectors :math:`\mathbf{v}` supplied in the input argument ``vecs``.
 
         Parameters
         ----------
@@ -318,7 +323,7 @@ class BaseDipole:
         Returns
         -------
         (n) numpy.ndarray
-            Cross product between each vector supplied and the dipole orientation.
+            Cross product between each vector supplied and the source orientation.
 
         """
         orientation = np.kron(
@@ -330,14 +335,24 @@ class BaseDipole:
 
 
 class BaseElectricDipole(BaseDipole):
-    """Base class for electric current dipoles.
+    r"""Base class for electric current dipoles.
+
+    The ``BaseElectricDipole`` class defines the basic properties for electric
+    current dipoles. Where :math:`I` is the current and :math:`d\mathbf{s}` defines
+    the direction and length of the dipole, the current dipole is defined as:
+
+    .. math::
+        \mathbf{j_s}(\mathbf{r}) = Id \mathbf{s} \, \delta(|\mathbf{r} - \mathbf{r_s}|)
+
+    where :math:`\mathbf{r_s}` is the location of the source.
+    For more, visit `EM GeoSci <https://em.geosci.xyz/content/maxwell1_fundamentals/dipole_sources_in_homogeneous_media/electric_dipole_definition/index.html>`__ .
 
     Parameters
     ----------
     length : float, int
-        Length of the electric current dipole (m). Default is 1.
+        Length of the electric current dipole (m). Default is 1 m.
     current : float, int
-        Current of the electric current dipole (A). Default is 1.
+        Current of the electric current dipole (A). Default is 1 A.
     """
 
     def __init__(self, length=1.0, current=1.0, **kwargs):
@@ -414,13 +429,23 @@ class BaseElectricDipole(BaseDipole):
 
 
 class BaseMagneticDipole(BaseDipole):
-    """Base class for magnetic dipoles.
+    r"""Base class for magnetic dipoles.
+
+    The ``BaseMagneticDipole`` class defines the basic properties for magnetic dipoles.
+    Where :math:`d\mathbf{m}` defines the dipole moment, the magnetic dipole is defined as:
+
+    .. math::
+        \mathbf{s_m}(\mathbf{r}) = \mathbf{m} \, \delta(|\mathbf{r} - \mathbf{r_s}|)
+
+    where :math:`\mathbf{r_s}` is the location of the source.
+    For more, visit `EM GeoSci <https://em.geosci.xyz/content/maxwell1_fundamentals/dipole_sources_in_homogeneous_media/index.html>`__ .
+
 
     Parameters
     ----------
     moment : float, int
         Amplitude of the dipole moment for the magnetic dipole (:math:`A/m^2`).
-        Default is 1.
+        Default is 1 :math:`A/m^2`.
     """
 
     def __init__(self, moment=1.0, **kwargs):

@@ -17,7 +17,6 @@ def omega(frequency):
     corresponding angular frequencies:
 
     .. math::
-
         \\omega = 2 \\pi f
 
     Parameters
@@ -25,8 +24,8 @@ def omega(frequency):
     frequency : float, (n) numpy.ndarray
         frequency or frequencies (Hz)
 
-    Returns:
-    --------
+    Returns
+    -------
     float, (n) numpy.ndarray
         Angular frequency or frequencies in rad/s
 
@@ -92,13 +91,12 @@ def skin_depth(frequency, sigma, mu=mu_0, epsilon=epsilon_0, quasistatic=True):
     where :math:`\omega` is the angular frequency:
 
     .. math::
-        \omega = 2 \\pi f
+        \omega = 2 \pi f
 
     For the quasistatic approximation, dielectric permittivity is ignore and the
     skin depth simplifies to:
 
     .. math::
-
         \delta = \sqrt{\frac{2}{\omega \sigma \mu}}
 
     Parameters
@@ -108,9 +106,9 @@ def skin_depth(frequency, sigma, mu=mu_0, epsilon=epsilon_0, quasistatic=True):
     sigma : float
         electrical conductivity (S/m)
     mu : float (optional)
-        magnetic permeability (H/m). Default: :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
+        magnetic permeability (H/m). Default: :math:`\mu_0 = 4\pi \times 10^{-7}` H/m
     epsilon : float (optional)
-        dielectric permittivity (F/m). Default: :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m.
+        dielectric permittivity (F/m). Default: :math:`\epsilon_0 = 8.85 \times 10^{-12}` F/m.
     quasistatic : bool (optional)
         If ``True``, the quasistatic approximation for the skin depth is computed.
 
@@ -289,7 +287,7 @@ class BaseFDEM(BaseEM):
         :math:`\omega = 2\pi f` is the angular frequency, the wavenumber is:
 
         .. math::
-            k = \sqrt{\omega**2 \mu \varepsilon - i \omega \mu \sigma}
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
 
         In the quasistatic regime, this expression simplifies to:
 
@@ -324,7 +322,7 @@ class BaseFDEM(BaseEM):
         where :math:`\omega` is the angular frequency:
 
         .. math::
-            \omega = 2 \\pi f
+            \omega = 2 \pi f
 
         For the quasistatic approximation, dielectric permittivity is ignore and the
         skin depth simplifies to:

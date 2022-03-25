@@ -39,7 +39,7 @@ class LineCurrentFreeSpace(BaseLineCurrent):
         Examples
         --------
         Here, we define a horizontal square loop and plot the magnetic field
-        on the XZ-plane that intercepts at Y=0.
+        on the xz-plane that intercepts at y=0.
 
         >>> from geoana.em.static import LineCurrentFreeSpace
         >>> from geoana.utils import ndgrid
@@ -48,7 +48,7 @@ class LineCurrentFreeSpace(BaseLineCurrent):
         >>> import matplotlib.pyplot as plt
 
         Let us begin by defining the loop. Note that to create an inductive
-        source, we must close the loop
+        source, we closed the loop.
 
         >>> x_nodes = np.array([-0.5, 0.5, 0.5, -0.5, -0.5])
         >>> y_nodes = np.array([-0.5, -0.5, 0.5, 0.5, -0.5])
@@ -61,11 +61,14 @@ class LineCurrentFreeSpace(BaseLineCurrent):
         >>> xyz = ndgrid(np.linspace(-1, 1, 50), np.array([0]), np.linspace(-1, 1, 50))
         >>> H = simulation.magnetic_field(xyz)
 
-        Finally, we plot the magnetic field on the plane.
+        Finally, we plot the magnetic field.
 
-        >>> fig = plt.figure(figsize=(6, 6))
-        >>> ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-        >>> plot2Ddata(xyz[:, [0, 2]], H[:, [0, 2]], ax=ax, vec=True, scale='log')
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.75, 0.75])
+        >>> plot2Ddata(xyz[:, [0, 2]], H[:, [0, 2]], ax=ax, vec=True, scale='log', ncontour=25)
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Z')
+        >>> ax.set_title('Magnetic field')
 
         """
 
@@ -166,7 +169,7 @@ class LineCurrentFreeSpace(BaseLineCurrent):
         >>> import matplotlib.pyplot as plt
 
         Let us begin by defining the loop. Note that to create an inductive
-        source, we must close the loop
+        source, we closed the loop
 
         >>> x_nodes = np.array([-0.5, 0.5, 0.5, -0.5, -0.5])
         >>> y_nodes = np.array([-0.5, -0.5, 0.5, 0.5, -0.5])
@@ -181,9 +184,12 @@ class LineCurrentFreeSpace(BaseLineCurrent):
 
         Finally, we plot the magnetic flux density on the plane.
 
-        >>> fig = plt.figure(figsize=(6, 6))
-        >>> ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-        >>> plot2Ddata(xyz[:, [0, 2]], B[:, [0, 2]], ax=ax, vec=True, scale='log')
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
+        >>> plot2Ddata(xyz[:, [0, 2]], B[:, [0, 2]], ax=ax, vec=True, scale='log', ncontour=25)
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Z')
+        >>> ax.set_title('Magnetic flux density')
 
         """
 
