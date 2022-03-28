@@ -15,6 +15,11 @@ class VerticalMagneticDipoleHalfSpace(BaseMagneticDipole, BaseTDEM):
     Waveform is assumed to be the step off.
     """
 
+    def __init__(self, time, **kwargs):
+
+        BaseTDEM.__init__(self, time, **kwargs)
+        BaseMagneticDipole.__init__(self, **kwargs)
+
     def magnetic_field(self, xy):
         """Magnetic field due to a magnetic dipole over a half space
 
