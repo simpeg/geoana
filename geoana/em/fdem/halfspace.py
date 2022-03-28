@@ -65,7 +65,7 @@ class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
         >>>     moment=moment, sigma=sigma
         >>> )
 
-        Now we define the receiver location and plot the seconary field.
+        Now we define the receiver location and plot the secondary field.
 
         >>> xyz = np.c_[5, 0, 0]
         >>> H = simulation.magnetic_field(xyz, field='secondary')

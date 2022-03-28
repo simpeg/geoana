@@ -5,7 +5,7 @@ from geoana.em.base import BaseElectricDipole, BaseMagneticDipole
 
 
 class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
-    r"""Class for a harmonic electric dipole in a wholespace.
+    r"""Class for simulating the fields and fluxes for a harmonic electric dipole in a wholespace.
 
     Harmonic electric dipole in a whole space. The source is
     (c.f. Ward and Hohmann, 1988 page 173). The source current

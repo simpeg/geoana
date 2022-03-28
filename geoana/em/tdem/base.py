@@ -113,7 +113,7 @@ def theta(time, sigma, mu=mu_0):
         electrical conductivity (S/m)
     mu : float or numpy.ndarray, optional
         magnetic permeability (A/m). Default is the permeability of free-space
-        (:math:`\\mu_0`)
+        (:math:`\mu_0`)
 
     Returns
     -------
@@ -248,7 +248,7 @@ class BaseTDEM(BaseEM):
             electrical conductivity (S/m)
         mu : float or numpy.ndarray, optional
             magnetic permeability (A/m). Default is the permeability of free-space
-            (:math:`\\mu_0`)
+            (:math:`\mu_0`)
 
         Returns
         -------
