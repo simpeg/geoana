@@ -21,6 +21,12 @@ Details about electromagnetics
 Earthquakes
 ===========
 
+Details about Earthquakes
+
+.. toctree::
+  :maxdepth: 2
+
+  geoana.earthquake.oksar
 
 Utilities
 =========
