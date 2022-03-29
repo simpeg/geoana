@@ -20,126 +20,20 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import numpy as np
-import properties
+# import properties
 import vectormath as vmath
 import utm
 import matplotlib.pyplot as plt
+from datetime import datetime
+
+def _date_time_from_json(value):
+    if len(value) == 10:
+        return datetime.strptime(value.replace('-', '/'),'%Y/%m/%d')
+    return datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ')
 
 
-class EarthquakeInterferogram(properties.HasProperties):
-
-    # title = properties.String(
-    #     'name of the earthquake',
-    #     required=True
-    # )
-
-    # description = properties.String(
-    #     'description of the event',
-    #     required=False
-    # )
-
-    # location = properties.Vector2(
-    #     'interferogram location (bottom N, left E)',
-    #     required=True
-    # )
-
-    # location_UTM_zone = properties.Integer(
-    #     'UTM zone',
-    #     required=True
-    # )
-
-    # shape = properties.Array(
-    #     'number of pixels in the interferogram',
-    #     shape=(2,),
-    #     dtype=int,
-    #     required=True
-    # )
-
-    # pixel_size = properties.Array(
-    #     'Size of each pixel (northing, easting)',
-    #     shape=(2,),
-    #     dtype=float,
-    #     required=True
-    # )
-
-    # data = properties.Array(
-    #     'Processed interferogram data (unwrapped)',
-    #     dtype=float,
-    #     required=True
-    # )
-
-    # ref = properties.Vector2(
-    #     'interferogram reference',
-    #     required=True
-    # )
-
-    # ref_incidence = properties.Float(
-    #     'Incidence angle',
-    #     required=True
-    # )
-
-    # scaling = properties.Float(
-    #     'Scaling of the interferogram',
-    #     default=1.0
-    # )
-
-    # satellite_name = properties.String('Name of the satelite.')
-
-    # satellite_fringe_interval = properties.Float(
-    #     'Fringe interval',
-    #     default=0.028333
-    # )
-
-    # satellite_azimuth = properties.Float(
-    #     'satellite_azimuth',
-    #     required=True
-    # )
-
-    # satellite_altitude = properties.Float(
-    #     'satellite_altitude',
-    #     required=True
-    # )
-
-    # local_rigidity = properties.Float(
-    #     'Local rigidity',
-    #     default=3e10
-    # )
-
-    # local_earth_radius = properties.Float(
-    #     'Earth radius',
-    #     default=6371000.
-    # )
-
-    date1 = properties.DateTime(
-        'date1',
-        required=True
-    )
-
-    date2 = properties.DateTime(
-        'date2',
-        required=True
-    )
-
-    # processed_by = properties.String(
-    #     'processed_by',
-    #     required=True
-    # )
-
-    processed_date = properties.DateTime(
-        'processed_date',
-        required=True
-    )
-
-    # copyright = properties.String(
-    #     'copyright',
-    #     required=True
-    # )
-
-    # data_source = properties.String(
-    #     'data_source',
-    #     required=True
-    # )
-
+class EarthquakeInterferogram:
+    """Interferogram class"""
 
     def __init__(
         self,
@@ -153,9 +47,6 @@ class EarthquakeInterferogram(properties.HasProperties):
         ref_incidence,
         satellite_azimuth,
         satellite_altitude,
-        # date1,
-        # date2,
-        # processed_date,
         processed_by,
         scaling=1.0,
         satellite_fringe_interval=0.028333,
@@ -181,8 +72,8 @@ class EarthquakeInterferogram(properties.HasProperties):
         self.local_rigidity = local_rigidity
 
         kwargs_list = [
-            'description', 'event_country', 'event_name', 'copyright',
-            'data_source', 'satellite_name', 'event_gcmt_id'
+            'description', 'event_country', 'event_name', 'copyright', 'data_source',
+            'satellite_name', 'event_gcmt_id', 'date1', 'date2', 'processed_date', 'event_date'
         ]
         
         for k in kwargs_list:
@@ -191,6 +82,12 @@ class EarthquakeInterferogram(properties.HasProperties):
 
         super().__init__(**kwargs)
 
+
+    # data = properties.Array(
+    #     'Processed interferogram data (unwrapped)',
+    #     dtype=float,
+    #     required=True
+    # )
 
     @property
     def data(self):
@@ -214,6 +111,11 @@ class EarthquakeInterferogram(properties.HasProperties):
         
         self._data = var
 
+    # title = properties.String(
+    #     'name of the earthquake',
+    #     required=True
+    # )
+
     @property
     def title(self):
         """A title.
@@ -234,13 +136,18 @@ class EarthquakeInterferogram(properties.HasProperties):
             raise TypeError("Title is not a string or data type that can be converted to string")
         self._title = var
 
+    # location = properties.Vector2(
+    #     'interferogram location (bottom N, left E)',
+    #     required=True
+    # )
+
     @property
     def location(self):
-        """Tnterferogram location (bottom N, left E).
+        """Interferogram location (bottom N, left E).
 
         Returns
         -------
-        (2) np.ndarray of float
+        vectormath.Vector2
             Interferogram location (bottom N, left E)
 
         """
@@ -248,15 +155,21 @@ class EarthquakeInterferogram(properties.HasProperties):
 
     @location.setter
     def location(self, var):
-        try:
-            var = np.array(var, dtype=float)
-        except:
-            raise TypeError("Location must be a (2) np.ndarray")
-
-        if len(var) != 2:
-            raise TypeError("Location must be a (2) np.ndarray")
+        
+        if not isinstance(var, vmath.Vector2):
+            try:
+                var = vmath.Vector2(var)
+            except:
+                raise TypeError((
+                    "Location must be a (2) array_like or vectormath.Vector2"
+                ))
 
         self._location = var
+
+    # location_UTM_zone = properties.Integer(
+    #     'UTM zone',
+    #     required=True
+    # )
 
     @property
     def location_UTM_zone(self):
@@ -279,6 +192,13 @@ class EarthquakeInterferogram(properties.HasProperties):
 
         self._location_UTM_zone = var
 
+    # shape = properties.Array(
+    #     'number of pixels in the interferogram',
+    #     shape=(2,),
+    #     dtype=int,
+    #     required=True
+    # )
+
     @property
     def shape(self):
         """Shape of the interferogram defined by number of pixels in
@@ -297,12 +217,19 @@ class EarthquakeInterferogram(properties.HasProperties):
         try:
             var = np.array(var, dtype=int)
         except:
-            raise TypeError("shape must be a (2) np.ndarray of int")
+            raise TypeError("shape must be a (2) array_like of int")
 
         if len(var) != 2:
-            raise TypeError("shape must be a (2) np.ndarray of int")
+            raise TypeError("shape must be a (2) array_like of int")
 
         self._shape = var
+
+    # pixel_size = properties.Array(
+    #     'Size of each pixel (northing, easting)',
+    #     shape=(2,),
+    #     dtype=float,
+    #     required=True
+    # )
 
     @property
     def pixel_size(self):
@@ -321,20 +248,25 @@ class EarthquakeInterferogram(properties.HasProperties):
         try:
             var = np.array(var, dtype=float)
         except:
-            raise TypeError("pixel_size must be a (2) np.ndarray of float")
+            raise TypeError("pixel_size must be a (2) array_like of float")
 
         if len(var) != 2:
-            raise TypeError("pixel_size must be a (2) np.ndarray of float")
+            raise TypeError("pixel_size must be a (2) array_like of float")
 
         self._pixel_size = var
+
+    # ref = properties.Vector2(
+    #     'interferogram reference',
+    #     required=True
+    # )
     
     @property
     def ref(self):
-        """Tnterferogram reference location (bottom N, left E).
+        """Interferogram reference location (bottom N, left E).
 
         Returns
         -------
-        (2) np.ndarray of float
+        vectormath.Vector2
             Interferogram reference location (bottom N, left E)
 
         """
@@ -342,15 +274,20 @@ class EarthquakeInterferogram(properties.HasProperties):
 
     @ref.setter
     def ref(self, var):
-        try:
-            var = np.array(var, dtype=float)
-        except:
-            raise TypeError("ref must be a (2) np.ndarray")
-
-        if len(var) != 2:
-            raise TypeError("ref must be a (2) np.ndarray")
+        if not isinstance(var, vmath.Vector2):
+            try:
+                var = vmath.Vector2(var)
+            except:
+                raise TypeError((
+                    "ref must be a (2) array_like or vectormath.Vector2"
+                ))
 
         self._ref = var
+
+    # ref_incidence = properties.Float(
+    #     'Incidence angle',
+    #     required=True
+    # )
 
     @property
     def ref_incidence(self):
@@ -373,6 +310,11 @@ class EarthquakeInterferogram(properties.HasProperties):
 
         self._ref_incidence = var
 
+    # scaling = properties.Float(
+    #     'Scaling of the interferogram',
+    #     default=1.0
+    # )
+
     @property
     def scaling(self):
         """Interferogram scaling factor.
@@ -393,6 +335,11 @@ class EarthquakeInterferogram(properties.HasProperties):
             raise TypeError("scaling must be a float")
 
         self._scaling = var
+
+    # satellite_fringe_interval = properties.Float(
+    #     'Fringe interval',
+    #     default=0.028333
+    # )
 
     @property
     def satellite_fringe_interval(self):
@@ -415,6 +362,11 @@ class EarthquakeInterferogram(properties.HasProperties):
 
         self._satellite_fringe_interval = var
 
+    # satellite_azimuth = properties.Float(
+    #     'satellite_azimuth',
+    #     required=True
+    # )
+
     @property
     def satellite_azimuth(self):
         """Satellite azimuth.
@@ -435,6 +387,11 @@ class EarthquakeInterferogram(properties.HasProperties):
             raise TypeError("satellite_azimuth must be a float")
 
         self._satellite_azimuth = var
+
+    # satellite_altitude = properties.Float(
+    #     'satellite_altitude',
+    #     required=True
+    # )
 
     @property
     def satellite_altitude(self):
@@ -457,6 +414,10 @@ class EarthquakeInterferogram(properties.HasProperties):
 
         self._satellite_altitude = var
 
+    # local_earth_radius = properties.Float(
+    #     'Earth radius',
+    #     default=6371000.
+    # )
 
     @property
     def local_earth_radius(self):
@@ -479,6 +440,11 @@ class EarthquakeInterferogram(properties.HasProperties):
 
         self._local_earth_radius = var
 
+    # local_rigidity = properties.Float(
+    #     'Local rigidity',
+    #     default=3e10
+    # )
+
     @property
     def local_rigidity(self):
         """Local rigidity.
@@ -500,6 +466,11 @@ class EarthquakeInterferogram(properties.HasProperties):
 
         self._rigidity = var
 
+    # processed_by = properties.String(
+    #     'processed_by',
+    #     required=True
+    # )
+
     @property
     def processed_by(self):
         """A string stating who processed the data.
@@ -520,6 +491,11 @@ class EarthquakeInterferogram(properties.HasProperties):
             raise TypeError("processed_by not a string or data type that can be converted to string")
 
         self._processed_by = var
+
+    # description = properties.String(
+    #     'description of the event',
+    #     required=False
+    # )
     
     @property
     def description(self):
@@ -540,6 +516,8 @@ class EarthquakeInterferogram(properties.HasProperties):
         except:
             raise TypeError("Title is not a string or data type that can be converted to string")
         self._description = var
+
+    # satellite_name = properties.String('Name of the satelite.')
 
     @property
     def satellite_name(self):
@@ -562,6 +540,11 @@ class EarthquakeInterferogram(properties.HasProperties):
 
         self._satellite_name = var
 
+    # copyright = properties.String(
+    #     'copyright',
+    #     required=True
+    # )
+
     @property
     def copyright(self):
         """A string providing any copyright information.
@@ -582,6 +565,11 @@ class EarthquakeInterferogram(properties.HasProperties):
             raise TypeError("copyright not a string or data type that can be converted to string")
 
         self._copyright = var
+
+    # data_source = properties.String(
+    #     'data_source',
+    #     required=True
+    # )
 
     @property
     def data_source(self):
@@ -667,12 +655,115 @@ class EarthquakeInterferogram(properties.HasProperties):
             raise TypeError("event_country not a string or data type that can be converted to string")
 
         self._event_country = var
-
-
     
+    # date1 = properties.DateTime(
+    #     'date1',
+    #     required=True
+    # )
 
+    @property
+    def date1(self):
+        """Date 1
+        
+        Returns
+        -------
+        datetime.datetime
+            The date and time
+        """
+        return self._date1
 
-    event_date = properties.DateTime('Date of the earthquake')
+    @date1.setter
+    def date1(self, date_time):
+        if not isinstance(date_time, datetime):
+            try:
+                date_time = _date_time_from_json(date_time)
+            except:
+                raise TypeError(
+                    "date_time must be instance of 'datetime.datetime' or a"
+                    "json formatted date-time. Got {} instead".format(type(date_time))
+                    )
+        self._date1 = date_time
+    
+    # date2 = properties.DateTime(
+    #     'date2',
+    #     required=True
+    # )
+
+    @property
+    def date2(self):
+        """Date 2
+        
+        Returns
+        -------
+        datetime.datetime
+            The date and time
+        """
+        return self._date2
+
+    @date2.setter
+    def date2(self, date_time):
+        if not isinstance(date_time, datetime):
+            try:
+                date_time = _date_time_from_json(date_time)
+            except:
+                raise TypeError(
+                    "date_time must be instance of 'datetime.datetime' or a"
+                    "json formatted date-time. Got {} instead".format(type(date_time))
+                    )
+        self._date2 = date_time
+    
+    # processed_date = properties.DateTime(
+    #     'processed_date',
+    #     required=True
+    # )
+
+    @property
+    def processed_date(self):
+        """Processed date
+        
+        Returns
+        -------
+        datetime.datetime
+            The date and time
+        """
+        return self._processed_date
+
+    @processed_date.setter
+    def processed_date(self, date_time):
+        if not isinstance(date_time, datetime):
+            try:
+                date_time = _date_time_from_json(date_time)
+            except:
+                raise TypeError(
+                    "date_time must be instance of 'datetime.datetime' or a"
+                    "json formatted date-time. Got {} instead".format(type(date_time))
+                    )
+        self._processed_date = date_time
+    
+    @property
+    def event_date(self):
+        """Event date
+        
+        Returns
+        -------
+        datetime.datetime
+            The date and time
+        """
+        return self._processed_date
+
+    @event_date.setter
+    def event_date(self, date_time):
+        if not isinstance(date_time, datetime):
+            try:
+                date_time = _date_time_from_json(date_time)
+            except:
+                raise TypeError(
+                    "date_time must be instance of 'datetime.datetime' or a"
+                    "json formatted date-time. Got {} instead".format(type(date_time))
+                    )
+        self._event_date = date_time
+
+    # event_date = properties.DateTime('Date of the earthquake')
     # event_gcmt_id = properties.String('GCMT ID')
     # event_name = properties.String('Earthquake name')
     # event_country = properties.String('Earthquake country')
@@ -704,6 +795,21 @@ class EarthquakeInterferogram(properties.HasProperties):
         return vectorNx, vectorNy, data
 
     def plot_interferogram(self, wrap=True, ax=None):
+        """Plot interferogram
+
+        Parameters
+        ----------
+        wrap: bool
+            If ``True``, wrap the function
+        ax: matplotlib.ax.Axes
+            An axes object
+
+        Returns
+        -------
+        matplotlib.ax.pcolormesh
+            The inteferogram plot
+
+        """
 
         self.assert_valid
 
@@ -744,6 +850,21 @@ class EarthquakeInterferogram(properties.HasProperties):
         return out
 
     def plot_mask(self, ax=None, opacity=0.2):
+        """Plot masked interferogram
+
+        Parameters
+        ----------
+        ax: matplotlib.ax.Axes
+            An axes object
+        opacity: float
+            The opacity, default = 0.2
+
+        Returns
+        -------
+        matplotlib.ax.pcolormesh
+            The masked inteferogram plot
+
+        """
 
         if ax is None:
             plt.figure()
@@ -771,9 +892,18 @@ class EarthquakeInterferogram(properties.HasProperties):
         return out
 
     def get_LOS_vector(self, locations):
-        """
-        calculate beta - the angle at earth center between reference point
+        """calculate beta - the angle at earth center between reference point
         and satellite nadir
+
+        Parameters
+        ----------
+        locations: list
+            list of locations
+
+        Returns
+        -------
+        vectormath.Vector3Array
+            The LOS vectors
         """
         if not isinstance(locations, list):
             locations = [locations]
@@ -886,39 +1016,415 @@ class EarthquakeInterferogram(properties.HasProperties):
         return angdist
 
 
-class Oksar(properties.HasProperties):
+class Oksar:
 
-    beta = properties.Float('beta', default=3E10)
-    mu = properties.Float('mu', default=3E10)
+    def __init__(
+        self,
+        O,
+        U,
+        V,
+        center,
+        depth_top,
+        depth_bottom=1e4,
+        strike=0.,
+        dip=45.,
+        rake=90,
+        slip=0.5,
+        length=1e4,
+        beta=3e10,
+        mu=3e10,
+        shape=(300, 300)
+    ):
 
-    strike = properties.Float('Strike', min=0, max=360)
-    dip = properties.Float('Dip', default=45, min=0, max=90)
-    rake = properties.Float('Rake', default=90, min=-180, max=180)
-    slip = properties.Float('Slip', default=0.5, min=0)
-    length = properties.Float('Fault length', default=10000., min=0)
-    center = properties.Vector2('Center of the fault plane.')
-    depth_top = properties.Float('Top of fault', min=0)
-    depth_bottom = properties.Float('Bottom of fault', default=10000, min=0)
+        self.O = O
+        self.U = U
+        self.V = V
+        self.center = center
+        self.depth_top = depth_top
+        self.depth_bottom = depth_bottom
+        self.strike = strike
+        self.dip = dip
+        self.rake = rake
+        self.slip = slip
+        self.length = length
+        self.beta = beta
+        self.mu = mu
+        self.shape = shape
 
-    O = properties.Vector2(
-        'Origin of the simulation domain', required=True
-    )
+    # O = properties.Vector2(
+    #     'Origin of the simulation domain', required=True
+    # )
 
-    U = properties.Vector2(
-        'U direction of the simulation domain', required=True
-    )
+    @property
+    def O(self):
+        """Origin of the simulation domain.
 
-    V = properties.Vector2(
-        'V direction of the simulation domain', required=True
-    )
+        Returns
+        -------
+        vectormath.Vector2
+            Origin of the simulation domain.
 
-    shape = properties.Array(
-        'number of pixels in the simulation',
-        shape=(2,),
-        default=(300, 300),
-        dtype=int,
-        # required=True
-    )
+        """
+        return self._O
+
+    @O.setter
+    def O(self, var):
+        
+        if not isinstance(var, vmath.Vector2):
+            try:
+                var = vmath.Vector2(var)
+            except:
+                raise TypeError((
+                    "O must be a (2) array_like or vectormath.Vector2"
+                ))
+
+        self._O = var
+
+    # U = properties.Vector2(
+    #     'U direction of the simulation domain', required=True
+    # )
+
+    @property
+    def U(self):
+        """U direction of the simulation domain
+
+        Returns
+        -------
+        vectormath.Vector2
+            U direction of the simulation domain
+
+        """
+        return self._U
+
+    @U.setter
+    def U(self, var):
+        
+        if not isinstance(var, vmath.Vector2):
+            try:
+                var = vmath.Vector2(var)
+            except:
+                raise TypeError((
+                    "U must be a (2) array_like or vectormath.Vector2"
+                ))
+
+        self._U = var
+
+    # V = properties.Vector2(
+    #     'V direction of the simulation domain', required=True
+    # )
+
+    @property
+    def V(self):
+        """V direction of the simulation domain
+
+        Returns
+        -------
+        vectormath.Vector2
+            V direction of the simulation domain
+
+        """
+        return self._location
+
+    @V.setter
+    def V(self, var):
+        
+        if not isinstance(var, vmath.Vector2):
+            try:
+                var = vmath.Vector2(var)
+            except:
+                raise TypeError((
+                    "V must be a (2) array_like or vectormath.Vector2"
+                ))
+
+        self._V = var
+
+    # center = properties.Vector2('Center of the fault plane.')
+
+    @property
+    def center(self):
+        """Earthquake epicenter (bottom N, left E).
+
+        Returns
+        -------
+        vectormath.Vector2
+            Earthquake epicenter (bottom N, left E)
+
+        """
+        return self._center
+
+    @center.setter
+    def center(self, var):
+        
+        if not isinstance(var, vmath.Vector2):
+            try:
+                var = vmath.Vector2(var)
+            except:
+                raise TypeError((
+                    "center must be a (2) array_like or vectormath.Vector2"
+                ))
+
+        self._center = var
+
+    # depth_top = properties.Float('Top of fault', min=0)
+
+    @property
+    def depth_top(self):
+        """Depth to the top of the fault (m)
+
+        Returns
+        -------
+        float
+            Depth to the top of the fault (m)
+
+        """
+        return self._depth_top
+
+    @depth_top.setter
+    def depth_top(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("depth_top must be a float")
+
+        if var < 0.:
+            raise ValueError("depth_top must be equal or greather than 0")
+
+        self._depth_top = var
+
+    # depth_bottom = properties.Float('Bottom of fault', default=10000, min=0)
+    
+    @property
+    def depth_bottom(self):
+        """Depth to the bottom of the fault (m)
+
+        Returns
+        -------
+        float
+            Depth to the bottom of the fault (m)
+
+        """
+        return self._depth_bottom
+
+    @depth_bottom.setter
+    def depth_bottom(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("depth_bottom must be a float")
+
+        if var < self.depth_top:
+            raise ValueError("depth_bottom must be larger than depth_top")
+
+        self._depth_bottom = var
+
+    # strike = properties.Float('Strike', min=0, max=360)
+
+    @property
+    def strike(self):
+        """Strike angle (0 to 360)
+
+        Returns
+        -------
+        float
+            Strike angle (0 to 360)
+
+        """
+        return self._strike
+
+    @strike.setter
+    def strike(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("strike must be a float")
+
+        if (var < 0.) | (var > 360.):
+            raise ValueError("strike must be within [0, 360]")
+
+        self._strike = var
+
+    # dip = properties.Float('Dip', default=45, min=0, max=90)
+    
+    @property
+    def dip(self):
+        """Strike angle (0 to 90)
+
+        Returns
+        -------
+        float
+            Strike angle (0 to 90)
+
+        """
+        return self._dip
+
+    @dip.setter
+    def dip(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("dip must be a float")
+
+        if (var < 0.) | (var > 90.):
+            raise ValueError("dip must be within [0, 90]")
+
+        self._dip = var
+
+    # rake = properties.Float('Rake', default=90, min=-180, max=180)
+    
+    @property
+    def rake(self):
+        """Rake angle (-180 to 180)
+
+        Returns
+        -------
+        float
+            Rake angle (-180 to 180)
+
+        """
+        return self._rake
+
+    @rake.setter
+    def rake(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("rake must be a float")
+
+        if (var < -180) | (var > 180.):
+            raise ValueError("rake must be within [-180, 180]")
+
+        self._rake = var
+
+    # slip = properties.Float('Slip', default=0.5, min=0)
+
+    @property
+    def slip(self):
+        """Slip
+
+        Returns
+        -------
+        float
+            Slip
+
+        """
+        return self._slip
+
+    @slip.setter
+    def slip(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("slip must be a float")
+
+        if var < 0.:
+            raise ValueError("slip must be greater than or equal to 0")
+
+        self._slip = var
+
+    # length = properties.Float('Fault length', default=10000., min=0)
+
+    @property
+    def length(self):
+        """Length
+
+        Returns
+        -------
+        float
+            Length
+
+        """
+        return self._length
+
+    @length.setter
+    def length(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("length must be a float")
+
+        if var < 0.:
+            raise ValueError("length must be greater than or equal to 0")
+
+        self._length = var
+    
+    # beta = properties.Float('beta', default=3E10)
+
+    @property
+    def beta(self):
+        """Beta parameter
+
+        Returns
+        -------
+        float
+            Beta parameter
+
+        """
+        return self._beta
+
+    @beta.setter
+    def beta(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("beta must be a float")
+
+        self._beta = var
+
+    # mu = properties.Float('mu', default=3E10)
+
+    @property
+    def mu(self):
+        """Mu parameter
+
+        Returns
+        -------
+        float
+            Mu parameter
+
+        """
+        return self._mu
+
+    @mu.setter
+    def mu(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("mu must be a float")
+
+        self._mu = var
+
+    # shape = properties.Array(
+    #     'number of pixels in the simulation',
+    #     shape=(2,),
+    #     default=(300, 300),
+    #     dtype=int,
+    #     # required=True
+    # )
+
+    @property
+    def shape(self):
+        """Shape of the interferogram defined by number of pixels in
+        the North and Easting directions, respectively; i.e. (n_pix_N, n_pix_E).
+
+        Returns
+        -------
+        (2) np.ndarray of int
+            Interferogram shape. 
+
+        """
+        return self._shape
+
+    @shape.setter
+    def shape(self, var):
+        try:
+            var = np.array(var, dtype=int)
+        except:
+            raise TypeError("shape must be a (2) array_like of int")
+
+        if len(var) != 2:
+            raise TypeError("shape must be a (2) array_like of int")
+
+        self._shape = var
 
     @property
     def simulation_grid(self):
@@ -1170,6 +1676,25 @@ class Oksar(properties.HasProperties):
         return u
 
     def plot_displacement(self, eq=None, ax=None, wrap=True, mask_opacity=0.2):
+        """Plot displacement/
+
+        Parameters
+        ----------
+        eq: EarthquakeInterferogram
+            Instance of ``EarthquakeInterferogram``
+        ax: matplotlib.ax.Axes
+            Axes object
+        wrap: bool
+            If ``True``, wrap the function
+        mask_opacity: float
+            Masking opacity, default = 0.2
+
+        Returns
+        -------
+        matplotlib.ax.pcolormesh
+            Displacement plot
+
+        """
 
         if eq is not None:
             assert isinstance(eq, EarthquakeInterferogram)
@@ -1328,20 +1853,26 @@ def example():
         satellite_name='ERS',
     )
 
+    O = [706216.0606, 4187318.9999]
+    U = [81920, 0]
+    V = [0, 81920]
+    center = [773728.2977967655, 4223586.816611591]
+    depth_top=0
+
     dinar_fwd = Oksar(
-        beta=3E10,
-        mu=3E10,
+        O,
+        U,
+        V,
+        center,
+        depth_top,
+        depth_bottom=1.5e4,
         strike=329.6,
-        dip=50,
+        dip=50.,
         rake=90,
         slip=0.5,
         length=11578.907244622129,
-        center=[773728.2977967655, 4223586.816611591],
-        depth_top=0,
-        depth_bottom=15000,
-        O=[706216.0606, 4187318.9999],
-        U=[81920, 0],
-        V=[0, 81920],
+        beta=3e10,
+        mu=3e10,
         shape=(300, 200)
     )
 
