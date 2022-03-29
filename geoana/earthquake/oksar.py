@@ -27,87 +27,88 @@ import matplotlib.pyplot as plt
 
 
 class EarthquakeInterferogram(properties.HasProperties):
-    title = properties.String(
-        'name of the earthquake',
-        required=True
-    )
 
-    description = properties.String(
-        'description of the event',
-        required=False
-    )
+    # title = properties.String(
+    #     'name of the earthquake',
+    #     required=True
+    # )
 
-    location = properties.Vector2(
-        'interferogram location (bottom N, left E)',
-        required=True
-    )
+    # description = properties.String(
+    #     'description of the event',
+    #     required=False
+    # )
 
-    location_UTM_zone = properties.Integer(
-        'UTM zone',
-        required=True
-    )
+    # location = properties.Vector2(
+    #     'interferogram location (bottom N, left E)',
+    #     required=True
+    # )
 
-    shape = properties.Array(
-        'number of pixels in the interferogram',
-        shape=(2,),
-        dtype=int,
-        required=True
-    )
+    # location_UTM_zone = properties.Integer(
+    #     'UTM zone',
+    #     required=True
+    # )
 
-    pixel_size = properties.Array(
-        'Size of each pixel (northing, easting)',
-        shape=(2,),
-        dtype=float,
-        required=True
-    )
+    # shape = properties.Array(
+    #     'number of pixels in the interferogram',
+    #     shape=(2,),
+    #     dtype=int,
+    #     required=True
+    # )
 
-    data = properties.Array(
-        'Processed interferogram data (unwrapped)',
-        dtype=float,
-        required=True
-    )
+    # pixel_size = properties.Array(
+    #     'Size of each pixel (northing, easting)',
+    #     shape=(2,),
+    #     dtype=float,
+    #     required=True
+    # )
 
-    ref = properties.Vector2(
-        'interferogram reference',
-        required=True
-    )
+    # data = properties.Array(
+    #     'Processed interferogram data (unwrapped)',
+    #     dtype=float,
+    #     required=True
+    # )
 
-    ref_incidence = properties.Float(
-        'Incidence angle',
-        required=True
-    )
+    # ref = properties.Vector2(
+    #     'interferogram reference',
+    #     required=True
+    # )
 
-    scaling = properties.Float(
-        'Scaling of the interferogram',
-        default=1.0
-    )
+    # ref_incidence = properties.Float(
+    #     'Incidence angle',
+    #     required=True
+    # )
 
-    satellite_name = properties.String('Name of the satelite.')
+    # scaling = properties.Float(
+    #     'Scaling of the interferogram',
+    #     default=1.0
+    # )
 
-    satellite_fringe_interval = properties.Float(
-        'Fringe interval',
-        default=0.028333
-    )
+    # satellite_name = properties.String('Name of the satelite.')
 
-    satellite_azimuth = properties.Float(
-        'satellite_azimuth',
-        required=True
-    )
+    # satellite_fringe_interval = properties.Float(
+    #     'Fringe interval',
+    #     default=0.028333
+    # )
 
-    satellite_altitude = properties.Float(
-        'satellite_altitude',
-        required=True
-    )
+    # satellite_azimuth = properties.Float(
+    #     'satellite_azimuth',
+    #     required=True
+    # )
 
-    local_rigidity = properties.Float(
-        'Local rigidity',
-        default=3e10
-    )
+    # satellite_altitude = properties.Float(
+    #     'satellite_altitude',
+    #     required=True
+    # )
 
-    local_earth_radius = properties.Float(
-        'Earth radius',
-        default=6371000.
-    )
+    # local_rigidity = properties.Float(
+    #     'Local rigidity',
+    #     default=3e10
+    # )
+
+    # local_earth_radius = properties.Float(
+    #     'Earth radius',
+    #     default=6371000.
+    # )
 
     date1 = properties.DateTime(
         'date1',
@@ -119,30 +120,562 @@ class EarthquakeInterferogram(properties.HasProperties):
         required=True
     )
 
-    processed_by = properties.String(
-        'processed_by',
-        required=True
-    )
+    # processed_by = properties.String(
+    #     'processed_by',
+    #     required=True
+    # )
 
     processed_date = properties.DateTime(
         'processed_date',
         required=True
     )
 
-    copyright = properties.String(
-        'copyright',
-        required=True
-    )
+    # copyright = properties.String(
+    #     'copyright',
+    #     required=True
+    # )
 
-    data_source = properties.String(
-        'data_source',
-        required=True
-    )
+    # data_source = properties.String(
+    #     'data_source',
+    #     required=True
+    # )
+
+
+    def __init__(
+        self,
+        data,
+        title,
+        location,
+        location_UTM_zone,
+        shape,
+        pixel_size,
+        ref,
+        ref_incidence,
+        satellite_azimuth,
+        satellite_altitude,
+        # date1,
+        # date2,
+        # processed_date,
+        processed_by,
+        scaling=1.0,
+        satellite_fringe_interval=0.028333,
+        local_earth_radius=6371000.,
+        local_rigidity=3e10,
+        **kwargs
+    ):
+
+        self.data = data
+        self.title = title
+        self.location = location
+        self.location_UTM_zone = location_UTM_zone
+        self.shape = shape
+        self.pixel_size = pixel_size
+        self.ref = ref
+        self.ref_incidence = ref_incidence
+        self.satellite_azimuth = satellite_azimuth
+        self.satellite_altitude = satellite_altitude
+        self.processed_by = processed_by
+        self.scaling = scaling
+        self.satellite_fringe_interval = satellite_fringe_interval
+        self.local_earth_radius = local_earth_radius
+        self.local_rigidity = local_rigidity
+
+        kwargs_list = [
+            'description', 'event_country', 'event_name', 'copyright',
+            'data_source', 'satellite_name', 'event_gcmt_id'
+        ]
+        
+        for k in kwargs_list:
+            if k in kwargs.keys():
+                setattr(self, k, kwargs.pop(k))
+
+        super().__init__(**kwargs)
+
+
+    @property
+    def data(self):
+        """Processed interferogram data (unwrapped).
+
+        Returns
+        -------
+        np.array of float
+            Processed interferogram data (unwrapped)
+
+        """
+        return self._data
+
+    @data.setter
+    def data(self, var):
+        if ~isinstance(var, np.ndarray):
+            try:
+                np.array(var)
+            except:
+                raise TypeError("Location must be a np.array_like of float")
+        
+        self._data = var
+
+    @property
+    def title(self):
+        """A title.
+
+        Returns
+        -------
+        str
+            A title.
+
+        """
+        return self._title
+
+    @title.setter
+    def title(self, var):
+        try:
+            var = str(var)
+        except:
+            raise TypeError("Title is not a string or data type that can be converted to string")
+        self._title = var
+
+    @property
+    def location(self):
+        """Tnterferogram location (bottom N, left E).
+
+        Returns
+        -------
+        (2) np.ndarray of float
+            Interferogram location (bottom N, left E)
+
+        """
+        return self._location
+
+    @location.setter
+    def location(self, var):
+        try:
+            var = np.array(var, dtype=float)
+        except:
+            raise TypeError("Location must be a (2) np.ndarray")
+
+        if len(var) != 2:
+            raise TypeError("Location must be a (2) np.ndarray")
+
+        self._location = var
+
+    @property
+    def location_UTM_zone(self):
+        """UTM zone for the interferogram.
+
+        Returns
+        -------
+        int
+            UTM zone for the interferogram
+
+        """
+        return self._location_UTM_zone
+
+    @location_UTM_zone.setter
+    def location_UTM_zone(self, var):
+        try:
+            var = int(var)
+        except:
+            raise TypeError("Location_UTM_zone must be integer")
+
+        self._location_UTM_zone = var
+
+    @property
+    def shape(self):
+        """Shape of the interferogram defined by number of pixels in
+        the North and Easting directions, respectively; i.e. (n_pix_N, n_pix_E).
+
+        Returns
+        -------
+        (2) np.ndarray of int
+            Interferogram shape. 
+
+        """
+        return self._shape
+
+    @shape.setter
+    def shape(self, var):
+        try:
+            var = np.array(var, dtype=int)
+        except:
+            raise TypeError("shape must be a (2) np.ndarray of int")
+
+        if len(var) != 2:
+            raise TypeError("shape must be a (2) np.ndarray of int")
+
+        self._shape = var
+
+    @property
+    def pixel_size(self):
+        """The Northing and Easting dimensions of each pixel.
+
+        Returns
+        -------
+        (2) np.ndarray of float
+            The Northing and Easting dimensions of each pixel.
+
+        """
+        return self._pixel_size
+
+    @pixel_size.setter
+    def pixel_size(self, var):
+        try:
+            var = np.array(var, dtype=float)
+        except:
+            raise TypeError("pixel_size must be a (2) np.ndarray of float")
+
+        if len(var) != 2:
+            raise TypeError("pixel_size must be a (2) np.ndarray of float")
+
+        self._pixel_size = var
+    
+    @property
+    def ref(self):
+        """Tnterferogram reference location (bottom N, left E).
+
+        Returns
+        -------
+        (2) np.ndarray of float
+            Interferogram reference location (bottom N, left E)
+
+        """
+        return self._ref
+
+    @ref.setter
+    def ref(self, var):
+        try:
+            var = np.array(var, dtype=float)
+        except:
+            raise TypeError("ref must be a (2) np.ndarray")
+
+        if len(var) != 2:
+            raise TypeError("ref must be a (2) np.ndarray")
+
+        self._ref = var
+
+    @property
+    def ref_incidence(self):
+        """Incidence angle.
+
+        Returns
+        -------
+        float
+            Incidence angle
+
+        """
+        return self._ref_incidence
+
+    @ref_incidence.setter
+    def ref_incidence(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("ref_incidence must be a float")
+
+        self._ref_incidence = var
+
+    @property
+    def scaling(self):
+        """Interferogram scaling factor.
+
+        Returns
+        -------
+        float
+            Interferogram scaling factor. Default = 1.0
+
+        """
+        return self._scaling
+
+    @scaling.setter
+    def scaling(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("scaling must be a float")
+
+        self._scaling = var
+
+    @property
+    def satellite_fringe_interval(self):
+        """Satellite fringe interval.
+
+        Returns
+        -------
+        float
+            Satellite fringe interval
+
+        """
+        return self._satellite_fringe_interval
+
+    @satellite_fringe_interval.setter
+    def satellite_fringe_interval(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("satellite_fringe_interval must be a float")
+
+        self._satellite_fringe_interval = var
+
+    @property
+    def satellite_azimuth(self):
+        """Satellite azimuth.
+
+        Returns
+        -------
+        float
+            Satellite azimuth
+
+        """
+        return self._satellite_azimuth
+
+    @satellite_azimuth.setter
+    def satellite_azimuth(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("satellite_azimuth must be a float")
+
+        self._satellite_azimuth = var
+
+    @property
+    def satellite_altitude(self):
+        """Satellite altitude.
+
+        Returns
+        -------
+        float
+            Satellite altitude
+
+        """
+        return self._satellite_altitude
+
+    @satellite_altitude.setter
+    def satellite_altitude(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("satellite_altitude must be a float")
+
+        self._satellite_altitude = var
+
+
+    @property
+    def local_earth_radius(self):
+        """Local Earth radius.
+
+        Returns
+        -------
+        float
+            Local Earth radius. Default = 6371000.
+
+        """
+        return self._local_earth_radius
+
+    @local_earth_radius.setter
+    def local_earth_radius(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("local_earth_radius must be a float")
+
+        self._local_earth_radius = var
+
+    @property
+    def local_rigidity(self):
+        """Local rigidity.
+
+        Returns
+        -------
+        float
+            Local rigidity. Default = 3e10
+
+        """
+        return self._local_rigidity
+
+    @local_rigidity.setter
+    def local_rigidity(self, var):
+        try:
+            var = float(var)
+        except:
+            raise TypeError("local_rigidity must be a float")
+
+        self._rigidity = var
+
+    @property
+    def processed_by(self):
+        """A string stating who processed the data.
+
+        Returns
+        -------
+        str
+            A string stating who processed the data.
+
+        """
+        return self._processed_by
+
+    @processed_by.setter
+    def processed_by(self, var):
+        try:
+            var = str(var)
+        except:
+            raise TypeError("processed_by not a string or data type that can be converted to string")
+
+        self._processed_by = var
+    
+    @property
+    def description(self):
+        """The description of the event.
+
+        Returns
+        -------
+        str
+            The description event. Default = 'My Earthquake'
+
+        """
+        return self._description
+
+    @description.setter
+    def description(self, var):
+        try:
+            var = str(var)
+        except:
+            raise TypeError("Title is not a string or data type that can be converted to string")
+        self._description = var
+
+    @property
+    def satellite_name(self):
+        """A string stating the name of the satellite.
+
+        Returns
+        -------
+        str
+            A string stating who the name of the satellite.
+
+        """
+        return self._satellite_name
+
+    @satellite_name.setter
+    def satellite_name(self, var):
+        try:
+            var = str(var)
+        except:
+            raise TypeError("satellite_name not a string or data type that can be converted to string")
+
+        self._satellite_name = var
+
+    @property
+    def copyright(self):
+        """A string providing any copyright information.
+
+        Returns
+        -------
+        str
+            A string providing any copyright information.
+
+        """
+        return self._copyright
+
+    @copyright.setter
+    def copyright(self, var):
+        try:
+            var = str(var)
+        except:
+            raise TypeError("copyright not a string or data type that can be converted to string")
+
+        self._copyright = var
+
+    @property
+    def data_source(self):
+        """The source of the data.
+
+        Returns
+        -------
+        str
+            The source of the data.
+
+        """
+        return self._data_source
+
+    @data_source.setter
+    def data_source(self, var):
+        try:
+            var = str(var)
+        except:
+            raise TypeError("data_source not a string or data type that can be converted to string")
+
+        self._data_source = var
+
+
+    @property
+    def event_gcmt_id(self):
+        """The GCMT ID for the event.
+
+        Returns
+        -------
+        str
+            The GCMT ID for the event.
+
+        """
+        return self._event_gcmt_id
+
+    @event_gcmt_id.setter
+    def event_gcmt_id(self, var):
+        try:
+            var = str(var)
+        except:
+            raise TypeError("event_gcmt_id not a string or data type that can be converted to string")
+
+        self._event_gcmt_id = var
+
+    @property
+    def event_name(self):
+        """The name of the event.
+
+        Returns
+        -------
+        str
+            The name of the event.
+
+        """
+        return self._event_name
+
+    @event_name.setter
+    def event_name(self, var):
+        try:
+            var = str(var)
+        except:
+            raise TypeError("event_name not a string or data type that can be converted to string")
+
+        self._event_name = var
+
+    @property
+    def event_country(self):
+        """The country where the event occurred.
+
+        Returns
+        -------
+        str
+            The country where the event occurred.
+
+        """
+        return self._event_country
+
+    @event_country.setter
+    def event_country(self, var):
+        try:
+            var = str(var)
+        except:
+            raise TypeError("event_country not a string or data type that can be converted to string")
+
+        self._event_country = var
+
+
+    
+
 
     event_date = properties.DateTime('Date of the earthquake')
-    event_gcmt_id = properties.String('GCMT ID')
-    event_name = properties.String('Earthquake name')
-    event_country = properties.String('Earthquake country')
+    # event_gcmt_id = properties.String('GCMT ID')
+    # event_name = properties.String('Earthquake name')
+    # event_country = properties.String('Earthquake country')
 
     def _get_plot_data(self):
 
@@ -711,11 +1244,72 @@ def example():
     dinar_file = requests.get(
         'https://storage.googleapis.com/simpeg/geoana/dinar.r4'
     )
+    
+    # data = np.fromstring(dinar_file.content, np.float32)
+
+    # dinar = EarthquakeInterferogram(
+    #     # uid='dinar',
+    #     title='Dinar, Turkey',
+    #     description=(
+    #         'On October 1, 1995, a strong earthquake ruptured a section of '
+    #         'the Dinar-Civril fault in SW Turkey. Around 30% of the buildings '
+    #         'in the nearby town of Dinar were destroyed. 92 inhabitants were '
+    #         'killed and over 200 injured.'
+    #     ),
+    #     event_country='Turkey',
+    #     event_date='1995-09-30T18:00:00Z',
+    #     event_gcmt_id='100195B',
+    #     event_name='Dinar',
+    #     copyright='ESA',
+    #     data_source='ESA',
+    #     date1='1995-08-12T18:00:00Z',
+    #     date2='1995-12-31T17:00:00Z',
+    #     processed_by='GarethFunning',
+    #     processed_date='2003-01-20T17:00:00Z',
+    #     ref_incidence=23,
+    #     ref=[741140., 4230327.],
+    #     scaling=0.0045040848895,
+    #     local_earth_radius=6386232,
+    #     local_rigidity=30000000000,
+    #     location=[706216.0606, 4269238.9999],
+    #     shape=(1024, 1024),
+    #     location_UTM_zone=35,
+    #     pixel_size=[80., 80.],
+    #     satellite_altitude=788792,
+    #     satellite_azimuth=192,
+    #     satellite_fringe_interval=0.028333333,
+    #     satellite_name='ERS',
+    #     data=data
+    # )
+
     data = np.fromstring(dinar_file.content, np.float32)
+    title = 'Dinar, Turkey'
+    location = [706216.0606, 4269238.9999]
+    location_UTM_zone = 35
+    shape = (1024, 1024)
+    pixel_size = [80., 80.]
+    ref= [741140., 4230327.]
+    ref_incidence = 23
+    satellite_azimuth=192
+    satellite_altitude=788792
+    processed_by='GarethFunning'
 
     dinar = EarthquakeInterferogram(
-        # uid='dinar',
-        title='Dinar, Turkey',
+        data,
+        title,
+        location,
+        location_UTM_zone,
+        shape,
+        pixel_size,
+        ref,
+        ref_incidence,
+        satellite_azimuth,
+        satellite_altitude,
+        processed_by,
+        scaling=0.0045040848895,
+        satellite_fringe_interval=0.028333333,
+        local_earth_radius=6386232,
+        local_rigidity=30000000000,
         description=(
             'On October 1, 1995, a strong earthquake ruptured a section of '
             'the Dinar-Civril fault in SW Turkey. Around 30% of the buildings '
@@ -730,22 +1324,8 @@ def example():
         data_source='ESA',
         date1='1995-08-12T18:00:00Z',
         date2='1995-12-31T17:00:00Z',
-        processed_by='GarethFunning',
         processed_date='2003-01-20T17:00:00Z',
-        ref_incidence=23,
-        ref=[741140., 4230327.],
-        scaling=0.0045040848895,
-        local_earth_radius=6386232,
-        local_rigidity=30000000000,
-        location=[706216.0606, 4269238.9999],
-        shape=(1024, 1024),
-        location_UTM_zone=35,
-        pixel_size=[80., 80.],
-        satellite_altitude=788792,
-        satellite_azimuth=192,
-        satellite_fringe_interval=0.028333333,
         satellite_name='ERS',
-        data=data
     )
 
     dinar_fwd = Oksar(
