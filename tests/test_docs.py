@@ -6,30 +6,40 @@ from __future__ import unicode_literals
 import os
 import subprocess
 import unittest
+import platform
 
 
 class TestDoc(unittest.TestCase):
 
     @property
     def path_to_docs(self):
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        return os.path.sep.join(dirname.split(os.path.sep)[:-1] + ['docs'])
+        dirname, file_name = os.path.split(os.path.abspath(__file__))
+        return dirname.split(os.path.sep)[:-1] + ["docs"]
 
     def test_html(self):
         wd = os.getcwd()
-        os.chdir(self.path_to_docs)
+        os.chdir(os.path.sep.join(self.path_to_docs))
 
-        response = subprocess.run(["make", "html"])
-        self.assertTrue(response.returncode == 0)
+        if platform.system() != "Windows":
+            response = subprocess.run(["make", "html"])
+            self.assertTrue(response.returncode == 0)
+        else:
+            response = subprocess.call(["make", "html"], shell=True)
+            self.assertTrue(response == 0)
+
         os.chdir(wd)
 
     def test_linkcheck(self):
         wd = os.getcwd()
-        os.chdir(self.path_to_docs)
+        os.chdir(os.path.sep.join(self.path_to_docs))
 
-        response = subprocess.run(["make", "linkcheck"])
-        print(response.returncode)
-        self.assertTrue(response.returncode == 0)
+        if platform.system() != "Windows":
+            response = subprocess.run(["make", "linkcheck"])
+            self.assertTrue(response.returncode == 0)
+        else:
+            response = subprocess.call(["make", "linkcheck"], shell=True)
+            self.assertTrue(response == 0)
+
         os.chdir(wd)
 
 

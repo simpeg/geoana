@@ -252,7 +252,7 @@ sphinx_gallery_conf = {
     'examples_dirs' : '../examples',
     'gallery_dirs'  : 'auto_examples',
     # "within_subsection_order": FileNameSortKey,
-    "filename_pattern": "\.py",
+    # "filename_pattern": "\.py",
     # 'backreferences_dir' : None,
     "backreferences_dir": "api/generated/backreferences",
     "doc_module": "geoana",

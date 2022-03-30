@@ -1428,6 +1428,14 @@ class Oksar:
 
     @property
     def simulation_grid(self):
+        """Compute simulation grid
+
+        Returns
+        -------
+        vectormath.Vector3Array
+            Simulation grid
+
+        """
 
         self.assert_valid
 
@@ -1441,6 +1449,14 @@ class Oksar:
 
     @property
     def displacement_vector(self):
+        """Compute displacement vector
+
+        Returns
+        -------
+        vectormath.Vector3
+            Displacement vector
+
+        """
 
         self.assert_valid
 
