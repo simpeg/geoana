@@ -164,8 +164,7 @@ class BaseDipole:
     def location(self, vec):
         
         try:
-            vec = np.asarray(vec, dtype=np.float64)
-            vec = np.atleast_1d(vec)
+            vec = np.atleast_1d(vec).astype(float)
         except:
             raise TypeError(f"location must be array_like, got {type(vec)}")
         
@@ -200,8 +199,7 @@ class BaseDipole:
                 var = np.r_[0., 0., 1.]
         else:
             try:
-                var = np.asarray(var, dtype=np.float64)
-                var = np.atleast_1d(var)
+                var = np.atleast_1d(var).astype(float)
             except:
                 raise TypeError(f"orientation must be str or array_like, got {type(var)}")
             

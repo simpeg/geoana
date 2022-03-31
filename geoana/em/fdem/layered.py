@@ -102,12 +102,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         
         # Ensure float or numpy array of float
         try:
-            if type(value) == np.ndarray:
-                value = value.astype(float)
-            elif type(value) == list:
-                value = np.array(value, dtype=float)
-            else:
-                value = np.array([value], dtype=float)
+            value = np.atleast_1d(value).astype(float)
         except:
             raise TypeError(f"frequencies are not a valid type")
         
@@ -137,12 +132,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         if value is None:
             value = []
         try:
-            if type(value) == np.ndarray:
-                value = value.astype(float)
-            elif type(value) == list:
-                value = np.array(value, dtype=float)
-            else:
-                value = np.array([value], dtype=float)
+            value = np.atleast_1d(value).astype(float)
         except:
             raise TypeError(f"thickness are not a valid type")
         
@@ -174,10 +164,8 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         
         # Ensure numpy array of complex
         try:
-            if type(value) == np.ndarray:
-                value = value.astype(complex)
-            elif type(value) == list:
-                value = np.array(value, dtype=complex)
+            if isinstance(value, (list, tuple, np.ndarray)):
+                value = np.atleast_1d(value).astype(complex)
             else:
                 value = complex(value) * np.ones(n_layer)
         except:
@@ -218,10 +206,8 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         
         # Ensure float or numpy array of complex
         try:
-            if type(value) == np.ndarray:
-                value = value.astype(complex)
-            elif type(value) == list:
-                value = np.array(value, dtype=complex)
+            if isinstance(value, (list, tuple, np.ndarray)):
+                value = np.atleast_1d(value).astype(complex)
             else:
                 value = complex(value) * np.ones(n_layer)
         except:
@@ -263,10 +249,8 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         
         # Ensure float or numpy array of complex
         try:
-            if type(value) == np.ndarray:
-                value = value.astype(complex)
-            elif type(value) == list:
-                value = np.array(value, dtype=complex)
+            if isinstance(value, (list, tuple, np.ndarray)):
+                value = np.atleast_1d(value).astype(complex)
             else:
                 value = complex(value) * np.ones(n_layer)
         except:
@@ -279,8 +263,6 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
             raise ValueError("Real components must be >= epsilon_0")
         
         # Enforce dimensions
-        n_layers = len(self.thickness) + 1
-        n_frequency = len(self.frequency)
         if (value.ndim == 1) & (len(value) != n_layer):
             raise TypeError(f"epsilon must be (n_layer) or (n_layer, n_frequency) np.ndarray")
         elif (value.ndim == 2) & (np.shape(value) != (n_layer, n_frequency)):
@@ -310,11 +292,8 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
 
     def _get_valid_properties_array(self):
 
-        thickness = self.thickness
-        n_layer = len(thickness)+1
-
-        frequency = self.frequency
-        n_frequency = len(frequency)
+        n_layer = len(self.thickness)+1
+        n_frequency = len(self.frequency)
 
         sigma = self.sigma
         if sigma.ndim == 1:

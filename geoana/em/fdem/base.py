@@ -218,12 +218,7 @@ class BaseFDEM(BaseEM):
         
         # Ensure float or numpy array of float
         try:
-            if type(value) == np.ndarray:
-                value = value.astype(float)
-            elif type(value) == list:
-                value = np.array(value, dtype=float)
-            else:
-                value = np.array([value], dtype=float)
+            value = np.atleast_1d(value).astype(float)
         except:
             raise TypeError(f"frequencies are not a valid type")
         

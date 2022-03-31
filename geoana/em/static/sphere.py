@@ -128,8 +128,7 @@ class ElectrostaticSphere:
     def location(self, vec):
         
         try:
-            vec = np.asarray(vec, dtype=np.float64)
-            vec = np.atleast_1d(vec)
+            vec = np.atleast_1d(vec).astype(float)
         except:
             raise TypeError(f"location must be array_like, got {type(vec)}")
         
