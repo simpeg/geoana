@@ -129,10 +129,11 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
     def thickness(self, value):
         
         # Ensure float or numpy array of float
-        if value is None:
-            value = []
         try:
-            value = np.atleast_1d(value).astype(float)
+            if value is None:
+                value = []
+            else:
+                value = np.atleast_1d(value).astype(float)
         except:
             raise TypeError(f"thickness are not a valid type")
         
