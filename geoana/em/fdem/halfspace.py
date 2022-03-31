@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.constants import mu_0
-import properties
+# import properties
 from scipy.special import iv, kv
 from geoana.em.base import BaseMagneticDipole
 from geoana.em.fdem.base import BaseFDEM

@@ -1,4 +1,4 @@
-import properties
+# import properties
 import numpy as np
 from geoana.em.base import BaseMagneticDipole
 from geoana.em.fdem.base import BaseFDEM, sigma_hat

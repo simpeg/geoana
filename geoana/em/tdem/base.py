@@ -1,7 +1,7 @@
 from geoana.em.base import BaseEM
 import numpy as np
 from scipy.constants import mu_0
-import properties
+# import properties
 
 
 ###############################################################################
