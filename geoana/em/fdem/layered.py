@@ -306,7 +306,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         if epsilon.ndim == 1:
             epsilon = np.tile(epsilon.reshape((n_layer, 1)), (1, n_frequency))
 
-        return thickness, sigma, epsilon, mu
+        return self.thickness, sigma, epsilon, mu
 
     @property
     def sigma_hat(self):
