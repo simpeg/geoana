@@ -1,6 +1,7 @@
 sphinx_rtd_theme
 sphinx-gallery
 pydata-sphinx-theme
+sphinx-toolbox
 sphinx
 pytest
 pytest-cov
