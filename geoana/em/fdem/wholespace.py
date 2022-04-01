@@ -59,11 +59,11 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         >>> frequency = np.logspace(1, 3, 3)
         >>> location = np.r_[0., 0., 0.]
         >>> orientation = np.r_[0., 0., 1.]
-        >>> moment = 1.
+        >>> current = 1.
         >>> sigma = 1.0
         >>> simulation = ElectricDipoleWholeSpace(
         >>>     frequency, location=location, orientation=orientation,
-        >>>     moment=moment, sigma=sigma
+        >>>     current=current, sigma=sigma
         >>> )
 
         Now we create a set of gridded locations and compute the vector potential.
@@ -162,11 +162,11 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         >>> frequency = np.logspace(1, 3, 3)
         >>> location = np.r_[0., 0., 0.]
         >>> orientation = np.r_[1., 0., 0.]
-        >>> moment = 1.
+        >>> current = 1.
         >>> sigma = 1.0
         >>> simulation = ElectricDipoleWholeSpace(
         >>>     frequency, location=location, orientation=orientation,
-        >>>     moment=moment, sigma=sigma
+        >>>     current=current, sigma=sigma
         >>> )
 
         Now we create a set of gridded locations and compute the electric field.
@@ -294,11 +294,11 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         >>> frequency = np.logspace(1, 3, 3)
         >>> location = np.r_[0., 0., 0.]
         >>> orientation = np.r_[1., 0., 0.]
-        >>> moment = 1.
+        >>> current = 1.
         >>> sigma = 1.0
         >>> simulation = ElectricDipoleWholeSpace(
         >>>     frequency, location=location, orientation=orientation,
-        >>>     moment=moment, sigma=sigma
+        >>>     current=current, sigma=sigma
         >>> )
 
         Now we create a set of gridded locations and compute the current density.
@@ -377,11 +377,11 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         >>> frequency = np.logspace(1, 3, 3)
         >>> location = np.r_[0., 0., 0.]
         >>> orientation = np.r_[0., 0., 1.]
-        >>> moment = 1.
+        >>> current = 1.
         >>> sigma = 1.0
         >>> simulation = ElectricDipoleWholeSpace(
         >>>     frequency, location=location, orientation=orientation,
-        >>>     moment=moment, sigma=sigma
+        >>>     current=current, sigma=sigma
         >>> )
 
         Now we create a set of gridded locations and compute the magnetic field.
@@ -493,11 +493,11 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         >>> frequency = np.logspace(1, 3, 3)
         >>> location = np.r_[0., 0., 0.]
         >>> orientation = np.r_[0., 0., 1.]
-        >>> moment = 1.
+        >>> current = 1.
         >>> sigma = 1.0
         >>> simulation = ElectricDipoleWholeSpace(
         >>>     frequency, location=location, orientation=orientation,
-        >>>     moment=moment, sigma=sigma
+        >>>     current=current, sigma=sigma
         >>> )
 
         Now we create a set of gridded locations and compute the magnetic flux density.
