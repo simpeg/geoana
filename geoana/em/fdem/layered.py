@@ -77,8 +77,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
     def __init__(self, frequency, thickness, **kwargs):
 
         self.thickness = thickness
-        BaseFDEM.__init__(self, frequency, **kwargs)
-        BaseMagneticDipole.__init__(self, **kwargs)
+        super().__init__(frequency=frequency, **kwargs)
         self._check_is_valid_location()
 
 
@@ -99,13 +98,13 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
 
     @frequency.setter
     def frequency(self, value):
-        
+
         # Ensure float or numpy array of float
         try:
             value = np.atleast_1d(value).astype(float)
         except:
             raise TypeError(f"frequencies are not a valid type")
-        
+
         # Enforce positivity and dimensions
         if (value < 0.).any():
             raise ValueError("All frequencies must be greater than 0")
@@ -127,7 +126,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
 
     @thickness.setter
     def thickness(self, value):
-        
+
         # Ensure float or numpy array of float
         try:
             if value is None:
@@ -136,7 +135,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
                 value = np.atleast_1d(value).astype(float)
         except:
             raise TypeError(f"thickness are not a valid type")
-        
+
         # Enforce positivity and dimensions
         if (value < 0.).any():
             raise ValueError("Thicknesses must be greater than 0")
@@ -162,7 +161,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
 
         n_layer = len(self.thickness) + 1
         n_frequency = len(self.frequency)
-        
+
         # Ensure numpy array of complex
         try:
             if isinstance(value, (list, tuple, np.ndarray)):
@@ -171,13 +170,13 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
                 value = complex(value) * np.ones(n_layer)
         except:
             raise TypeError(f"sigma array is not a valid type")
-        
+
         # Error if values are non-physical
         if (value.imag < 0.).any():
             raise ValueError("Imaginary components must be >= 0.0")
         if (value.real <= 0.0).any():
             raise ValueError("Real components must be > 0.0")
-        
+
         # Enforce dimensions
         if (value.ndim == 1) & (len(value) != n_layer):
             raise TypeError(f"sigma must be (n_layer) or (n_layer, n_frequency) np.ndarray")
@@ -204,7 +203,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
 
         n_layer = len(self.thickness) + 1
         n_frequency = len(self.frequency)
-        
+
         # Ensure float or numpy array of complex
         try:
             if isinstance(value, (list, tuple, np.ndarray)):
@@ -213,13 +212,13 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
                 value = complex(value) * np.ones(n_layer)
         except:
             raise TypeError(f"mu array is not a valid type")
-        
+
         # Error if values are non-physical
         if (value.imag < 0.).any():
             raise ValueError("Imaginary components must be >= 0")
         if (value.real < mu_0).any():
             raise ValueError("Real components must be >= mu_0")
-        
+
         # Enforce dimensions
         if (value.ndim == 1) & (len(value) != n_layer):
             raise TypeError(f"mu must be (n_layer) or (n_layer, n_frequency) np.ndarray")
@@ -247,7 +246,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
 
         n_layer = len(self.thickness) + 1
         n_frequency = len(self.frequency)
-        
+
         # Ensure float or numpy array of complex
         try:
             if isinstance(value, (list, tuple, np.ndarray)):
@@ -256,13 +255,13 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
                 value = complex(value) * np.ones(n_layer)
         except:
             raise TypeError(f"epsilon array is not a valid type")
-        
+
         # Error if values are non-physical
         if (value.imag < 0.).any():
             raise ValueError("Imaginary components must be >= 0.0")
         if (value.real < epsilon_0).any():
             raise ValueError("Real components must be >= epsilon_0")
-        
+
         # Enforce dimensions
         if (value.ndim == 1) & (len(value) != n_layer):
             raise TypeError(f"epsilon must be (n_layer) or (n_layer, n_frequency) np.ndarray")
@@ -354,7 +353,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
 
         .. math::
             H_z = \frac{m_z}{4\pi} \int_0^\infty \bigg [ e^{-u_0 (z - h)} + r_{te} e^{u_0 (z + h)} \bigg ] \frac{\lambda^3}{u_0} J_0 (\lambda \rho) \, d\lambda
-        
+
         For the horizontal component of the magnetic dipole, we compute the contribution by adapting
         Ward and Hohmann equations 4.119-4.121; which is for an x-oriented magnetic dipole:
 
@@ -367,7 +366,7 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
             & -\frac{m_x}{4\pi} \frac{xy}{\rho^2} \int_0^\infty \bigg [ e^{-u_0 (z - h)} - r_{te} e^{u_0 (z + h)} \bigg ] \lambda^2 J_0 (\lambda \rho) \, d\lambda
 
         .. math::
-            H_z = \frac{m_x}{4\pi} \frac{x}{\rho}  \int_0^\infty \bigg [ e^{-u_0 (z - h)} + r_{te} e^{u_0 (z + h)} \bigg ] \lambda^2 J_1 (\lambda \rho) \, d\lambda 
+            H_z = \frac{m_x}{4\pi} \frac{x}{\rho}  \int_0^\infty \bigg [ e^{-u_0 (z - h)} + r_{te} e^{u_0 (z + h)} \bigg ] \lambda^2 J_1 (\lambda \rho) \, d\lambda
 
         Examples
         --------
@@ -459,13 +458,13 @@ class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
         #     quasistatic=self.quasistatic
         # ).T  # this gets sigh with proper shape (n_layer x n_freq) and fortran ordering.
         # mu = np.tile(mu, (n_frequency, 1)).T  # shape(n_layer x n_freq)
-        
+
         sigh = sigma_hat(
             np.tile(self.frequency.reshape((1, n_frequency)), (n_layer, 1)),
             sigma, epsilon,
             quasistatic=self.quasistatic
         )
-        
+
         rTE = rTE_forward(f, lambd.reshape(-1), sigh, mu, thick)
         rTE = rTE.reshape((n_frequency, *lambd.shape))
 

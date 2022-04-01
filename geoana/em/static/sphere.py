@@ -1,14 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import numpy as np
 # import properties
-from scipy.special import ellipk, ellipe
-from scipy.constants import mu_0, epsilon_0
-
-from ... import spatial
+from scipy.constants import epsilon_0
 
 
 class ElectrostaticSphere:
@@ -126,17 +118,17 @@ class ElectrostaticSphere:
 
     @location.setter
     def location(self, vec):
-        
+
         try:
             vec = np.atleast_1d(vec).astype(float)
         except:
             raise TypeError(f"location must be array_like, got {type(vec)}")
-        
+
         if len(vec) != 3:
             raise ValueError(
                 f"location must be array_like with shape (3,), got {len(vec)}"
             )
-        
+
         self._location = vec
 
     def _check_XYZ(self, XYZ):

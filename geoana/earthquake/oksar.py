@@ -14,11 +14,6 @@ Heritage:
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import numpy as np
 # import properties
 import vectormath as vmath
@@ -75,7 +70,7 @@ class EarthquakeInterferogram:
             'description', 'event_country', 'event_name', 'copyright', 'data_source',
             'satellite_name', 'event_gcmt_id', 'date1', 'date2', 'processed_date', 'event_date'
         ]
-        
+
         for k in kwargs_list:
             if k in kwargs.keys():
                 setattr(self, k, kwargs.pop(k))
@@ -108,7 +103,7 @@ class EarthquakeInterferogram:
                 np.array(var)
             except:
                 raise TypeError("Location must be a np.array_like of float")
-        
+
         self._data = var
 
     # title = properties.String(
@@ -155,7 +150,7 @@ class EarthquakeInterferogram:
 
     @location.setter
     def location(self, var):
-        
+
         if not isinstance(var, vmath.Vector2):
             try:
                 var = vmath.Vector2(var)
@@ -207,7 +202,7 @@ class EarthquakeInterferogram:
         Returns
         -------
         (2) np.ndarray of int
-            Interferogram shape. 
+            Interferogram shape.
 
         """
         return self._shape
@@ -259,7 +254,7 @@ class EarthquakeInterferogram:
     #     'interferogram reference',
     #     required=True
     # )
-    
+
     @property
     def ref(self):
         """Interferogram reference location (bottom N, left E).
@@ -496,7 +491,7 @@ class EarthquakeInterferogram:
     #     'description of the event',
     #     required=False
     # )
-    
+
     @property
     def description(self):
         """The description of the event.
@@ -655,7 +650,7 @@ class EarthquakeInterferogram:
             raise TypeError("event_country not a string or data type that can be converted to string")
 
         self._event_country = var
-    
+
     # date1 = properties.DateTime(
     #     'date1',
     #     required=True
@@ -664,7 +659,7 @@ class EarthquakeInterferogram:
     @property
     def date1(self):
         """Date 1
-        
+
         Returns
         -------
         datetime.datetime
@@ -683,7 +678,7 @@ class EarthquakeInterferogram:
                     "json formatted date-time. Got {} instead".format(type(date_time))
                     )
         self._date1 = date_time
-    
+
     # date2 = properties.DateTime(
     #     'date2',
     #     required=True
@@ -692,7 +687,7 @@ class EarthquakeInterferogram:
     @property
     def date2(self):
         """Date 2
-        
+
         Returns
         -------
         datetime.datetime
@@ -711,7 +706,7 @@ class EarthquakeInterferogram:
                     "json formatted date-time. Got {} instead".format(type(date_time))
                     )
         self._date2 = date_time
-    
+
     # processed_date = properties.DateTime(
     #     'processed_date',
     #     required=True
@@ -720,7 +715,7 @@ class EarthquakeInterferogram:
     @property
     def processed_date(self):
         """Processed date
-        
+
         Returns
         -------
         datetime.datetime
@@ -739,11 +734,11 @@ class EarthquakeInterferogram:
                     "json formatted date-time. Got {} instead".format(type(date_time))
                     )
         self._processed_date = date_time
-    
+
     @property
     def event_date(self):
         """Event date
-        
+
         Returns
         -------
         datetime.datetime
@@ -1069,7 +1064,7 @@ class Oksar:
 
     @O.setter
     def O(self, var):
-        
+
         if not isinstance(var, vmath.Vector2):
             try:
                 var = vmath.Vector2(var)
@@ -1098,7 +1093,7 @@ class Oksar:
 
     @U.setter
     def U(self, var):
-        
+
         if not isinstance(var, vmath.Vector2):
             try:
                 var = vmath.Vector2(var)
@@ -1127,7 +1122,7 @@ class Oksar:
 
     @V.setter
     def V(self, var):
-        
+
         if not isinstance(var, vmath.Vector2):
             try:
                 var = vmath.Vector2(var)
@@ -1154,7 +1149,7 @@ class Oksar:
 
     @center.setter
     def center(self, var):
-        
+
         if not isinstance(var, vmath.Vector2):
             try:
                 var = vmath.Vector2(var)
@@ -1192,7 +1187,7 @@ class Oksar:
         self._depth_top = var
 
     # depth_bottom = properties.Float('Bottom of fault', default=10000, min=0)
-    
+
     @property
     def depth_bottom(self):
         """Depth to the bottom of the fault (m)
@@ -1244,7 +1239,7 @@ class Oksar:
         self._strike = var
 
     # dip = properties.Float('Dip', default=45, min=0, max=90)
-    
+
     @property
     def dip(self):
         """Strike angle (0 to 90)
@@ -1270,7 +1265,7 @@ class Oksar:
         self._dip = var
 
     # rake = properties.Float('Rake', default=90, min=-180, max=180)
-    
+
     @property
     def rake(self):
         """Rake angle (-180 to 180)
@@ -1346,7 +1341,7 @@ class Oksar:
             raise ValueError("length must be greater than or equal to 0")
 
         self._length = var
-    
+
     # beta = properties.Float('beta', default=3E10)
 
     @property
@@ -1409,7 +1404,7 @@ class Oksar:
         Returns
         -------
         (2) np.ndarray of int
-            Interferogram shape. 
+            Interferogram shape.
 
         """
         return self._shape
@@ -1785,7 +1780,7 @@ def example():
     dinar_file = requests.get(
         'https://storage.googleapis.com/simpeg/geoana/dinar.r4'
     )
-    
+
     # data = np.fromstring(dinar_file.content, np.float32)
 
     # dinar = EarthquakeInterferogram(

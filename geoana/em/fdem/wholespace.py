@@ -16,13 +16,6 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         \mathbf{J}(\mathbf{r}) = I ds \delta(\mathbf{r} - \mathbf{r}_s)\mathbf{\hat{u}}
 
     """
-
-    def __init__(self, frequency, **kwargs):
-
-        BaseFDEM.__init__(self, frequency, **kwargs)
-        BaseElectricDipole.__init__(self, **kwargs)
-
-
     def vector_potential(self, xyz):
         r"""Vector potential for the harmonic current dipole at a set of gridded locations.
 
@@ -110,13 +103,13 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         r = self.distance(xyz)
         k = self.wavenumber
-        
+
         # (n_freq, n_loc) array
         a = self.current * self.length * (
             1 / (4*np.pi*np.tile(r.reshape((1, n_loc)), (n_freq, 1))) *
             np.exp(-1j*np.outer(k, r))
         )
-        
+
         v = self.orientation.reshape(1, 1, 3)
         a = a.reshape((n_freq, n_loc, 1))
         return np.kron(v, a).squeeze()
@@ -133,9 +126,9 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         :math:`\mathbf{r}` from the current dipole is:
 
         .. math::
-            \;\;\;\;\;\; \mathbf{E}(\mathbf{r}) = \frac{I ds}{4\pi (\sigma + i \omega \varepsilon) r^3} & e^{-ikr} ... \\ 
+            \;\;\;\;\;\; \mathbf{E}(\mathbf{r}) = \frac{I ds}{4\pi (\sigma + i \omega \varepsilon) r^3} & e^{-ikr} ... \\
             & \Bigg [ \Bigg ( \frac{x^2}{r^2}\hat{x} + \frac{xy}{r^2}\hat{y} + \frac{xz}{r^2}\hat{z} \Bigg ) \big ( -k^2r^2 + 3ikr + 3 \big ) + \big ( k^2 r^2 - ikr - 1 \big ) \hat{x} \Bigg ]
-        
+
         where
 
         .. math::
@@ -228,23 +221,23 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         k = self.wavenumber
         r = self.distance(xyz)
         dxyz = self.vector_distance(xyz)
-        
+
         # (n_freq, n_loc) arrays
         kr = np.outer(k, r)
         ikr = 1j * kr
         tile_r = np.outer(np.ones(n_freq), r)
-        
+
         front_term = (self.current * self.length) * (
             1 / (4 * np.pi * self.sigma * tile_r**3) * np.exp(-ikr)
         ).reshape((n_freq, n_loc, 1))
         front_term = np.tile(front_term, (1, 1, 3))
-        
+
         temp_1 = repeat_scalar(self.dot_orientation(dxyz)) * dxyz
         temp_1 = np.tile(temp_1.reshape((1, n_loc, 3)), (n_freq, 1, 1))
         temp_2 = (-kr**2 + 3*ikr + 3) / tile_r**2
         temp_2 = np.tile(temp_2.reshape((n_freq, n_loc, 1)), (1, 1, 3))
         symmetric_term = temp_1 * temp_2
-        
+
         temp_1 = (kr**2 - ikr - 1)
         temp_1 = np.tile(temp_1.reshape((n_freq, n_loc, 1)), (1, 1, 3))
         temp_2 = np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
@@ -267,7 +260,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         .. math::
             \;\;\;\; \mathbf{J}(\mathbf{r}) = \frac{\sigma I ds}{4\pi (\sigma + i \omega \varepsilon) r^3} & e^{-ikr} ... \\
             & \Bigg [ \Bigg ( \frac{x^2}{r^2}\hat{x} + \frac{xy}{r^2}\hat{y} + \frac{xz}{r^2}\hat{z} \Bigg ) \big ( -k^2r^2 + 3ikr + 3 \big ) \big ( k^2 r^2 - ikr - 1 \big ) \hat{x} \Bigg ]
-        
+
         where
 
         .. math::
@@ -350,7 +343,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         .. math::
             \mathbf{H}(\mathbf{r}) = \frac{I ds}{4\pi r^2} (ikr + 1) e^{-ikr} \big ( - \frac{z}{r}\hat{y} + \frac{y}{r}\hat{z} \big )
-        
+
         where
 
         .. math::
@@ -428,18 +421,18 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         #     np.exp(-ikr)
         # )
         # return -front_term * self.cross_orientation(dxyz) / r
-        
+
         n_freq = len(self.frequency)
         n_loc = np.shape(xyz)[0]
-        
+
         k = self.wavenumber
         r = self.distance(xyz)
-        
+
         # (n_freq, n_loc)
         kr = np.outer(k, r)
         ikr = 1j * kr
         tile_r = np.outer(np.ones(n_freq), r)
-        
+
         r = repeat_scalar(r)
         dxyz = self.vector_distance(xyz)
 
@@ -447,10 +440,10 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
             1 / (4 * np.pi * tile_r**2) * (ikr + 1) * np.exp(-ikr)
         ).reshape((n_freq, n_loc, 1))
         first_term = np.tile(first_term, (1, 1, 3))
-        
+
         second_term = (self.cross_orientation(dxyz) / r).reshape((1, n_loc, 3))
         second_term = np.tile(second_term, (n_freq, 1, 1))
-        
+
         return -(first_term * second_term).squeeze()
 
     def magnetic_flux_density(self, xyz):
@@ -466,7 +459,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         .. math::
             \mathbf{B}(\mathbf{r}) = \frac{\mu I ds}{4\pi r^2} (ikr + 1) e^{-ikr} \bigg ( - \frac{z}{r}\hat{y} + \frac{y}{r}\hat{z} \bigg )
-        
+
         where
 
         .. math::
@@ -541,11 +534,6 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
     """
     Harmonic magnetic dipole in a whole space.
     """
-
-    def __init__(self, frequency, **kwargs):
-
-        BaseFDEM.__init__(self, frequency, **kwargs)
-        BaseMagneticDipole.__init__(self, **kwargs)
 
     def vector_potential(self, xyz):
         r"""Vector potential for the harmonic magnetic dipole at a set of gridded locations.
@@ -628,13 +616,13 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         # )
         # f = np.kron(np.ones(1, 3), np.atleast_2d(f).T)
         # return self.dot_orientation(f)
-        
+
         n_freq = len(self.frequency)
         n_loc = np.shape(xyz)[0]
 
         r = self.distance(xyz)
         k = self.wavenumber
-        
+
         tile_r = np.tile(r.reshape((1, n_loc)), (n_freq, 1))
         tile_w = np.tile(self.omega.reshape((n_freq, 1)), (1, n_loc))
 
@@ -644,7 +632,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
         v = self.orientation.reshape(1, 1, 3)
         a = a.reshape((n_freq, n_loc, 1))
-        
+
         return np.kron(v, a).squeeze()
 
     def electric_field(self, xyz):
@@ -660,7 +648,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
         .. math::
             \mathbf{E}(\mathbf{r}) = \frac{i\omega \mu m}{4\pi r^2} (ikr + 1) e^{-ikr} \big ( - \frac{z}{r}\hat{y} + \frac{y}{r}\hat{z} \big )
-        
+
         where
 
         .. math::
@@ -738,13 +726,13 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         #     (ikr + 1) * np.exp(-ikr)
         # )
         # return front_term * self.cross_orientation(dxyz) / r
-        
+
         n_freq = len(self.frequency)
         n_loc = np.shape(xyz)[0]
-        
+
         k = self.wavenumber
         r = self.distance(xyz)
-        
+
         # (n_freq, n_loc)
         tile_r = np.tile(r.reshape((1, n_loc)), (n_freq, 1))
         tile_w = np.tile(self.omega.reshape((n_freq, 1)), (1, n_loc))
@@ -756,15 +744,15 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
             (1 / (4 * np.pi * tile_r**2) * (ikr + 1) * np.exp(-ikr))
         ).reshape((n_freq, n_loc, 1))
         first_term = np.tile(first_term, (1, 1, 3))
-        
+
         r = repeat_scalar(r)
         dxyz = self.vector_distance(xyz)
-        
+
         second_term = (self.cross_orientation(dxyz) / r).reshape((1, n_loc, 3))
         second_term = np.tile(second_term, (n_freq, 1, 1))
-        
+
         return (first_term * second_term).squeeze()
-        
+
 
     def current_density(self, xyz):
         r"""Current density for the harmonic magnetic dipole at a set of gridded locations.
@@ -779,7 +767,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
 
         .. math::
             \mathbf{J}(\mathbf{r}) = \frac{i\omega \mu \sigma m}{4\pi r^2} (ikr + 1) e^{-ikr} \big ( - \frac{z}{r}\hat{y} + \frac{y}{r}\hat{z} \big )
-        
+
         where
 
         .. math::
@@ -863,7 +851,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         .. math::
             \mathbf{H}(\mathbf{r}) = \frac{m}{4\pi r^3} e^{-ikr} \Bigg [ \Bigg ( \frac{x^2}{r^2}\hat{x} + \frac{xy}{r^2}\hat{y} + \frac{xz}{r^2}\hat{z} \Bigg ) ... \\
             \big ( -k^2r^2 + 3ikr + 3 \big ) \big ( k^2 r^2 - ikr - 1 \big ) \hat{x} \Bigg ]
-        
+
         where
 
         .. math::
@@ -947,30 +935,30 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         # )
 
         # return front_term * (symmetric_term + oriented_term)
-        
+
         n_freq = len(self.frequency)
         n_loc = np.shape(xyz)[0]
 
         k = self.wavenumber
         r = self.distance(xyz)
         dxyz = self.vector_distance(xyz)
-        
+
         # (n_freq, n_loc)
         kr = np.outer(k, r)
         ikr = 1j * kr
         tile_r = np.outer(np.ones(n_freq), r)
-        
+
         front_term = self.moment * (
             1 / (4 * np.pi * tile_r**3) * np.exp(-ikr)
         ).reshape((n_freq, n_loc, 1))
         front_term = np.tile(front_term, (1, 1, 3))
-        
+
         temp_1 = repeat_scalar(self.dot_orientation(dxyz)) * dxyz
         temp_1 = np.tile(temp_1.reshape((1, n_loc, 3)), (n_freq, 1, 1))
         temp_2 = (-kr**2 + 3*ikr + 3) / tile_r**2
         temp_2 = np.tile(temp_2.reshape((n_freq, n_loc, 1)), (1, 1, 3))
         symmetric_term = temp_1 * temp_2
-        
+
         temp_1 = (kr**2 - ikr - 1)
         temp_1 = np.tile(temp_1.reshape((n_freq, n_loc, 1)), (1, 1, 3))
         temp_2 = np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
@@ -993,7 +981,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
         .. math::
             \mathbf{B}(\mathbf{r}) = \frac{\mu m}{4\pi r^3} e^{-ikr} \Bigg [ \Bigg ( \frac{x^2}{r^2}\hat{x} + \frac{xy}{r^2}\hat{y} + \frac{xz}{r^2}\hat{z} \Bigg ) ... \\
             \big ( -k^2r^2 + 3ikr + 3 \big ) \big ( k^2 r^2 - ikr - 1 \big ) \hat{x} \Bigg ]
-        
+
         where
 
         .. math::

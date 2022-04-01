@@ -36,6 +36,7 @@ class BaseEM:
         self.sigma = sigma
         self.mu = mu
         self.epsilon = epsilon
+        super().__init__(**kwargs)
 
 
     @property
@@ -51,12 +52,12 @@ class BaseEM:
 
     @sigma.setter
     def sigma(self, value):
-        
+
         try:
             value = float(value)
         except:
             raise TypeError(f"sigma must be a number, got {type(value)}")
-        
+
         if value <= 0.0:
             raise ValueError("sigma must be greater than 0")
 
@@ -75,12 +76,12 @@ class BaseEM:
 
     @mu.setter
     def mu(self, value):
-        
+
         try:
             value = float(value)
         except:
             raise TypeError(f"mu must be a number, got {type(value)}")
-        
+
         if value <= 0.0:
             raise ValueError("mu must be greater than 0")
 
@@ -99,12 +100,12 @@ class BaseEM:
 
     @epsilon.setter
     def epsilon(self, value):
-        
+
         try:
             value = float(value)
         except:
             raise TypeError(f"epsilon must be a number, got {type(value)}")
-        
+
         if value <= 0.0:
             raise ValueError("epsilon must be greater than 0")
 
@@ -147,6 +148,7 @@ class BaseDipole:
 
         self.location = location
         self.orientation = orientation
+        super().__init__(**kwargs)
 
 
     @property
@@ -162,17 +164,17 @@ class BaseDipole:
 
     @location.setter
     def location(self, vec):
-        
+
         try:
             vec = np.atleast_1d(vec).astype(float)
         except:
             raise TypeError(f"location must be array_like, got {type(vec)}")
-        
+
         if len(vec) != 3:
             raise ValueError(
                 f"location must be array_like with shape (3,), got {len(vec)}"
             )
-        
+
         self._location = vec
 
 
@@ -189,7 +191,7 @@ class BaseDipole:
 
     @orientation.setter
     def orientation(self, var):
-        
+
         if isinstance(var, str):
             if var.upper() == 'X':
                 var = np.r_[1., 0., 0.]
@@ -202,7 +204,7 @@ class BaseDipole:
                 var = np.atleast_1d(var).astype(float)
             except:
                 raise TypeError(f"orientation must be str or array_like, got {type(var)}")
-            
+
             if len(var) != 3:
                 raise ValueError(
                     f"orientation must be array_like with shape (3,), got {len(var)}"
@@ -226,7 +228,7 @@ class BaseDipole:
     #     default="ZERO"
     # )
 
-    
+
 
     def vector_distance(self, xyz):
         r"""Vector distance to a set of gridded xyz locations.
@@ -240,7 +242,7 @@ class BaseDipole:
         for all locations :math:`\mathbf{q}` supplied in the inputed argument `xyz`.
         For dipoles, :math:`\mathbf{p}` is the dipole location. For circular loops,
         :math:`\mathbf{p}` defines the center location for the loop.
-        
+
         Parameters
         ----------
         xyz : (n, 3) numpy.ndarray
@@ -285,7 +287,7 @@ class BaseDipole:
         :math:`\mathbf{v}` is a 3D vector, this method returns the dot product:
 
         .. math::
-            \mathbf{p} \cdot \mathbf{v} 
+            \mathbf{p} \cdot \mathbf{v}
 
         for all vectors :math:`\mathbf{v}` supplied in the input argument ``vecs``.
 
@@ -308,7 +310,7 @@ class BaseDipole:
         :math:`\mathbf{v}` is a 3D vector, this method returns the cross product:
 
         .. math::
-            \mathbf{v} \times \mathbf{p} 
+            \mathbf{v} \times \mathbf{p}
 
 
         for all vectors :math:`\mathbf{v}` supplied in the input argument ``vecs``.
@@ -374,12 +376,12 @@ class BaseElectricDipole(BaseDipole):
 
     @length.setter
     def length(self, value):
-        
+
         try:
             value = float(value)
         except:
             raise TypeError(f"length must be a number, got {type(value)}")
-        
+
         if value <= 0.0:
             raise ValueError("length must be greater than 0")
 
@@ -399,12 +401,12 @@ class BaseElectricDipole(BaseDipole):
 
     @current.setter
     def current(self, value):
-        
+
         try:
             value = float(value)
         except:
             raise TypeError(f"current must be a number, got {type(value)}")
-        
+
         if value <= 0.0:
             raise ValueError("current must be greater than 0")
 
@@ -447,7 +449,7 @@ class BaseMagneticDipole(BaseDipole):
     """
 
     def __init__(self, moment=1.0, **kwargs):
-        
+
         self.moment = moment
         super().__init__(**kwargs)
 
@@ -464,12 +466,12 @@ class BaseMagneticDipole(BaseDipole):
 
     @moment.setter
     def moment(self, value):
-        
+
         try:
             value = float(value)
         except:
             raise TypeError(f"moment must be a number, got {type(value)}")
-        
+
         if value <= 0.0:
             raise ValueError("moment must be greater than 0")
 
@@ -494,7 +496,7 @@ class BaseLineCurrent:
     """
 
     def __init__(self, nodes, current=1.0, **kwargs):
-        
+
         self.nodes = nodes
         self.current = current
         super().__init__(**kwargs)
@@ -513,17 +515,17 @@ class BaseLineCurrent:
 
     @nodes.setter
     def nodes(self, xyz):
-        
+
         try:
             xyz = np.asarray(xyz, dtype=np.float64)
         except:
             raise TypeError(f"nodes must be array_like, got {type(xyz)}")
-        
+
         if (np.shape(xyz)[1] != 3) | (xyz.ndim != 2):
             raise ValueError(
                 f"nodes must be array_like with shape (n, 3), got {np.shape(xyz)}"
             )
-        
+
         self._nodes = xyz
 
 
@@ -538,7 +540,7 @@ class BaseLineCurrent:
 
         """
         return np.shape(self.nodes)[0] - 1
-    
+
 
     @property
     def current(self):
@@ -553,11 +555,10 @@ class BaseLineCurrent:
 
     @current.setter
     def current(self, value):
-        
+
         try:
             value = float(value)
         except:
             raise TypeError(f"current must be a number, got {type(value)}")
 
         self._current = value
-

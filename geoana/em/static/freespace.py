@@ -1,15 +1,8 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import numpy as np
 # import properties
-from scipy.special import ellipk, ellipe
-from scipy.constants import mu_0, epsilon_0
+from scipy.constants import mu_0
 
 from ..base import BaseLineCurrent
-from ... import spatial
 
 
 class LineCurrentFreeSpace(BaseLineCurrent):
@@ -18,10 +11,6 @@ class LineCurrentFreeSpace(BaseLineCurrent):
     The ``LineCurrentFreeSpace`` class is used to analytically compute the
     fields and potentials within freespace due to a set of static current-carrying wires.
     """
-
-    def __init__(self, nodes, **kwargs):
-
-        BaseLineCurrent.__init__(self, nodes, **kwargs)
 
     def magnetic_field(self, xyz):
         r"""Compute the magnetic field for the static current-carrying wire segments.

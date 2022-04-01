@@ -16,9 +16,7 @@ class VerticalMagneticDipoleHalfSpace(BaseMagneticDipole, BaseTDEM):
     """
 
     def __init__(self, time, **kwargs):
-
-        BaseTDEM.__init__(self, time, **kwargs)
-        BaseMagneticDipole.__init__(self, **kwargs)
+        super().__init__(time=time, **kwargs)
 
     def magnetic_field(self, xy):
         """Magnetic field due to a magnetic dipole over a half space

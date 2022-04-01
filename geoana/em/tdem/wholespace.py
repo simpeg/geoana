@@ -19,9 +19,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
     """
 
     def __init__(self, time, **kwargs):
-
-        BaseTDEM.__init__(self, time, **kwargs)
-        BaseElectricDipole.__init__(self, **kwargs)
+        super().__init__(time=time, **kwargs)
 
     def vector_potential(self, xyz):
         r"""Vector potential for the transient current dipole at a set of gridded locations.
@@ -96,18 +94,18 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         """
 
         r = self.distance(xyz)
-        
+
         n_loc = len(r)
         n_time = len(self.time)
 
         theta_r = np.outer(self.theta, r)
         tile_r = np.outer(np.ones(n_time), r)
-        
+
         term_1 = (
             (self.current * self.length) * erf(theta_r) / (4 * np.pi * tile_r**3)
         ).reshape((n_time, n_loc, 1))
         term_1 = np.tile(term_1, (1, 1, 3))
-        
+
         term_2 = np.tile(np.reshape(self.orientation, (1, 1, 3)), (n_time, n_loc, 1))
 
         return (term_1 * term_2).squeeze()
@@ -128,7 +126,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         .. math::
             {\bf e_e}(t) = \frac{Ids}{4\pi \sigma r^3} & \Bigg [ \Bigg ( \frac{x^2}{r^2}\mathbf{\hat x} + \frac{xy}{r^2}\mathbf{\hat y} + \frac{xz}{r^2}\mathbf{\hat z} \Bigg ) ... \\
             & \Bigg ( 3 \, \textrm{erf}(\theta r) - \bigg ( \frac{4}{\sqrt{\pi}}\theta^3 r^3 + \frac{6}{\sqrt{\pi}} \theta r \bigg ) e^{-\theta^2 r^2}  \Bigg ) - \Bigg ( \textrm{erf}(\theta r) - \bigg ( \frac{4}{\sqrt{\pi}} \theta^3 r^3 + \frac{2}{\sqrt{\pi}} \theta r \bigg ) e^{-\theta^2 r^2} \Bigg ) \mathbf{\hat x} \Bigg ]
-        
+
         where
 
         .. math::
@@ -218,19 +216,19 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         root_pi = np.sqrt(np.pi)
         dxyz = self.vector_distance(xyz)
         r = self.distance(xyz)
-        
+
         n_loc = len(r)
         n_time = len(self.time)
 
         theta_r = np.outer(self.theta, r)
         tile_r = np.outer(np.ones(n_time), r)
         r = repeat_scalar(r)
-        
+
         front = (
             (self.current * self.length) / (4 * np.pi * self.sigma * tile_r**3)
         ).reshape((n_time, n_loc, 1))
         front = np.tile(front, (1, 1, 3))
-        
+
         term_1 = 3 * erf(theta_r) - (4/root_pi * theta_r ** 3 + 6/root_pi * theta_r) * np.exp(-theta_r**2)
         term_1 = np.tile(term_1.reshape((n_time, n_loc, 1)), (1, 1, 3))
         term_2 = repeat_scalar(self.dot_orientation(dxyz)) * dxyz / r**2
@@ -261,7 +259,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
         .. math::
             {\bf e_e}(t) = \frac{Ids}{4\pi \sigma r^2} & \Bigg [ \Bigg ( \frac{x^2}{r^2}\mathbf{\hat x} + \frac{xy}{r^2}\mathbf{\hat y} + \frac{xz}{r^2}\mathbf{\hat z} \Bigg ) \Bigg ( 3 \, \textrm{erf}(\theta r) - \bigg ( \frac{4}{\sqrt{\pi}}\theta^3 r^3 \; ... \\
             & + \frac{6}{\sqrt{\pi}} \theta r \bigg ) e^{-\theta^2 r^2}  \Bigg ) - \Bigg ( \textrm{erf}(\theta r) - \bigg ( \frac{4}{\sqrt{\pi}} \theta^3 r^3 + \frac{2}{\sqrt{\pi}} \theta r \bigg ) e^{-\theta^2 r^2} \Bigg ) \mathbf{\hat x} \Bigg ]
-        
+
         where
 
         .. math::
@@ -335,7 +333,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
 
         .. math::
             \mathbf{h}(t) = \frac{Ids}{4 \pi r^3} \bigg ( \textrm{erf}(\theta r) - \frac{2}{\sqrt{\pi}} \theta r \, e^{-\theta^2 r^2}  \bigg ) \big ( - z \, \mathbf{\hat y} + y \, \mathbf{\hat z}  \big )
-        
+
         where
 
         .. math::
@@ -440,7 +438,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
 
         .. math::
             \frac{\partial \mathbf{h}}{\partial t} = - \frac{2 \, \theta^5 Ids}{\pi^{3/2} \mu \sigma} e^{-\theta^2 r^2} \big ( - z \, \mathbf{\hat y} + y \, \mathbf{\hat z}  \big )
-        
+
         where
 
         .. math::
@@ -510,7 +508,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
 
         dxyz = self.vector_distance(xyz)
         r = self.distance(dxyz)
-        
+
         n_loc = len(r)
         n_time = len(self.time)
 
@@ -542,7 +540,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
 
         .. math::
             \mathbf{b}(t) = \frac{\mu Ids}{4 \pi r^3} \bigg ( \textrm{erf}(\theta r) - \frac{2}{\sqrt{\pi}} \theta r \, e^{-\theta^2 r^2}  \bigg ) \big ( - z \, \mathbf{\hat y} + y \, \mathbf{\hat z}  \big )
-        
+
         where
 
         .. math::
@@ -617,7 +615,7 @@ class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
 
         .. math::
             \frac{\partial \mathbf{b}}{\partial t} = - \frac{2 \, \theta^5 Ids}{\pi^{3/2} \sigma} e^{-\theta^2 r^2} \big ( - z \, \mathbf{\hat y} + y \, \mathbf{\hat z}  \big )
-        
+
         where
 
         .. math::

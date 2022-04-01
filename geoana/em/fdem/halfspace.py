@@ -11,9 +11,7 @@ class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
     """
 
     def __init__(self, frequency, **kwargs):
-
-        BaseFDEM.__init__(self, frequency, **kwargs)
-        BaseMagneticDipole.__init__(self, **kwargs)
+        super().__init__(frequency=frequency, **kwargs)
         self._check_is_valid_location()
 
     def _check_is_valid_location(self):
@@ -98,7 +96,7 @@ class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
 
         em_x = em_y = em_z = np.zeros((n_freq, n_loc), dtype=complex)
         src_x, src_y, src_z = self.orientation
-        
+
         # tile such that (n_freq, n_loc)
         alpha = 1j * np.outer(k, r) / 2
         r = np.tile(r.reshape((1, n_loc)), (n_freq, 1))
@@ -115,7 +113,7 @@ class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
             angle = np.tile(angle.reshape((1, n_loc)), (n_freq, 1))
             em_x += src_z*np.cos(angle)*Hr
             em_y += src_z*np.sin(angle)*Hr
-        
+
         x = np.tile(x.reshape((1, n_loc)), (n_freq, 1))
         y = np.tile(y.reshape((1, n_loc)), (n_freq, 1))
 

@@ -25,14 +25,10 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
 
     """
 
-    def __init__(self, **kwargs):
-        BaseMagneticDipole.__init__(self, **kwargs)
-        BaseEM.__init__(self, **kwargs)
-
     def vector_potential(self, xyz, coordinates="cartesian"):
         r"""Compute the vector potential for the static magnetic dipole.
 
-        This method computes the vector potential for the magnetic dipole at 
+        This method computes the vector potential for the magnetic dipole at
         the set of gridded xyz locations provided. Where :math:`\mu` is the
         magnetic permeability, :math:`\mathbf{m}` is the dipole moment,
         :math:`\mathbf{r_0}` the dipole location and :math:`\mathbf{r}`
@@ -241,7 +237,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
     def magnetic_field(self, xyz, coordinates="cartesian"):
         r"""Compute the magnetic field produced by a static magnetic dipole.
 
-        This method computes the magnetic field produced by the static magnetic dipole at 
+        This method computes the magnetic field produced by the static magnetic dipole at
         the set of gridded xyz locations provided. Where :math:`\mathbf{m}` is the dipole
         moment, :math:`\mathbf{r_0}` is the dipole location and :math:`\mathbf{r}` is the
         location at which we want to evaluate the magnetic field :math:`\mathbf{H}`:
@@ -320,10 +316,6 @@ class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
     fields and potentials within a wholespace due to a static magnetic pole.
     """
 
-    def __init__(self, **kwargs):
-        BaseMagneticDipole.__init__(self, **kwargs)
-        BaseEM.__init__(self, **kwargs)
-
     def magnetic_flux_density(self, xyz, coordinates="cartesian"):
         r"""Compute the magnetic flux density produced by the static magnetic pole.
 
@@ -387,7 +379,7 @@ class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
     def magnetic_field(self, xyz, coordinates="cartesian"):
         r"""Compute the magnetic field produced by the static magnetic pole.
 
-        This method computes the magnetic field produced by the static magnetic pole at 
+        This method computes the magnetic field produced by the static magnetic pole at
         the set of gridded xyz locations provided. Where :math:`\mu` is the magnetic
         permeability of the wholespace, :math:`m` is the moment amplitude,
         :math:`\mathbf{r_0}` the pole's location and :math:`\mathbf{r}` is the location
@@ -429,7 +421,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
     The ``CircularLoopWholeSpace`` class is used to analytically compute the
     fields and potentials within a wholespace due to a circular loop carrying
     static current.
-    
+
     Parameters
     ----------
     current : float
@@ -443,8 +435,7 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
         self.current = current
         self.radius = radius
-        BaseDipole.__init__(self, **kwargs)
-        BaseEM.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
 
     @property
@@ -460,12 +451,12 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
     @current.setter
     def current(self, value):
-        
+
         try:
             value = float(value)
         except:
             raise TypeError(f"current must be a number, got {type(value)}")
-        
+
         if value <= 0.0:
             raise ValueError("current must be greater than 0")
 
@@ -485,12 +476,12 @@ class CircularLoopWholeSpace(BaseDipole, BaseEM):
 
     @radius.setter
     def radius(self, value):
-        
+
         try:
             value = float(value)
         except:
             raise TypeError(f"radius must be a number, got {type(value)}")
-        
+
         if value <= 0.0:
             raise ValueError("radius must be greater than 0")
 
