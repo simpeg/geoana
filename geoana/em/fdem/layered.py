@@ -8,7 +8,7 @@ from empymod.transform import get_dlf_points
 from geoana.kernels.tranverse_electric_reflections import rTE_forward
 
 
-class MagneticDipoleLayeredHalfSpace(BaseMagneticDipole, BaseFDEM):
+class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
     """Simulation class for a harmonic magnetic dipole over a layered halfspace.
 
     This class is used to simulate the fields produced by a harmonic magnetic dipole

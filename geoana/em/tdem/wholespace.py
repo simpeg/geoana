@@ -11,15 +11,12 @@ from geoana.em.base import BaseElectricDipole
 ###############################################################################
 
 
-class ElectricDipoleWholeSpace(BaseElectricDipole, BaseTDEM):
+class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
     r"""
     Class for simulating the fields and fluxes for a transient electric
     dipole in a wholespace.
 
     """
-
-    def __init__(self, time, **kwargs):
-        super().__init__(time=time, **kwargs)
 
     def vector_potential(self, xyz):
         r"""Vector potential for the transient current dipole at a set of gridded locations.

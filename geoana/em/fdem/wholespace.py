@@ -530,7 +530,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         return self.mu * self.magnetic_field(xyz)
 
 
-class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseFDEM):
+class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
     """
     Harmonic magnetic dipole in a whole space.
     """

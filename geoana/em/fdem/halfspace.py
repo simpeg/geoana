@@ -6,7 +6,7 @@ from geoana.em.base import BaseMagneticDipole
 from geoana.em.fdem.base import BaseFDEM
 
 
-class MagneticDipoleHalfSpace(BaseMagneticDipole, BaseFDEM):
+class MagneticDipoleHalfSpace(BaseFDEM, BaseMagneticDipole):
     r"""Class for a harmonic magnetic dipole in a wholespace.
     """
 

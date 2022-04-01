@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 
-class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
+class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
     """Class for a static magnetic dipole in a wholespace.
 
     The ``MagneticDipoleWholeSpace`` class is used to analytically compute the
@@ -309,7 +309,7 @@ class MagneticDipoleWholeSpace(BaseMagneticDipole, BaseEM):
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
 
 
-class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
+class MagneticPoleWholeSpace(BaseEM, BaseMagneticDipole):
     """Class for a static magnetic pole in a wholespace.
 
     The ``MagneticPoleWholeSpace`` class is used to analytically compute the
@@ -415,7 +415,7 @@ class MagneticPoleWholeSpace(BaseMagneticDipole, BaseEM):
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
 
 
-class CircularLoopWholeSpace(BaseDipole, BaseEM):
+class CircularLoopWholeSpace(BaseEM, BaseDipole):
     """Class for a circular loop of static current in a wholespace.
 
     The ``CircularLoopWholeSpace`` class is used to analytically compute the

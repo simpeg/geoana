@@ -6,7 +6,7 @@ from geoana.em.tdem.base import BaseTDEM
 from geoana.em.tdem.simple_functions import magnetic_field_vertical_magnetic_dipole, magnetic_field_time_deriv_magnetic_dipole
 
 
-class VerticalMagneticDipoleHalfSpace(BaseMagneticDipole, BaseTDEM):
+class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
     """Transient of a vertical magnetic dipole in a half space.
 
     Only valid for source and receivers at the surface. The surface is assumed
@@ -14,9 +14,6 @@ class VerticalMagneticDipoleHalfSpace(BaseMagneticDipole, BaseTDEM):
 
     Waveform is assumed to be the step off.
     """
-
-    def __init__(self, time, **kwargs):
-        super().__init__(time=time, **kwargs)
 
     def magnetic_field(self, xy):
         """Magnetic field due to a magnetic dipole over a half space
