@@ -16,7 +16,6 @@ Heritage:
 
 import numpy as np
 # import properties
-import vectormath as vmath
 import utm
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -77,20 +76,13 @@ class EarthquakeInterferogram:
 
         super().__init__(**kwargs)
 
-
-    # data = properties.Array(
-    #     'Processed interferogram data (unwrapped)',
-    #     dtype=float,
-    #     required=True
-    # )
-
     @property
     def data(self):
         """Processed interferogram data (unwrapped).
 
         Returns
         -------
-        np.array of float
+        numpy.ndarray of float
             Processed interferogram data (unwrapped)
 
         """
@@ -100,16 +92,11 @@ class EarthquakeInterferogram:
     def data(self, var):
         if ~isinstance(var, np.ndarray):
             try:
-                np.array(var)
+                var = np.asarray(var, dtype=float)
             except:
                 raise TypeError("Location must be a np.array_like of float")
 
         self._data = var
-
-    # title = properties.String(
-    #     'name of the earthquake',
-    #     required=True
-    # )
 
     @property
     def title(self):
@@ -131,18 +118,13 @@ class EarthquakeInterferogram:
             raise TypeError("Title is not a string or data type that can be converted to string")
         self._title = var
 
-    # location = properties.Vector2(
-    #     'interferogram location (bottom N, left E)',
-    #     required=True
-    # )
-
     @property
     def location(self):
         """Interferogram location (bottom N, left E).
 
         Returns
         -------
-        vectormath.Vector2
+        (2,) numpy.ndarray
             Interferogram location (bottom N, left E)
 
         """
@@ -150,21 +132,19 @@ class EarthquakeInterferogram:
 
     @location.setter
     def location(self, var):
-
-        if not isinstance(var, vmath.Vector2):
-            try:
-                var = vmath.Vector2(var)
-            except:
-                raise TypeError((
-                    "Location must be a (2) array_like or vectormath.Vector2"
-                ))
+        try:
+            var = np.asarray(var, dtype=float)
+        except:
+            raise TypeError(
+                "Location must be array_like of float"
+            )
+        var = np.squeeze(var)
+        if var.shape != (2, ):
+            raise ValueError(
+                f"Location must be of shape (2,) not {var.shape}"
+            )
 
         self._location = var
-
-    # location_UTM_zone = properties.Integer(
-    #     'UTM zone',
-    #     required=True
-    # )
 
     @property
     def location_UTM_zone(self):
@@ -187,13 +167,6 @@ class EarthquakeInterferogram:
 
         self._location_UTM_zone = var
 
-    # shape = properties.Array(
-    #     'number of pixels in the interferogram',
-    #     shape=(2,),
-    #     dtype=int,
-    #     required=True
-    # )
-
     @property
     def shape(self):
         """Shape of the interferogram defined by number of pixels in
@@ -201,8 +174,8 @@ class EarthquakeInterferogram:
 
         Returns
         -------
-        (2) np.ndarray of int
-            Interferogram shape.
+        (2,) tuple of int
+            Interferogram shape, (number in Northing, number in Easting).
 
         """
         return self._shape
@@ -210,21 +183,14 @@ class EarthquakeInterferogram:
     @shape.setter
     def shape(self, var):
         try:
-            var = np.array(var, dtype=int)
+            var = tuple(int(v) for v in var)
         except:
-            raise TypeError("shape must be a (2) array_like of int")
+            raise TypeError("shape must be a array_like of int")
 
         if len(var) != 2:
-            raise TypeError("shape must be a (2) array_like of int")
+            raise ValueError(f"shape must be length 2, not{len(var)}")
 
         self._shape = var
-
-    # pixel_size = properties.Array(
-    #     'Size of each pixel (northing, easting)',
-    #     shape=(2,),
-    #     dtype=float,
-    #     required=True
-    # )
 
     @property
     def pixel_size(self):
@@ -232,7 +198,7 @@ class EarthquakeInterferogram:
 
         Returns
         -------
-        (2) np.ndarray of float
+        (2,) numpy.ndarray of float
             The Northing and Easting dimensions of each pixel.
 
         """
@@ -241,19 +207,14 @@ class EarthquakeInterferogram:
     @pixel_size.setter
     def pixel_size(self, var):
         try:
-            var = np.array(var, dtype=float)
+            var = np.asarray(var, dtype=float)
         except:
-            raise TypeError("pixel_size must be a (2) array_like of float")
-
-        if len(var) != 2:
-            raise TypeError("pixel_size must be a (2) array_like of float")
+            raise TypeError("pixel_size must be array_like of float")
+        var = np.squeeze(var)
+        if var.shape != (2,):
+            raise TypeError(f"pixel_size must have shape (2, ) not {var.shape}")
 
         self._pixel_size = var
-
-    # ref = properties.Vector2(
-    #     'interferogram reference',
-    #     required=True
-    # )
 
     @property
     def ref(self):
@@ -261,7 +222,7 @@ class EarthquakeInterferogram:
 
         Returns
         -------
-        vectormath.Vector2
+        (2,) numpy.ndarray
             Interferogram reference location (bottom N, left E)
 
         """
@@ -269,20 +230,17 @@ class EarthquakeInterferogram:
 
     @ref.setter
     def ref(self, var):
-        if not isinstance(var, vmath.Vector2):
-            try:
-                var = vmath.Vector2(var)
-            except:
-                raise TypeError((
-                    "ref must be a (2) array_like or vectormath.Vector2"
-                ))
+        try:
+            var = np.asarray(var, dtype=float)
+        except:
+            raise TypeError(
+                "ref must be a array_like of float"
+            )
+        var = np.squeeze(var)
+        if var.shape != (2, ):
+            raise ValueError(f"ref must have shape (2, ) not {var.shape}")
 
         self._ref = var
-
-    # ref_incidence = properties.Float(
-    #     'Incidence angle',
-    #     required=True
-    # )
 
     @property
     def ref_incidence(self):
@@ -305,11 +263,6 @@ class EarthquakeInterferogram:
 
         self._ref_incidence = var
 
-    # scaling = properties.Float(
-    #     'Scaling of the interferogram',
-    #     default=1.0
-    # )
-
     @property
     def scaling(self):
         """Interferogram scaling factor.
@@ -330,11 +283,6 @@ class EarthquakeInterferogram:
             raise TypeError("scaling must be a float")
 
         self._scaling = var
-
-    # satellite_fringe_interval = properties.Float(
-    #     'Fringe interval',
-    #     default=0.028333
-    # )
 
     @property
     def satellite_fringe_interval(self):
@@ -357,11 +305,6 @@ class EarthquakeInterferogram:
 
         self._satellite_fringe_interval = var
 
-    # satellite_azimuth = properties.Float(
-    #     'satellite_azimuth',
-    #     required=True
-    # )
-
     @property
     def satellite_azimuth(self):
         """Satellite azimuth.
@@ -382,11 +325,6 @@ class EarthquakeInterferogram:
             raise TypeError("satellite_azimuth must be a float")
 
         self._satellite_azimuth = var
-
-    # satellite_altitude = properties.Float(
-    #     'satellite_altitude',
-    #     required=True
-    # )
 
     @property
     def satellite_altitude(self):
@@ -409,11 +347,6 @@ class EarthquakeInterferogram:
 
         self._satellite_altitude = var
 
-    # local_earth_radius = properties.Float(
-    #     'Earth radius',
-    #     default=6371000.
-    # )
-
     @property
     def local_earth_radius(self):
         """Local Earth radius.
@@ -434,11 +367,6 @@ class EarthquakeInterferogram:
             raise TypeError("local_earth_radius must be a float")
 
         self._local_earth_radius = var
-
-    # local_rigidity = properties.Float(
-    #     'Local rigidity',
-    #     default=3e10
-    # )
 
     @property
     def local_rigidity(self):
@@ -461,11 +389,6 @@ class EarthquakeInterferogram:
 
         self._rigidity = var
 
-    # processed_by = properties.String(
-    #     'processed_by',
-    #     required=True
-    # )
-
     @property
     def processed_by(self):
         """A string stating who processed the data.
@@ -487,11 +410,6 @@ class EarthquakeInterferogram:
 
         self._processed_by = var
 
-    # description = properties.String(
-    #     'description of the event',
-    #     required=False
-    # )
-
     @property
     def description(self):
         """The description of the event.
@@ -509,10 +427,8 @@ class EarthquakeInterferogram:
         try:
             var = str(var)
         except:
-            raise TypeError("Title is not a string or data type that can be converted to string")
+            raise TypeError("description is not a string or data type that can be converted to string")
         self._description = var
-
-    # satellite_name = properties.String('Name of the satelite.')
 
     @property
     def satellite_name(self):
@@ -535,11 +451,6 @@ class EarthquakeInterferogram:
 
         self._satellite_name = var
 
-    # copyright = properties.String(
-    #     'copyright',
-    #     required=True
-    # )
-
     @property
     def copyright(self):
         """A string providing any copyright information.
@@ -561,11 +472,6 @@ class EarthquakeInterferogram:
 
         self._copyright = var
 
-    # data_source = properties.String(
-    #     'data_source',
-    #     required=True
-    # )
-
     @property
     def data_source(self):
         """The source of the data.
@@ -586,7 +492,6 @@ class EarthquakeInterferogram:
             raise TypeError("data_source not a string or data type that can be converted to string")
 
         self._data_source = var
-
 
     @property
     def event_gcmt_id(self):
@@ -651,11 +556,6 @@ class EarthquakeInterferogram:
 
         self._event_country = var
 
-    # date1 = properties.DateTime(
-    #     'date1',
-    #     required=True
-    # )
-
     @property
     def date1(self):
         """Date 1
@@ -679,11 +579,6 @@ class EarthquakeInterferogram:
                     )
         self._date1 = date_time
 
-    # date2 = properties.DateTime(
-    #     'date2',
-    #     required=True
-    # )
-
     @property
     def date2(self):
         """Date 2
@@ -706,12 +601,6 @@ class EarthquakeInterferogram:
                     "json formatted date-time. Got {} instead".format(type(date_time))
                     )
         self._date2 = date_time
-
-    # processed_date = properties.DateTime(
-    #     'processed_date',
-    #     required=True
-    # )
-
     @property
     def processed_date(self):
         """Processed date
@@ -758,11 +647,6 @@ class EarthquakeInterferogram:
                     )
         self._event_date = date_time
 
-    # event_date = properties.DateTime('Date of the earthquake')
-    # event_gcmt_id = properties.String('GCMT ID')
-    # event_name = properties.String('Earthquake name')
-    # event_country = properties.String('Earthquake country')
-
     def _get_plot_data(self):
 
         vectorNx = (
@@ -805,8 +689,6 @@ class EarthquakeInterferogram:
             The inteferogram plot
 
         """
-
-        self.assert_valid
 
         if ax is None:
             plt.figure()
@@ -897,14 +779,14 @@ class EarthquakeInterferogram:
 
         Returns
         -------
-        vectormath.Vector3Array
+        numpy.ndarray
             The LOS vectors
         """
         if not isinstance(locations, list):
             locations = [locations]
 
         utmZone = self.location_UTM_zone
-        refPoint = vmath.Vector3(self.ref.x, self.ref.y, 0)
+        refPoint = self.ref
         satAltitude = self.satellite_altitude
         satAzimuth = self.satellite_azimuth
         satIncidence = self.ref_incidence
@@ -921,7 +803,7 @@ class EarthquakeInterferogram:
 
         # Long lat **NOT** lat long
         origy, origx = utm.to_latlon(
-            refPoint.x, refPoint.y, np.abs(utmZone), northern=utmZone > 0
+            refPoint[0], refPoint[1], np.abs(utmZone), northern=utmZone > 0
         )
 
         xy = np.array([
@@ -956,7 +838,7 @@ class EarthquakeInterferogram:
         los_y = -np.sin(satAzimuth * DEG2RAD) * np.cos(satIncidence * DEG2RAD)
         los_z = np.sin(satIncidence * DEG2RAD)
 
-        return vmath.Vector3Array([los_x, los_y, los_z])
+        return np.array([los_x, los_y, los_z])
 
     @staticmethod
     def _ang_to_gc(x, y, origx, origy, satAzimuth):
@@ -1046,17 +928,13 @@ class Oksar:
         self.mu = mu
         self.shape = shape
 
-    # O = properties.Vector2(
-    #     'Origin of the simulation domain', required=True
-    # )
-
     @property
     def O(self):
         """Origin of the simulation domain.
 
         Returns
         -------
-        vectormath.Vector2
+        (2,) numpy.ndarray
             Origin of the simulation domain.
 
         """
@@ -1064,20 +942,14 @@ class Oksar:
 
     @O.setter
     def O(self, var):
-
-        if not isinstance(var, vmath.Vector2):
-            try:
-                var = vmath.Vector2(var)
-            except:
-                raise TypeError((
-                    "O must be a (2) array_like or vectormath.Vector2"
-                ))
-
+        try:
+            var = np.asarray(var, dtype=float)
+        except:
+            raise TypeError("O must be array_like of float")
+        var = np.squeeze(var)
+        if var.shape != (2, ):
+            raise ValueError(f"O must have a shape (2, ) not {var.shape}")
         self._O = var
-
-    # U = properties.Vector2(
-    #     'U direction of the simulation domain', required=True
-    # )
 
     @property
     def U(self):
@@ -1085,7 +957,7 @@ class Oksar:
 
         Returns
         -------
-        vectormath.Vector2
+        (2,) numpy.ndarray
             U direction of the simulation domain
 
         """
@@ -1093,20 +965,16 @@ class Oksar:
 
     @U.setter
     def U(self, var):
-
-        if not isinstance(var, vmath.Vector2):
-            try:
-                var = vmath.Vector2(var)
-            except:
-                raise TypeError((
-                    "U must be a (2) array_like or vectormath.Vector2"
-                ))
-
+        try:
+            var = np.asarray(var, dtype=float)
+        except:
+            raise TypeError(
+                "U must be a array_like of float"
+            )
+        var = np.squeeze(var)
+        if var.shape != (2, ):
+            raise ValueError(f"U must have a shape of (2, ) not {var.shape}")
         self._U = var
-
-    # V = properties.Vector2(
-    #     'V direction of the simulation domain', required=True
-    # )
 
     @property
     def V(self):
@@ -1114,7 +982,7 @@ class Oksar:
 
         Returns
         -------
-        vectormath.Vector2
+        (2,) numpy.ndarray
             V direction of the simulation domain
 
         """
@@ -1122,18 +990,15 @@ class Oksar:
 
     @V.setter
     def V(self, var):
-
-        if not isinstance(var, vmath.Vector2):
-            try:
-                var = vmath.Vector2(var)
-            except:
-                raise TypeError((
-                    "V must be a (2) array_like or vectormath.Vector2"
-                ))
-
+        try:
+            var = np.asarray(var, dtype=float)
+        except:
+            raise TypeError("V must be array_like of float")
+        var = np.squeeze(var)
+        if var.shape != (2, ):
+            raise ValueError(f"V must have a shape of (2, ) not {var.shape}")
         self._V = var
 
-    # center = properties.Vector2('Center of the fault plane.')
 
     @property
     def center(self):
@@ -1141,7 +1006,7 @@ class Oksar:
 
         Returns
         -------
-        vectormath.Vector2
+        )2,) numpy.ndarray
             Earthquake epicenter (bottom N, left E)
 
         """
@@ -1149,18 +1014,14 @@ class Oksar:
 
     @center.setter
     def center(self, var):
-
-        if not isinstance(var, vmath.Vector2):
-            try:
-                var = vmath.Vector2(var)
-            except:
-                raise TypeError((
-                    "center must be a (2) array_like or vectormath.Vector2"
-                ))
-
+        try:
+            var = np.asarray(var, dtype=float)
+        except:
+            raise TypeError("center must be array_like of float")
+        var = np.squeeze(var)
+        if var.shape != (2, ):
+            raise ValueError(f"center must have a shape of (2, ) not {var.shape}")
         self._center = var
-
-    # depth_top = properties.Float('Top of fault', min=0)
 
     @property
     def depth_top(self):
@@ -1186,8 +1047,6 @@ class Oksar:
 
         self._depth_top = var
 
-    # depth_bottom = properties.Float('Bottom of fault', default=10000, min=0)
-
     @property
     def depth_bottom(self):
         """Depth to the bottom of the fault (m)
@@ -1212,11 +1071,9 @@ class Oksar:
 
         self._depth_bottom = var
 
-    # strike = properties.Float('Strike', min=0, max=360)
-
     @property
     def strike(self):
-        """Strike angle (0 to 360)
+        """Strike angle (0 to 360) in degrees
 
         Returns
         -------
@@ -1238,16 +1095,14 @@ class Oksar:
 
         self._strike = var
 
-    # dip = properties.Float('Dip', default=45, min=0, max=90)
-
     @property
     def dip(self):
-        """Strike angle (0 to 90)
+        """Strike angle (0 to 90) in degrees
 
         Returns
         -------
         float
-            Strike angle (0 to 90)
+            Strike angle (0 to 90) in degrees
 
         """
         return self._dip
@@ -1263,9 +1118,6 @@ class Oksar:
             raise ValueError("dip must be within [0, 90]")
 
         self._dip = var
-
-    # rake = properties.Float('Rake', default=90, min=-180, max=180)
-
     @property
     def rake(self):
         """Rake angle (-180 to 180)
@@ -1289,8 +1141,6 @@ class Oksar:
             raise ValueError("rake must be within [-180, 180]")
 
         self._rake = var
-
-    # slip = properties.Float('Slip', default=0.5, min=0)
 
     @property
     def slip(self):
@@ -1316,8 +1166,6 @@ class Oksar:
 
         self._slip = var
 
-    # length = properties.Float('Fault length', default=10000., min=0)
-
     @property
     def length(self):
         """Length
@@ -1342,8 +1190,6 @@ class Oksar:
 
         self._length = var
 
-    # beta = properties.Float('beta', default=3E10)
-
     @property
     def beta(self):
         """Beta parameter
@@ -1365,8 +1211,6 @@ class Oksar:
 
         self._beta = var
 
-    # mu = properties.Float('mu', default=3E10)
-
     @property
     def mu(self):
         """Mu parameter
@@ -1387,14 +1231,6 @@ class Oksar:
             raise TypeError("mu must be a float")
 
         self._mu = var
-
-    # shape = properties.Array(
-    #     'number of pixels in the simulation',
-    #     shape=(2,),
-    #     default=(300, 300),
-    #     dtype=int,
-    #     # required=True
-    # )
 
     @property
     def shape(self):
@@ -1427,20 +1263,20 @@ class Oksar:
 
         Returns
         -------
-        vectormath.Vector3Array
+        numpy.ndarray
             Simulation grid
-
         """
-
-        self.assert_valid
-
-        vec, shape = vmath.ouv2vec(
-            vmath.Vector3(self.O[0], self.O[1], 0),
-            vmath.Vector3(self.U[0], self.U[1], 0),
-            vmath.Vector3(self.V[0], self.V[1], 0),
-            self.shape
+        shape = self.shape
+        origin = self.O
+        R = np.stack([self.U, self.V])
+        square = np.meshgrid(
+            np.linspace(0, 1, shape[0]),
+            np.linspace(0, 1, shape[1])
         )
-        return vec
+        square = np.stack([square[0].flatten(), square[1].flatten()], axis=-1)
+        grid = origin + np.einsum('ij,...j->...i', R, square)
+
+        return grid
 
     @property
     def displacement_vector(self):
@@ -1448,21 +1284,18 @@ class Oksar:
 
         Returns
         -------
-        vectormath.Vector3
+        numpy.ndarray
             Displacement vector
 
         """
 
-        self.assert_valid
-
         vec = self.simulation_grid
-        x, y = vec.x, vec.y
+        x, y = vec[:, 0], vec[:, 1]
 
         DEG2RAD = 0.017453292519943
         alpha = (self.beta + self.mu) / (self.beta + 2.0 * self.mu)
 
         #  Here we could loop over models
-
         flt_x = self.center[0]
         flt_y = self.center[1]
         strike = self.strike
@@ -1484,9 +1317,6 @@ class Oksar:
         aw1 = hmin/sindip
         aw2 = hmax/sindip
 
-        if(hmin < 0.0):
-            raise Exception('ERROR: Fault top above ground surface')
-
         if(hmin == 0.0):
             hmin = 0.00001
 
@@ -1500,11 +1330,11 @@ class Oksar:
 
         u = self._dc3d3(alpha, X, Y, -dip, al1, al2, aw1, aw2, us, ud)
 
-        UX = ct*u.x + st*u.y
-        UY = -st*u.x + ct*u.y
-        UZ = u.z
+        UX = ct*u[...,0] + st*u[...,1]
+        UY = -st*u[...,0] + ct*u[...,1]
+        UZ = u[..., 2]
 
-        return vmath.Vector3(UX, UY, UZ)
+        return np.stack([UX, UY, UZ], axis=-1)
 
     def _dc3d3(self, alpha, X, Y, dip, al1, al2, aw1, aw2, disl1, disl2):
         F0 = 0.0
@@ -1513,8 +1343,8 @@ class Oksar:
         PI2 = 6.283185307179586
         EPS = 1.0E-6
 
-        u = vmath.Vector3(F0, F0, F0)
-        dub = vmath.Vector3(F0, F0, F0)
+        u = np.array([F0, F0, F0])
+        dub = np.array([F0, F0, F0])
 
         #  %%dccon0 subroutine
         #  Calculates medium and fault dip constants
@@ -1590,7 +1420,7 @@ class Oksar:
 
                 ret = c2_r + dc_et
                 if np.any(ret < 1e-14):
-                    raise Exception('dccon2 b %f %f %f %f' % (
+                    raise Exception('dccon2 b %f %f %f %f %f' % (
                         ret, c2_r, dc_et, dc_q, dc_xi
                     ))
 
@@ -1660,30 +1490,29 @@ class Oksar:
                     du2x = - xi*qy - c2_tt - c0_alp3 * ai1 * c0_sd
                     du2y = - q/c2_r + c0_alp3*c2_y/rd*c0_sd
                     du2z = q*qy - c0_alp3*ai2*c0_sd
-                    du2 = vmath.Vector3(du2x, du2y, du2z)
+                    du2 = np.array([du2x, du2y, du2z])
                     dub = du2 * (disl1 / PI2)
                 else:
-                    dub = vmath.Vector3()
+                    dub = np.zeros(3)
 
                 # dip-slip contribution
                 if(disl2 != F0):
                     du2x = - q/c2_r + c0_alp3 * ai3 * c0_sdcd
                     du2y = - et*qx - c2_tt - c0_alp3 * xi / rd * c0_sdcd
                     du2z = q*qx + c0_alp3 * ai4 * c0_sdcd
-                    du2 = vmath.Vector3(du2x, du2y, du2z)
+                    du2 = np.array([du2x, du2y, du2z])
                     dub = dub + (du2 * (disl2 / PI2))
 
                 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-                dux = dub.x
-                duy = dub.y*c0_cd - dub.z*c0_sd
-                duz = dub.y*c0_sd + dub.z*c0_cd
-                du = vmath.Vector3(dux, duy, duz)
+                dux = dub[0]
+                duy = dub[1]*c0_cd - dub[2]*c0_sd
+                duz = dub[1]*c0_sd + dub[2]*c0_cd
+                du = np.array([dux, duy, duz])
                 if((j+k) != 3):
                     u = + du + u
                 else:
                     u = - du + u
-
         return u
 
     def plot_displacement(self, eq=None, ax=None, wrap=True, mask_opacity=0.2):
@@ -1706,9 +1535,8 @@ class Oksar:
             Displacement plot
 
         """
-
-        if eq is not None:
-            assert isinstance(eq, EarthquakeInterferogram)
+        if eq is not None and not isinstance(eq, EarthquakeInterferogram):
+            raise TypeError("eq must be an EarthquakeInterferogram")
 
         if ax is None:
             plt.figure()
@@ -1734,7 +1562,7 @@ class Oksar:
         DIR = self.displacement_vector
         grid = self.simulation_grid
         if eq is None:
-            LOS = vmath.Vector3(0, 0, 1)
+            LOS = np.array([0, 0, 1))
         else:
             LOS = eq.get_LOS_vector(grid)
         data = DIR.dot(LOS)
