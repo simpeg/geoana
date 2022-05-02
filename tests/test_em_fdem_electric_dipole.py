@@ -1,8 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import unittest
 import numpy as np
 
@@ -74,7 +69,8 @@ def E_from_EDWS(
 class TestFDEMdipole(unittest.TestCase):
 
     def test_defaults(self):
-        edws = fdem.ElectricDipoleWholeSpace()
+        frequency = 1.0
+        edws = fdem.ElectricDipoleWholeSpace(frequency)
         assert(edws.sigma == 1)
         assert(edws.mu == mu_0)
         assert(edws.epsilon == epsilon_0)
@@ -145,11 +141,12 @@ class TestFDEMdipole(unittest.TestCase):
 
     def test_electric_dipole_tilted_e(self):
 
+        frequency = 1.0
         orientation = np.random.rand(3)
         orientation = orientation / np.linalg.norm(orientation)
 
         edws = fdem.ElectricDipoleWholeSpace(
-            orientation=orientation
+            frequency, orientation=orientation
         )
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
