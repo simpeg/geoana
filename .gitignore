@@ -90,6 +90,9 @@ ENV/
 *.sublime-workspace
 *.sublime-project
 
+# auto-api
+docs/api/generated/*
+
 # sphinx-gallery
 /docs/auto_examples/*
 

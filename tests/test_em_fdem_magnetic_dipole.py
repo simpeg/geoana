@@ -1,17 +1,9 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import unittest
 import numpy as np
 import discretize
-# from SimPEG import Maps
-# from SimPEG.EM import FDEM
 
 from scipy.constants import mu_0, epsilon_0
 from geoana.em import fdem
-from discretize.utils import ndgrid, asArray_N_x_Dim
 
 
 def H_from_MagneticDipoleWholeSpace(
@@ -133,7 +125,8 @@ class TestFDEMdipole(unittest.TestCase):
 
     def test_defaults(self):
         TOL = 1e-15
-        mdws = fdem.MagneticDipoleWholeSpace()
+        frequency = 1.0
+        mdws = fdem.MagneticDipoleWholeSpace(frequency)
         assert(mdws.sigma == 1.)
         assert(mdws.mu == mu_0)
         assert(mdws.epsilon == epsilon_0)
@@ -249,11 +242,12 @@ class TestFDEMdipole(unittest.TestCase):
 
     def test_magnetic_dipole_tilted_b(self):
 
+        frequency = 1.0
         orientation = np.random.rand(3)
         orientation = orientation / np.linalg.norm(orientation)
 
         mdws = fdem.MagneticDipoleWholeSpace(
-            orientation=orientation
+            frequency, orientation=orientation
         )
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -302,15 +296,16 @@ class TestFDEMdipole(unittest.TestCase):
 
     def test_magnetic_dipole_tilted_e(self):
 
+        frequency = 1.0
         orientation = np.random.rand(3)
         orientation = orientation / np.linalg.norm(orientation)
 
         mdws = fdem.MagneticDipoleWholeSpace(
-            orientation=orientation
+            frequency, orientation=orientation
         )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
+        x = np.linspace(-20., 20., 10)
+        y = np.linspace(-30., 30., 10)
+        z = np.linspace(-40., 40., 10)
 
         xyz = discretize.utils.ndgrid([x, y, z])
 

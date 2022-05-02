@@ -6,7 +6,7 @@ from geoana.em.tdem.base import BaseTDEM
 from geoana.em.tdem.simple_functions import magnetic_field_vertical_magnetic_dipole, magnetic_field_time_deriv_magnetic_dipole
 
 
-class VerticalMagneticDipoleHalfSpace(BaseMagneticDipole, BaseTDEM):
+class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
     """Transient of a vertical magnetic dipole in a half space.
 
     Only valid for source and receivers at the surface. The surface is assumed

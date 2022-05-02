@@ -49,7 +49,7 @@ quasistatic=False  # don't use the quasistatic assumption
 # docs
 
 edipole = fdem.ElectricDipoleWholeSpace(
-    sigma=sigma, mu=mu, epsilon=epsilon,
+    frequencies, sigma=sigma, mu=mu, epsilon=epsilon,
     location=location, orientation=orientation,
     quasistatic=False
 )
