@@ -1,7 +1,6 @@
 from geoana.em.base import BaseEM
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
-# import properties
 
 ###############################################################################
 #                                                                             #
@@ -185,17 +184,6 @@ class BaseFDEM(BaseEM):
     #     cast=True
     # )
 
-    # frequency = properties.Float(
-    #     "Source frequency (Hz)",
-    #     default=1.,
-    #     min=0.0
-    # )
-
-    # quasistatic = properties.Bool(
-    #     "Use the quasi-static approximation and ignore displacement current?",
-    #     default=False
-    # )
-
     def __init__(self, frequency, quasistatic=False, **kwargs):
 
         self.frequency = frequency
@@ -215,13 +203,14 @@ class BaseFDEM(BaseEM):
 
     @frequency.setter
     def frequency(self, value):
-        
+
         # Ensure float or numpy array of float
         try:
-            value = np.atleast_1d(value).astype(float)
+            value = np.asarray(value, dtype=float)
         except:
             raise TypeError(f"frequencies are not a valid type")
-        
+        value = np.atleast_1d(value)
+
         # Enforce positivity and dimensions
         if (value < 0.).any():
             raise ValueError("All frequencies must be greater than 0")

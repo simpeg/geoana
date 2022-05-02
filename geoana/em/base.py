@@ -1,9 +1,5 @@
 import numpy as np
-# import properties
 from scipy.constants import mu_0, epsilon_0
-
-from .. import spatial
-
 
 ###############################################################################
 #                                                                             #
@@ -23,11 +19,11 @@ class BaseEM:
 
     Parameters
     ----------
-    sigma : float, int
+    sigma : float, optional
         Electrical conductivity in S/m. Default is :math:`\\sigma` = 1 S/m
-    mu : float
+    mu : float, optional
         Magnetic permeability in H/m. Default is :math:`\\mu_0 = 4\\pi \\times 10^{-7}` H/m
-    epsilon : float
+    epsilon : float, optional
         Dielectric permittivity F/m. Default is :math:`\\epsilon_0 = 8.85 \\times 10^{-12}` F/m
     """
 
@@ -111,34 +107,15 @@ class BaseEM:
 
         self._epsilon = value
 
-    # mu = properties.Float(
-    #     "Magnetic permeability (H/m)",
-    #     default=mu_0,
-    #     min=0.0
-    # )
-
-    # sigma = properties.Float(
-    #     "Electrical conductivity (S/m)",
-    #     default=1.0,
-    #     min=0.0
-    # )
-
-    # epsilon = properties.Float(
-    #     "Permitivity value (F/m)",
-    #     default=epsilon_0,
-    #     min=0.0
-    # )
-
-
 class BaseDipole:
     """Base class for dipoles; namely the location and orientation.
     This class is inherited by both electric current and magnetic dipoles.
 
     Parameters
     ----------
-    location: (3) array_like
+    location: (3) array_like, optional
         Location of the dipole in 3D space. Default is (0,0,0)
-    orientation : (3) array_like or str {'X','Y','Z'}
+    orientation : (3) array_like or {'X','Y','Z'}
         Orientation of the dipole. Can be defined using as an ``array_like`` of length 3,
         or by using one of {'X','Y','Z'} to define a unit dipole along the x, y or z direction.
         Default is 'X'.
@@ -166,17 +143,16 @@ class BaseDipole:
     def location(self, vec):
 
         try:
-            vec = np.atleast_1d(vec).astype(float)
+            vec = np.asarray(vec, dtype=float)
         except:
-            raise TypeError(f"location must be array_like, got {type(vec)}")
-
-        if len(vec) != 3:
+            raise TypeError(f"location must be array_like of float, got {type(vec)}")
+        vec = np.squeeze(vec)
+        if vec.shape != (3, ):
             raise ValueError(
-                f"location must be array_like with shape (3,), got {len(vec)}"
+                f"location must be array_like with shape (3,), got {vec.shape}"
             )
 
         self._location = vec
-
 
     @property
     def orientation(self):
@@ -201,34 +177,21 @@ class BaseDipole:
                 var = np.r_[0., 0., 1.]
         else:
             try:
-                var = np.atleast_1d(var).astype(float)
+                var = np.asarray(var, dtype=float)
             except:
-                raise TypeError(f"orientation must be str or array_like, got {type(var)}")
-
-            if len(var) != 3:
+                raise TypeError(
+                    f"orientation must be str or array_like, got {type(var)}"
+                )
+            var = np.squeeze(var)
+            if var.shape != (3, ):
                 raise ValueError(
                     f"orientation must be array_like with shape (3,), got {len(var)}"
                 )
 
-        # Normalize the orientation
-        var /= np.sqrt(np.sum(var**2))
+            # Normalize the orientation
+            var /= np.linalg.norm(var)
 
         self._orientation = var
-
-
-
-    # orientation = properties.Vector3(
-    #     "orientation of dipole",
-    #     default="X",
-    #     length=1.0
-    # )
-
-    # location = properties.Vector3(
-    #     "location of the electric dipole source",
-    #     default="ZERO"
-    # )
-
-
 
     def vector_distance(self, xyz):
         r"""Vector distance to a set of gridded xyz locations.
@@ -253,7 +216,7 @@ class BaseDipole:
         (n, 3) numpy.ndarray
             Vector distances in the x, y and z directions
         """
-        return spatial.vector_distance(xyz, np.array(self.location))
+        return xyz - self.location
 
     def distance(self, xyz):
         r"""Scalar distance from dipole to a set of gridded xyz locations
@@ -278,7 +241,7 @@ class BaseDipole:
         (n) numpy.ndarray
             Scalar distances from dipole to xyz locations
         """
-        return spatial.distance(xyz, np.array(self.location))
+        return np.linalg.norm(xyz - self.location, axis=-1)
 
     def dot_orientation(self, vecs):
         r"""Dot product between the orientation of the source and a gridded set of vectors.
@@ -301,7 +264,7 @@ class BaseDipole:
         (n) numpy.ndarray
             Dot product between the dipole moment direction (orientation) and each vector supplied.
         """
-        return spatial.vector_dot(vecs, np.array(self.orientation))
+        return np.dot(vecs, self.orientation)
 
     def cross_orientation(self, xyz):
         r"""Cross products between a gridded set of vectors and the orientation of the source.
@@ -326,12 +289,7 @@ class BaseDipole:
             Cross product between each vector supplied and the source orientation.
 
         """
-        orientation = np.kron(
-            np.atleast_2d(
-                np.array(self.orientation)
-            ), np.ones((xyz.shape[0], 1))
-        )
-        return np.cross(xyz, orientation)
+        return np.cross(xyz, self.orientation)
 
 
 class BaseElectricDipole(BaseDipole):
@@ -362,7 +320,6 @@ class BaseElectricDipole(BaseDipole):
 
         super().__init__(**kwargs)
 
-
     @property
     def length(self):
         """Length of the electric current dipole (m)
@@ -386,7 +343,6 @@ class BaseElectricDipole(BaseDipole):
             raise ValueError("length must be greater than 0")
 
         self._length = value
-
 
     @property
     def current(self):
@@ -413,21 +369,6 @@ class BaseElectricDipole(BaseDipole):
         self._current = value
 
 
-
-
-    # length = properties.Float(
-    #     "length of the dipole (m)",
-    #     default=1.0,
-    #     min=0.0
-    # )
-
-    # current = properties.Float(
-    #     "magnitude of the injected current (A)",
-    #     default=1.0,
-    #     min=0.0
-    # )
-
-
 class BaseMagneticDipole(BaseDipole):
     r"""Base class for magnetic dipoles.
 
@@ -443,7 +384,7 @@ class BaseMagneticDipole(BaseDipole):
 
     Parameters
     ----------
-    moment : float, int
+    moment : float, optional
         Amplitude of the dipole moment for the magnetic dipole (:math:`A/m^2`).
         Default is 1 :math:`A/m^2`.
     """
@@ -478,19 +419,12 @@ class BaseMagneticDipole(BaseDipole):
         self._moment = value
 
 
-    # moment = properties.Float(
-    #     "moment of the dipole (Am^2)",
-    #     default=1.0,
-    #     min=0.0
-    # )
-
-
 class BaseLineCurrent:
     """Base class for connected segments of current-carrying wire.
 
     Parameters
     ----------
-    nodes : (n, 3) np.ndarray
+    nodes : (n, 3) array_like
         Nodes defining the segments of current-carrying wire segments. For an
         inductive source, you must close the loop.
     """
@@ -520,14 +454,14 @@ class BaseLineCurrent:
             xyz = np.asarray(xyz, dtype=np.float64)
         except:
             raise TypeError(f"nodes must be array_like, got {type(xyz)}")
+        xyz = np.atleast_2d(xyz)
 
-        if (np.shape(xyz)[1] != 3) | (xyz.ndim != 2):
+        if (xyz.shape[1] != 3) | (xyz.ndim != 2):
             raise ValueError(
-                f"nodes must be array_like with shape (n, 3), got {np.shape(xyz)}"
+                f"nodes must be array_like with shape (n, 3), got {xyz.shape}"
             )
 
         self._nodes = xyz
-
 
     @property
     def n_segments(self):
@@ -539,7 +473,7 @@ class BaseLineCurrent:
             number of wire segments
 
         """
-        return np.shape(self.nodes)[0] - 1
+        return self.nodes.shape[0] - 1
 
 
     @property

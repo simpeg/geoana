@@ -15,7 +15,6 @@ Heritage:
 """
 
 import numpy as np
-# import properties
 import utm
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -90,11 +89,10 @@ class EarthquakeInterferogram:
 
     @data.setter
     def data(self, var):
-        if ~isinstance(var, np.ndarray):
-            try:
-                var = np.asarray(var, dtype=float)
-            except:
-                raise TypeError("Location must be a np.array_like of float")
+        try:
+            var = np.asarray(var, dtype=float)
+        except:
+            raise TypeError("Location must be a array_like of float")
 
         self._data = var
 
@@ -1118,6 +1116,7 @@ class Oksar:
             raise ValueError("dip must be within [0, 90]")
 
         self._dip = var
+
     @property
     def rake(self):
         """Rake angle (-180 to 180)
@@ -1239,7 +1238,7 @@ class Oksar:
 
         Returns
         -------
-        (2) np.ndarray of int
+        (2) numpy.ndarray of int
             Interferogram shape.
 
         """
