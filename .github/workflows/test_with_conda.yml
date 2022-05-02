@@ -37,7 +37,7 @@ jobs:
         conda list
         conda config --show
         conda install --quiet --yes pip numpy scipy matplotlib ipython cython;
-        conda install --quiet --yes discretize utm pytest pytest-cov graphviz
+        conda install --quiet --yes discretize utm empymod pytest pytest-cov graphviz
         pip install -r requirements_dev.txt
     - name: Install Our Package
       run: |
@@ -75,7 +75,7 @@ jobs:
         conda list
         conda config --show
         conda install --quiet --yes pip numpy scipy matplotlib ipython cython;
-        conda install --quiet --yes discretize utm pytest pytest-cov graphviz
+        conda install --quiet --yes discretize utm empymod pytest pytest-cov graphviz
         pip install -r requirements_dev.txt
     - name: Prepare source distribution
       run: |
@@ -86,3 +86,40 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+    - name: Build documentation
+      run: |
+        cd docs
+        make html
+        cd ..
+    - name: GitHub Pages
+      # You may pin to the exact commit or the version.
+      uses: crazy-max/ghaction-github-pages@v2.5.0
+      with:
+        # Git domain (default github.com)
+        # domain: # optional, default is github.com
+        # GitHub repository where assets will be deployed (default $GITHUB_REPOSITORY)
+        # repo: # optional
+        # Git branch where assets will be deployed
+        # target_branch: # optional, default is gh-pages
+        # Create incremental commit instead of doing push force
+        # keep_history: # optional, default is false
+        # Allow an empty commit to be created
+        # allow_empty_commit: # optional, default is true
+        # Build directory to deploy
+        build_dir: docs/_build/html
+        # The committer name and email address
+        # committer: # optional
+        # The author name and email address
+        # author: # optional
+        # Commit message
+        # commit_message: # optional
+        # Write the given domain name to the CNAME file
+        fqdn: geoana.simpeg.xyz
+        # Allow Jekyll to build your site
+        jekyll: false # optional, default is true
+        # If enabled, nothing will be pushed
+        # dry_run: true # optional, default is false
+        # Enable verbose output
+        # verbose: true # optional, default is false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
