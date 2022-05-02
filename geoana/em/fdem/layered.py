@@ -1,4 +1,3 @@
-# import properties
 import numpy as np
 from geoana.em.base import BaseMagneticDipole
 from geoana.em.fdem.base import BaseFDEM, sigma_hat
@@ -40,39 +39,6 @@ class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
         *epsilon* is assigned with a (n_layer, n_frequency) np.ndarray.
 
     """
-
-    # thickness = properties.Array(
-    #     "Layer thicknesses (m) starting from the top-most layer. The bottom layer is assumed to be infinite.",
-    #     shape=('*', ),
-    #     dtype=float
-    # )
-
-    # sigma = properties.Array(
-    #     "Electrical conductivity (S/m), defined starting from the top most layer",
-    #     shape=('*', ),
-    #     dtype=complex,
-    #     coerce=True
-    # )
-
-    # frequency = properties.Array(
-    #     "Source frequency (Hz)",
-    #     shape=('*', ),
-    #     dtype=float
-    # )
-
-    # mu = properties.Array(
-    #     "Magnetic permeability (H/m), defined starting from the top most layer",
-    #     shape=('*', ),
-    #     dtype=complex,
-    #     default=np.array([mu_0], dtype=np.complex128)
-    # )
-
-    # epsilon = properties.Array(
-    #     "Permitivity value (F/m), defined starting from the top most layer",
-    #     shape=('*', ),
-    #     dtype=float,
-    #     default=np.array([epsilon_0], dtype=np.float64)
-    # )
 
     def __init__(self, frequency, thickness, **kwargs):
 

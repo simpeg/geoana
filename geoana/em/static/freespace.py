@@ -1,5 +1,4 @@
 import numpy as np
-# import properties
 from scipy.constants import mu_0
 
 from ..base import BaseLineCurrent

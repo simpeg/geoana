@@ -447,8 +447,6 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'matplotlib': ('http://matplotlib.org/', None),
-    'properties': ('http://propertiespy.readthedocs.io/en/latest/', None),
-
 }
 
 
@@ -466,7 +464,3 @@ def _supress_nonlocal_image_warn(self, msg, node, **kwargs):
         self._warnfunc(msg, '{0!s}:{1!s}'.format(*get_source_line(node)))
 
 supress_nonlocal_image_warn()
-
-nitpick_ignore = [
-    ('py:class', 'properties.base.base.HasProperties')
-]

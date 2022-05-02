@@ -178,12 +178,6 @@ class BaseFDEM(BaseEM):
         is neglected in all computations. Default is ``False``.
     """
 
-    # sigma = properties.Complex(
-    #     "Electrical conductivity (S/m)",
-    #     default=1.0,
-    #     cast=True
-    # )
-
     def __init__(self, frequency, quasistatic=False, **kwargs):
 
         self.frequency = frequency

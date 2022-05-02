@@ -1,7 +1,6 @@
 from geoana.em.base import BaseEM
 import numpy as np
 from scipy.constants import mu_0
-# import properties
 
 
 ###############################################################################
@@ -157,13 +156,13 @@ class BaseTDEM(BaseEM):
 
     @time.setter
     def time(self, value):
-        
+
         # Ensure float or numpy array of float
         try:
             value = np.atleast_1d(value).astype(float)
         except:
             raise TypeError(f"times are not a valid type")
-        
+
         # Enforce positivity and dimensions
         if (value < 0.).any():
             raise ValueError("All times must be greater than 0")
@@ -192,7 +191,7 @@ class BaseTDEM(BaseEM):
         ----------
         z : float or numpy.ndarray
             propagation distance from the planewave source (m)
-        
+
         Returns
         -------
         float, np.ndarray

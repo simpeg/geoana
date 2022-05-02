@@ -480,15 +480,6 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         self._radius = value
 
-
-    # current = properties.Float(
-    #     "Electric current through the loop (A)", default=1.
-    # )
-
-    # radius = properties.Float(
-    #     "radius of the loop (m)", default=1., min=0.
-    # )
-
     def vector_potential(self, xyz, coordinates="cartesian"):
         r"""Compute the vector potential for the static loop in a wholespace.
 
