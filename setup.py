@@ -51,7 +51,6 @@ metadata = dict(
         "cython>=0.2",
     ],
     install_requires = [
-        'future',
         'numpy>=1.8',
         'scipy>=0.13',
         'matplotlib',
