@@ -1,17 +1,9 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import unittest
 import numpy as np
 import discretize
-# from SimPEG import Maps
-# from SimPEG.EM import FDEM
 
 from scipy.constants import mu_0, epsilon_0
 from geoana.em import fdem
-from discretize.utils import ndgrid, asArray_N_x_Dim
 
 
 def H_from_MagneticDipoleWholeSpace(

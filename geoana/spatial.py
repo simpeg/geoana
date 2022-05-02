@@ -22,11 +22,6 @@ functions for converting between Cartesian, cylindrical and spherical coordinate
   rotate_points_from_normals
 
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import numpy as np
 from .utils import mkvc
 
@@ -119,7 +114,7 @@ def cartesian_to_cylindrical(grid, vec=None):
     Transform gridded locations or a set of vectors from Cartesian coordinates
     :math:`(x, y, z)` to cylindrical coordinates :math:`(r, \\phi, z)`. Where
     the azimuthal angle :math:`\\phi \\in [-\\pi , \\pi ]` will be given output
-    in radians. 
+    in radians.
 
     Parameters
     ----------
@@ -424,7 +419,7 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
 
     for all locations :math:`\mathbf{q}` supplied in the input argument `xyz`.
     By default, the reference location is (0,0,0).
-    
+
     Parameters
     ----------
     xyz : (n, 3) numpy.ndarray
@@ -436,7 +431,7 @@ def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
     -------
     (n, 3) numpy.ndarray
         Vector distances along the x, y and z directions
-    
+
     """
     assert(xyz.shape[1] == 3), (
         "the xyz grid should be npoints by 3, the shape provided is {}".format(
@@ -470,7 +465,7 @@ def distance(xyz, origin=np.r_[0., 0., 0.]):
 
     for all locations :math:`\mathbf{q}` supplied in the input argument `xyz`.
     By default, the reference location is (0,0,0).
-    
+
     Parameters
     ----------
     xyz : (n, 3) numpy.ndarray
