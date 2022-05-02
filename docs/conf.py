@@ -197,7 +197,7 @@ try:
         "icon_links": [
             {
                 "name": "GitHub",
-                "url": "https://github.com/simpeg/discretize",
+                "url": "https://github.com/simpeg/geoana",
                 "icon": "fab fa-github",
             },
             {
