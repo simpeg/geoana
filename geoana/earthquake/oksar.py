@@ -836,7 +836,7 @@ class EarthquakeInterferogram:
         los_y = -np.sin(satAzimuth * DEG2RAD) * np.cos(satIncidence * DEG2RAD)
         los_z = np.sin(satIncidence * DEG2RAD)
 
-        return np.array([los_x, los_y, los_z])
+        return np.squeeze(np.array([los_x, los_y, los_z]))
 
     @staticmethod
     def _ang_to_gc(x, y, origx, origy, satAzimuth):
@@ -1561,7 +1561,7 @@ class Oksar:
         DIR = self.displacement_vector
         grid = self.simulation_grid
         if eq is None:
-            LOS = np.array([0, 0, 1))
+            LOS = np.array([0, 0, 1])
         else:
             LOS = eq.get_LOS_vector(grid)
         data = DIR.dot(LOS)
