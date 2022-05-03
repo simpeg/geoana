@@ -86,6 +86,10 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+    - name: Install package
+      run: |
+        export BUILD_GEOANA_EXT=1
+        pip install -e .
     - name: Build documentation
       run: |
         cd docs
