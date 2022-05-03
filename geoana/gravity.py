@@ -54,7 +54,7 @@ class PointMass:
 
         .. math::
 
-            in progress
+            \\Gamma = \\nabla \\mathbf{g}
 
         """
         r_vec = xyz - self.location
