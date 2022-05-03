@@ -1,18 +1,24 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import numpy as np
+import properties
 
 from scipy.constants import G
 
 
-class GravityPointMass:
+class PointMass:
+
     """
     Gravity due to a point mass
     """
-    def gravitational_potential(self, m, r):
+
+    mass = properties.Float(
+        "mass of the point particle (kg)", default=1.
+    )
+
+    location = properties.Float(
+        "location of the point mass (m)", default=1
+    )
+
+    def gravitational_potential(self, xyz):
         """
         Gravitational potential for a point mass.  See Blakely, 1996
         equation 3.4
@@ -22,10 +28,12 @@ class GravityPointMass:
             U(P) = \\gamma \\frac{m}{r}
 
         """
-        u_g = (G * m) / r
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
+        u_g = (G * self.mass) / r
         return u_g
 
-    def gravitational_field(self, m, r, xyz):
+    def gravitational_field(self, xyz):
         """
         Gravitational field for a point mass.  See Blakely, 1996
         equation 3.3
@@ -35,11 +43,12 @@ class GravityPointMass:
             \\mathbf{g} = \\nabla U(P)
 
         """
-        r_vec = self.distance(xyz)
-        g_vec = (G * m * r_vec) / r
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
+        g_vec = (G * self.mass * r_vec) / r
         return g_vec
 
-    def gravitational_gradient(self, m, r, xyz):
+    def gravitational_gradient(self, xyz):
         """
         Gravitational gradient for a point mass.
 
@@ -48,6 +57,7 @@ class GravityPointMass:
             in progress
 
         """
-        r_vec = self.distance(xyz)
-        gg_tens = (G * m * np.eye) / r ** 3 + (3 * np.outer(r_vec, r_vec)) / r ** 5
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
+        gg_tens = (G * self.mass * np.eye) / r ** 3 + (3 * np.outer(r_vec, r_vec)) / r ** 5
         return gg_tens
