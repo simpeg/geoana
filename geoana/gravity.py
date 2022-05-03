@@ -1,5 +1,4 @@
 import numpy as np
-import properties
 
 from scipy.constants import G
 
@@ -33,7 +32,7 @@ class PointMass:
         return self._mass
 
     @mass.setter
-    def sigma(self, value):
+    def mass(self, value):
 
         try:
             value = float(value)
@@ -154,12 +153,9 @@ class PointMass:
         """
         Gravitational gradient for a point mass.
 
-        .. math::
-
-            \\Gamma = \\nabla \\mathbf{g}
-
         """
         r_vec = self.vector_distance(xyz)
         r = self.distance(xyz)
         gg_tens = (G * self.mass * np.eye) / r ** 3 + (3 * np.outer(r_vec, r_vec)) / r ** 5
         return gg_tens
+
