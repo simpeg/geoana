@@ -122,13 +122,22 @@ class PointMass:
 
     def gravitational_potential(self, xyz):
         """
-        Gravitational potential for a point mass.  See Blakely, 1996
+        Gravitational potential due to a point mass.  See Blakely, 1996
         equation 3.4
 
         .. math::
 
             U(P) = \\gamma \\frac{m}{r}
 
+        Parameters
+        ----------
+        xyz : (3) numpy.ndarray
+            point mass location
+
+        Returns
+        -------
+        numpy.ndarray
+            gravitational potential at point mass location xyz
         """
         r = self.distance(xyz)
         u_g = (G * self.mass) / r
@@ -136,13 +145,22 @@ class PointMass:
 
     def gravitational_field(self, xyz):
         """
-        Gravitational field for a point mass.  See Blakely, 1996
+        Gravitational field due to a point mass.  See Blakely, 1996
         equation 3.3
 
         .. math::
 
             \\mathbf{g} = \\nabla U(P)
 
+        Parameters
+        ----------
+        xyz : (3) numpy.ndarray
+            point mass location
+
+        Returns
+        -------
+        numpy.ndarray
+            gravitational field at point mass location xyz
         """
         r_vec = self.vector_distance(xyz)
         r = self.distance(xyz)
@@ -153,6 +171,15 @@ class PointMass:
         """
         Gravitational gradient for a point mass.
 
+        Parameters
+        ----------
+        xyz : (3) numpy.ndarray
+            point mass location
+
+        Returns
+        -------
+        numpy.ndarray
+            gravitational gradient at point mass location xyz
         """
         r_vec = self.vector_distance(xyz)
         r = self.distance(xyz)
