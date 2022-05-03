@@ -98,3 +98,4 @@ docs/api/generated/*
 
 # Jupyter
 *.ipynb
+geoana/kernels/_extensions/rTE.cpp
