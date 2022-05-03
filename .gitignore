@@ -90,8 +90,12 @@ ENV/
 *.sublime-workspace
 *.sublime-project
 
+# auto-api
+docs/api/generated/*
+
 # sphinx-gallery
 /docs/auto_examples/*
 
 # Jupyter
 *.ipynb
+geoana/kernels/_extensions/rTE.cpp

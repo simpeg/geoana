@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
 """
 geoana
 
@@ -7,8 +6,6 @@ Interactive geoscience (mostly) analytic functions.
 """
 
 from distutils.core import setup
-from setuptools import find_packages
-
 import sys
 
 CLASSIFIERS = [
@@ -47,19 +44,16 @@ with open('README.rst') as f:
 
 metadata = dict(
     name = 'geoana',
-    version = '0.1.3',
+    version = '0.2.0',
     python_requires=">=3.6",
     setup_requires=[
         "numpy>=1.8",
         "cython>=0.2",
     ],
     install_requires = [
-        'future',
         'numpy>=1.8',
         'scipy>=0.13',
         'matplotlib',
-        'properties',
-        'vectormath',
         'utm',
         'empymod'
     ],

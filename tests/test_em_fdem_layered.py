@@ -15,19 +15,20 @@ class TestLayeredHalfspace(unittest.TestCase):
         sigma = 1.0
         moment = 2.0
         frequencies = np.logspace(1, 4, 3)
-        X, Y, Z = np.mgrid[-10:10:10j, -10:10:10j, 0:1]*100
+        thickness = 10*np.ones(5)
+        X, Y, Z = np.mgrid[-10:10:10, -10:10:10, 0:1]*100
         xyz = np.c_[X.reshape(-1), Y.reshape(-1), Z.reshape(-1)]
 
         for orientation in ['Z', "Y", "Z"]:
             dip_layer = MagneticDipoleLayeredHalfSpace(
-                frequency=frequencies,
-                thickness=np.ones(5)*10,
-                sigma=[sigma + 0j],
+                frequencies,
+                thickness,
+                sigma=sigma,
                 orientation=orientation,
                 moment=moment,
             )
             dip_half = MagneticDipoleHalfSpace(
-                frequency=frequencies,
+                frequencies,
                 sigma=sigma,
                 orientation=orientation,
                 moment=moment,
@@ -142,3 +143,9 @@ class TestCompiledVsNumpy(unittest.TestCase):
         # only compare non-zeros in derivatives rTE2
         # (the compiled routine (rTE1) is slightly more accurate)
         assert_allclose(self.rTE1_dmu[non_zeros2], self.rTE2_dmu[non_zeros2])
+
+
+
+if __name__ == '__main__':
+    unittest.main()
+

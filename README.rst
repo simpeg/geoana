@@ -11,14 +11,6 @@ geoana
     :target: https://github.com/simpeg/geoana/blob/master/LICENSE
     :alt: MIT license
 
-.. image:: https://travis-ci.org/simpeg/geoana.svg?branch=master
-    :target: https://travis-ci.org/simpeg/geoana
-    :alt: Travis status
-
-.. image:: https://api.codacy.com/project/badge/Grade/2e32cd28f4424dc1800f1590a64c244f
-    :target: https://www.codacy.com/app/lindseyheagy/geoana?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=simpeg/geoana&amp;utm_campaign=Badge_Grade
-    :alt: codacy status
-
 
 `geoana` is a collection of (mostly) analytic functions in geophysics. We take an object oriented
 approach with the aim of having users be able to readily interact with the functions using `Jupyter <https://jupyter.org>`_
