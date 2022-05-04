@@ -14,9 +14,11 @@ class PointMass:
             Location of the point mass in 3D space. Default is (0,0,0)
         """
 
-    def __init__(self, mass=1.0, location=np.r_[0., 0., 0.], **kwargs):
+    def __init__(self, mass=1.0, location=None, **kwargs):
 
         self.mass = mass
+        if location is None:
+            location = np.r_[0, 0, 0]
         self.location = location
         super().__init__(**kwargs)
 
@@ -36,11 +38,8 @@ class PointMass:
 
         try:
             value = float(value)
-        except:
+        except TypeError:
             raise TypeError(f"mass must be a number, got {type(value)}")
-
-        if value <= 0.0:
-            raise ValueError("mass must be greater than 0")
 
         self._mass = value
 
@@ -60,7 +59,7 @@ class PointMass:
 
         try:
             vec = np.asarray(vec, dtype=float)
-        except:
+        except (TypeError, ValueError):
             raise TypeError(f"location must be array_like of float, got {type(vec)}")
         vec = np.squeeze(vec)
         if vec.shape != (3,):
@@ -69,56 +68,6 @@ class PointMass:
             )
 
         self._location = vec
-
-    def vector_distance(self, xyz):
-        r"""Vector distance to a set of gridded xyz locations.
-
-        Where :math:`\mathbf{p}` is the location of the source and :math:`\mathbf{q}`
-        is a point in 3D space, this method returns the vector distance:
-
-        .. math::
-            \mathbf{v} = \mathbf{q} - \mathbf{p}
-
-        for all locations :math:`\mathbf{q}` supplied in the inputed argument `xyz`.
-        For dipoles, :math:`\mathbf{p}` is the dipole location. For circular loops,
-        :math:`\mathbf{p}` defines the center location for the loop.
-
-        Parameters
-        ----------
-        xyz : (n, 3) numpy.ndarray
-            Gridded xyz locations
-
-        Returns
-        -------
-        (n, 3) numpy.ndarray
-            Vector distances in the x, y and z directions
-        """
-        return xyz - self.location
-
-    def distance(self, xyz):
-        r"""Scalar distance from dipole to a set of gridded xyz locations
-
-        Where :math:`\mathbf{p}` is the location of the source and :math:`\mathbf{q}`
-        is a point in 3D space, this method returns the scalar distance:
-
-        .. math::
-            d = \sqrt{(q_x - p_x)^2 + (q_y - p_y)^2 + (q_z - p_z)^2}
-
-        for all locations :math:`\mathbf{q}` supplied in the input argument `xyz`.
-        For dipoles, :math:`\mathbf{p}` is the dipole location. For circular loops,
-        :math:`\mathbf{p}` defines the center location for the loop.
-
-        Parameters
-        ----------
-        xyz : (n, 3) numpy.ndarray
-            Gridded xyz locations
-
-        Returns
-        -------
-        (n) numpy.ndarray
-            Scalar distances from dipole to xyz locations
-        """
-        return np.linalg.norm(xyz - self.location, axis=-1)
 
     def gravitational_potential(self, xyz):
         """
@@ -139,7 +88,8 @@ class PointMass:
         numpy.ndarray
             gravitational potential at point mass location xyz
         """
-        r = self.distance(xyz)
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
         u_g = (G * self.mass) / r
         return u_g
 
@@ -154,16 +104,16 @@ class PointMass:
 
         Parameters
         ----------
-        xyz : (3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             point mass location
 
         Returns
         -------
-        numpy.ndarray
+        (..., 3) numpy.ndarray
             gravitational field at point mass location xyz
         """
-        r_vec = self.vector_distance(xyz)
-        r = self.distance(xyz)
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
         g_vec = (G * self.mass * r_vec) / r
         return g_vec
 
@@ -181,8 +131,7 @@ class PointMass:
         numpy.ndarray
             gravitational gradient at point mass location xyz
         """
-        r_vec = self.vector_distance(xyz)
-        r = self.distance(xyz)
-        gg_tens = (G * self.mass * np.eye) / r ** 3 + (3 * np.outer(r_vec, r_vec)) / r ** 5
-        return gg_tens
-
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
+        g_tens = (G * self.mass * np.eye(3)) / r ** 3 + (3 * (r_vec[..., None] * r_vec[..., None, :])) / r ** 5
+        return g_tens

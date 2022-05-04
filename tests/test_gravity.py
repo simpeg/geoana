@@ -66,8 +66,13 @@ class TestPointMass:
         assert pm.mass == 1
         assert np.all(pm.location == np.r_[0., 0., 0.])
 
+    def test_errors(self):
+        pm = gravity.PointMass()
+        with pytest.raises(TypeError):
+            pm.mass = "string"
+
     def test_gravitational_potential(self):
-        mass = 1
+        mass = 1.0
         pm = gravity.PointMass(
             mass=mass
         )
@@ -82,10 +87,10 @@ class TestPointMass:
 
         u = pm.gravitational_potential(xyz)
 
-        assert np.all(utest == u)
+        np.testing.assert_equal(utest, u)
 
     def test_gravitational_field(self):
-        mass = 1
+        mass = 1.0
         pm = gravity.PointMass(
             mass=mass
         )
@@ -100,10 +105,10 @@ class TestPointMass:
 
         g = pm.gravitational_field(xyz)
 
-        assert np.all(gtest == g)
+        np.testing.assert_equal(gtest, g)
 
     def test_gravitational_gradient(self):
-        mass = 1
+        mass = 1.0
         pm = gravity.PointMass(
             mass=mass
         )
@@ -112,12 +117,12 @@ class TestPointMass:
         z = np.linspace(-40., 40., 50)
         xyz = discretize.utils.ndgrid([x, y, z])
 
-        ggtenstest = ggtens_from_PointMass(
+        gtenstest = ggtens_from_PointMass(
             xyz, pm.location, pm.mass
         )
 
-        ggtens = pm.gravitational_gradient(xyz)
+        gtens = pm.gravitational_gradient(xyz)
 
-        assert np.all(ggtenstest == ggtens)
+        np.testing.assert_equal(gtenstest, gtens)
 
 
