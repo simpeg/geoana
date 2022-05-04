@@ -242,7 +242,6 @@ except Exception:
 
 
 linkcheck_ignore = [
-    'https://readthedocs.org/projects/geoana/badge/?version=latest'
 ]
 
 
