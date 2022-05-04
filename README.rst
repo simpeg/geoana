@@ -1,11 +1,7 @@
-| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <http://geoana.readthedocs.io/en/latest/>`_ |
+| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <http://geoana.simpeg.xyz/>`_ |
 
 geoana
 ======
-
-.. image:: https://readthedocs.org/projects/geoana/badge/?version=latest
-    :target: https://geoana.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
 
 .. image:: https://img.shields.io/github/license/simpeg/geoana.svg
     :target: https://github.com/simpeg/geoana/blob/master/LICENSE
@@ -23,8 +19,8 @@ Getting started
 
 - If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
 - `installing`_ `geoana`
-- Browse the `gallery <http://geoana.readthedocs.io/en/latest/auto_examples/>`_ for ideas and example usage
-- Read the `documentation <http://geoana.readthedocs.io/en/latest/>`_ for more information on the library and what it can do
+- Browse the `gallery <http://geoana.simpeg.xyz/auto_examples/index.html>`_ for ideas and example usage
+- Read the `documentation <http://geoana.simpeg.xyz/>`_ for more information on the library and what it can do
 
 .. - See the `contributor guide` and `code of conduct` if you are interested in helping develop or maintain geoana
 
