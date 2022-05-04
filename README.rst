@@ -1,4 +1,4 @@
-| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <https://geoana.simpeg.xyz>`_ |
+| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <http://geoana.simpeg.xyz/>`_ |
 
 geoana
 ======
@@ -32,7 +32,7 @@ Getting started
 - If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
 - `installing`_ `geoana`
 - Browse the `gallery <https://geoana.simpeg.xyz/auto_examples/>`_ for ideas and example usage
-- Read the `documentation <https://geoana.simpeg.xyz>`_ for more information on the library and what it can do
+- Read the `documentation <https://geoana.simpeg.xyz/>`_ for more information on the library and what it can do
 
 .. - See the `contributor guide` and `code of conduct` if you are interested in helping develop or maintain geoana
 
