@@ -12,11 +12,8 @@ def U_from_PointMass(
 
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
-    dx = XYZ[:, 0]-loc[0]
-    dy = XYZ[:, 1]-loc[1]
-    dz = XYZ[:, 2]-loc[2]
-
-    r = np.sqrt(dx**2. + dy**2. + dz**2.)
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
 
     u_g = (G * m) / r
     return u_g
@@ -28,14 +25,10 @@ def g_from_PointMass(
 
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
-    dx = XYZ[:, 0] - loc[0]
-    dy = XYZ[:, 1] - loc[1]
-    dz = XYZ[:, 2] - loc[2]
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
 
-    r_vec = np.array([dx, dy, dz])
-    r = np.sqrt(dx ** 2. + dy ** 2. + dz ** 2.)
-
-    g_vec = (G * m * r_vec) / r
+    g_vec = (G * m * r_vec) / r[..., None]
     return g_vec
 
 
@@ -45,12 +38,8 @@ def gtens_from_PointMass(
 
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
-    dx = XYZ[:, 0] - loc[0]
-    dy = XYZ[:, 1] - loc[1]
-    dz = XYZ[:, 2] - loc[2]
-
-    r_vec = np.array([dx, dy, dz])
-    r = np.sqrt(dx ** 2. + dy ** 2. + dz ** 2.)
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
 
     g_tens = (G * m * np.eye(3)) / r[..., None, None] ** 3 +\
              (3 * r_vec[..., None] * r_vec[..., None, :]) / r[..., None, None] ** 5

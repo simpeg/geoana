@@ -87,7 +87,37 @@ class PointMass:
         -------
         numpy.ndarray
             gravitational potential at point mass location xyz
+
+        Examples
+        --------
+        Here, we define a point mass with mass=1kg and plot the gravitational
+        potential as a function of distance.
+
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> from geoana.gravity import PointMass
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+
+
+        Define the point mass.
+
+        >>> location = np.r_[0., 0., 0.]
+        >>> mass = 1.0
+        >>> simulation = PointMass(
+        >>>     mass=mass, location=location
+        >>> )
+
+        Now we create a set of gridded locations and compute the gravitational potential.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> u = simulation.gravitational_potential(xyz)
+
+        Finally, we plot the gravitational potential as a function of distance.
+
+        >>> plot2Ddata(xyz, u)
         """
+
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
         u_g = (G * self.mass) / r
@@ -111,10 +141,39 @@ class PointMass:
         -------
         (..., 3) numpy.ndarray
             gravitational field at point mass location xyz
+
+        Examples
+        --------
+        Here, we define a point mass with mass=1kg and plot the gravitational
+        field as a function of distance.
+
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> from geoana.gravity import PointMass
+        >>> from geoana.utils import ndgrid
+
+        Define the point mass.
+
+        >>> location = np.r_[0., 0., 0.]
+        >>> mass = 1.0
+        >>> simulation = PointMass(
+        >>>     mass=mass, location=location
+        >>> )
+
+        Now we create a set of gridded locations and compute the gravitational field.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> g = simulation.gravitational_field(xyz)
+
+        Finally, we plot the gravitational field lines.
+
+        >>> plt.quiver(xyz, u)
+        >>> plt.show()
         """
+
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
-        g_vec = (G * self.mass * r_vec) / r
+        g_vec = (G * self.mass * r_vec) / r[..., None]
         return g_vec
 
     def gravitational_gradient(self, xyz):
