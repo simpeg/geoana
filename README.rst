@@ -3,9 +3,21 @@
 geoana
 ======
 
+.. image:: https://img.shields.io/pypi/v/geoana.svg
+    :target: https://pypi.python.org/pypi/geoana
+    :alt: Latest PyPI version
+
+.. image:: https://anaconda.org/conda-forge/geoana/badges/version.svg
+    :target: https://anaconda.org/conda-forge/geoana
+    :alt: Latest conda-forge version
+
 .. image:: https://img.shields.io/github/license/simpeg/geoana.svg
-    :target: https://github.com/simpeg/geoana/blob/master/LICENSE
+    :target: https://github.com/simpeg/geoana/blob/main/LICENSE
     :alt: MIT license
+
+.. image:: https://codecov.io/gh/simpeg/geoana/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/simpeg/geoana
+    :alt: Coverage status
 
 
 `geoana` is a collection of (mostly) analytic functions in geophysics. We take an object oriented
@@ -19,8 +31,8 @@ Getting started
 
 - If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
 - `installing`_ `geoana`
-- Browse the `gallery <http://geoana.simpeg.xyz/auto_examples/index.html>`_ for ideas and example usage
-- Read the `documentation <http://geoana.simpeg.xyz/>`_ for more information on the library and what it can do
+- Browse the `gallery <https://geoana.simpeg.xyz/auto_examples/>`_ for ideas and example usage
+- Read the `documentation <https://geoana.simpeg.xyz/>`_ for more information on the library and what it can do
 
 .. - See the `contributor guide` and `code of conduct` if you are interested in helping develop or maintain geoana
 
