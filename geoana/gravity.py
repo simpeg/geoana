@@ -36,9 +36,7 @@ class PointMass:
     @mass.setter
     def mass(self, value):
 
-        try:
-            value = float(value)
-        except TypeError:
+        if not isinstance(value, float):
             raise TypeError(f"mass must be a number, got {type(value)}")
 
         self._mass = value
@@ -57,15 +55,12 @@ class PointMass:
     @location.setter
     def location(self, vec):
 
-        try:
-            vec = np.asarray(vec, dtype=float)
-        except (TypeError, ValueError):
+        if not isinstance(vec, np.ndarray):
             raise TypeError(f"location must be array_like of float, got {type(vec)}")
+
         vec = np.squeeze(vec)
         if vec.shape != (3,):
-            raise ValueError(
-                f"location must be array_like with shape (3,), got {vec.shape}"
-            )
+            raise ValueError(f"location must be array_like with shape (3,), got {vec.shape}")
 
         self._location = vec
 
@@ -212,7 +207,7 @@ class PointMass:
         >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
         >>> g_tens = simulation.gravitational_gradient(xyz)
 
-        Finally, we plot the gravitational potential as a function of distance.
+        Finally, we plot the gravitational gradient.
 
         >>> plot2Ddata(xyz, g_tens)
         """

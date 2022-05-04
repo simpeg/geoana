@@ -54,13 +54,13 @@ class TestPointMass:
         assert np.all(pm.location == np.r_[0., 0., 0.])
 
     def test_errors(self):
-        pm = gravity.PointMass()
+        pm = gravity.PointMass(mass=1.0, location=None)
         with pytest.raises(TypeError):
-            raise TypeError(f"mass must be a number, got {type(pm.mass)}")
+            pm.mass = "string"
         with pytest.raises(TypeError):
-            raise TypeError(f"location must be array_like of float, got {type(pm.location)}")
+            pm.location = 3
         with pytest.raises(ValueError):
-            raise ValueError(f"location must be array_like with shape (3,), got {pm.location.shape}")
+            pm.location = np.array([2, 2])
 
     def test_gravitational_potential(self):
         mass = 1.0
