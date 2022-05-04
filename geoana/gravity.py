@@ -1,3 +1,20 @@
+"""
+======================================================
+Gravity (:mod:`geoana.gravity`)
+======================================================
+.. currentmodule:: geoana.gravity
+
+The ``geoana.gravity`` module contains simulation classes for solving
+basic gravitational problems.
+
+Simulation Classes
+==================
+.. autosummary::
+  :toctree: generated/
+
+  PointMass
+"""
+
 import numpy as np
 
 from scipy.constants import G
@@ -36,7 +53,9 @@ class PointMass:
     @mass.setter
     def mass(self, value):
 
-        if not isinstance(value, float):
+        try:
+            value = float(value)
+        except:
             raise TypeError(f"mass must be a number, got {type(value)}")
 
         self._mass = value
@@ -55,7 +74,9 @@ class PointMass:
     @location.setter
     def location(self, vec):
 
-        if not isinstance(vec, np.ndarray):
+        try:
+            vec = np.asarray(vec, dtype=float)
+        except:
             raise TypeError(f"location must be array_like of float, got {type(vec)}")
 
         vec = np.squeeze(vec)
@@ -92,7 +113,6 @@ class PointMass:
         >>> import matplotlib.pyplot as plt
         >>> from geoana.gravity import PointMass
         >>> from geoana.utils import ndgrid
-        >>> from geoana.plotting_utils import plot2Ddata
 
         Define the point mass.
 
@@ -102,14 +122,16 @@ class PointMass:
         >>>     mass=mass, location=location
         >>> )
 
-        Now we create a set of gridded locations and compute the gravitational potential.
+        Now we create a set of gridded locations, take the distances and compute the gravitational potential.
 
         >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> r = np.linalg.norm(xyz, axis=-1)
         >>> u = simulation.gravitational_potential(xyz)
 
         Finally, we plot the gravitational potential as a function of distance.
 
-        >>> plot2Ddata(xyz, u)
+        >>> plt.plot(r, u)
+        >>> plt.show()
         """
 
         r_vec = xyz - self.location
@@ -139,7 +161,7 @@ class PointMass:
         Examples
         --------
         Here, we define a point mass with mass=1kg and plot the gravitational
-        field.
+        field lines in the xy-plane.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -159,9 +181,17 @@ class PointMass:
         >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
         >>> g = simulation.gravitational_field(xyz)
 
+        Take the caretesian components of the location and gravitational field
+
+        >>> x = xyz[:, 0]
+        >>> y = xyz[:, 1]
+        >>> gx = g[:, 0]
+        >>> gy = g[:, 1]
+
         Finally, we plot the gravitational field lines.
 
-        >>> plot2Ddata(xyz, g)
+        >>> plt.quiver(x, y, gx, gy)
+        >>> plt.show()
         """
 
         r_vec = xyz - self.location
@@ -190,9 +220,9 @@ class PointMass:
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
+        >>> from matplotlib.patches import FancyArrowPatch
         >>> from geoana.gravity import PointMass
         >>> from geoana.utils import ndgrid
-        >>> from geoana.plotting_utils import plot2Ddata
 
         Define the point mass.
 
@@ -202,14 +232,26 @@ class PointMass:
         >>>     mass=mass, location=location
         >>> )
 
-        Now we create a set of gridded locations and compute the gravitational potential.
+        Now we create a set of gridded locations and compute the gravitational gradient.
 
         >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
-        >>> g_tens = simulation.gravitational_gradient(xyz)
+        >>> g_tens = simulation.gravitational_field(xyz)
 
-        Finally, we plot the gravitational gradient.
+        Take the caretesian components of the location and gravitational gradient
 
-        >>> plot2Ddata(xyz, g_tens)
+        >>> x = xyz[:, 0]
+        >>> y = xyz[:, 1]
+        >>> gx = g_tens[:, 0]
+        >>> gy = g_tens[:, 1]
+        >>> gz = g_tens[:, 2]
+
+        Finally, we plot the gravitational field lines.
+
+        >>> plt.quiver(x, y, gx, gy)
+        >>> plt.contour(x, y, gz, 10, cmap='jet', lw=2)
+        >>> arrow = FancyArrowPatch((35, 35), (35+34*0.2, 35+0), arrowstyle='simple', color='r', mutation_scale=10)
+        >>> FancyArrowPatch.add_patch(arrow)
+        >>> plt.show()
         """
 
         r_vec = xyz - self.location

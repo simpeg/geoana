@@ -60,7 +60,7 @@ class TestPointMass:
         with pytest.raises(TypeError):
             pm.location = 3
         with pytest.raises(ValueError):
-            pm.location = np.array([2, 2])
+            pm.location = ([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
     def test_gravitational_potential(self):
         mass = 1.0
