@@ -11,7 +11,6 @@ def U_from_PointMass(
 ):
 
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
-    # Check
 
     dx = XYZ[:, 0]-loc[0]
     dy = XYZ[:, 1]-loc[1]
@@ -28,7 +27,6 @@ def g_from_PointMass(
 ):
 
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
-    # Check
 
     dx = XYZ[:, 0] - loc[0]
     dy = XYZ[:, 1] - loc[1]
@@ -41,12 +39,11 @@ def g_from_PointMass(
     return g_vec
 
 
-def ggtens_from_PointMass(
+def gtens_from_PointMass(
         XYZ, loc, m
 ):
 
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
-    # Check
 
     dx = XYZ[:, 0] - loc[0]
     dy = XYZ[:, 1] - loc[1]
@@ -55,8 +52,9 @@ def ggtens_from_PointMass(
     r_vec = np.array([dx, dy, dz])
     r = np.sqrt(dx ** 2. + dy ** 2. + dz ** 2.)
 
-    gg_tens = (G * m * np.eye) / r ** 3 + (3 * np.outer(r_vec, r_vec)) / r ** 5
-    return gg_tens
+    g_tens = (G * m * np.eye(3)) / r[..., None, None] ** 3 +\
+             (3 * r_vec[..., None] * r_vec[..., None, :]) / r[..., None, None] ** 5
+    return g_tens
 
 
 class TestPointMass:
@@ -69,7 +67,11 @@ class TestPointMass:
     def test_errors(self):
         pm = gravity.PointMass()
         with pytest.raises(TypeError):
-            pm.mass = "string"
+            raise TypeError(f"mass must be a number, got {type(pm.mass)}")
+        with pytest.raises(TypeError):
+            raise TypeError(f"location must be array_like of float, got {type(pm.location)}")
+        with pytest.raises(ValueError):
+            raise ValueError(f"location must be array_like with shape (3,), got {pm.location.shape}")
 
     def test_gravitational_potential(self):
         mass = 1.0
@@ -112,12 +114,12 @@ class TestPointMass:
         pm = gravity.PointMass(
             mass=mass
         )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
+        x = np.linspace(-20., 20., 5)
+        y = np.linspace(-30., 30., 5)
+        z = np.linspace(-40., 40., 5)
         xyz = discretize.utils.ndgrid([x, y, z])
 
-        gtenstest = ggtens_from_PointMass(
+        gtenstest = gtens_from_PointMass(
             xyz, pm.location, pm.mass
         )
 
