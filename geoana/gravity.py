@@ -79,9 +79,10 @@ class PointMass:
         except:
             raise TypeError(f"location must be array_like of float, got {type(vec)}")
 
-        if len(vec) != 3:
+        vec = np.squeeze(vec)
+        if vec.shape != (3,):
             raise ValueError(
-                f"location must be array_like with shape (3,), got {len(vec)}"
+                f"location must be array_like with shape (3,), got {vec.shape}"
             )
 
         self._location = vec
@@ -125,7 +126,7 @@ class PointMass:
 
         Now we create a set of gridded locations, take the distances and compute the gravitational potential.
 
-        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> xyz = ndgrid(np.linspace(-5, 5, 10), np.linspace(-5, 5, 10), np.array([0]))
         >>> r = np.linalg.norm(xyz, axis=-1)
         >>> u = simulation.gravitational_potential(xyz)
 
@@ -168,6 +169,7 @@ class PointMass:
         >>> import matplotlib.pyplot as plt
         >>> from geoana.gravity import PointMass
         >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
 
         Define the point mass.
 
@@ -182,15 +184,14 @@ class PointMass:
         >>> xyz = ndgrid(np.linspace(-5, 5, 10), np.linspace(-5, 5, 10), np.array([0]))
         >>> g = simulation.gravitational_field(xyz)
 
-        Take the caretesian components of the location and gravitational field
-
-        >>> x, y = ndgrid(np.linspace(-5, 5, 10), np.linspace(-5, 5, 10), vector=false)
-
         Finally, we plot the gravitational field lines.
 
-        >>> plt.quiver(x, y, g)
-        >>> plt.grid()
-        >>> plt.show()
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
+        >>> plot2Ddata(xyz[:, 0::2], g[:, 0::2], ax=ax, vec=True, scale='log')
+        >>> ax.set_xlabel('x')
+        >>> ax.set_ylabel('y')
+        >>> ax.set_title('Magnetic field at y=0')
         """
 
         r_vec = xyz - self.location
@@ -236,21 +237,15 @@ class PointMass:
         >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
         >>> g_tens = simulation.gravitational_field(xyz)
 
-        Take the caretesian components of the location and gravitational gradient
-
-        >>> x = xyz[:, 0]
-        >>> y = xyz[:, 1]
-        >>> gx = g_tens[:, 0]
-        >>> gy = g_tens[:, 1]
-        >>> gz = g_tens[:, 2]
-
         Finally, we plot the gravitational field lines.
 
-        >>> plt.quiver(x, y, gx, gy)
-        >>> plt.contour(x, y, gz, 10, cmap='jet', lw=2)
+        >>> fig, ax = plt.subplots(1, 1)
+        >>> ax.set_aspect(1)
+        >>> ax.plot(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), c='k')
+        >>> ax.quiver(xyz, g_tens, units='xy', scale=0.5, color='gray')
+        # >>> ax.contour(xyz, g_tens, 10, cmap='jet', lw=2)
         >>> arrow = FancyArrowPatch((35, 35), (35+34*0.2, 35+0), arrowstyle='simple', color='r', mutation_scale=10)
-        >>> FancyArrowPatch.add_patch(arrow)
-        >>> plt.show()
+        >>> ax.add_patch(arrow)
         """
 
         r_vec = xyz - self.location

@@ -57,12 +57,12 @@ class TestPointMass:
         pm = gravity.PointMass(mass=1.0, location=None)
         with pytest.raises(TypeError):
             pm.mass = "string"
-        with pytest.raises(TypeError):
-            pm.location = 3
         with pytest.raises(ValueError):
             pm.location = [0, 1, 2, 3]
         with pytest.raises(ValueError):
-            pm.location = [[0, 0, 1], [0, 1, 0]]
+            pm.location = [[0, 0, 1, 4], [0, 1, 0, 3]]
+        with pytest.raises(TypeError):
+            pm.location = ["string"]
 
     def test_gravitational_potential(self):
         mass = 1.0
