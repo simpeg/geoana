@@ -163,7 +163,7 @@ class PointMass:
         Examples
         --------
         Here, we define a point mass with mass=1kg and plot the gravitational
-        field lines in the xy-plane.
+        field lines in the xy-plane at z=0.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -191,7 +191,7 @@ class PointMass:
         >>> plot2Ddata(xyz[:, 0::2], g[:, 0::2], ax=ax, vec=True, scale='log')
         >>> ax.set_xlabel('x')
         >>> ax.set_ylabel('y')
-        >>> ax.set_title('Magnetic field at y=0')
+        >>> ax.set_title('Gravitational field at z=0')
         """
 
         r_vec = xyz - self.location
@@ -220,7 +220,6 @@ class PointMass:
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
-        >>> from matplotlib.patches import FancyArrowPatch
         >>> from geoana.gravity import PointMass
         >>> from geoana.utils import ndgrid
 
@@ -234,18 +233,25 @@ class PointMass:
 
         Now we create a set of gridded locations and compute the gravitational gradient.
 
-        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
-        >>> g_tens = simulation.gravitational_field(xyz)
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> g_tens = simulation.gravitational_gradient(xyz)
 
-        Finally, we plot the gravitational field lines.
+        Finally, we plot the gravitational gradient of each element of the 3 x 3 matrix.
 
-        >>> fig, ax = plt.subplots(1, 1)
-        >>> ax.set_aspect(1)
-        >>> ax.plot(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), c='k')
-        >>> ax.quiver(xyz, g_tens, units='xy', scale=0.5, color='gray')
-        # >>> ax.contour(xyz, g_tens, 10, cmap='jet', lw=2)
-        >>> arrow = FancyArrowPatch((35, 35), (35+34*0.2, 35+0), arrowstyle='simple', color='r', mutation_scale=10)
-        >>> ax.add_patch(arrow)
+        >>> fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12,6))
+        >>> ax1.set_aspect('equal')
+        >>> ax1.set_title('1')
+        >>> cf1 = ax1.contourf(xyz, xyz, g_tens[:,0,:], cmap='jet')
+        >>> fig.colorbar(cf1, ax=ax1)
+        >>> ax2.set_aspect('equal')
+        >>> ax2.set_title('2')
+        >>> cf2 = ax2.contourf(xyz, xyz, g_tens[:,1,:], cmap='jet')
+        >>> fig.colorbar(cf2, ax=ax2)
+        >>> ax3.set_aspect('equal')
+        >>> ax3.set_title('3')
+        >>> cf3 = ax3.contourf(xyz, xyz, g_tens[:,2,:], cmap='jet')
+        >>> fig.colorbar(cf3, ax=ax3)
+        >>> plt.show()
         """
 
         r_vec = xyz - self.location
