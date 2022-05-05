@@ -79,9 +79,10 @@ class PointMass:
         except:
             raise TypeError(f"location must be array_like of float, got {type(vec)}")
 
-        vec = np.squeeze(vec)
-        if vec.shape != (3,):
-            raise ValueError(f"location must be array_like with shape (3,), got {vec.shape}")
+        if len(vec) != 3:
+            raise ValueError(
+                f"location must be array_like with shape (3,), got {len(vec)}"
+            )
 
         self._location = vec
 
@@ -178,19 +179,17 @@ class PointMass:
 
         Now we create a set of gridded locations and compute the gravitational field.
 
-        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
+        >>> xyz = ndgrid(np.linspace(-5, 5, 10), np.linspace(-5, 5, 10), np.array([0]))
         >>> g = simulation.gravitational_field(xyz)
 
         Take the caretesian components of the location and gravitational field
 
-        >>> x = xyz[:, 0]
-        >>> y = xyz[:, 1]
-        >>> gx = g[:, 0]
-        >>> gy = g[:, 1]
+        >>> x, y = ndgrid(np.linspace(-5, 5, 10), np.linspace(-5, 5, 10), vector=false)
 
         Finally, we plot the gravitational field lines.
 
-        >>> plt.quiver(x, y, gx, gy)
+        >>> plt.quiver(x, y, g)
+        >>> plt.grid()
         >>> plt.show()
         """
 
