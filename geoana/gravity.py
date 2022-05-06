@@ -21,14 +21,17 @@ from scipy.constants import G
 
 
 class PointMass:
-    """Gravity of a point mass.
+    """Class for gravitational solutions for a point mass.
+
+    The ``PointMass`` class is used to analytically compute the gravitational
+    potentials, fields, and gradients for a point mass.
 
         Parameters
         ----------
-        mass : float, optional
-            Mass of the point particle in kg. Default is m = 1 kg
+        mass : float
+            Mass of the point particle (kg). Default is m = 1 kg
         location : array_like, optional
-            Location of the point mass in 3D space. Default is (0,0,0)
+            Location of the point mass in 3D space. Default is (0, 0, 0)
         """
 
     def __init__(self, mass=1.0, location=None, **kwargs):
@@ -67,7 +70,7 @@ class PointMass:
         Returns
         -------
         (3) numpy.ndarray of float
-            xyz point mass location
+            Location of the point mass.  Default = np.r_[0,0,0]
         """
         return self._location
 
@@ -90,7 +93,7 @@ class PointMass:
     def gravitational_potential(self, xyz):
         """
         Gravitational potential due to a point mass.  See Blakely, 1996
-        equation 3.4
+        equation 3.4.
 
         .. math::
 
@@ -99,12 +102,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            point mass location
+            Point mass location.
 
         Returns
         -------
         (..., ) numpy.ndarray
-            gravitational potential at point mass location xyz
+            Gravitational potential at point mass location xyz.
 
         Examples
         --------
@@ -144,7 +147,7 @@ class PointMass:
     def gravitational_field(self, xyz):
         """
         Gravitational field due to a point mass.  See Blakely, 1996
-        equation 3.3
+        equation 3.3.
 
         .. math::
 
@@ -153,12 +156,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            point mass location
+            Point mass location.
 
         Returns
         -------
         (..., 3) numpy.ndarray
-            gravitational field at point mass location xyz
+            Gravitational field at point mass location xyz.
 
         Examples
         --------
@@ -186,7 +189,10 @@ class PointMass:
 
         Finally, we plot the gravitational field lines.
 
-        >>> plt.quiver(xyz[:,0], xyz[:,1], g[:,0] g[:,1])
+        >>> plt.quiver(xyz[:,0], xyz[:,1], g[:,0], g[:,1])
+        >>> plt.xlabel('y')
+        >>> plt.ylabel('x')
+        >>> plt.title('Gravitational Field Lines at z=0')
         >>> plt.show()
         """
 
@@ -202,12 +208,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            point mass location
+            Point mass location.
 
         Returns
         -------
         (..., 3, 3) numpy.ndarray
-            gravitational gradient at point mass location xyz
+            Gravitational gradient at point mass location xyz.
 
         Examples
         --------
@@ -229,12 +235,12 @@ class PointMass:
 
         Now we create a set of gridded locations and compute the gravitational gradient.
 
-        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
         >>> g_tens = simulation.gravitational_gradient(xyz[None,...] * xyz[...,None,:])
 
-        Finally, we plot the gravitational gradient of each element of the 3 x 3 matrix.
+        Finally, we plot the gravitational gradient for each element of the 3 x 3 matrix.
 
-        >>> fig = plt.figure()
+        >>> fig = plt.figure(figsize=(15, 15))
         >>> gs = fig.add_gridspec(3, 3, hspace=0, wspace=0)
         >>> (ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = gs.subplots(sharex='col', sharey='row')
         >>> fig.suptitle('Gravitational Gradients')

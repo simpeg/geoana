@@ -79,6 +79,9 @@ class TestPointMass:
         )
 
         u = pm.gravitational_potential(xyz)
+        print(
+            "\n\nTesting Gravitational Potential U\n"
+        )
 
         np.testing.assert_equal(utest, u)
 
@@ -97,6 +100,9 @@ class TestPointMass:
         )
 
         g = pm.gravitational_field(xyz)
+        print(
+            "\n\nTesting Gravitational Field g\n"
+        )
 
         np.testing.assert_equal(gtest, g)
 
@@ -106,16 +112,19 @@ class TestPointMass:
             mass=mass
         )
         x = np.linspace(-20., 20., 5)
-        y = np.linspace(-30., 30., 5)
+        # y = np.linspace(-30., 30., 5)
         z = np.linspace(-40., 40., 5)
         xyz = discretize.utils.ndgrid([x, y, z])
 
-        gtenstest = gtens_from_PointMass(
+        g_tenstest = gtens_from_PointMass(
             xyz, pm.location, pm.mass
         )
 
-        gtens = pm.gravitational_gradient(xyz)
+        g_tens = pm.gravitational_gradient(xyz)
+        print(
+            "\n\nTesting Gravitational Gradient g_tens\n"
+        )
 
-        np.testing.assert_equal(gtenstest, gtens)
+        np.testing.assert_equal(g_tenstest, g_tens)
 
 
