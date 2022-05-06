@@ -129,13 +129,18 @@ class PointMass:
 
         Now we create a set of gridded locations, take the distances and compute the gravitational potential.
 
-        >>> xyz = ndgrid(np.linspace(-5, 5, 10), np.linspace(-5, 5, 10), np.array([0]))
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X) + 0.25
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> r = np.linalg.norm(xyz, axis=-1)
         >>> u = simulation.gravitational_potential(xyz)
 
         Finally, we plot the gravitational potential as a function of distance.
 
         >>> plt.plot(r, u)
+        >>> plt.xlabel('Distance from point mass')
+        >>> plt.ylabel('Gravitational potential')
+        >>> plt.title('Gravitational Potential as a function of distance from point mass')
         >>> plt.show()
         """
 
@@ -166,13 +171,11 @@ class PointMass:
         Examples
         --------
         Here, we define a point mass with mass=1kg and plot the gravitational
-        field lines in the xy-plane at z=0.
+        field lines in the xy-plane.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
         >>> from geoana.gravity import PointMass
-        >>> from geoana.utils import ndgrid
-        >>> from geoana.plotting_utils import plot2Ddata
 
         Define the point mass.
 
@@ -194,7 +197,7 @@ class PointMass:
         >>> plt.quiver(X, Y, g[:,:,0], g[:,:,1])
         >>> plt.xlabel('x')
         >>> plt.ylabel('y')
-        >>> plt.title('Gravitational Field Lines at z=0')
+        >>> plt.title('Gravitational Field Lines')
         >>> plt.show()
         """
 
@@ -225,7 +228,6 @@ class PointMass:
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
         >>> from geoana.gravity import PointMass
-        >>> from geoana.utils import ndgrid
 
         Define the point mass.
 
@@ -248,15 +250,15 @@ class PointMass:
         >>> gs = fig.add_gridspec(3, 3, hspace=0, wspace=0)
         >>> (ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = gs.subplots(sharex='col', sharey='row')
         >>> fig.suptitle('Gravitational Gradients')
-        >>> ax1.contourf(X, Y, g_tens[:,:,0,0], cmap='jet')
-        >>> ax2.contourf(X, Y, g_tens[:,:,0,1], cmap='jet')
-        >>> ax3.contourf(X, Y, g_tens[:,:,0,2], cmap='jet')
-        >>> ax4.contourf(X, Y, g_tens[:,:,1,0], cmap='jet')
-        >>> ax5.contourf(X, Y, g_tens[:,:,1,1], cmap='jet')
-        >>> ax6.contourf(X, Y, g_tens[:,:,1,2], cmap='jet')
-        >>> ax7.contourf(X, Y, g_tens[:,:,2,0], cmap='jet')
-        >>> ax8.contourf(X, Y, g_tens[:,:,2,1], cmap='jet')
-        >>> ax9.contourf(X, Y, g_tens[:,:,2,2], cmap='jet')
+        >>> ax1.contourf(X, Y, g_tens[:,:,0,0])
+        >>> ax2.contourf(X, Y, g_tens[:,:,0,1])
+        >>> ax3.contourf(X, Y, g_tens[:,:,0,2])
+        >>> ax4.contourf(X, Y, g_tens[:,:,1,0])
+        >>> ax5.contourf(X, Y, g_tens[:,:,1,1])
+        >>> ax6.contourf(X, Y, g_tens[:,:,1,2])
+        >>> ax7.contourf(X, Y, g_tens[:,:,2,0])
+        >>> ax8.contourf(X, Y, g_tens[:,:,2,1])
+        >>> ax9.contourf(X, Y, g_tens[:,:,2,2])
         >>> plt.show()
         """
 
