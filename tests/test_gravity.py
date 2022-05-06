@@ -41,8 +41,8 @@ def gtens_from_PointMass(
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
 
-    g_tens = (G * m * np.eye(3)) / r[..., None, None] ** 3 +\
-             (3 * r_vec[..., None] * r_vec[..., None, :]) / r[..., None, None] ** 5
+    g_tens = G * m * (np.eye(3) / r[..., None, None] ** 3 +
+                      (3 * r_vec[..., None] * r_vec[..., None, :]) / r[..., None, None] ** 5)
     return g_tens
 
 
