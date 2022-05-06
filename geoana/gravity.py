@@ -184,12 +184,14 @@ class PointMass:
 
         Now we create a set of gridded locations and compute the gravitational field.
 
-        >>> xyz = ndgrid(np.linspace(-5, 5, 10), np.linspace(-5, 5, 10), np.array([0]))
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X) + 0.25
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> g = simulation.gravitational_field(xyz)
 
         Finally, we plot the gravitational field lines.
 
-        >>> plt.quiver(xyz[:,0], xyz[:,1], g[:,0], g[:,1])
+        >>> plt.quiver(X, Y, g[:,:,0], g[:,:,1])
         >>> plt.xlabel('y')
         >>> plt.ylabel('x')
         >>> plt.title('Gravitational Field Lines at z=0')
@@ -198,7 +200,7 @@ class PointMass:
 
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
-        g_vec = (G * self.mass * r_vec) / r[..., None]
+        g_vec = -G * self.mass * r_vec / r[..., None] ** 3
         return g_vec
 
     def gravitational_gradient(self, xyz):
@@ -235,29 +237,31 @@ class PointMass:
 
         Now we create a set of gridded locations and compute the gravitational gradient.
 
-        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
-        >>> g_tens = simulation.gravitational_gradient(xyz[None,...] * xyz[...,None,:])
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X) + 0.25
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> g_tens = simulation.gravitational_gradient(xyz)
 
         Finally, we plot the gravitational gradient for each element of the 3 x 3 matrix.
 
-        >>> fig = plt.figure(figsize=(15, 15))
+        >>> fig = plt.figure()
         >>> gs = fig.add_gridspec(3, 3, hspace=0, wspace=0)
         >>> (ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = gs.subplots(sharex='col', sharey='row')
         >>> fig.suptitle('Gravitational Gradients')
-        >>> ax1.contourf(g_tens[:,:,0,0], cmap='jet')
-        >>> ax2.contourf(g_tens[:,:,0,1], cmap='jet')
-        >>> ax3.contourf(g_tens[:,:,0,2], cmap='jet')
-        >>> ax4.contourf(g_tens[:,:,1,0], cmap='jet')
-        >>> ax5.contourf(g_tens[:,:,1,1], cmap='jet')
-        >>> ax6.contourf(g_tens[:,:,1,2], cmap='jet')
-        >>> ax7.contourf(g_tens[:,:,2,0], cmap='jet')
-        >>> ax8.contourf(g_tens[:,:,2,1], cmap='jet')
-        >>> ax9.contourf(g_tens[:,:,2,2], cmap='jet')
+        >>> ax1.contourf(X, Y, g_tens[:,:,0,0], cmap='jet')
+        >>> ax2.contourf(X, Y, g_tens[:,:,0,1], cmap='jet')
+        >>> ax3.contourf(X, Y, g_tens[:,:,0,2], cmap='jet')
+        >>> ax4.contourf(X, Y, g_tens[:,:,1,0], cmap='jet')
+        >>> ax5.contourf(X, Y, g_tens[:,:,1,1], cmap='jet')
+        >>> ax6.contourf(X, Y, g_tens[:,:,1,2], cmap='jet')
+        >>> ax7.contourf(X, Y, g_tens[:,:,2,0], cmap='jet')
+        >>> ax8.contourf(X, Y, g_tens[:,:,2,1], cmap='jet')
+        >>> ax9.contourf(X, Y, g_tens[:,:,2,2], cmap='jet')
         >>> plt.show()
         """
 
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
-        g_tens = G * self.mass * (np.eye(3) / r[..., None, None] ** 3 +
-                                  (3 * r_vec[..., None] * r_vec[..., None, :]) / r[..., None, None] ** 5)
+        g_tens = -G * self.mass * (np.eye(3) / r[..., None, None] ** 3 -
+                                   3 * r_vec[..., None] * r_vec[..., None, :] / r[..., None, None] ** 5)
         return g_tens

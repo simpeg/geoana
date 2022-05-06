@@ -28,7 +28,7 @@ def g_from_PointMass(
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
 
-    g_vec = (G * m * r_vec) / r[..., None]
+    g_vec = -G * m * r_vec / r[..., None] ** 3
     return g_vec
 
 
@@ -41,8 +41,8 @@ def gtens_from_PointMass(
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
 
-    g_tens = G * m * (np.eye(3) / r[..., None, None] ** 3 +
-                      (3 * r_vec[..., None] * r_vec[..., None, :]) / r[..., None, None] ** 5)
+    g_tens = -G * m * (np.eye(3) / r[..., None, None] ** 3 -
+                       3 * r_vec[..., None] * r_vec[..., None, :] / r[..., None, None] ** 5)
     return g_tens
 
 
@@ -112,7 +112,7 @@ class TestPointMass:
             mass=mass
         )
         x = np.linspace(-20., 20., 5)
-        # y = np.linspace(-30., 30., 5)
+        y = np.linspace(-30., 30., 5)
         z = np.linspace(-40., 40., 5)
         xyz = discretize.utils.ndgrid([x, y, z])
 
