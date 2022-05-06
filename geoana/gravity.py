@@ -192,8 +192,8 @@ class PointMass:
         Finally, we plot the gravitational field lines.
 
         >>> plt.quiver(X, Y, g[:,:,0], g[:,:,1])
-        >>> plt.xlabel('y')
-        >>> plt.ylabel('x')
+        >>> plt.xlabel('x')
+        >>> plt.ylabel('y')
         >>> plt.title('Gravitational Field Lines at z=0')
         >>> plt.show()
         """
@@ -244,7 +244,7 @@ class PointMass:
 
         Finally, we plot the gravitational gradient for each element of the 3 x 3 matrix.
 
-        >>> fig = plt.figure()
+        >>> fig = plt.figure(figsize=(10, 10))
         >>> gs = fig.add_gridspec(3, 3, hspace=0, wspace=0)
         >>> (ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = gs.subplots(sharex='col', sharey='row')
         >>> fig.suptitle('Gravitational Gradients')
