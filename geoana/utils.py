@@ -12,6 +12,7 @@ commonly used within the code base.
 
   mkvc
   ndgrid
+  check_ndarray_dim
 
 """
 import numpy as np
@@ -151,3 +152,33 @@ def ndgrid(*args, **kwargs):
             return np.c_[X1, X2, X3]
         else:
             return XYZ[2], XYZ[1], XYZ[0]
+
+
+def check_ndarray_dim(xyz, dim=3, dtype=float):
+    """ Checks if the arguments are compatible with the expected dimensionality and type
+
+    If xyz is a list or tuple of arrays, this will attempt to stack the arrays along the
+    last dimension, ensuring all arrays are of consistent shapes with each other.
+
+    Parameters
+    ----------
+    xyz : (dim,) tuple of numpy.ndarray, or (..., dim) numpy.ndarray
+        The array to check
+    dim : int, optional
+        The expected dimensionality
+    dtype : DataType, optional
+        The requested data type for the array
+
+    Returns
+    -------
+    xyz : (..., dim) numpy.ndarray of `dtype`
+        The validated array
+    """
+    if isinstance(xyz, (tuple, list)):
+        xyz = np.stack(xyz, axis=-1)
+    xyz = np.asarray(xyz, dtype=dtype)
+    if xyz.shape[-1] != dim:
+        raise ValueError(
+            f"Unexpected dimensionality of array, expected {dim}, saw {xyz.shape[-1]}"
+        )
+    return xyz

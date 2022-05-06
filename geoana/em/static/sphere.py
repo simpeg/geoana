@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.constants import epsilon_0
+from geoana.utils import check_ndarray_dim
 
 
 class ElectrostaticSphere:
@@ -130,25 +131,6 @@ class ElectrostaticSphere:
 
         self._location = vec
 
-    def _check_XYZ(self, XYZ):
-        if len(XYZ) == 3:
-            x, y, z = XYZ
-            x = np.asarray(x, dtype=float)
-            y = np.asarray(y, dtype=float)
-            z = np.asarray(z, dtype=float)
-        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
-            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
-        else:
-            raise TypeError(
-                "XYZ must be either a length three tuple of each dimension, "
-                "or a numpy.ndarray of shape (..., 3)."
-                )
-        if not (x.shape == y.shape and x.shape == z.shape):
-            raise ValueError(
-                "x, y, z must all have the same shape"
-            )
-        return x, y, z
-
     def potential(self, XYZ, field='all'):
         """Compute the electric potential.
 
@@ -166,28 +148,25 @@ class ElectrostaticSphere:
         V : (..., ) np.ndarray
             If only requesting a single field.
         """
+        XYZ = check_ndarray_dim(XYZ)
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         E0 = self.amplitude
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
-        x0, y0, z0 = self.location
-        x, y, z = self._check_XYZ(XYZ)
-        x = x-x0
-        y = y-y0
-        z = z-z0
-        r = np.sqrt(x**2 + y**2 + z**2)
+        r_vec = XYZ - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
 
         if field != 'total':
-            Vp = -E0 * x
+            Vp = -E0 * r_vec[..., 0]
             if field == 'primary':
                 return Vp
 
         Vt = np.zeros_like(r)
         ind0 = r > self.radius
         # total potential outside the sphere
-        Vt[ind0] = -E0*x[ind0]*(1.-sig_cur*self.radius**3./r[ind0]**3.)
+        Vt[ind0] = -E0*r_vec[ind0, 0]*(1.-sig_cur*self.radius**3./r[ind0]**3.)
         # inside the sphere
-        Vt[~ind0] = -E0*x[~ind0]*3.*sig0/(sig1+2.*sig0)
+        Vt[~ind0] = -E0*r_vec[~ind0, 0]*3.*sig0/(sig1+2.*sig0)
 
         if field == 'total':
             return Vt
@@ -214,30 +193,26 @@ class ElectrostaticSphere:
         E : (..., 3) np.ndarray
             If only requesting a single field.
         """
+        XYZ = check_ndarray_dim(XYZ)
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         E0 = self.amplitude
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
-
-        x, y, z = self._check_XYZ(XYZ)
-        x0, y0, z0 = self.location
-        x = x-x0
-        y = y-y0
-        z = z-z0
-        r = np.sqrt(x**2 + y**2 + z**2)
+        r_vec = XYZ - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
 
         if field != 'total':
-            Ep = np.zeros((*x.shape, 3))
+            Ep = np.zeros_like(r_vec)
             Ep[..., 0] = E0
             if field == 'primary':
                 return Ep
 
-        Et = np.zeros((*x.shape, 3))
+        Et = np.zeros_like(r_vec)
         ind0 = r > self.radius
         # total field outside the sphere
-        Et[ind0, 0] = E0 + E0*self.radius**3./(r[ind0]**5.)*sig_cur*(2.*x[ind0]**2.-y[ind0]**2.-z[ind0]**2.)
-        Et[ind0, 1] = E0*self.radius**3./(r[ind0]**5.)*3.*x[ind0]*y[ind0]*sig_cur
-        Et[ind0, 2] = E0*self.radius**3./(r[ind0]**5.)*3.*x[ind0]*z[ind0]*sig_cur
+        Et[ind0, 0] = E0 + E0*self.radius**3./(r[ind0]**5.)*sig_cur*(2.*r_vec[ind0, 0]**2.-r_vec[ind0, 1]**2.-r_vec[ind0, 2]**2.)
+        Et[ind0, 1] = E0*self.radius**3./(r[ind0]**5.)*3.*r_vec[ind0, 0]*r_vec[ind0, 1]*sig_cur
+        Et[ind0, 2] = E0*self.radius**3./(r[ind0]**5.)*3.*r_vec[ind0, 0]*r_vec[ind0, 2]*sig_cur
         # inside the sphere
         Et[~ind0, 0] = 3.*sig0/(sig1+2.*sig0)*E0
 
@@ -266,19 +241,15 @@ class ElectrostaticSphere:
         J : (..., 3) np.ndarray
             If only requesting a single field.
         """
+        XYZ = check_ndarray_dim(XYZ)
 
         Et, Ep, Es = self.electric_field(XYZ, field='all')
         if field != 'total':
             Jp = self.sigma_background * Ep
             if field == 'primary':
                 return Jp
-
-        x, y, z = self._check_XYZ(XYZ)
-        x0, y0, z0 = self.location
-        x = x-x0
-        y = y-y0
-        z = z-z0
-        r = np.sqrt(x**2 + y**2 + z**2)
+        r_vec = XYZ - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
 
         sigma = np.full(r.shape, self.sigma_background)
         sigma[r <= self.radius] = self.sigma_sphere
@@ -308,18 +279,15 @@ class ElectrostaticSphere:
         -------
         rho: (..., ) np.ndarray
         """
+        XYZ = check_ndarray_dim(XYZ)
 
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
         Ep = self.electric_field(XYZ, field='primary')
 
-        x, y, z = self._check_XYZ(XYZ)
-        x0, y0, z0 = self.location
-        x = x-x0
-        y = y-y0
-        z = z-z0
-        r = np.sqrt(x**2 + y**2 + z**2)
+        r_vec = XYZ - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
 
         if dr is None:
             dr = 0.05 * self.radius
