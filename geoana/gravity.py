@@ -26,13 +26,13 @@ class PointMass:
     The ``PointMass`` class is used to analytically compute the gravitational
     potentials, fields, and gradients for a point mass.
 
-        Parameters
-        ----------
-        mass : float
-            Mass of the point particle (kg). Default is m = 1 kg
-        location : array_like, optional
-            Location of the point mass in 3D space. Default is (0, 0, 0)
-        """
+    Parameters
+    ----------
+    mass : float
+        Mass of the point particle (kg). Default is m = 1 kg
+    location : array_like, optional
+        Location of the point mass in 3D space (m). Default is (0, 0, 0)
+    """
 
     def __init__(self, mass=1.0, location=None, **kwargs):
 
@@ -70,7 +70,7 @@ class PointMass:
         Returns
         -------
         (3) numpy.ndarray of float
-            Location of the point mass.  Default = np.r_[0,0,0]
+            Location of the point mass in m.  Default = np.r_[0,0,0]
         """
         return self._location
 
@@ -102,12 +102,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location.
+            Point mass location in units m.
 
         Returns
         -------
         (..., ) numpy.ndarray
-            Gravitational potential at point mass location xyz.
+            Gravitational potential at point mass location xyz in units m^2/s^2.
 
         Examples
         --------
@@ -161,12 +161,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location.
+            Point mass location in units m.
 
         Returns
         -------
         (..., 3) numpy.ndarray
-            Gravitational field at point mass location xyz.
+            Gravitational field at point mass location xyz in units m/s^2.
 
         Examples
         --------
@@ -213,12 +213,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location.
+            Point mass location in units m.
 
         Returns
         -------
         (..., 3, 3) numpy.ndarray
-            Gravitational gradient at point mass location xyz.
+            Gravitational gradient at point mass location xyz in units 1/s^2.
 
         Examples
         --------
