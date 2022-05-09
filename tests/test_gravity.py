@@ -128,23 +128,132 @@ class TestPointMass:
         np.testing.assert_equal(g_tenstest, g_tens)
 
 
+def U_from_Sphere(
+    XYZ, loc, m, rho, radius
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    u_g = np.zeros_like(r)
+    ind0 = r > radius
+    u_g[ind0] = (G * m) / r
+    u_g[~ind0] = G * 2/3 * np.pi * (3 * radius ** 2 - r[ind0] ** 2)
+    return u_g
+
+
+def g_from_Sphere(
+        XYZ, loc, m, rho, radius
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    g_vec = np.zeros((*r.shape, 3, 3))
+    ind0 = r > radius
+    g_vec[ind0] = -G * m * r_vec / r[..., None] ** 3
+    g_vec[~ind0] = -G * 4 / 3 * np.pi * rho * r_vec
+    return g_vec
+
+
+def gtens_from_Sphere(
+        XYZ, loc, m, rho, radius
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    g_tens = np.zeros((*r.shape, 3, 3))
+    ind0 = r > radius
+    g_tens[ind0] = -G * m * (np.eye(3) / r[..., None, None] ** 3 -
+                             3 * r_vec[..., None] * r_vec[..., None, :] / r[..., None, None] ** 5)
+    g_tens[~ind0] = -G * 4 / 3 * np.pi * rho * np.eye(3)
+    return g_tens
+
+
 class TestSphere:
 
     def test_defaults(self):
-        pm = gravity.Sphere()
-        assert pm.radius == 1
-        assert pm.mass == 1
-        assert np.all(pm.location == np.r_[0., 0., 0.])
+        s = gravity.Sphere()
+        assert s.rho == 1
+        assert s.radius == 1
+        assert np.all(s.location == np.r_[0., 0., 0.])
 
     def test_errors(self):
-        pm = gravity.Sphere(radius=1.0, mass=1.0, location=None)
+        s = gravity.Sphere(rho=1.0, radius=1.0, location=None)
         with pytest.raises(ValueError):
-            pm.radius = -1
+            s.rho = -1
+        with pytest.raises(ValueError):
+            s.radius = -1
+        with pytest.raises(ValueError):
+            s.location = [0, 1, 2, 3]
+        with pytest.raises(ValueError):
+            s.location = [[0, 0, 1, 4], [0, 1, 0, 3]]
         with pytest.raises(TypeError):
-            pm.mass = "string"
-        with pytest.raises(ValueError):
-            pm.location = [0, 1, 2, 3]
-        with pytest.raises(ValueError):
-            pm.location = [[0, 0, 1, 4], [0, 1, 0, 3]]
-        with pytest.raises(TypeError):
-            pm.location = ["string"]
+            s.location = ["string"]
+
+    def test_gravitational_potential(self):
+        radius = 1.0
+        rho = 1.0
+        mass = 4 / 3 * np.pi * radius ** 3 * rho
+        location = [0., 0., 0.]
+        s = gravity.Sphere(
+            mass=mass,
+            radius=radius,
+            rho=rho,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        u1 = s.gravitational_potential((x, y, z))
+        u2 = s.gravitational_potential(xyz)
+        np.testing.assert_equal(u1, u2)
+
+    def test_gravitational_field(self):
+        radius = 1.0
+        rho = 1.0
+        mass = 4 / 3 * np.pi * radius ** 3 * rho
+        location = [0., 0., 0.]
+        s = gravity.Sphere(
+            mass=mass,
+            radius=radius,
+            rho=rho,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        g1 = s.gravitational_field((x, y, z))
+        g2 = s.gravitational_field(xyz)
+        np.testing.assert_equal(g1, g2)
+
+    def test_gravitational_gradient(self):
+        radius = 1.0
+        rho = 1.0
+        mass = 4 / 3 * np.pi * radius ** 3 * rho
+        location = [0., 0., 0.]
+        s = gravity.Sphere(
+            mass=mass,
+            radius=radius,
+            rho=rho,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        g_tens1 = s.gravitational_gradient((x, y, z))
+        g_tens2 = s.gravitational_gradient(xyz)
+        np.testing.assert_equal(g_tens1, g_tens2)

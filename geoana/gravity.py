@@ -277,20 +277,20 @@ class Sphere(PointMass):
 
     Parameters
     ----------
-    density : float
-        Density of sphere (m).  Default is r = 1 kg/m^3.
+    rho : float
+        Density of sphere (kg/m^3).  Default is :math:'\\rho = 1 \\frac{kg}{m^3}'.
     radius : float
         Radius of sphere (m).  Default is r = 1 m.
     mass : float
-        Mass of the sphere (kg). Default is m = 4/3*pi*R^3*rho kg.
+        Mass of the sphere (kg). Default is :math:`m = \\frac{4}{3} \\pi R^3 \\rho` kg.
     location : array_like, optional
         Center of the sphere (m). Default is (0, 0, 0).
     """
 
-    def __init__(self, density=1.0, radius=1.0, mass=1.0, location=None, **kwargs):
-        super().__init__(mass, location, **kwargs)
+    def __init__(self, rho=1.0, radius=1.0, location=None, **kwargs):
+        super().__init__(location, **kwargs)
         self.radius = radius
-        self.density = density
+        self.rho = rho
 
     @property
     def radius(self):
@@ -311,7 +311,7 @@ class Sphere(PointMass):
         self._radius = item
 
     @property
-    def density(self):
+    def rho(self):
         """Density of the sphere in kilogram over meters cubed.
 
         Returns
@@ -319,18 +319,36 @@ class Sphere(PointMass):
         float
             Density of the sphere in kilogram over meters cubed.
         """
-        return self.density
+        return self._rho
 
-    @density.setter
-    def density(self, item):
+    @rho.setter
+    def rho(self, item):
         item = float(item)
         if item < 0.0:
             raise ValueError('density must be non-negative')
-        self.density = item
+        self._rho = item
 
-    @PointMass.mass.getter
+    @property
     def mass(self):
+        """Mass of sphere in kg
+
+        Returns
+        -------
+        float
+            Mass of the sphere in kg
+        """
         return 4/3 * np.pi * self.radius ** 3 * self.density
+
+    @mass.setter
+    def mass(self, value):
+
+        try:
+            value = float(value)
+        except:
+            raise TypeError(f"mass must be a number, got {type(value)}")
+
+        rho = value * 4 / 3 * np.pi * self.radius ** 3
+        self.rho = rho
 
     def gravitational_potential(self, xyz):
         """
@@ -338,7 +356,13 @@ class Sphere(PointMass):
 
         .. math::
 
-            U(P) = \\gamma \\frac{m}{r}
+            r > R
+
+            \\phi (\\mathbf{r}) = \\gamma \\frac{m}{r}
+
+            r < R
+
+            \\phi (\\mathbf{r}) = G \\frac{2}{3} * \\pi \\rho (3R^2 - r^2)
 
         Parameters
         ----------
@@ -355,7 +379,7 @@ class Sphere(PointMass):
         r = np.linalg.norm(r_vec, axis=-1)
         u_g = np.zeros_like(r)
         ind0 = r > self.radius
-        u_g[ind0] = PointMass.gravitational_potential(xyz)
+        u_g[ind0] = super().gravitational_potential(xyz)
         u_g[~ind0] = G * 2/3 * np.pi * (3 * self.radius ** 2 - r[ind0] ** 2)
         return u_g
 
@@ -365,7 +389,13 @@ class Sphere(PointMass):
 
         .. math::
 
-            \\mathbf{g} = \\nabla U(P)
+            r > R
+
+            \\phi (\\mathbf{r}) = \\nabla \\phi (\\mathbf{r})
+
+            r < R
+
+            \\mathbf{g} (\\mathbf{r}) = - G \\frac{4}{3} \\pi \\rho \\mathbf{r}
 
         Parameters
         ----------
@@ -382,7 +412,7 @@ class Sphere(PointMass):
         r = np.linalg.norm(r_vec, axis=-1)
         g_vec = np.zeros((*r.shape, 3))
         ind0 = r > self.radius
-        g_vec[ind0] = PointMass.gravitational_field(xyz)
+        g_vec[ind0] = super().gravitational_field(xyz)
         g_vec[~ind0] = -G * 4/3 * np.pi * self.density * r_vec
         return g_vec
 
@@ -405,6 +435,6 @@ class Sphere(PointMass):
         r = np.linalg.norm(r_vec, axis=-1)
         g_tens = np.zeros((*r.shape, 3, 3))
         ind0 = r > self.radius
-        g_tens[ind0] = PointMass.gravitational_gradient(xyz)
+        g_tens[ind0] = super().gravitational_gradient(xyz)
         g_tens[~ind0] = -G * 4/3 * np.pi * self.density * np.eye(3)
         return g_tens
