@@ -13,6 +13,7 @@ Simulation Classes
   :toctree: generated/
 
   PointMass
+  Sphere
 """
 
 import numpy as np
@@ -70,7 +71,7 @@ class PointMass:
         Returns
         -------
         (3) numpy.ndarray of float
-            Location of the point mass in m.  Default = np.r_[0,0,0]
+            Location of the point mass in meters.  Default = np.r_[0,0,0]
         """
         return self._location
 
@@ -266,3 +267,148 @@ class PointMass:
         g_tens = -G * self.mass * (np.eye(3) / r[..., None, None] ** 3 -
                                    3 * r_vec[..., None] * r_vec[..., None, :] / r[..., None, None] ** 5)
         return g_tens
+
+
+class Sphere:
+    """Class for gravitational solutions for a sphere.
+
+    The ``Sphere`` class is used to analytically compute the gravitational
+    potentials, fields, and gradients for a sphere.
+
+    Parameters
+    ----------
+    radius : float
+        Radius of sphere (m).
+    mass : float
+        Mass of the sphere (kg). Default is m = 1 kg.
+    location : array_like, optional
+        Center of the sphere (m). Default is (0, 0, 0).
+    """
+
+    def __init__(self, radius, mass=1.0, location=None, **kwargs):
+
+        self.radius = radius
+        self.mass = mass
+        if location is None:
+            location = np.r_[0, 0, 0]
+        self.location = location
+        super().__init__(**kwargs)
+
+    @property
+    def radius(self):
+        """Radius of the sphere in meters
+
+        Returns
+        -------
+        float
+            Radius of the sphere in meters
+        """
+        return self._radius
+
+    @radius.setter
+    def radius(self, item):
+        item = float(item)
+        if item < 0.0:
+            raise ValueError('radius must be non-negative')
+        self._radius = item
+
+    @property
+    def mass(self):
+        """Mass of the point particle in kg
+
+        Returns
+        -------
+        float
+            Mass of the point particle in kg
+        """
+        return self._mass
+
+    @mass.setter
+    def mass(self, value):
+
+        try:
+            value = float(value)
+        except:
+            raise TypeError(f"mass must be a number, got {type(value)}")
+
+        self._mass = value
+
+    @property
+    def location(self):
+        """Location of the point mass
+
+        Returns
+        -------
+        (3) numpy.ndarray of float
+            Location of the point mass in meters.  Default = np.r_[0,0,0]
+        """
+        return self._location
+
+    @location.setter
+    def location(self, vec):
+
+        try:
+            vec = np.asarray(vec, dtype=float)
+        except:
+            raise TypeError(f"location must be array_like of float, got {type(vec)}")
+
+        vec = np.squeeze(vec)
+        if vec.shape != (3,):
+            raise ValueError(
+                f"location must be array_like with shape (3,), got {vec.shape}"
+            )
+
+        self._location = vec
+
+    def gravitational_potential(self, xyz):
+        """
+        Gravitational potential due to a sphere.
+
+        .. math::
+
+            U(P) = \\gamma \\frac{m}{r}
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Center of sphere in units m.
+
+        Returns
+        -------
+        (..., ) numpy.ndarray
+            Gravitational potential at sphere location xyz in units m^2/s^2.
+        """
+
+    def gravitational_field(self, xyz):
+        """
+        Gravitational field due to a sphere.
+
+        .. math::
+
+            \\mathbf{g} = \\nabla U(P)
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Center of sphere in units m.
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            Gravitational field at sphere location xyz in units m/s^2.
+        """
+
+    def gravitational_gradient(self, xyz):
+        """
+        Gravitational gradient for a sphere.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Center of sphere in units m.
+
+        Returns
+        -------
+        (..., 3, 3) numpy.ndarray
+            Gravitational gradient at sphere location xyz in units 1/s^2.
+        """
