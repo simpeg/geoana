@@ -128,3 +128,23 @@ class TestPointMass:
         np.testing.assert_equal(g_tenstest, g_tens)
 
 
+class TestSphere:
+
+    def test_defaults(self):
+        pm = gravity.Sphere()
+        assert pm.radius == 1
+        assert pm.mass == 1
+        assert np.all(pm.location == np.r_[0., 0., 0.])
+
+    def test_errors(self):
+        pm = gravity.Sphere(radius=1.0, mass=1.0, location=None)
+        with pytest.raises(ValueError):
+            pm.radius = -1
+        with pytest.raises(TypeError):
+            pm.mass = "string"
+        with pytest.raises(ValueError):
+            pm.location = [0, 1, 2, 3]
+        with pytest.raises(ValueError):
+            pm.location = [[0, 0, 1, 4], [0, 1, 0, 3]]
+        with pytest.raises(TypeError):
+            pm.location = ["string"]

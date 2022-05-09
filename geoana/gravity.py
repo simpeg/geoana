@@ -269,7 +269,7 @@ class PointMass:
         return g_tens
 
 
-class Sphere:
+class Sphere(PointMass):
     """Class for gravitational solutions for a sphere.
 
     The ``Sphere`` class is used to analytically compute the gravitational
@@ -277,22 +277,20 @@ class Sphere:
 
     Parameters
     ----------
+    density : float
+        Density of sphere (m).  Default is r = 1 kg/m^3.
     radius : float
-        Radius of sphere (m).
+        Radius of sphere (m).  Default is r = 1 m.
     mass : float
-        Mass of the sphere (kg). Default is m = 1 kg.
+        Mass of the sphere (kg). Default is m = 4/3*pi*R^3*rho kg.
     location : array_like, optional
         Center of the sphere (m). Default is (0, 0, 0).
     """
 
-    def __init__(self, radius, mass=1.0, location=None, **kwargs):
-
+    def __init__(self, density=1.0, radius=1.0, mass=1.0, location=None, **kwargs):
+        super().__init__(mass, location, **kwargs)
         self.radius = radius
-        self.mass = mass
-        if location is None:
-            location = np.r_[0, 0, 0]
-        self.location = location
-        super().__init__(**kwargs)
+        self.density = density
 
     @property
     def radius(self):
@@ -313,52 +311,26 @@ class Sphere:
         self._radius = item
 
     @property
-    def mass(self):
-        """Mass of the point particle in kg
+    def density(self):
+        """Density of the sphere in kilogram over meters cubed.
 
         Returns
         -------
         float
-            Mass of the point particle in kg
+            Density of the sphere in kilogram over meters cubed.
         """
-        return self._mass
+        return self.density
 
-    @mass.setter
-    def mass(self, value):
+    @density.setter
+    def density(self, item):
+        item = float(item)
+        if item < 0.0:
+            raise ValueError('density must be non-negative')
+        self.density = item
 
-        try:
-            value = float(value)
-        except:
-            raise TypeError(f"mass must be a number, got {type(value)}")
-
-        self._mass = value
-
-    @property
-    def location(self):
-        """Location of the point mass
-
-        Returns
-        -------
-        (3) numpy.ndarray of float
-            Location of the point mass in meters.  Default = np.r_[0,0,0]
-        """
-        return self._location
-
-    @location.setter
-    def location(self, vec):
-
-        try:
-            vec = np.asarray(vec, dtype=float)
-        except:
-            raise TypeError(f"location must be array_like of float, got {type(vec)}")
-
-        vec = np.squeeze(vec)
-        if vec.shape != (3,):
-            raise ValueError(
-                f"location must be array_like with shape (3,), got {vec.shape}"
-            )
-
-        self._location = vec
+    @PointMass.mass.getter
+    def mass(self):
+        return 4/3 * np.pi * self.radius ** 3 * self.density
 
     def gravitational_potential(self, xyz):
         """
@@ -371,13 +343,21 @@ class Sphere:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Center of sphere in units m.
+            Locations to evaluate at in units m.
 
         Returns
         -------
         (..., ) numpy.ndarray
             Gravitational potential at sphere location xyz in units m^2/s^2.
         """
+
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
+        u_g = np.zeros_like(r)
+        ind0 = r > self.radius
+        u_g[ind0] = PointMass.gravitational_potential(xyz)
+        u_g[~ind0] = G * 2/3 * np.pi * (3 * self.radius ** 2 - r[ind0] ** 2)
+        return u_g
 
     def gravitational_field(self, xyz):
         """
@@ -390,13 +370,21 @@ class Sphere:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Center of sphere in units m.
+            Locations to evaluate at in units m.
 
         Returns
         -------
         (..., 3) numpy.ndarray
             Gravitational field at sphere location xyz in units m/s^2.
         """
+
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
+        g_vec = np.zeros((*r.shape, 3))
+        ind0 = r > self.radius
+        g_vec[ind0] = PointMass.gravitational_field(xyz)
+        g_vec[~ind0] = -G * 4/3 * np.pi * self.density * r_vec
+        return g_vec
 
     def gravitational_gradient(self, xyz):
         """
@@ -405,10 +393,18 @@ class Sphere:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Center of sphere in units m.
+            Locations to evaluate at in units m.
 
         Returns
         -------
         (..., 3, 3) numpy.ndarray
             Gravitational gradient at sphere location xyz in units 1/s^2.
         """
+
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)
+        g_tens = np.zeros((*r.shape, 3, 3))
+        ind0 = r > self.radius
+        g_tens[ind0] = PointMass.gravitational_gradient(xyz)
+        g_tens[~ind0] = -G * 4/3 * np.pi * self.density * np.eye(3)
+        return g_tens
