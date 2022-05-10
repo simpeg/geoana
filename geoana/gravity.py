@@ -362,7 +362,7 @@ class Sphere(PointMass):
 
             r < R
 
-            \\phi (\\mathbf{r}) = G \\frac{2}{3} * \\pi \\rho (3R^2 - r^2)
+            \\phi (\\mathbf{r}) = G \\frac{2}{3} \\pi \\rho (3R^2 - r^2)
 
         Parameters
         ----------
@@ -373,6 +373,40 @@ class Sphere(PointMass):
         -------
         (..., ) numpy.ndarray
             Gravitational potential at sphere location xyz in units m^2/s^2.
+
+        Examples
+        --------
+        Here, we define a sphere with mass m and plot the gravitational
+        potential as a function of distance.
+
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> from geoana.gravity import Sphere
+
+        Define the sphere.
+
+        >>> location = np.r_[0., 0., 0.]
+        >>> density = 1.0
+        >>> radius = 1.0
+        >>> simulation = Sphere(
+        >>>     location=location, density=density, radius=radius
+        >>> )
+
+        Now we create a set of gridded locations, take the distances and compute the gravitational potential.
+
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X) + 0.25
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> r = np.linalg.norm(xyz, axis=-1)
+        >>> u = simulation.gravitational_potential(xyz)
+
+        Finally, we plot the gravitational potential as a function of distance.
+
+        >>> plt.plot(r, u)
+        >>> plt.xlabel('Distance from sphere')
+        >>> plt.ylabel('Gravitational potential')
+        >>> plt.title('Gravitational Potential as a function of distance from sphere')
+        >>> plt.show()
         """
 
         r_vec = xyz - self.location
@@ -406,6 +440,39 @@ class Sphere(PointMass):
         -------
         (..., 3) numpy.ndarray
             Gravitational field at sphere location xyz in units m/s^2.
+
+        Examples
+        --------
+        Here, we define a sphere with mass m and plot the gravitational
+        field lines in the xy-plane.
+
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> from geoana.gravity import Sphere
+
+        Define the sphere.
+
+        >>> location = np.r_[0., 0., 0.]
+        >>> density = 1.0
+        >>> radius = 1.0
+        >>> simulation = Sphere(
+        >>>     location=location, density=density, radius=radius
+        >>> )
+
+        Now we create a set of gridded locations and compute the gravitational field.
+
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X) + 0.25
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> g = simulation.gravitational_field(xyz)
+
+        Finally, we plot the gravitational field lines.
+
+        >>> plt.quiver(X, Y, g[:,:,0], g[:,:,1])
+        >>> plt.xlabel('x')
+        >>> plt.ylabel('y')
+        >>> plt.title('Gravitational Field Lines')
+        >>> plt.show()
         """
 
         r_vec = xyz - self.location
@@ -429,6 +496,48 @@ class Sphere(PointMass):
         -------
         (..., 3, 3) numpy.ndarray
             Gravitational gradient at sphere location xyz in units 1/s^2.
+
+        Examples
+        --------
+        Here, we define a sphere with mass m and plot the gravitational
+        gradient.
+
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> from geoana.gravity import Sphere
+
+        Define the sphere.
+
+        >>> location = np.r_[0., 0., 0.]
+        >>> density = 1.0
+        >>> radius = 1.0
+        >>> simulation = Sphere(
+        >>>     location=location, density=density, radius=radius
+        >>> )
+
+        Now we create a set of gridded locations and compute the gravitational gradient.
+
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X) + 0.25
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> g_tens = simulation.gravitational_gradient(xyz)
+
+        Finally, we plot the gravitational gradient for each element of the 3 x 3 matrix.
+
+        >>> fig = plt.figure(figsize=(10, 10))
+        >>> gs = fig.add_gridspec(3, 3, hspace=0, wspace=0)
+        >>> (ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = gs.subplots(sharex='col', sharey='row')
+        >>> fig.suptitle('Gravitational Gradients')
+        >>> ax1.contourf(X, Y, g_tens[:,:,0,0])
+        >>> ax2.contourf(X, Y, g_tens[:,:,0,1])
+        >>> ax3.contourf(X, Y, g_tens[:,:,0,2])
+        >>> ax4.contourf(X, Y, g_tens[:,:,1,0])
+        >>> ax5.contourf(X, Y, g_tens[:,:,1,1])
+        >>> ax6.contourf(X, Y, g_tens[:,:,1,2])
+        >>> ax7.contourf(X, Y, g_tens[:,:,2,0])
+        >>> ax8.contourf(X, Y, g_tens[:,:,2,1])
+        >>> ax9.contourf(X, Y, g_tens[:,:,2,2])
+        >>> plt.show()
         """
 
         r_vec = xyz - self.location
