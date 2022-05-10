@@ -362,7 +362,7 @@ class Sphere(PointMass):
 
             r < R
 
-            \\phi (\\mathbf{r}) = G \\frac{2}{3} \\pi \\rho (3R^2 - r^2)
+            \\phi (\\mathbf{r}) = \\gamma \\frac{2}{3} \\pi \\rho (3R^2 - r^2)
 
         Parameters
         ----------
@@ -382,6 +382,7 @@ class Sphere(PointMass):
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
         >>> from geoana.gravity import Sphere
+        >>> from geoana.utils import ndgrid
 
         Define the sphere.
 
@@ -413,8 +414,8 @@ class Sphere(PointMass):
         r = np.linalg.norm(r_vec, axis=-1)
         u_g = np.zeros_like(r)
         ind0 = r > self.radius
-        u_g[ind0] = super().gravitational_potential(xyz)
-        u_g[~ind0] = G * 2/3 * np.pi * (3 * self.radius ** 2 - r[ind0] ** 2)
+        u_g[ind0] = G * self.mass / r[ind0]
+        u_g[~ind0] = G * 2/3 * np.pi * (3 * self.radius ** 2 - r[~ind0] ** 2)
         return u_g
 
     def gravitational_field(self, xyz):
