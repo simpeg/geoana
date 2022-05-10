@@ -17,7 +17,6 @@ Simulation Classes
 """
 
 import numpy as np
-
 from scipy.constants import G
 
 
@@ -45,12 +44,12 @@ class PointMass:
 
     @property
     def mass(self):
-        """Mass of the point particle in kg
+        """Mass of the point particle in kilograms.
 
         Returns
         -------
         float
-            Mass of the point particle in kg
+            Mass of the point particle in kilograms.
         """
         return self._mass
 
@@ -66,7 +65,7 @@ class PointMass:
 
     @property
     def location(self):
-        """Location of the point mass
+        """Location of the point mass.
 
         Returns
         -------
@@ -108,7 +107,7 @@ class PointMass:
         Returns
         -------
         (..., ) numpy.ndarray
-            Gravitational potential at point mass location xyz in units m^2/s^2.
+            Gravitational potential at point mass location xyz in units :math:`\\frac{m^2}{s^2}`.
 
         Examples
         --------
@@ -166,7 +165,7 @@ class PointMass:
         Returns
         -------
         (..., 3) numpy.ndarray
-            Gravitational field at point mass location xyz in units m/s^2.
+            Gravitational field at point mass location xyz in units :math:`\\frac{m}{s^2}`.
 
         Examples
         --------
@@ -197,7 +196,7 @@ class PointMass:
         >>> plt.quiver(X, Y, g[:,:,0], g[:,:,1])
         >>> plt.xlabel('x')
         >>> plt.ylabel('y')
-        >>> plt.title('Gravitational Field Lines')
+        >>> plt.title('Gravitational Field Lines for a Point Mass')
         >>> plt.show()
         """
 
@@ -218,7 +217,7 @@ class PointMass:
         Returns
         -------
         (..., 3, 3) numpy.ndarray
-            Gravitational gradient at point mass location xyz in units 1/s^2.
+            Gravitational gradient at point mass location xyz in units :math:`\\frac{1}{s^2}`.
 
         Examples
         --------
@@ -249,7 +248,7 @@ class PointMass:
         >>> fig = plt.figure(figsize=(10, 10))
         >>> gs = fig.add_gridspec(3, 3, hspace=0, wspace=0)
         >>> (ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = gs.subplots(sharex='col', sharey='row')
-        >>> fig.suptitle('Gravitational Gradients')
+        >>> fig.suptitle('Gravitational Gradients for a Point Mass')
         >>> ax1.contourf(X, Y, g_tens[:,:,0,0])
         >>> ax2.contourf(X, Y, g_tens[:,:,0,1])
         >>> ax3.contourf(X, Y, g_tens[:,:,0,2])
@@ -278,7 +277,7 @@ class Sphere(PointMass):
     Parameters
     ----------
     rho : float
-        Density of sphere (kg/m^3).  Default is :math:'\\rho = 1 \\frac{kg}{m^3}'.
+        Density of sphere :math:`\\frac{kg}{m^3}`.  Default is :math:`\\rho = 1 \\frac{kg}{m^3}`.
     radius : float
         Radius of sphere (m).
     mass : float
@@ -294,12 +293,12 @@ class Sphere(PointMass):
 
     @property
     def radius(self):
-        """Radius of the sphere in meters
+        """Radius of the sphere in meters.
 
         Returns
         -------
         float
-            Radius of the sphere in meters
+            Radius of the sphere in meters.
         """
         return self._radius
 
@@ -312,12 +311,12 @@ class Sphere(PointMass):
 
     @property
     def rho(self):
-        """Density of the sphere in kilogram over meters cubed.
+        """Density of the sphere in kilograms over meters cubed.
 
         Returns
         -------
         float
-            Density of the sphere in kilogram over meters cubed.
+            Density of the sphere in kilograms over meters cubed.
         """
         return self._rho
 
@@ -330,12 +329,12 @@ class Sphere(PointMass):
 
     @property
     def mass(self):
-        """Mass of sphere in kg
+        """Mass of sphere in kilograms.
 
         Returns
         -------
         float
-            Mass of the sphere in kg
+            Mass of the sphere in kilograms.
         """
         return 4 / 3 * np.pi * self.radius ** 3 * self.rho
 
@@ -372,7 +371,7 @@ class Sphere(PointMass):
         Returns
         -------
         (..., ) numpy.ndarray
-            Gravitational potential at sphere location xyz in units m^2/s^2.
+            Gravitational potential at sphere location xyz in units :math:`\\frac{m^2}{s^2}`.
 
         Examples
         --------
@@ -440,7 +439,7 @@ class Sphere(PointMass):
         Returns
         -------
         (..., 3) numpy.ndarray
-            Gravitational field at sphere location xyz in units m/s^2.
+            Gravitational field at sphere location xyz in units :math:`\\frac{m}{s^2}`.
 
         Examples
         --------
@@ -472,7 +471,7 @@ class Sphere(PointMass):
         >>> plt.quiver(X, Y, g[:,:,0], g[:,:,1])
         >>> plt.xlabel('x')
         >>> plt.ylabel('y')
-        >>> plt.title('Gravitational Field Lines')
+        >>> plt.title('Gravitational Field Lines for a Sphere')
         >>> plt.show()
         """
 
@@ -502,7 +501,7 @@ class Sphere(PointMass):
         Returns
         -------
         (..., 3, 3) numpy.ndarray
-            Gravitational gradient at sphere location xyz in units 1/s^2.
+            Gravitational gradient at sphere location xyz in units :math:`\\frac{1}{s^2}`.
 
         Examples
         --------
@@ -534,7 +533,7 @@ class Sphere(PointMass):
         >>> fig = plt.figure(figsize=(10, 10))
         >>> gs = fig.add_gridspec(3, 3, hspace=0, wspace=0)
         >>> (ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = gs.subplots(sharex='col', sharey='row')
-        >>> fig.suptitle('Gravitational Gradients')
+        >>> fig.suptitle('Gravitational Gradients for a Sphere')
         >>> ax1.contourf(X, Y, g_tens[:,:,0,0])
         >>> ax2.contourf(X, Y, g_tens[:,:,0,1])
         >>> ax3.contourf(X, Y, g_tens[:,:,0,2])
