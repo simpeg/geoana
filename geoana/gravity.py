@@ -551,6 +551,8 @@ class Sphere(PointMass):
         r = np.linalg.norm(r_vec, axis=-1)
         g_tens = np.zeros((*r.shape, 3, 3))
         ind0 = r > self.radius
+        ind1 = r == self.radius
         g_tens[ind0] = super().gravitational_gradient(xyz[ind0])
         g_tens[~ind0] = -G * 4 / 3 * np.pi * self.rho * np.eye(3)
+        g_tens[ind1] = np.NaN
         return g_tens
