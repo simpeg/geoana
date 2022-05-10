@@ -415,7 +415,7 @@ class Sphere(PointMass):
         u_g = np.zeros_like(r)
         ind0 = r > self.radius
         u_g[ind0] = super().gravitational_potential(xyz[ind0])
-        u_g[~ind0] = G * 2/3 * np.pi * (3 * self.radius ** 2 - r[~ind0] ** 2)
+        u_g[~ind0] = G * 2 / 3 * np.pi * self.rho * (3 * self.radius ** 2 - r[~ind0] ** 2)
         return u_g
 
     def gravitational_field(self, xyz):
@@ -426,11 +426,11 @@ class Sphere(PointMass):
 
             r > R
 
-            \\phi (\\mathbf{r}) = \\nabla \\phi (\\mathbf{r})
+            \\mathbf{g} (\\mathbf{r}) = \\nabla \\phi (\\mathbf{r})
 
             r < R
 
-            \\mathbf{g} (\\mathbf{r}) = - G \\frac{4}{3} \\pi \\rho \\mathbf{r}
+            \\mathbf{g} (\\mathbf{r}) = - \\gamma \\frac{4}{3} \\pi \\rho \\mathbf{r}
 
         Parameters
         ----------
@@ -481,12 +481,18 @@ class Sphere(PointMass):
         g_vec = np.zeros((*r.shape, 3))
         ind0 = r > self.radius
         g_vec[ind0] = super().gravitational_field(xyz[ind0])
-        g_vec[~ind0] = -G * 4/3 * np.pi * self.rho * r_vec[~ind0]
+        g_vec[~ind0] = -G * 4 / 3 * np.pi * self.rho * r_vec[~ind0]
         return g_vec
 
     def gravitational_gradient(self, xyz):
         """
         Gravitational gradient for a sphere.
+
+        .. math::
+
+            r < R
+
+            \\mathbf{T} (\\mathbf{r}) = -\\gamma \\frac{4}{3} \\pi \\rho \\mathbf{I}
 
         Parameters
         ----------
@@ -546,5 +552,5 @@ class Sphere(PointMass):
         g_tens = np.zeros((*r.shape, 3, 3))
         ind0 = r > self.radius
         g_tens[ind0] = super().gravitational_gradient(xyz[ind0])
-        g_tens[~ind0] = -G * 4/3 * np.pi * self.rho * np.eye(3)
+        g_tens[~ind0] = -G * 4 / 3 * np.pi * self.rho * np.eye(3)
         return g_tens

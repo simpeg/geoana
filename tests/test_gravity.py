@@ -140,7 +140,7 @@ def U_from_Sphere(
     u_g = np.zeros_like(r)
     ind0 = r > radius
     u_g[ind0] = (G * m) / r[ind0]
-    u_g[~ind0] = G * 2 / 3 * np.pi * (3 * radius ** 2 - r[~ind0] ** 2)
+    u_g[~ind0] = G * 2 / 3 * np.pi * rho * (3 * radius ** 2 - r[~ind0] ** 2)
     return u_g
 
 
