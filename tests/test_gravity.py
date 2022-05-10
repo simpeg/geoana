@@ -180,19 +180,24 @@ def gtens_from_Sphere(
 class TestSphere:
 
     def test_defaults(self):
-        s = gravity.Sphere()
+        radius = 1.0
+        rho = 1.0
+        s = gravity.Sphere(radius, rho)
         assert s.rho == 1
         assert s.radius == 1
+        assert s.mass == 4 / 3 * np.pi * s.radius ** 3 * s.rho
         assert np.all(s.location == np.r_[0., 0., 0.])
 
     def test_errors(self):
         s = gravity.Sphere(rho=1.0, radius=1.0, location=None)
+        with pytest.raises(TypeError):
+            s.mass = "string"
         with pytest.raises(ValueError):
             s.rho = -1
         with pytest.raises(ValueError):
             s.radius = -1
         with pytest.raises(ValueError):
-            s.location = [0, 1, 2, 3]
+            s.location = [0, 1, 2, 3, 4]
         with pytest.raises(ValueError):
             s.location = [[0, 0, 1, 4], [0, 1, 0, 3]]
         with pytest.raises(TypeError):

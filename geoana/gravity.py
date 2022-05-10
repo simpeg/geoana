@@ -280,17 +280,17 @@ class Sphere(PointMass):
     rho : float
         Density of sphere (kg/m^3).  Default is :math:'\\rho = 1 \\frac{kg}{m^3}'.
     radius : float
-        Radius of sphere (m).  Default is r = 1 m.
+        Radius of sphere (m).
     mass : float
         Mass of the sphere (kg). Default is :math:`m = \\frac{4}{3} \\pi R^3 \\rho` kg.
     location : array_like, optional
         Center of the sphere (m). Default is (0, 0, 0).
     """
 
-    def __init__(self, rho=1.0, radius=1.0, location=None, **kwargs):
-        super().__init__(location, **kwargs)
+    def __init__(self, radius, rho, location=None, **kwargs):
         self.radius = radius
         self.rho = rho
+        super().__init__(location=location, mass=self.mass, **kwargs)
 
     @property
     def radius(self):
@@ -337,7 +337,7 @@ class Sphere(PointMass):
         float
             Mass of the sphere in kg
         """
-        return 4/3 * np.pi * self.radius ** 3 * self.density
+        return 4 / 3 * np.pi * self.radius ** 3 * self.rho
 
     @mass.setter
     def mass(self, value):
@@ -347,8 +347,8 @@ class Sphere(PointMass):
         except:
             raise TypeError(f"mass must be a number, got {type(value)}")
 
-        rho = value * 4 / 3 * np.pi * self.radius ** 3
-        self.rho = rho
+        rho = value * 3 / (4 * np.pi * self.radius ** 3)
+        self._rho = rho
 
     def gravitational_potential(self, xyz):
         """
@@ -386,10 +386,10 @@ class Sphere(PointMass):
         Define the sphere.
 
         >>> location = np.r_[0., 0., 0.]
-        >>> density = 1.0
+        >>> rho = 1.0
         >>> radius = 1.0
         >>> simulation = Sphere(
-        >>>     location=location, density=density, radius=radius
+        >>>     location=location, rho=rho, radius=radius
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the gravitational potential.
@@ -453,10 +453,10 @@ class Sphere(PointMass):
         Define the sphere.
 
         >>> location = np.r_[0., 0., 0.]
-        >>> density = 1.0
+        >>> rho = 1.0
         >>> radius = 1.0
         >>> simulation = Sphere(
-        >>>     location=location, density=density, radius=radius
+        >>>     location=location, rho=rho, radius=radius
         >>> )
 
         Now we create a set of gridded locations and compute the gravitational field.
@@ -509,10 +509,10 @@ class Sphere(PointMass):
         Define the sphere.
 
         >>> location = np.r_[0., 0., 0.]
-        >>> density = 1.0
+        >>> rho = 1.0
         >>> radius = 1.0
         >>> simulation = Sphere(
-        >>>     location=location, density=density, radius=radius
+        >>>     location=location, rho=rho, radius=radius
         >>> )
 
         Now we create a set of gridded locations and compute the gravitational gradient.
