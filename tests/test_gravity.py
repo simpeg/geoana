@@ -155,8 +155,8 @@ def g_from_Sphere(
 
     g_vec = np.zeros((*r.shape, 3))
     ind0 = r > radius
-    g_vec[ind0] = -G * m * r_vec / r[..., None] ** 3
-    g_vec[~ind0] = -G * 4 / 3 * np.pi * rho * r_vec
+    g_vec[ind0] = -G * m * r_vec[ind0] / r[ind0, None] ** 3
+    g_vec[~ind0] = -G * 4 / 3 * np.pi * rho * r_vec[~ind0]
     return g_vec
 
 
@@ -171,8 +171,8 @@ def gtens_from_Sphere(
 
     g_tens = np.zeros((*r.shape, 3, 3))
     ind0 = r > radius
-    g_tens[ind0] = -G * m * (np.eye(3) / r[..., None, None] ** 3 -
-                             3 * r_vec[..., None] * r_vec[..., None, :] / r[..., None, None] ** 5)
+    g_tens[ind0] = -G * m * (np.eye(3) / r[ind0, None, None] ** 3 -
+                             3 * r_vec[ind0, None] * r_vec[ind0, None, :] / r[ind0, None, None] ** 5)
     g_tens[~ind0] = -G * 4 / 3 * np.pi * rho * np.eye(3)
     return g_tens
 
@@ -227,7 +227,6 @@ class TestSphere:
     def test_gravitational_field(self):
         radius = 1.0
         rho = 1.0
-        mass = 4 / 3 * np.pi * radius ** 3 * rho
         location = [0., 0., 0.]
         s = gravity.Sphere(
             radius=radius,
@@ -249,7 +248,6 @@ class TestSphere:
     def test_gravitational_gradient(self):
         radius = 1.0
         rho = 1.0
-        mass = 4 / 3 * np.pi * radius ** 3 * rho
         location = [0., 0., 0.]
         s = gravity.Sphere(
             radius=radius,
