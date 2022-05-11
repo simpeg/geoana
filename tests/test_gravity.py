@@ -195,8 +195,6 @@ class TestSphere:
         with pytest.raises(TypeError):
             s.mass = "string"
         with pytest.raises(ValueError):
-            s.rho = -1
-        with pytest.raises(ValueError):
             s.radius = -1
         with pytest.raises(ValueError):
             s.location = [0, 1, 2, 3, 4]

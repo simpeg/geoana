@@ -323,8 +323,6 @@ class Sphere(PointMass):
     @rho.setter
     def rho(self, item):
         item = float(item)
-        if item < 0.0:
-            raise ValueError('density must be non-negative')
         self._rho = item
 
     @property
