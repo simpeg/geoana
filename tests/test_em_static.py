@@ -412,6 +412,30 @@ def H_from_Sphere(
     h[~ind0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp
     return h
 
+def B_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    y = r_vec[:, 1]
+    z = r_vec[:, 2]
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    h = np.zeros((*r.shape, 3))
+    ind0 = r > radius
+    h[ind0, 0] = amp * radius ** 3. * mu_cur * \
+        (2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.) / (r[ind0] ** 5.)
+    h[ind0, 1] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * y[ind0] / (r[ind0] ** 5.)
+    h[ind0, 2] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * z[ind0] / (r[ind0] ** 5.)
+    h[~ind0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp
+
+    b = h * mu_0
+    return b
+
 
 class TestMagnetoStaticSphere:
 
@@ -496,3 +520,31 @@ class TestMagnetoStaticSphere:
 
         h = mss.magnetic_field(xyz)
         np.testing.assert_equal(htest, h)
+
+    def testB(self):
+        radius = 1.0
+        amplitude = 1.0
+        mu_s = 1.0
+        mu_b = 1.0
+        location = [0., 0., 0.]
+        mss = static.MagnetostaticSphere(
+            radius=radius,
+            amplitude=amplitude,
+            mu_background=mu_b,
+            mu_sphere=mu_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        btest = B_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
+        )
+        print(
+            "\n\nTesting Magnetic Flux Density B for Sphere\n"
+        )
+
+        b = mss.magnetic_flux_density(xyz)
+        np.testing.assert_equal(btest, b)

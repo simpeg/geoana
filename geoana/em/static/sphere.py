@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.constants import epsilon_0
+from scipy.constants import mu_0
 
 
 class ElectrostaticSphere:
@@ -570,6 +571,6 @@ class MagnetostaticSphere:
             Magnetic flux density for permeable sphere in a uniform magnetostatic field.
         """
 
-        return self.magnetic_field(xyz) * self.mu
+        return self.magnetic_field(xyz) * mu_0
 
 
