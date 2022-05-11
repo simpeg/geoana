@@ -220,6 +220,9 @@ class TestSphere:
         utest = U_from_Sphere(
             xyz, s.location, s.mass, s.rho, s.radius
         )
+        print(
+            "\n\nTesting Gravitational Potential U\n"
+        )
 
         u = s.gravitational_potential(xyz)
         np.testing.assert_equal(utest, u)
@@ -241,12 +244,13 @@ class TestSphere:
         gtest = g_from_Sphere(
             xyz, s.location, s.mass, s.rho, s.radius
         )
+        print(
+            "\n\nTesting Gravitational Field g\n"
+        )
 
         g = s.gravitational_field(xyz)
         np.testing.assert_equal(gtest, g)
 
-
-"""
     def test_gravitational_gradient(self):
         radius = 1.0
         rho = 1.0
@@ -264,7 +268,10 @@ class TestSphere:
         g_tens_test = gtens_from_Sphere(
             xyz, s.location, s.mass, s.rho, s.radius
         )
+        print(
+            "\n\nTesting Gravitational Gradient g_tens\n"
+        )
 
         g_tens = s.gravitational_gradient(xyz)
         np.testing.assert_equal(g_tens_test, g_tens)
-"""
+

@@ -277,7 +277,7 @@ class Sphere(PointMass):
     Parameters
     ----------
     rho : float
-        Density of sphere :math:`\\frac{kg}{m^3}`.  Default is :math:`\\rho = 1 \\frac{kg}{m^3}`.
+        Density of sphere (:math:`\\frac{kg}{m^3}`).
     radius : float
         Radius of sphere (m).
     mass : float
