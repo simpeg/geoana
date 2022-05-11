@@ -1,4 +1,4 @@
-| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <http://geoana.simpeg.xyz/>`_ |
+| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <https://geoana.simpeg.xyz/>`_ |
 
 geoana
 ======
