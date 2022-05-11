@@ -346,11 +346,11 @@ class MagnetostaticSphere:
         radius : float
             radius of sphere (m).
         mu_sphere : float
-            permeability of target sphere (S/m)
+            permeability of target sphere (H/m).
         mu_background : float
-            background permeability (S/m)
+            background permeability (H/m).
         amplitude : float, optional
-            amplitude of primary magnetic field along the :math:`\\hat{x}` direction (V/m).
+            amplitude of primary magnetic field along the :math:`\\hat{x}` direction (A/m).
             Default is 1.
         location : (3) array_like, optional
             Center of the sphere. Defaults is (0, 0, 0).
@@ -370,12 +370,12 @@ class MagnetostaticSphere:
 
     @property
     def mu_sphere(self):
-        """Electrical permeability of the sphere in S/m.
+        """Magnetic permeability of the sphere in H/m.
 
         Returns
         -------
         float
-            Electrical permeability of the sphere in S/m.
+            Magnetic permeability of the sphere in H/m.
         """
         return self._mu_sphere
 
@@ -388,12 +388,12 @@ class MagnetostaticSphere:
 
     @property
     def mu_background(self):
-        """Electrical permeability of the background in S/m.
+        """Magnetic permeability of the background in H/m.
 
         Returns
         -------
         float
-            Electrical permeability of the background in S/m.
+            Magnetic permeability of the background in H/m.
         """
         return self._mu_background
 
@@ -485,6 +485,10 @@ class MagnetostaticSphere:
     def potential(self, xyz):
         """Compute the magnetic potential.
 
+        .. math::
+
+            U(P) = \\gamma \\frac{m}{r}
+
         Parameters
         ----------
         xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
@@ -494,7 +498,7 @@ class MagnetostaticSphere:
         Returns
         -------
         V : (..., ) np.ndarray
-            Potential for permeable sphere in a uniform magnetostatic field.
+            Potential for permeable sphere in a uniform magnetostatic field in units T m.
         """
 
         mu0 = self.mu_background
@@ -518,7 +522,12 @@ class MagnetostaticSphere:
         return V
 
     def magnetic_field(self, xyz):
-        """Magnetic field for a permeable sphere in a uniform magnetostatic field.
+        """Magnetic field for a permeable sphere in a uniform magnetostatic field.  See Ward and Hohmann,
+        1988 Equation 6.69.
+
+        .. math::
+
+            \\mathbf{H} = - \\nabla U
 
         Parameters
         ----------
@@ -529,7 +538,7 @@ class MagnetostaticSphere:
         Returns
         -------
         H : (..., 3) np.ndarray
-            Magnetic field for permeable sphere in a uniform magnetostatic field.
+            Magnetic field for permeable sphere in a uniform magnetostatic field in units T.
         """
 
         mu0 = self.mu_background
@@ -559,6 +568,10 @@ class MagnetostaticSphere:
     def magnetic_flux_density(self, xyz):
         """Magnetic flux density for a permeable sphere in a uniform magnetostatic field.
 
+        .. math::
+
+            U(P) = \\gamma \\frac{m}{r}
+
         Parameters
         ----------
         xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
@@ -568,7 +581,7 @@ class MagnetostaticSphere:
         Returns
         -------
         B : (..., 3) np.ndarray
-            Magnetic flux density for permeable sphere in a uniform magnetostatic field.
+            Magnetic flux density for permeable sphere in a uniform magnetostatic field in units T.
         """
 
         return self.magnetic_field(xyz) * mu_0
