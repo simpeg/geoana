@@ -403,7 +403,7 @@ def H_from_Sphere(
     z = r_vec[:, 2]
     r = np.linalg.norm(r_vec, axis=-1)
 
-    h = np.zeros_like((*r.shape, 3))
+    h = np.zeros((*r.shape, 3))
     ind0 = r > radius
     h[ind0, 0] = amp * radius ** 3. * mu_cur * \
         (2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.) / (r[ind0] ** 5.)
@@ -470,11 +470,11 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(vtest, v)
 
     def testH(self):
-        radius = 2.0
-        amplitude = 2.0
-        mu_s = 2.0
-        mu_b = 2.0
-        location = [1., 0., 0.]
+        radius = 1.0
+        amplitude = 1.0
+        mu_s = 1.0
+        mu_b = 1.0
+        location = [0., 0., 0.]
         mss = static.MagnetostaticSphere(
             radius=radius,
             amplitude=amplitude,
