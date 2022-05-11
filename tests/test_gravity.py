@@ -80,7 +80,7 @@ class TestPointMass:
 
         u = pm.gravitational_potential(xyz)
         print(
-            "\n\nTesting Gravitational Potential U\n"
+            "\n\nTesting Gravitational Potential U for Point Mass\n"
         )
 
         np.testing.assert_equal(utest, u)
@@ -101,7 +101,7 @@ class TestPointMass:
 
         g = pm.gravitational_field(xyz)
         print(
-            "\n\nTesting Gravitational Field g\n"
+            "\n\nTesting Gravitational Field g for Point Mass\n"
         )
 
         np.testing.assert_equal(gtest, g)
@@ -122,7 +122,7 @@ class TestPointMass:
 
         g_tens = pm.gravitational_gradient(xyz)
         print(
-            "\n\nTesting Gravitational Gradient g_tens\n"
+            "\n\nTesting Gravitational Gradient g_tens for Point Mass\n"
         )
 
         np.testing.assert_equal(g_tenstest, g_tens)
@@ -221,7 +221,7 @@ class TestSphere:
             xyz, s.location, s.mass, s.rho, s.radius
         )
         print(
-            "\n\nTesting Gravitational Potential U\n"
+            "\n\nTesting Gravitational Potential U for Sphere\n"
         )
 
         u = s.gravitational_potential(xyz)
@@ -245,7 +245,7 @@ class TestSphere:
             xyz, s.location, s.mass, s.rho, s.radius
         )
         print(
-            "\n\nTesting Gravitational Field g\n"
+            "\n\nTesting Gravitational Field g for Sphere\n"
         )
 
         g = s.gravitational_field(xyz)
@@ -269,9 +269,9 @@ class TestSphere:
             xyz, s.location, s.mass, s.rho, s.radius
         )
         print(
-            "\n\nTesting Gravitational Gradient g_tens\n"
+            "\n\nTesting Gravitational Gradient g_tens for Sphere\n"
         )
 
         g_tens = s.gravitational_gradient(xyz)
-        np.testing.assert_equal(g_tens_test, g_tens)
+        np.testing.assert_allclose(g_tens_test, g_tens, atol=1E-9)
 

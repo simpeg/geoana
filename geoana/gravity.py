@@ -288,8 +288,8 @@ class Sphere(PointMass):
 
     def __init__(self, radius, rho, location=None, **kwargs):
         self.radius = radius
+        super().__init__(location=location, **kwargs)
         self.rho = rho
-        super().__init__(location=location, mass=self.mass, **kwargs)
 
     @property
     def radius(self):
