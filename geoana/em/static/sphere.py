@@ -483,17 +483,16 @@ class MagnetostaticSphere:
         return x, y, z
 
     def potential(self, xyz):
-        """Compute the magnetic potential.
+        """Magnetic potential for a permeable sphere in a uniform magnetostatic field.
 
         .. math::
 
-            U(P) = \\gamma \\frac{m}{r}
+
 
         Parameters
         ----------
-        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
-            locations to evaluate at. If a tuple, all
-            the numpy arrays must be the same shape.
+        xyz : (..., 3) numpy.ndarray
+            Locations to evaluate at in units m.
 
         Returns
         -------
@@ -531,9 +530,8 @@ class MagnetostaticSphere:
 
         Parameters
         ----------
-        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
-            locations to evaluate at. If a tuple, all
-            the numpy arrays must be the same shape.
+        xyz : (..., 3) numpy.ndarray
+            Locations to evaluate at in units m.
 
         Returns
         -------
@@ -570,13 +568,12 @@ class MagnetostaticSphere:
 
         .. math::
 
-            U(P) = \\gamma \\frac{m}{r}
+            \\mathbf{B} = \\mu \\mathbf{H}
 
         Parameters
         ----------
-        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
-            locations to evaluate at. If a tuple, all
-            the numpy arrays must be the same shape.
+        xyz : (..., 3) numpy.ndarray
+            Locations to evaluate at in units m.
 
         Returns
         -------
