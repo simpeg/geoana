@@ -1,3 +1,4 @@
+import pytest
 import unittest
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
@@ -370,3 +371,128 @@ class Test_StaticSphere(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def V_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    v = np.zeros_like(r)
+    ind0 = r > radius
+    v[ind0] = -amp * x[ind0] * (1. - mu_cur * radius ** 3. / r[ind0] ** 3.)
+    v[~ind0] = -amp * x[~ind0] * 3. * mu_b / (mu_s + 2. * mu_b)
+    return v
+
+def H_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    y = r_vec[:, 1]
+    z = r_vec[:, 2]
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    h = np.zeros_like((*r.shape, 3))
+    ind0 = r > radius
+    h[ind0, 0] = amp * radius ** 3. * mu_cur * \
+        (2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.) / (r[ind0] ** 5.)
+    h[ind0, 1] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * y[ind0] / (r[ind0] ** 5.)
+    h[ind0, 2] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * z[ind0] / (r[ind0] ** 5.)
+    h[~ind0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp
+    return h
+
+
+class TestMagnetoStaticSphere:
+
+    def test_defaults(self):
+        radius = 1.0
+        mu_sphere = 1.0
+        mu_background = 1.0
+        mss = static.MagnetostaticSphere(radius, mu_sphere, mu_background)
+        assert mss.amplitude == 1.0
+        assert mss.radius == 1.0
+        assert mss.mu_sphere == 1.0
+        assert mss.mu_background == 1.0
+        assert np.all(mss.location == np.r_[0., 0., 0.])
+
+    def test_errors(self):
+        mss = static.MagnetostaticSphere(amplitude=1.0, radius=1.0, mu_sphere=1.0, mu_background=1.0, location=None)
+        with pytest.raises(ValueError):
+            mss.mu_sphere = -1
+        with pytest.raises(ValueError):
+            mss.mu_background = -1
+        with pytest.raises(ValueError):
+            mss.radius = -2
+        with pytest.raises(ValueError):
+            mss.location = [0, 1, 2, 3, 4, 5]
+        with pytest.raises(ValueError):
+            mss.location = [[0, 0, 1, 4], [0, 1, 0, 3]]
+        with pytest.raises(TypeError):
+            mss.location = ["string"]
+
+    def testV(self):
+        radius = 1.0
+        amplitude = 1.0
+        mu_s = 1.0
+        mu_b = 1.0
+        location = [0., 0., 0.]
+        mss = static.MagnetostaticSphere(
+            radius=radius,
+            amplitude=amplitude,
+            mu_background=mu_b,
+            mu_sphere=mu_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        vtest = V_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
+        )
+        print(
+            "\n\nTesting Magnetic Potential V for Sphere\n"
+        )
+
+        v = mss.potential(xyz)
+        np.testing.assert_equal(vtest, v)
+
+    def testH(self):
+        radius = 2.0
+        amplitude = 2.0
+        mu_s = 2.0
+        mu_b = 2.0
+        location = [1., 0., 0.]
+        mss = static.MagnetostaticSphere(
+            radius=radius,
+            amplitude=amplitude,
+            mu_background=mu_b,
+            mu_sphere=mu_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        htest = H_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
+        )
+        print(
+            "\n\nTesting Magnetic Field H for Sphere\n"
+        )
+
+        h = mss.magnetic_field(xyz)
+        np.testing.assert_equal(htest, h)

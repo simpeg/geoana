@@ -330,3 +330,246 @@ class ElectrostaticSphere:
         rho[ind] = epsilon_0*3.*Ep[ind, 0]*sig_cur*x[ind]/(np.sqrt(x[ind]**2.+y[ind]**2.))
 
         return rho
+
+
+class MagnetostaticSphere:
+    """Class for magnetostatic solutions for a permeable sphere in a uniform magnetostatic field.
+
+        The ``MagnetostaticSphere`` class is used to analytically compute the magnetic
+        potentials, fields, and magnetic flux densities for a permeable sphere in a uniform magnetostatic field.
+        For this class, we assume a homogeneous primary magnetic field along the
+        :math:`\\hat{x}` direction.
+
+        Parameters
+        ----------
+        radius : float
+            radius of sphere (m).
+        mu_sphere : float
+            permeability of target sphere (S/m)
+        mu_background : float
+            background permeability (S/m)
+        amplitude : float, optional
+            amplitude of primary magnetic field along the :math:`\\hat{x}` direction (V/m).
+            Default is 1.
+        location : (3) array_like, optional
+            Center of the sphere. Defaults is (0, 0, 0).
+        """
+
+    def __init__(
+        self, radius, mu_sphere, mu_background, amplitude=1.0, location=None
+    ):
+
+        self.radius = radius
+        self.mu_sphere = mu_sphere
+        self.mu_background = mu_background
+        self.amplitude = amplitude
+        if location is None:
+            location = np.r_[0, 0, 0]
+        self.location = location
+
+    @property
+    def mu_sphere(self):
+        """Electrical permeability of the sphere in S/m.
+
+        Returns
+        -------
+        float
+            Electrical permeability of the sphere in S/m.
+        """
+        return self._mu_sphere
+
+    @mu_sphere.setter
+    def mu_sphere(self, item):
+        item = float(item)
+        if item <= 0.0:
+            raise ValueError('Permeability must be positive')
+        self._mu_sphere = item
+
+    @property
+    def mu_background(self):
+        """Electrical permeability of the background in S/m.
+
+        Returns
+        -------
+        float
+            Electrical permeability of the background in S/m.
+        """
+        return self._mu_background
+
+    @mu_background.setter
+    def mu_background(self, item):
+        item = float(item)
+        if item <= 0.0:
+            raise ValueError('Permeability must be positive')
+        self._mu_background = item
+
+    @property
+    def radius(self):
+        """Radius of the sphere in meters.
+
+        Returns
+        -------
+        float
+            Radius of the sphere in meters.
+        """
+        return self._radius
+
+    @radius.setter
+    def radius(self, item):
+        item = float(item)
+        if item < 0.0:
+            raise ValueError('radius must be non-negative')
+        self._radius = item
+
+    @property
+    def amplitude(self):
+        """Amplitude of the primary current density along the x-direction.
+
+        Returns
+        -------
+        float
+            Amplitude of the primary current density along the x-direction in :math:`A/m^2`.
+        """
+        return self._amplitude
+
+    @amplitude.setter
+    def amplitude(self, item):
+        self._amplitude = float(item)
+
+    @property
+    def location(self):
+        """Center of the sphere
+
+        Returns
+        -------
+        (3) numpy.ndarray of float
+            Center of the sphere. Default = np.r_[0,0,0]
+        """
+        return self._location
+
+    @location.setter
+    def location(self, vec):
+
+        try:
+            vec = np.atleast_1d(vec).astype(float)
+        except:
+            raise TypeError(f"location must be array_like, got {type(vec)}")
+
+        if len(vec) != 3:
+            raise ValueError(
+                f"location must be array_like with shape (3,), got {len(vec)}"
+            )
+
+        self._location = vec
+
+    def _check_xyz(self, xyz):
+        if len(xyz) == 3:
+            x, y, z = xyz
+            x = np.asarray(x, dtype=float)
+            y = np.asarray(y, dtype=float)
+            z = np.asarray(z, dtype=float)
+        elif isinstance(xyz, np.ndarray) and xyz.shape[-1] == 3:
+            x, y, z = xyz[..., 0], xyz[..., 1], xyz[..., 2]
+        else:
+            raise TypeError(
+                "xyz must be either a length three tuple of each dimension, "
+                "or a numpy.ndarray of shape (..., 3)."
+                )
+        if not (x.shape == y.shape and x.shape == z.shape):
+            raise ValueError(
+                "x, y, z must all have the same shape"
+            )
+        return x, y, z
+
+    def potential(self, xyz):
+        """Compute the magnetic potential.
+
+        Parameters
+        ----------
+        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+
+        Returns
+        -------
+        V : (..., ) np.ndarray
+            Potential for permeable sphere in a uniform magnetostatic field.
+        """
+
+        mu0 = self.mu_background
+        mu1 = self.mu_sphere
+        H0 = self.amplitude
+        mu_cur = (mu1 - mu0) / (mu1 + 2 * mu0)
+        x0, y0, z0 = self.location
+        x, y, z = self._check_xyz(xyz)
+        x = x-x0
+        y = y-y0
+        z = z-z0
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+
+        V = np.zeros_like(r)
+        ind0 = r > self.radius
+        # total potential outside the sphere
+        V[ind0] = -H0 * x[ind0] * (1. - mu_cur * self.radius ** 3. / r[ind0] ** 3.)
+        # inside the sphere
+        V[~ind0] = -H0 * x[~ind0] * 3. * mu0 / (mu1 + 2. * mu0)
+
+        return V
+
+    def magnetic_field(self, xyz):
+        """Magnetic field for a permeable sphere in a uniform magnetostatic field.
+
+        Parameters
+        ----------
+        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+
+        Returns
+        -------
+        H : (..., 3) np.ndarray
+            Magnetic field for permeable sphere in a uniform magnetostatic field.
+        """
+
+        mu0 = self.mu_background
+        mu1 = self.mu_sphere
+        H0 = self.amplitude
+        mu_cur = (mu1 - mu0) / (mu1 + 2 * mu0)
+
+        x, y, z = self._check_xyz(xyz)
+        x0, y0, z0 = self.location
+        x = x-x0
+        y = y-y0
+        z = z-z0
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+
+        H = np.zeros((*x.shape, 3))
+        ind0 = r > self.radius
+        # total field outside the sphere
+        H[ind0, 0] = H0 * self.radius ** 3. * mu_cur *\
+            (2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.) / (r[ind0] ** 5.)
+        H[ind0, 1] = H0 * self.radius ** 3. * mu_cur * 3. * x[ind0] * y[ind0] / (r[ind0] ** 5.)
+        H[ind0, 2] = H0 * self.radius ** 3. * mu_cur * 3. * x[ind0] * z[ind0] / (r[ind0] ** 5.)
+        # inside the sphere
+        H[~ind0, 0] = 3. * mu0 / (mu1 + 2. * mu0) * H0
+
+        return H
+
+    def magnetic_flux_density(self, xyz):
+        """Magnetic flux density for a permeable sphere in a uniform magnetostatic field.
+
+        Parameters
+        ----------
+        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
+            locations to evaluate at. If a tuple, all
+            the numpy arrays must be the same shape.
+
+        Returns
+        -------
+        B : (..., 3) np.ndarray
+            Magnetic flux density for permeable sphere in a uniform magnetostatic field.
+        """
+
+        return self.magnetic_field(xyz) * self.mu
+
+
