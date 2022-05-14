@@ -490,8 +490,8 @@ class TestMagnetoStaticSphere:
             "\n\nTesting Magnetic Potential V for Sphere\n"
         )
 
-        v = mss.potential(xyz)
-        np.testing.assert_equal(vtest, v)
+        vt, vp, vs = mss.potential(xyz, field='all')
+        np.testing.assert_equal(vtest, vt)
 
     def testH(self):
         radius = 1.0
@@ -518,8 +518,8 @@ class TestMagnetoStaticSphere:
             "\n\nTesting Magnetic Field H for Sphere\n"
         )
 
-        h = mss.magnetic_field(xyz)
-        np.testing.assert_equal(htest, h)
+        ht, hp, hs = mss.magnetic_field(xyz, field='all')
+        np.testing.assert_equal(htest, ht)
 
     def testB(self):
         radius = 1.0
@@ -546,5 +546,5 @@ class TestMagnetoStaticSphere:
             "\n\nTesting Magnetic Flux Density B for Sphere\n"
         )
 
-        b = mss.magnetic_flux_density(xyz)
-        np.testing.assert_equal(btest, b)
+        bt, bp, bs = mss.magnetic_flux_density(xyz, field='all')
+        np.testing.assert_equal(btest, bt)
