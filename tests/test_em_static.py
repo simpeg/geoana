@@ -381,13 +381,12 @@ def Vt_from_Sphere(
 
     mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
     r_vec = XYZ - loc
-    x = r_vec[:, 0]
     r = np.linalg.norm(r_vec, axis=-1)
 
-    vt = np.zeros_like(r)
+    vt = np.zeros((*r.shape, 3))
     ind0 = r > radius
-    vt[ind0] = -amp * x[ind0] * (1. - mu_cur * radius ** 3. / r[ind0] ** 3.)
-    vt[~ind0] = -amp * x[~ind0] * 3. * mu_b / (mu_s + 2. * mu_b)
+    vt[ind0] = -amp * r_vec[ind0] * (1. - mu_cur * radius ** 3. / r[ind0, None] ** 3.)
+    vt[~ind0] = -amp * r_vec[~ind0] * 3. * mu_b / (mu_s + 2. * mu_b)
     return vt
 
 def Vp_from_Sphere(
@@ -396,10 +395,8 @@ def Vp_from_Sphere(
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
     r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
 
-    vp = np.zeros_like(r)
-    vp[..., 0] = amp
+    vp = -amp * r_vec
     return vp
 
 def Vs_from_Sphere(
@@ -417,17 +414,12 @@ def Ht_from_Sphere(
 
     mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
     r_vec = XYZ - loc
-    x = r_vec[:, 0]
-    y = r_vec[:, 1]
-    z = r_vec[:, 2]
     r = np.linalg.norm(r_vec, axis=-1)
 
     ht = np.zeros((*r.shape, 3))
     ind0 = r > radius
-    ht[ind0, 0] = amp * radius ** 3. * mu_cur * \
-        (2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.) / (r[ind0] ** 5.)
-    ht[ind0, 1] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * y[ind0] / (r[ind0] ** 5.)
-    ht[ind0, 2] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * z[ind0] / (r[ind0] ** 5.)
+    ht[ind0] = amp * (1. - mu_cur * radius ** 3. / r[ind0, None] ** 3) +\
+        3. * amp * r_vec[ind0] * mu_cur * radius * r_vec[ind0] / r[ind0, None] ** 4
     ht[~ind0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp
     return ht
 
@@ -437,10 +429,8 @@ def Hp_from_Sphere(
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
     r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
 
-    hp = np.zeros((*r.shape, 3))
-    hp[..., 0] = amp
+    hp = amp
     return hp
 
 def Hs_from_Sphere(
