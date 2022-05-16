@@ -468,15 +468,16 @@ class TestMagnetoStaticSphere:
         radius = 1.0
         mu_sphere = 1.0
         mu_background = 1.0
-        mss = static.MagnetostaticSphere(radius, mu_sphere, mu_background)
-        assert mss.amplitude == 1.0
+        primary_field = np.r_[1., 1., 1.]
+        mss = static.MagnetostaticSphere(radius, mu_sphere, mu_background, primary_field)
+        assert np.all(mss.primary_field == np.r_[1., 1., 1.])
         assert mss.radius == 1.0
         assert mss.mu_sphere == 1.0
         assert mss.mu_background == 1.0
         assert np.all(mss.location == np.r_[0., 0., 0.])
 
     def test_errors(self):
-        mss = static.MagnetostaticSphere(amplitude=1.0, radius=1.0, mu_sphere=1.0, mu_background=1.0, location=None)
+        mss = static.MagnetostaticSphere(primary_field=np.r_[1., 1., 1.], radius=1.0, mu_sphere=1.0, mu_background=1.0, location=None)
         with pytest.raises(ValueError):
             mss.mu_sphere = -1
         with pytest.raises(ValueError):
@@ -489,6 +490,12 @@ class TestMagnetoStaticSphere:
             mss.location = [[0, 0, 1, 4], [0, 1, 0, 3]]
         with pytest.raises(TypeError):
             mss.location = ["string"]
+        with pytest.raises(ValueError):
+                mss.primary_field = [0, 1, 2, 3, 4, 5]
+        with pytest.raises(ValueError):
+                mss.primary_field = [[0, 0, 1, 4], [0, 1, 0, 3]]
+        with pytest.raises(TypeError):
+                mss.primary_field = ["string"]
 
     def testV(self):
         radius = 1.0

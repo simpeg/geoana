@@ -17,21 +17,20 @@ class ElectrostaticSphere:
         conductivity of target sphere (S/m)
     sigma_background : float
         background conductivity (S/m)
-    amplitude : float, optional
+    primary_field : (3) array_like, optional
         amplitude of primary electric field.
-        Default is 1.
     location : (3) array_like, optional
         Center of the sphere. Defaults is (0, 0, 0).
     """
 
     def __init__(
-        self, radius, sigma_sphere, sigma_background, amplitude=1.0, location=np.r_[0.,0.,0.]
+        self, radius, sigma_sphere, sigma_background, primary_field, location=np.r_[0.,0.,0.]
     ):
 
         self.radius = radius
         self.sigma_sphere = sigma_sphere
         self.sigma_background = sigma_background
-        self.amplitude = amplitude
+        self.primary_field = primary_field
         self.location = location
 
     @property
@@ -89,19 +88,29 @@ class ElectrostaticSphere:
         self._radius = item
 
     @property
-    def amplitude(self):
+    def primary_field(self):
         """Amplitude of the primary current density.
 
         Returns
         -------
-        float
+        (3) numpy.ndarray of float
             Amplitude of the primary current density.
         """
-        return self._amplitude
+        return self._primary_field
 
-    @amplitude.setter
-    def amplitude(self, item):
-        self._amplitude = float(item)
+    @primary_field.setter
+    def primary_field(self, vec):
+        try:
+            vec = np.atleast_1d(vec).astype(float)
+        except:
+            raise TypeError(f"primary_field must be array_like, got {type(vec)}")
+
+        if len(vec) != 3:
+            raise ValueError(
+                f"primary_field must be array_like with shape (3,), got {len(vec)}"
+            )
+
+        self._primary_field = vec
 
     @property
     def location(self):
@@ -182,9 +191,9 @@ class ElectrostaticSphere:
         >>> sigma_sphere = 10. ** -1
         >>> sigma_background = 10. ** -3
         >>> radius = 1.0
-        >>> amplitude = 1.0
+        >>> primary_field = np.r_[1., 1., 1.]
         >>> simulation = ElectrostaticSphere(
-        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, amplitude=amplitude
+        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=primary_field
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the magnetic potential.
@@ -219,7 +228,7 @@ class ElectrostaticSphere:
 
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
-        E0 = self.amplitude
+        E0 = self.primary_field
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
         x0, y0, z0 = self.location
         x, y, z = self._check_XYZ(xyz)
@@ -288,9 +297,9 @@ class ElectrostaticSphere:
         >>> sigma_sphere = 10. ** -1
         >>> sigma_background = 10. ** -3
         >>> radius = 1.0
-        >>> amplitude = 1.0
+        >>> primary_field = np.r_[1., 1., 1.]
         >>> simulation = ElectrostaticSphere(
-        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, amplitude=amplitude
+        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=primary_field
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the electric fields.
@@ -324,7 +333,7 @@ class ElectrostaticSphere:
 
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
-        E0 = self.amplitude
+        E0 = self.primary_field
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
 
         x, y, z = self._check_XYZ(xyz)
@@ -335,12 +344,12 @@ class ElectrostaticSphere:
         r_vec = xyz - self.location
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
-        Et = np.zeros((*x.shape, 3))
+        Et = np.zeros((*r.shape, 3))
         ind0 = r > self.radius
 
         # total field outside the sphere
         Et[ind0] = E0 * (1. - sig_cur * self.radius ** 3. / r[ind0, None] ** 3) +\
-            3. * E0 * r_vec[ind0] * sig_cur * self.radius * r_vec[ind0] / r[ind0, None] ** 4
+            3. * E0 * r_vec[ind0, 0, None] * sig_cur * self.radius * r_vec[ind0, 0, None] / r[ind0, None] ** 4
 
         # inside the sphere
         Et[~ind0] = 3. * sig0 / (sig1 + 2. * sig0) * E0
@@ -395,9 +404,9 @@ class ElectrostaticSphere:
         >>> sigma_sphere = 10. ** -1
         >>> sigma_background = 10. ** -3
         >>> radius = 1.0
-        >>> amplitude = 1.0
+        >>> primary_field = np.r_[1., 1., 1.]
         >>> simulation = ElectrostaticSphere(
-        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, amplitude=amplitude
+        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=primary_field
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the electric fields.
@@ -489,9 +498,9 @@ class ElectrostaticSphere:
         >>> sigma_sphere = 10. ** -1
         >>> sigma_background = 10. ** -3
         >>> radius = 1.0
-        >>> amplitude = 1.0
+        >>> primary_field = [1., 1., 1.]
         >>> simulation = ElectrostaticSphere(
-        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, amplitude=amplitude
+        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=primary_field
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the electric fields.
@@ -499,19 +508,19 @@ class ElectrostaticSphere:
         >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> jt = simulation.current_density(xyz, field='total')
-        >>> js = simulation.current_density(xyz, field='secondary')
+        >>> qt = simulation.charge_density(xyz, field='total')
+        >>> qs = simulation.charge_density(xyz, field='secondary')
 
         Finally, we plot the current densities for total and secondary fields.
 
         >>> fig, axs = plt.subplots(1,2,figsize=(18,6))
         >>> titles = ['Charge Accumulation']
 
-        >>> for ax, q, title in zip(axs, qs, titles):
+        >>> for ax, q, title in zip(axs, [qt, qs], titles):
         >>>     im = ax.pcolor(X, Y, q, shading='auto')
         >>>     cb1 = plt.colorbar(im, ax=ax)
         >>>     cb1.set_label(label= 'Charge Density ($C/m^2$)')
-        >>>     ax.add_patch(patches.Circle([0,0], R, fill=False, linestyle='--'))
+        >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
         >>>     ax.set_ylabel('Y coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
         >>>     ax.set_title(title)
@@ -559,21 +568,20 @@ class MagnetostaticSphere:
             permeability of target sphere (H/m).
         mu_background : float
             background permeability (H/m).
-        amplitude : float, optional
+        primary_field : (3) array_like, optional
             amplitude of primary magnetic field
-            Default is 1.
         location : (3) array_like, optional
             Center of the sphere. Defaults is (0, 0, 0).
         """
 
     def __init__(
-        self, radius, mu_sphere, mu_background, amplitude=1.0, location=None
+        self, radius, mu_sphere, mu_background, primary_field, location=None
     ):
 
         self.radius = radius
         self.mu_sphere = mu_sphere
         self.mu_background = mu_background
-        self.amplitude = amplitude
+        self.primary_field = primary_field
         if location is None:
             location = np.r_[0, 0, 0]
         self.location = location
@@ -633,19 +641,30 @@ class MagnetostaticSphere:
         self._radius = item
 
     @property
-    def amplitude(self):
+    def primary_field(self):
         """Amplitude of the primary current density.
 
         Returns
         -------
-        float
+        (3) numpy.ndarray of float
             Amplitude of the primary current density.
         """
-        return self._amplitude
+        return self._primary_field
 
-    @amplitude.setter
-    def amplitude(self, item):
-        self._amplitude = float(item)
+    @primary_field.setter
+    def primary_field(self, vec):
+
+        try:
+            vec = np.atleast_1d(vec).astype(float)
+        except:
+            raise TypeError(f"primary_field must be array_like, got {type(vec)}")
+
+        if len(vec) != 3:
+            raise ValueError(
+                f"primary_field must be array_like with shape (3,), got {len(vec)}"
+            )
+
+        self._primary_field = vec
 
     @property
     def location(self):
@@ -729,9 +748,9 @@ class MagnetostaticSphere:
         >>> mu_sphere = 10. ** -1
         >>> mu_background = 10. ** -3
         >>> radius = 1.0
-        >>> amplitude = 1.0
+        >>> primary_field = [1., 1., 1.]
         >>> simulation = MagnetostaticSphere(
-        >>>     location=location, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, amplitude=amplitude
+        >>>     location=location, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=primary_field
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the magnetic potential.
@@ -766,7 +785,7 @@ class MagnetostaticSphere:
 
         mu0 = self.mu_background
         mu1 = self.mu_sphere
-        H0 = self.amplitude
+        H0 = self.primary_field
         mu_cur = (mu1 - mu0) / (mu1 + 2 * mu0)
         x0, y0, z0 = self.location
         x, y, z = self._check_XYZ(xyz)
@@ -839,9 +858,9 @@ class MagnetostaticSphere:
         >>> mu_sphere = 10. ** -1
         >>> mu_background = 10. ** -3
         >>> radius = 1.0
-        >>> amplitude = 1.0
+        >>> primary_field = [1., 1., 1.]
         >>> simulation = MagnetostaticSphere(
-        >>>     location=location, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, amplitude=amplitude
+        >>>     location=location, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=primary_field
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the magnetic fields.
@@ -875,7 +894,7 @@ class MagnetostaticSphere:
 
         mu0 = self.mu_background
         mu1 = self.mu_sphere
-        H0 = self.amplitude
+        H0 = self.primary_field
         mu_cur = (mu1 - mu0) / (mu1 + 2 * mu0)
 
         x, y, z = self._check_XYZ(xyz)
@@ -948,9 +967,9 @@ class MagnetostaticSphere:
         >>> mu_sphere = 10. ** -1
         >>> mu_background = 10. ** -3
         >>> radius = 1.0
-        >>> amplitude = 1.0
+        >>> primary_field = [1., 1., 1.]
         >>> simulation = MagnetostaticSphere(
-        >>>     location=location, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, amplitude=amplitude
+        >>>     location=location, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=primary_field
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the magnetic flux densities.
