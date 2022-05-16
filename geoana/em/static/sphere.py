@@ -509,13 +509,15 @@ class MagnetostaticSphere:
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
+        >>> from matplotlib import patches
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> from geoana.em.static import MagnetostaticSphere
 
         Define the sphere.
 
         >>> location = np.r_[0., 0., 0.]
-        >>> mu_sphere = 1.0
-        >>> mu_background = 1.0
+        >>> mu_sphere = 10. ** -1
+        >>> mu_background = 10. ** -3
         >>> radius = 1.0
         >>> amplitude = 1.0
         >>> simulation = MagnetostaticSphere(
@@ -524,24 +526,30 @@ class MagnetostaticSphere:
 
         Now we create a set of gridded locations, take the distances and compute the magnetic potential.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-5, 5, 20), np.linspace(-5, 5, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> r = np.linalg.norm(xyz, axis=-1)
         >>> vt = simulation.potential(xyz, field='total')
-        >>> vp = simulation.potential(xyz, field='primary')
         >>> vs = simulation.potential(xyz, field='secondary')
 
-        Finally, we plot the magnetic potential as a function of distance.
+        Finally, we plot the magnetic potential for total and secondary fields.
 
-        >>> fig = plt.figure(figsize=(10, 10))
-        >>> gs = fig.add_gridspec(3, 1, hspace=0, wspace=0)
-        >>> (ax1, ax2, ax3) = gs.subplots(sharex='col', sharey='row')
-        >>> fig.suptitle('Magnetic Potential for a Sphere as a function of distance')
-        >>> ax1.plot(r, vt)
-        >>> ax2.plot(r, vp)
-        >>> ax3.plot(r, vs)
-        >>> plt.show()
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['Total Potential', 'Secondary Potential']
+        >>> for ax, V, title in zip(axs.flatten(), [vt, vs], titles):
+        >>>     im = ax.pcolor(X, Y, V, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label='Potential ($V$)')
+        >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
+        >>>     ax.set_title(title)
+        >>>     ax.set_ylabel('Y coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.plot(np.linspace(-5, 5, 20), np.linspace(-5, 5, 20), color='gray')
+        >>>     ax.legend(loc='best')
         """
 
         mu0 = self.mu_background
@@ -603,17 +611,19 @@ class MagnetostaticSphere:
         Examples
         --------
         Here, we define a sphere with permeability mu_sphere in a uniform magnetostatic field with permeability
-        mu_background and plot the magnetic field lines for total, primary and secondary field.
+        mu_background and plot the magnetic field lines for total and secondary field.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
+        >>> from matplotlib import patches
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> from geoana.em.static import MagnetostaticSphere
 
         Define the sphere.
 
         >>> location = np.r_[0., 0., 0.]
-        >>> mu_sphere = 1.0
-        >>> mu_background = 1.0
+        >>> mu_sphere = 10. ** -1
+        >>> mu_background = 10. ** -3
         >>> radius = 1.0
         >>> amplitude = 1.0
         >>> simulation = MagnetostaticSphere(
@@ -625,19 +635,27 @@ class MagnetostaticSphere:
         >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> vt = simulation.magnetic_field(xyz, field='total')
-        >>> vp = simulation.magnetic_field(xyz, field='primary')
-        >>> vs = simulation.magnetic_field(xyz, field='secondary')
+        >>> ht = simulation.magnetic_field(xyz, field='total')
+        >>> hs = simulation.magnetic_field(xyz, field='secondary')
 
         Finally, we plot the magnetic field lines.
 
-        >>> fig = plt.figure(figsize=(10, 10))
-        >>> gs = fig.add_gridspec(3, 1, hspace=0, wspace=0)
-        >>> (ax1, ax2, ax3) = gs.subplots(sharex='col', sharey='row')
-        >>> fig.suptitle('Magnetic Field Lines for a Sphere')
-        >>> ax1.quiver(X, Y, vt[:,:,0], vt[:,:,1])
-        >>> ax2.quiver(X, Y, vp[:,:,0], vp[:,:,1])
-        >>> ax3.quiver(X, Y, vs[:,:,0], vs[:,:,1])
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['Total Magnetic Field', 'Secondary Magnetic Field']
+        >>> for ax, H, title in zip(axs.flatten(), [ht, hs], titles):
+        >>>     H_amp = np.linalg.norm(H, axis=-1)
+        >>>     im = ax.pcolor(X, Y, H_amp, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Amplitude ($V/m$)')
+        >>>     ax.streamplot(X, Y, H[..., 0], H[..., 1], density=0.75)
+        >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
+        >>>     ax.set_ylabel('Y coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
         >>> plt.show()
         """
 
@@ -704,17 +722,19 @@ class MagnetostaticSphere:
         Examples
         --------
         Here, we define a sphere with permeability mu_sphere in a uniform magnetostatic field with permeability
-        mu_background and plot the magnetic flux densities for total, primary and secondary field.
+        mu_background and plot the magnetic flux densities for total and secondary field.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
+        >>> from matplotlib import patches
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> from geoana.em.static import MagnetostaticSphere
 
         Define the sphere.
 
         >>> location = np.r_[0., 0., 0.]
-        >>> mu_sphere = 1.0
-        >>> mu_background = 1.0
+        >>> mu_sphere = 10. ** -1
+        >>> mu_background = 10. ** -3
         >>> radius = 1.0
         >>> amplitude = 1.0
         >>> simulation = MagnetostaticSphere(
@@ -727,21 +747,26 @@ class MagnetostaticSphere:
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> bt = simulation.magnetic_flux_density(xyz, field='total')
-        >>> bp = simulation.magnetic_flux_density(xyz, field='primary')
         >>> bs = simulation.magnetic_flux_density(xyz, field='secondary')
 
-        Finally, we plot the magnetic flux densities for total, primary and secondary field.
+        Finally, we plot the magnetic flux densities for total and secondary field.
 
-        >>> fig = plt.figure(figsize=(10, 10))
-        >>> gs = fig.add_gridspec(3, 2, hspace=0, wspace=0)
-        >>> (ax1, ax2, ax3), (ax4, ax5, ax6) = gs.subplots(sharex='col', sharey='row')
-        >>> fig.suptitle('Magnetic Flux Densities for a Sphere')
-        >>> ax1.contourf(X, Y, bt[:,:,0])
-        >>> ax2.contourf(X, Y, bp[:,:,0])
-        >>> ax3.contourf(X, Y, bs[:,:,0])
-        >>> ax4.contourf(X, Y, bt[:,:,1])
-        >>> ax5.contourf(X, Y, bp[:,:,1])
-        >>> ax6.contourf(X, Y, bs[:,:,1])
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['Total Magnetic Flux Density', 'Secondary Magnetic Flux Density']
+        >>> for ax, B, title in zip(axs.flatten(), [bt, bs], titles):
+        >>>     B_amp = np.linalg.norm(B, axis=-1)
+        >>>     im = ax.pcolor(X, Y, B_amp, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Amplitude ($V/m$)')
+        >>>     ax.streamplot(X, Y, B[..., 0], B[..., 1], density=0.75)
+        >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
+        >>>     ax.set_ylabel('Y coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
         >>> plt.show()
         """
 
