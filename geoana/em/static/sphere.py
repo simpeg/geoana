@@ -149,7 +149,7 @@ class ElectrostaticSphere:
         return x, y, z
 
     def potential(self, xyz, field='all'):
-        """Compute the electric potential.
+        """Electric potential for a conductive sphere in a uniform electrostatic field.
 
         Parameters
         ----------
@@ -199,13 +199,15 @@ class ElectrostaticSphere:
         Finally, we plot the electric potential for total and secondary fields.
 
         >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
-        >>> titles = ['Total Electric Potential', 'Secondary Electric Potential']
+        >>> titles = ['Total Potential', 'Secondary Potential']
         >>> for ax, V, title in zip(axs.flatten(), [vt, vs], titles):
-        >>>     im = ax.pcolor(X, Y, V, shading='auto')
+        >>>     V_amp = np.linalg.norm(V, axis=-1)
+        >>>     im = ax.pcolor(X, Y, V_amp, shading='auto')
         >>>     divider = make_axes_locatable(ax)
         >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
         >>>     cb = plt.colorbar(im, cax=cax)
-        >>>     cb.set_label(label='Electric Potential ($V$)')
+        >>>     cb.set_label(label= 'Amplitude ($V/m$)')
+        >>>     ax.streamplot(X, Y, V[..., 0], V[..., 1], density=0.75)
         >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
         >>>     ax.set_ylabel('Y coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
@@ -227,7 +229,7 @@ class ElectrostaticSphere:
         r_vec = xyz - self.location
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
-        Vt = np.zeros_like(r)
+        Vt = np.zeros((*r.shape, 3))
         ind0 = r > self.radius
 
         # total potential outside the sphere
@@ -236,13 +238,17 @@ class ElectrostaticSphere:
         # inside the sphere
         Vt[~ind0] = -E0 * r_vec[~ind0] * 3. * sig0 / (sig1 + 2. * sig0)
 
+        # total field
         if field == 'total':
             return Vt
+
+        # primary field
         if field != 'total':
             Vp = -E0 * r_vec
             if field == 'primary':
                 return Vp
-        # field was not primary or total
+
+        # secondary field
         Vs = Vt - Vp
         if field == 'secondary':
             return Vs
@@ -339,13 +345,17 @@ class ElectrostaticSphere:
         # inside the sphere
         Et[~ind0] = 3. * sig0 / (sig1 + 2. * sig0) * E0
 
+        # total field
         if field == 'total':
             return Et
+
+        # primary field
         if field != 'total':
             Ep = E0
             if field == 'primary':
                 return Ep
-        # field was not primary or total
+
+        # secondary field
         Es = Et - Ep
         if field == 'secondary':
             return Es
@@ -367,15 +377,60 @@ class ElectrostaticSphere:
             If field == "all"
         J : (..., 3) np.ndarray
             If only requesting a single field.
+
+        Examples
+        --------
+        Here, we define a sphere with conductivity sigma_sphere in a uniform electrostatic field with conductivity
+        sigma_background and plot the current density for total and secondary field.
+
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> from matplotlib import patches
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
+        >>> from geoana.em.static import ElectrostaticSphere
+
+        Define the sphere.
+
+        >>> location = np.r_[0., 0., 0.]
+        >>> sigma_sphere = 10. ** -1
+        >>> sigma_background = 10. ** -3
+        >>> radius = 1.0
+        >>> amplitude = 1.0
+        >>> simulation = ElectrostaticSphere(
+        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, amplitude=amplitude
+        >>> )
+
+        Now we create a set of gridded locations, take the distances and compute the electric fields.
+
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X) + 0.25
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> jt = simulation.current_density(xyz, field='total')
+        >>> js = simulation.current_density(xyz, field='secondary')
+
+        Finally, we plot the current densities for total and secondary fields.
+
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['Total Current Density', 'Secondary Current Density']
+        >>> for ax, J, title in zip(axs.flatten(), [jt, js], titles):
+        >>>     J_amp = np.linalg.norm(J, axis=-1)
+        >>>     im = ax.pcolor(X, Y, J_amp, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Amplitude ($V/m$)')
+        >>>     ax.streamplot(X, Y, J[..., 0], J[..., 1], density=0.75)
+        >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
+        >>>     ax.set_ylabel('Y coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
+        >>> plt.show()
         """
 
         Et = self.electric_field(xyz, field='total')
         Ep = self.electric_field(xyz, field='primary')
-        Es = self.electric_field(xyz, field='secondary')
-        if field != 'total':
-            Jp = self.sigma_background * Ep
-            if field == 'primary':
-                return Jp
 
         x, y, z = self._check_XYZ(xyz)
         x0, y0, z0 = self.location
@@ -390,6 +445,11 @@ class ElectrostaticSphere:
         Jt = sigma[..., None] * Et
         if field == 'total':
             return Jt
+
+        if field != 'total':
+            Jp = self.sigma_background * Ep
+            if field == 'primary':
+                return Jp
 
         Js = Jt - Jp
         if field == 'secondary':
@@ -411,6 +471,54 @@ class ElectrostaticSphere:
         Returns
         -------
         rho: (..., ) np.ndarray
+
+        Examples
+        --------
+        Here, we define a sphere with conductivity sigma_sphere in a uniform electrostatic field with conductivity
+        sigma_background and plot the current density for total and secondary field.
+
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> from matplotlib import patches
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
+        >>> from geoana.em.static import ElectrostaticSphere
+
+        Define the sphere.
+
+        >>> location = np.r_[0., 0., 0.]
+        >>> sigma_sphere = 10. ** -1
+        >>> sigma_background = 10. ** -3
+        >>> radius = 1.0
+        >>> amplitude = 1.0
+        >>> simulation = ElectrostaticSphere(
+        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, amplitude=amplitude
+        >>> )
+
+        Now we create a set of gridded locations, take the distances and compute the electric fields.
+
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X) + 0.25
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> jt = simulation.current_density(xyz, field='total')
+        >>> js = simulation.current_density(xyz, field='secondary')
+
+        Finally, we plot the current densities for total and secondary fields.
+
+        >>> fig, axs = plt.subplots(1,2,figsize=(18,6))
+        >>> titles = ['Charge Accumulation']
+
+        >>> for ax, q, title in zip(axs, qs, titles):
+        >>>     im = ax.pcolor(X, Y, q, shading='auto')
+        >>>     cb1 = plt.colorbar(im, ax=ax)
+        >>>     cb1.set_label(label= 'Charge Density ($C/m^2$)')
+        >>>     ax.add_patch(patches.Circle([0,0], R, fill=False, linestyle='--'))
+        >>>     ax.set_ylabel('Y coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_title(title)
+        >>>     ax.set_aspect('equal')
+
+        >>> plt.tight_layout()
+        >>> plt.show()
         """
 
         sig0 = self.sigma_background
@@ -565,19 +673,19 @@ class MagnetostaticSphere:
 
         self._location = vec
 
-    def _check_xyz(self, xyz):
-        if len(xyz) == 3:
-            x, y, z = xyz
+    def _check_XYZ(self, XYZ):
+        if len(XYZ) == 3:
+            x, y, z = XYZ
             x = np.asarray(x, dtype=float)
             y = np.asarray(y, dtype=float)
             z = np.asarray(z, dtype=float)
-        elif isinstance(xyz, np.ndarray) and xyz.shape[-1] == 3:
-            x, y, z = xyz[..., 0], xyz[..., 1], xyz[..., 2]
+        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
+            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
         else:
             raise TypeError(
-                "xyz must be either a length three tuple of each dimension, "
+                "XYZ must be either a length three tuple of each dimension, "
                 "or a numpy.ndarray of shape (..., 3)."
-                )
+            )
         if not (x.shape == y.shape and x.shape == z.shape):
             raise ValueError(
                 "x, y, z must all have the same shape"
@@ -638,13 +746,15 @@ class MagnetostaticSphere:
         Finally, we plot the magnetic potential for total and secondary fields.
 
         >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
-        >>> titles = ['Total Magnetic Potential', 'Secondary Magnetic Potential']
+        >>> titles = ['Total Potential', 'Secondary Potential']
         >>> for ax, V, title in zip(axs.flatten(), [vt, vs], titles):
-        >>>     im = ax.pcolor(X, Y, V, shading='auto')
+        >>>     V_amp = np.linalg.norm(V, axis=-1)
+        >>>     im = ax.pcolor(X, Y, V_amp, shading='auto')
         >>>     divider = make_axes_locatable(ax)
         >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
         >>>     cb = plt.colorbar(im, cax=cax)
-        >>>     cb.set_label(label=' Magnetic Potential ($V$)')
+        >>>     cb.set_label(label= 'Amplitude ($V/m$)')
+        >>>     ax.streamplot(X, Y, V[..., 0], V[..., 1], density=0.75)
         >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
         >>>     ax.set_ylabel('Y coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
@@ -659,10 +769,10 @@ class MagnetostaticSphere:
         H0 = self.amplitude
         mu_cur = (mu1 - mu0) / (mu1 + 2 * mu0)
         x0, y0, z0 = self.location
-        x, y, z = self._check_xyz(xyz)
-        x = x-x0
-        y = y-y0
-        z = z-z0
+        x, y, z = self._check_XYZ(xyz)
+        x = x - x0
+        y = y - y0
+        z = z - z0
         r_vec = xyz - self.location
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
@@ -675,15 +785,17 @@ class MagnetostaticSphere:
         # inside the sphere
         Vt[~ind0] = -H0 * r_vec[~ind0] * 3. * mu0 / (mu1 + 2. * mu0)
 
+        # total field
         if field == 'total':
             return Vt
 
+        # primary field
         if field != 'total':
             Vp = -H0 * r_vec
             if field == 'primary':
                 return Vp
 
-        # field was not primary or total
+        # secondary field
         Vs = Vt - Vp
         if field == 'secondary':
             return Vs
@@ -766,11 +878,11 @@ class MagnetostaticSphere:
         H0 = self.amplitude
         mu_cur = (mu1 - mu0) / (mu1 + 2 * mu0)
 
-        x, y, z = self._check_xyz(xyz)
+        x, y, z = self._check_XYZ(xyz)
         x0, y0, z0 = self.location
-        x = x-x0
-        y = y-y0
-        z = z-z0
+        x = x - x0
+        y = y - y0
+        z = z - z0
         r_vec = xyz - self.location
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
