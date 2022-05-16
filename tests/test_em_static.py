@@ -373,7 +373,7 @@ if __name__ == '__main__':
     unittest.main()
 
 
-def V_from_Sphere(
+def Vt_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
@@ -384,13 +384,32 @@ def V_from_Sphere(
     x = r_vec[:, 0]
     r = np.linalg.norm(r_vec, axis=-1)
 
-    v = np.zeros_like(r)
+    vt = np.zeros_like(r)
     ind0 = r > radius
-    v[ind0] = -amp * x[ind0] * (1. - mu_cur * radius ** 3. / r[ind0] ** 3.)
-    v[~ind0] = -amp * x[~ind0] * 3. * mu_b / (mu_s + 2. * mu_b)
-    return v
+    vt[ind0] = -amp * x[ind0] * (1. - mu_cur * radius ** 3. / r[ind0] ** 3.)
+    vt[~ind0] = -amp * x[~ind0] * 3. * mu_b / (mu_s + 2. * mu_b)
+    return vt
 
-def H_from_Sphere(
+def Vp_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    vp = np.zeros_like(r)
+    vp[..., 0] = amp
+    return vp
+
+def Vs_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    vs = Vt_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) - Vp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp)
+    return vs
+
+def Ht_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
@@ -403,38 +422,54 @@ def H_from_Sphere(
     z = r_vec[:, 2]
     r = np.linalg.norm(r_vec, axis=-1)
 
-    h = np.zeros((*r.shape, 3))
+    ht = np.zeros((*r.shape, 3))
     ind0 = r > radius
-    h[ind0, 0] = amp * radius ** 3. * mu_cur * \
+    ht[ind0, 0] = amp * radius ** 3. * mu_cur * \
         (2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.) / (r[ind0] ** 5.)
-    h[ind0, 1] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * y[ind0] / (r[ind0] ** 5.)
-    h[ind0, 2] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * z[ind0] / (r[ind0] ** 5.)
-    h[~ind0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp
-    return h
+    ht[ind0, 1] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * y[ind0] / (r[ind0] ** 5.)
+    ht[ind0, 2] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * z[ind0] / (r[ind0] ** 5.)
+    ht[~ind0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp
+    return ht
 
-def B_from_Sphere(
+def Hp_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    hp = np.zeros((*r.shape, 3))
+    hp[..., 0] = amp
+    return hp
+
+def Hs_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    hs = Ht_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) - Hp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp)
+    return hs
 
-    mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
-    r_vec = XYZ - loc
-    x = r_vec[:, 0]
-    y = r_vec[:, 1]
-    z = r_vec[:, 2]
-    r = np.linalg.norm(r_vec, axis=-1)
+def Bt_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
 
-    h = np.zeros((*r.shape, 3))
-    ind0 = r > radius
-    h[ind0, 0] = amp * radius ** 3. * mu_cur * \
-        (2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.) / (r[ind0] ** 5.)
-    h[ind0, 1] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * y[ind0] / (r[ind0] ** 5.)
-    h[ind0, 2] = amp * radius ** 3. * mu_cur * 3. * x[ind0] * z[ind0] / (r[ind0] ** 5.)
-    h[~ind0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp
+    bt = Ht_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) * mu_0
+    return bt
 
-    b = h * mu_0
-    return b
+def Bp_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    bp = Hp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) * mu_0
+    return bp
+
+def Bs_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    bs = Hs_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) * mu_0
+    return bs
 
 
 class TestMagnetoStaticSphere:
@@ -483,15 +518,26 @@ class TestMagnetoStaticSphere:
         z = np.linspace(-40., 40., 50)
         xyz = discretize.utils.ndgrid([x, y, z])
 
-        vtest = V_from_Sphere(
+        vttest = Vt_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
+        )
+        vptest = Vp_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
+        )
+        vstest = Vs_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
         )
         print(
             "\n\nTesting Magnetic Potential V for Sphere\n"
         )
 
-        vt, vp, vs = mss.potential(xyz, field='all')
-        np.testing.assert_equal(vtest, vt)
+        vt = mss.potential(xyz, field='total')
+        vp = mss.potential(xyz, field='primary')
+        vs = mss.potential(xyz, field='secondary')
+        np.testing.assert_equal(vttest, vt)
+        np.testing.assert_equal(vptest, vp)
+        np.testing.assert_equal(vstest, vs)
+
 
     def testH(self):
         radius = 1.0
@@ -511,15 +557,25 @@ class TestMagnetoStaticSphere:
         z = np.linspace(-40., 40., 50)
         xyz = discretize.utils.ndgrid([x, y, z])
 
-        htest = H_from_Sphere(
+        httest = Ht_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
+        )
+        hptest = Hp_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
+        )
+        hstest = Hs_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
         )
         print(
             "\n\nTesting Magnetic Field H for Sphere\n"
         )
 
-        ht, hp, hs = mss.magnetic_field(xyz, field='all')
-        np.testing.assert_equal(htest, ht)
+        ht = mss.magnetic_field(xyz, field='total')
+        hp = mss.magnetic_field(xyz, field='primary')
+        hs = mss.magnetic_field(xyz, field='secondary')
+        np.testing.assert_equal(httest, ht)
+        np.testing.assert_equal(hptest, hp)
+        np.testing.assert_equal(hstest, hs)
 
     def testB(self):
         radius = 1.0
@@ -539,12 +595,22 @@ class TestMagnetoStaticSphere:
         z = np.linspace(-40., 40., 50)
         xyz = discretize.utils.ndgrid([x, y, z])
 
-        btest = B_from_Sphere(
+        btest = Bt_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
+        )
+        bptest = Bp_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
+        )
+        bstest = Bs_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
         )
         print(
             "\n\nTesting Magnetic Flux Density B for Sphere\n"
         )
 
-        bt, bp, bs = mss.magnetic_flux_density(xyz, field='all')
+        bt = mss.magnetic_flux_density(xyz, field='total')
+        bp = mss.magnetic_flux_density(xyz, field='primary')
+        bs = mss.magnetic_flux_density(xyz, field='secondary')
         np.testing.assert_equal(btest, bt)
+        np.testing.assert_equal(bptest, bp)
+        np.testing.assert_equal(bstest, bs)

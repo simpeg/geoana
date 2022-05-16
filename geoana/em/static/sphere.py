@@ -739,17 +739,13 @@ class MagnetostaticSphere:
         >>> plt.show()
         """
 
-        # field was not primary or total
-        Bt = self.magnetic_field(xyz, field='total') * mu_0
-        Bp = self.magnetic_field(xyz, field='primary') * mu_0
-        Bs = Bt - Bp
+        if field == 'total':
+            return self.magnetic_field(xyz, field='total') * mu_0
+        if field == 'primary':
+            return self.magnetic_field(xyz, field='primary') * mu_0
         if field == 'secondary':
-            return Bs
-        elif field == 'primary':
-            return Bp
-        elif field == 'total':
-            return Bt
-        return Bt, Bp, Bs
+            return self.magnetic_field(xyz, field='secondary') * mu_0
+
 
 
 
