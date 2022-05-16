@@ -555,21 +555,24 @@ class MagnetostaticSphere:
         z = z-z0
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
+        Vt = np.zeros_like(r)
+        ind0 = r > self.radius
+
+        # total potential outside the sphere
+        Vt[ind0] = -H0 * x[ind0] * (1. - mu_cur * self.radius ** 3. / r[ind0] ** 3.)
+
+        # inside the sphere
+        Vt[~ind0] = -H0 * x[~ind0] * 3. * mu0 / (mu1 + 2. * mu0)
+
+        if field == 'total':
+            return Vt
+
         if field != 'total':
             Vp = np.zeros_like(r)
             Vp[..., 0] = H0
             if field == 'primary':
                 return Vp
 
-        Vt = np.zeros_like(r)
-        ind0 = r > self.radius
-        # total potential outside the sphere
-        Vt[ind0] = -H0 * x[ind0] * (1. - mu_cur * self.radius ** 3. / r[ind0] ** 3.)
-        # inside the sphere
-        Vt[~ind0] = -H0 * x[~ind0] * 3. * mu0 / (mu1 + 2. * mu0)
-
-        if field == 'total':
-            return Vt
         # field was not primary or total
         Vs = Vt - Vp
         if field == 'secondary':
@@ -650,24 +653,27 @@ class MagnetostaticSphere:
         z = z-z0
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
+        Ht = np.zeros((*x.shape, 3))
+        ind0 = r > self.radius
+
+        # total field outside the sphere
+        Ht[ind0, 0] = H0 + H0 * self.radius ** 3. * mu_cur *\
+            (2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.) / (r[ind0] ** 5.)
+        Ht[ind0, 1] = H0 * self.radius ** 3. * mu_cur * 3. * x[ind0] * y[ind0] / (r[ind0] ** 5.)
+        Ht[ind0, 2] = H0 * self.radius ** 3. * mu_cur * 3. * x[ind0] * z[ind0] / (r[ind0] ** 5.)
+
+        # inside the sphere
+        Ht[~ind0, 0] = 3. * mu0 / (mu1 + 2. * mu0) * H0
+
+        if field == 'total':
+            return Ht
+
         if field != 'total':
             Hp = np.zeros((*x.shape, 3))
             Hp[..., 0] = H0
             if field == 'primary':
                 return Hp
 
-        Ht = np.zeros((*x.shape, 3))
-        ind0 = r > self.radius
-        # total field outside the sphere
-        Ht[ind0, 0] = H0 * self.radius ** 3. * mu_cur *\
-            (2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.) / (r[ind0] ** 5.)
-        Ht[ind0, 1] = H0 * self.radius ** 3. * mu_cur * 3. * x[ind0] * y[ind0] / (r[ind0] ** 5.)
-        Ht[ind0, 2] = H0 * self.radius ** 3. * mu_cur * 3. * x[ind0] * z[ind0] / (r[ind0] ** 5.)
-        # inside the sphere
-        Ht[~ind0, 0] = 3. * mu0 / (mu1 + 2. * mu0) * H0
-
-        if field == 'total':
-            return Ht
         # field was not primary or total
         Hs = Ht - Hp
         if field == 'secondary':
