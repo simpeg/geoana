@@ -544,12 +544,12 @@ class MagnetostaticSphere:
         >>>     cb = plt.colorbar(im, cax=cax)
         >>>     cb.set_label(label='Potential ($V$)')
         >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
-        >>>     ax.set_title(title)
         >>>     ax.set_ylabel('Y coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
         >>>     ax.set_aspect('equal')
-        >>>     ax.plot(np.linspace(-5, 5, 20), np.linspace(-5, 5, 20), color='gray')
-        >>>     ax.legend(loc='best')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
+        >>> plt.show()
         """
 
         mu0 = self.mu_background
