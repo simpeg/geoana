@@ -36,7 +36,6 @@ jobs:
         conda info
         conda list
         conda config --show
-        conda install --quiet --yes pip numpy scipy matplotlib ipython cython;
         conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
         conda install --quiet --yes discretize utm empymod pytest pytest-cov graphviz
         pip install -r requirements_dev.txt
@@ -75,7 +74,6 @@ jobs:
         conda info
         conda list
         conda config --show
-        conda install --quiet --yes pip numpy scipy matplotlib ipython cython;
         conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
         conda install --quiet --yes discretize utm empymod pytest pytest-cov graphviz
         pip install -r requirements_dev.txt
