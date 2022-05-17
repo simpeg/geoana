@@ -483,7 +483,6 @@ class TestElectroStaticSphere:
         np.testing.assert_equal(vptest, vp)
         np.testing.assert_equal(vstest, vs)
 
-
     def testE(self):
         radius = 1.0
         primary_field = [1., 1., 1.]
@@ -670,130 +669,8 @@ class TestMagnetoStaticSphere:
         assert np.all(mss.location == np.r_[0., 0., 0.])
 
     def test_errors(self):
-<<<<<<< HEAD
-=======
-        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
-        with self.assertRaises(ValueError):
-            sphere.location = [[0, 0, 1],[0, 1, 0]]
-        with self.assertRaises(ValueError):
-            sphere.location = [0, 1, 2, 3]
-        with self.assertRaises(ValueError):
-            sphere.radius = -1
-        with self.assertRaises(ValueError):
-            sphere.sigma_sphere = -1
-        with self.assertRaises(ValueError):
-            sphere.sigma_background = -1
-
-if __name__ == '__main__':
-    unittest.main()
-
-
-def Vt_from_Sphere(
-    XYZ, loc, mu_s, mu_b, radius, amp
-):
-
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
-
-    mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    vt = np.zeros((*r.shape, 3))
-    ind0 = r > radius
-    vt[ind0] = -amp * r_vec[ind0] * (1. - mu_cur * radius ** 3. / r[ind0, None] ** 3.)
-    vt[~ind0] = -amp * r_vec[~ind0] * 3. * mu_b / (mu_s + 2. * mu_b)
-    return vt
-
-def Vp_from_Sphere(
-    XYZ, loc, mu_s, mu_b, radius, amp
-):
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
-
-    r_vec = XYZ - loc
-
-    vp = -amp * r_vec
-    return vp
-
-def Vs_from_Sphere(
-    XYZ, loc, mu_s, mu_b, radius, amp
-):
-
-    vs = Vt_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) - Vp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp)
-    return vs
-
-def Ht_from_Sphere(
-    XYZ, loc, mu_s, mu_b, radius, amp
-):
-
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
-
-    mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    ht = np.zeros((*r.shape, 3))
-    ind0 = r > radius
-    ht[ind0] = amp * (1. - mu_cur * radius ** 3. / r[ind0, None] ** 3) +\
-        3. * amp * r_vec[ind0] * mu_cur * radius * r_vec[ind0] / r[ind0, None] ** 4
-    ht[~ind0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp
-    return ht
-
-def Hp_from_Sphere(
-    XYZ, loc, mu_s, mu_b, radius, amp
-):
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
-
-    r_vec = XYZ - loc
-
-    hp = amp
-    return hp
-
-def Hs_from_Sphere(
-    XYZ, loc, mu_s, mu_b, radius, amp
-):
-
-    hs = Ht_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) - Hp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp)
-    return hs
-
-def Bt_from_Sphere(
-    XYZ, loc, mu_s, mu_b, radius, amp
-):
-
-    bt = Ht_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) * mu_0
-    return bt
-
-def Bp_from_Sphere(
-    XYZ, loc, mu_s, mu_b, radius, amp
-):
-
-    bp = Hp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) * mu_0
-    return bp
-
-def Bs_from_Sphere(
-    XYZ, loc, mu_s, mu_b, radius, amp
-):
-
-    bs = Hs_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) * mu_0
-    return bs
-
-
-class TestMagnetoStaticSphere:
-
-    def test_defaults(self):
-        radius = 1.0
-        mu_sphere = 1.0
-        mu_background = 1.0
-        primary_field = np.r_[1., 1., 1.]
-        mss = static.MagnetostaticSphere(radius, mu_sphere, mu_background, primary_field)
-        assert np.all(mss.primary_field == np.r_[1., 1., 1.])
-        assert mss.radius == 1.0
-        assert mss.mu_sphere == 1.0
-        assert mss.mu_background == 1.0
-        assert np.all(mss.location == np.r_[0., 0., 0.])
-
-    def test_errors(self):
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
-        mss = static.MagnetostaticSphere(primary_field=np.r_[1., 1., 1.], radius=1.0, mu_sphere=1.0, mu_background=1.0, location=None)
+        mss = static.MagnetostaticSphere(primary_field=np.r_[1., 1., 1.], radius=1.0, mu_sphere=1.0, mu_background=1.0,
+                                         location=None)
         with pytest.raises(ValueError):
             mss.mu_sphere = -1
         with pytest.raises(ValueError):
@@ -807,7 +684,6 @@ class TestMagnetoStaticSphere:
         with pytest.raises(TypeError):
             mss.location = ["string"]
         with pytest.raises(ValueError):
-<<<<<<< HEAD
             mss.primary_field = [0, 1, 2, 3, 4, 5]
         with pytest.raises(ValueError):
             mss.primary_field = [[0, 0, 1, 4], [0, 1, 0, 3]]
@@ -817,27 +693,12 @@ class TestMagnetoStaticSphere:
     def testV(self):
         radius = 1.0
         primary_field = [1., 1., 1.]
-=======
-                mss.primary_field = [0, 1, 2, 3, 4, 5]
-        with pytest.raises(ValueError):
-                mss.primary_field = [[0, 0, 1, 4], [0, 1, 0, 3]]
-        with pytest.raises(TypeError):
-                mss.primary_field = ["string"]
-
-    def testV(self):
-        radius = 1.0
-        amplitude = 1.0
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
         mu_s = 1.0
         mu_b = 1.0
         location = [0., 0., 0.]
         mss = static.MagnetostaticSphere(
             radius=radius,
-<<<<<<< HEAD
             primary_field=primary_field,
-=======
-            amplitude=amplitude,
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
             mu_background=mu_b,
             mu_sphere=mu_s,
             location=location
@@ -848,7 +709,6 @@ class TestMagnetoStaticSphere:
         xyz = discretize.utils.ndgrid([x, y, z])
 
         vttest = Vt_from_Sphere(
-<<<<<<< HEAD
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
         )
         vptest = Vp_from_Sphere(
@@ -856,15 +716,6 @@ class TestMagnetoStaticSphere:
         )
         vstest = Vs_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
-=======
-            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
-        )
-        vptest = Vp_from_Sphere(
-            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
-        )
-        vstest = Vs_from_Sphere(
-            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
         )
         print(
             "\n\nTesting Magnetic Potential V for Sphere\n"
@@ -880,21 +731,13 @@ class TestMagnetoStaticSphere:
 
     def testH(self):
         radius = 1.0
-<<<<<<< HEAD
         primary_field = [1., 1., 1.]
-=======
-        amplitude = 1.0
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
         mu_s = 1.0
         mu_b = 1.0
         location = [0., 0., 0.]
         mss = static.MagnetostaticSphere(
             radius=radius,
-<<<<<<< HEAD
             primary_field=primary_field,
-=======
-            amplitude=amplitude,
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
             mu_background=mu_b,
             mu_sphere=mu_s,
             location=location
@@ -905,7 +748,6 @@ class TestMagnetoStaticSphere:
         xyz = discretize.utils.ndgrid([x, y, z])
 
         httest = Ht_from_Sphere(
-<<<<<<< HEAD
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
         )
         hptest = Hp_from_Sphere(
@@ -913,15 +755,6 @@ class TestMagnetoStaticSphere:
         )
         hstest = Hs_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
-=======
-            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
-        )
-        hptest = Hp_from_Sphere(
-            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
-        )
-        hstest = Hs_from_Sphere(
-            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
         )
         print(
             "\n\nTesting Magnetic Field H for Sphere\n"
@@ -936,21 +769,13 @@ class TestMagnetoStaticSphere:
 
     def testB(self):
         radius = 1.0
-<<<<<<< HEAD
         primary_field = [1., 1., 1.]
-=======
-        amplitude = 1.0
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
         mu_s = 1.0
         mu_b = 1.0
         location = [0., 0., 0.]
         mss = static.MagnetostaticSphere(
             radius=radius,
-<<<<<<< HEAD
             primary_field=primary_field,
-=======
-            amplitude=amplitude,
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
             mu_background=mu_b,
             mu_sphere=mu_s,
             location=location
@@ -961,7 +786,6 @@ class TestMagnetoStaticSphere:
         xyz = discretize.utils.ndgrid([x, y, z])
 
         btest = Bt_from_Sphere(
-<<<<<<< HEAD
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
         )
         bptest = Bp_from_Sphere(
@@ -970,17 +794,6 @@ class TestMagnetoStaticSphere:
         bstest = Bs_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
         )
-
-=======
-            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
-        )
-        bptest = Bp_from_Sphere(
-            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
-        )
-        bstest = Bs_from_Sphere(
-            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.amplitude
-        )
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
         print(
             "\n\nTesting Magnetic Flux Density B for Sphere\n"
         )
@@ -991,7 +804,4 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(btest, bt)
         np.testing.assert_equal(bptest, bp)
         np.testing.assert_equal(bstest, bs)
-<<<<<<< HEAD
 
-=======
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
