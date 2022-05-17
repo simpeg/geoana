@@ -20,7 +20,7 @@ class ElectrostaticSphere:
     primary_field : (3) array_like, optional
         amplitude of primary electric field.
     location : (3) array_like, optional
-        Center of the sphere. Defaults is (0, 0, 0).
+        center of the sphere. Default is (0, 0, 0).
     """
 
     def __init__(
@@ -176,9 +176,8 @@ class ElectrostaticSphere:
 
         Parameters
         ----------
-        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
-            locations to evaluate at. If a tuple, all
-            the numpy arrays must be the same shape.
+        xyz : (..., 3) numpy.ndarray
+            Locations to evaluate at in units m.
         field : {'all', 'total', 'primary', 'secondary'}
 
         Returns
@@ -191,7 +190,7 @@ class ElectrostaticSphere:
         Examples
         --------
         Here, we define a sphere with conductivity sigma_sphere in a uniform electrostatic field with conductivity
-        sigma_background and plot the electric potentials for total and secondary field.
+        sigma_background and plot the total and secondary electric potentials.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -219,7 +218,7 @@ class ElectrostaticSphere:
         >>> vt = simulation.potential(xyz, field='total')
         >>> vs = simulation.potential(xyz, field='secondary')
 
-        Finally, we plot the electric potential for total and secondary fields.
+        Finally, we plot the total and secondary electric potentials.
 
         >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
         >>> titles = ['Total Potential', 'Secondary Potential']
@@ -284,9 +283,8 @@ class ElectrostaticSphere:
 
         Parameters
         ----------
-        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
-            locations to evaluate at. If a tuple, all
-            the numpy arrays must be the same shape.
+        xyz : (..., 3) numpy.ndarray
+            Locations to evaluate at in units m.
         field : {'all', 'total', 'primary', 'secondary'}
 
         Returns
@@ -299,7 +297,7 @@ class ElectrostaticSphere:
         Examples
         --------
         Here, we define a sphere with conductivity sigma_sphere in a uniform electrostatic field with conductivity
-        sigma_background and plot the electric field lines for total and secondary field.
+        sigma_background and plot the total and secondary electric fields.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -326,7 +324,7 @@ class ElectrostaticSphere:
         >>> et = simulation.electric_field(xyz, field='total')
         >>> es = simulation.electric_field(xyz, field='secondary')
 
-        Finally, we plot the magnetic field lines.
+        Finally, we plot the total and secondary electric fields.
 
         >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
         >>> titles = ['Total Electric Field', 'Secondary Electric Field']
@@ -391,9 +389,8 @@ class ElectrostaticSphere:
 
         Parameters
         ----------
-        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
-            locations to evaluate at. If a tuple, all
-            the numpy arrays must be the same shape.
+        xyz : (..., 3) numpy.ndarray
+            Locations to evaluate at in units m.
         field : {'all', 'total', 'primary', 'secondary'}
 
         Returns
@@ -406,7 +403,7 @@ class ElectrostaticSphere:
         Examples
         --------
         Here, we define a sphere with conductivity sigma_sphere in a uniform electrostatic field with conductivity
-        sigma_background and plot the current density for total and secondary field.
+        sigma_background and plot the total and secondary current densities.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -425,7 +422,7 @@ class ElectrostaticSphere:
         >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=primary_field
         >>> )
 
-        Now we create a set of gridded locations, take the distances and compute the electric fields.
+        Now we create a set of gridded locations, take the distances and compute the current densities.
 
         >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
         >>> Z = np.zeros_like(X) + 0.25
@@ -433,7 +430,7 @@ class ElectrostaticSphere:
         >>> jt = simulation.current_density(xyz, field='total')
         >>> js = simulation.current_density(xyz, field='secondary')
 
-        Finally, we plot the current densities for total and secondary fields.
+        Finally, we plot the total and secondary current densities.
 
         >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
         >>> titles = ['Total Current Density', 'Secondary Current Density']
@@ -486,9 +483,8 @@ class ElectrostaticSphere:
 
         Parameters
         ----------
-        xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
-            locations to evaluate at. If a tuple, all
-            the numpy arrays must be the same shape.
+        xyz : (..., 3) numpy.ndarray
+            Locations to evaluate at in units m.
         dr : float, optional
             Buffer around the edge of the sphere to calculate
             current density. Defaults to 5 % of the sphere radius
@@ -500,7 +496,7 @@ class ElectrostaticSphere:
         Examples
         --------
         Here, we define a sphere with conductivity sigma_sphere in a uniform electrostatic field with conductivity
-        sigma_background and plot the current density.
+        sigma_background and plot the charge density.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -735,12 +731,12 @@ class MagnetostaticSphere:
         Vt, Vp, Vs : (..., ) np.ndarray
             If field == "all"
         V : (..., ) np.ndarray
-            Potential for permeable sphere in a uniform magnetostatic field in units T m if requesting single field.
+            If only requesting a single field.
 
         Examples
         --------
         Here, we define a sphere with permeability mu_sphere in a uniform magnetostatic field with permeability
-        mu_background and plot the magnetic potentials for total and secondary field.
+        mu_background and plot the total and secondary magnetic potentials.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -768,7 +764,7 @@ class MagnetostaticSphere:
         >>> vt = simulation.potential(xyz, field='total')
         >>> vs = simulation.potential(xyz, field='secondary')
 
-        Finally, we plot the total and secondary potentials.
+        Finally, we plot the total and secondary magnetic potentials.
 
         >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
         >>> titles = ['Total Potential', 'Secondary Potential']
@@ -843,12 +839,12 @@ class MagnetostaticSphere:
         Ht, Hp, Hs : (..., 3) np.ndarray
             If field == "all"
         H : (..., 3) np.ndarray
-            Magnetic field for permeable sphere in a uniform magnetostatic field in units T if requesting single field.
+            If only requesting a single field.
 
         Examples
         --------
         Here, we define a sphere with permeability mu_sphere in a uniform magnetostatic field with permeability
-        mu_background and plot the magnetic field lines for total and secondary field.
+        mu_background and plot the total and secondary magnetic fields.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -951,13 +947,12 @@ class MagnetostaticSphere:
         Bt, Bp, Bs : (..., 3) np.ndarray
             If field == "all"
         B : (..., 3) np.ndarray
-            Magnetic flux density for permeable sphere in a uniform magnetostatic field in units T if requesting
-            single field.
+            If only requesting a single field.
 
         Examples
         --------
         Here, we define a sphere with permeability mu_sphere in a uniform magnetostatic field with permeability
-        mu_background and plot the magnetic flux densities for total and secondary fields.
+        mu_background and plot the total and secondary magnetic flux densities.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
