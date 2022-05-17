@@ -213,8 +213,10 @@ class ElectrostaticSphere:
         >>> titles = ['Total Potential', 'Secondary Potential']
         >>> for ax, V, title in zip(axs.flatten(), [vt, vs], titles):
         >>>     im = ax.pcolor(X, Y, V, shading='auto')
-        >>>     cb1 = plt.colorbar(im, ax=ax)
-        >>>     cb1.set_label(label= 'Amplitude')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Amplitude')
         >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
         >>>     ax.set_ylabel('Y coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
@@ -756,8 +758,10 @@ class MagnetostaticSphere:
         >>> titles = ['Total Potential', 'Secondary Potential']
         >>> for ax, V, title in zip(axs.flatten(), [vt, vs], titles):
         >>>     im = ax.pcolor(X, Y, V, shading='auto')
-        >>>     cb1 = plt.colorbar(im, ax=ax)
-        >>>     cb1.set_label(label= 'Amplitude')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Amplitude')
         >>>     ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
         >>>     ax.set_ylabel('Y coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
