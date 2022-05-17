@@ -36,7 +36,11 @@ jobs:
         conda info
         conda list
         conda config --show
+<<<<<<< HEAD
         conda install --quiet --yes pip numpy scipy matplotlib ipython cython;
+=======
+        conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
+>>>>>>> 22379fe4e8c53e8b6e4dc54a136616e3bdbf7ebf
         conda install --quiet --yes discretize utm empymod pytest pytest-cov graphviz
         pip install -r requirements_dev.txt
     - name: Install Our Package
@@ -74,7 +78,11 @@ jobs:
         conda info
         conda list
         conda config --show
+<<<<<<< HEAD
         conda install --quiet --yes pip numpy scipy matplotlib ipython cython;
+=======
+        conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
+>>>>>>> 22379fe4e8c53e8b6e4dc54a136616e3bdbf7ebf
         conda install --quiet --yes discretize utm empymod pytest pytest-cov graphviz
         pip install -r requirements_dev.txt
     - name: Prepare source distribution

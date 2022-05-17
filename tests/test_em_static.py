@@ -670,8 +670,7 @@ class TestMagnetoStaticSphere:
         assert np.all(mss.location == np.r_[0., 0., 0.])
 
     def test_errors(self):
-        mss = static.MagnetostaticSphere(primary_field=np.r_[1., 1., 1.], radius=1.0, mu_sphere=1.0,
-                                         mu_background=1.0, location=None)
+        mss = static.MagnetostaticSphere(primary_field=np.r_[1., 1., 1.], radius=1.0, mu_sphere=1.0, mu_background=1.0, location=None)
         with pytest.raises(ValueError):
             mss.mu_sphere = -1
         with pytest.raises(ValueError):
@@ -795,6 +794,7 @@ class TestMagnetoStaticSphere:
         bstest = Bs_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
         )
+
         print(
             "\n\nTesting Magnetic Flux Density B for Sphere\n"
         )
@@ -805,3 +805,4 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(btest, bt)
         np.testing.assert_equal(bptest, bp)
         np.testing.assert_equal(bstest, bs)
+
