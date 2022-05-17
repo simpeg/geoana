@@ -762,7 +762,7 @@ class MagnetostaticSphere:
         >>> vt = simulation.potential(xyz, field='total')
         >>> vs = simulation.potential(xyz, field='secondary')
 
-        Finally, we plot the magnetic potential for total and secondary fields.
+        Finally, we plot the total and secondary potentials.
 
         >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
         >>> titles = ['Total Potential', 'Secondary Potential']
@@ -871,7 +871,7 @@ class MagnetostaticSphere:
         >>> ht = simulation.magnetic_field(xyz, field='total')
         >>> hs = simulation.magnetic_field(xyz, field='secondary')
 
-        Finally, we plot the magnetic field lines.
+        Finally, we plot the total and secondary magnetic fields.
 
         >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
         >>> titles = ['Total Magnetic Field', 'Secondary Magnetic Field']
@@ -953,7 +953,7 @@ class MagnetostaticSphere:
         Examples
         --------
         Here, we define a sphere with permeability mu_sphere in a uniform magnetostatic field with permeability
-        mu_background and plot the magnetic flux densities for total and secondary field.
+        mu_background and plot the magnetic flux densities for total and secondary fields.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -980,7 +980,7 @@ class MagnetostaticSphere:
         >>> bt = simulation.magnetic_flux_density(xyz, field='total')
         >>> bs = simulation.magnetic_flux_density(xyz, field='secondary')
 
-        Finally, we plot the magnetic flux densities for total and secondary field.
+        Finally, we plot the total and secondary magnetic flux densities.
 
         >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
         >>> titles = ['Total Magnetic Flux Density', 'Secondary Magnetic Flux Density']
