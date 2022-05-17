@@ -162,6 +162,18 @@ class ElectrostaticSphere:
     def potential(self, xyz, field='all'):
         """Electric potential for a conductive sphere in a uniform electrostatic field.
 
+       .. math::
+
+            V_p(\\mathbf{r}) = -\\mathbf{E_0} \\dot \\mathbf{r}
+
+            r > R
+
+            V_T(\\mathbf{r}) = -\\mathbf{E_0} \\dot \\mathbf{r} (1 - \\frac{\\sigma_s - \\sigma_0}{\\sigma_s + 2 \\sigma_0} \\frac{R}{r^3}
+
+            r < R
+
+            V_T(\\mathbf{r}) = -3 \\mathbf{E_0} \\dot \\mathbf{r} \\frac{\\sigma_0}{\\sigma_s + 2 \\sigma_0}
+
         Parameters
         ----------
         xyz : (3, ) tuple of np.ndarray or (..., 3) np.ndarray
@@ -265,6 +277,10 @@ class ElectrostaticSphere:
 
     def electric_field(self, xyz, field='all'):
         """Electric field for a sphere in a uniform wholespace
+
+        .. math::
+
+            E_p(\\mathbf{r}) = - \\nabla V_p = \\mathbf{E_0}
 
         Parameters
         ----------
