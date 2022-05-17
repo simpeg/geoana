@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 | `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <http://geoana.simpeg.xyz/>`_ |
-=======
-| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <https://geoana.simpeg.xyz/>`_ |
->>>>>>> 22379fe4e8c53e8b6e4dc54a136616e3bdbf7ebf
-=======
-| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <https://geoana.simpeg.xyz/>`_ |
->>>>>>> 568e7feb392ee6b09280d2c6a72da7bf6255c06b
 
 geoana
 ======
