@@ -1,8 +1,13 @@
+sphinx
 sphinx_rtd_theme
 sphinx-gallery
-sphinx
+sphinx-toolbox
+sphinxcontrib-apidoc
+pydata-sphinx-theme
 pytest
 pytest-cov
 discretize
 numpydoc
+nbsphinx
+matplotlib
 pillow

@@ -1,23 +1,23 @@
-| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <http://geoana.readthedocs.io/en/latest/>`_ |
+| `getting_started`_ | `connecting`_ | `installing`_ | `license`_ | `documentation <http://geoana.simpeg.xyz/>`_ |
 
 geoana
 ======
 
-.. image:: https://readthedocs.org/projects/geoana/badge/?version=latest
-    :target: https://geoana.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+.. image:: https://img.shields.io/pypi/v/geoana.svg
+    :target: https://pypi.python.org/pypi/geoana
+    :alt: Latest PyPI version
+
+.. image:: https://anaconda.org/conda-forge/geoana/badges/version.svg
+    :target: https://anaconda.org/conda-forge/geoana
+    :alt: Latest conda-forge version
 
 .. image:: https://img.shields.io/github/license/simpeg/geoana.svg
-    :target: https://github.com/simpeg/geoana/blob/master/LICENSE
+    :target: https://github.com/simpeg/geoana/blob/main/LICENSE
     :alt: MIT license
 
-.. image:: https://travis-ci.org/simpeg/geoana.svg?branch=master
-    :target: https://travis-ci.org/simpeg/geoana
-    :alt: Travis status
-
-.. image:: https://api.codacy.com/project/badge/Grade/2e32cd28f4424dc1800f1590a64c244f
-    :target: https://www.codacy.com/app/lindseyheagy/geoana?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=simpeg/geoana&amp;utm_campaign=Badge_Grade
-    :alt: codacy status
+.. image:: https://codecov.io/gh/simpeg/geoana/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/simpeg/geoana
+    :alt: Coverage status
 
 
 `geoana` is a collection of (mostly) analytic functions in geophysics. We take an object oriented
@@ -31,8 +31,8 @@ Getting started
 
 - If you do not already have python installed, we recommend downloading and installing it through `anaconda <https://www.anaconda.com/download/>`_
 - `installing`_ `geoana`
-- Browse the `gallery <http://geoana.readthedocs.io/en/latest/auto_examples/>`_ for ideas and example usage
-- Read the `documentation <http://geoana.readthedocs.io/en/latest/>`_ for more information on the library and what it can do
+- Browse the `gallery <https://geoana.simpeg.xyz/auto_examples/>`_ for ideas and example usage
+- Read the `documentation <https://geoana.simpeg.xyz/>`_ for more information on the library and what it can do
 
 .. - See the `contributor guide` and `code of conduct` if you are interested in helping develop or maintain geoana
 

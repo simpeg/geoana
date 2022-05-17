@@ -13,18 +13,29 @@ def vertical_magnetic_field_horizontal_loop(
     Parameters
     ----------
     frequencies : float, or numpy.ndarray
+        frequencies in Hz
     sigma : float, complex, or numpy.ndarray, optional
+        electrical conductivity in S/m. Can provide a complex conductivity
+        at each frequency if dispersive (i.e. induced polarization)
     mu : float, complex, or numpy.ndarray, optional
+        magnetic permeability in H/m. Can provide a complex permeability
+        at each frequency if dispersive (i.e. viscous remanent magnetization)
     radius : float, optional
+        radius of the loop in meters
     current: float, optional
+        transmitter current in A
     turns : int, optional
+        number of turns for the loop source
     secondary : bool, optional
-        whether to return the secondary field (primary if false)
+        if ``True``, the secondary field is returned. If ``False``, the total
+        field is returned. Default is ``True``
 
     Returns
     -------
-    hz : complex, or numpy.ndarray
-        The secondary (primary if `secondary == False`) vertical magnetic field
+    complex, or numpy.ndarray
+        The vertical magnetic field (H/m). If *secondary* is ``True``, only
+        the secondary field is returned. If *secondary* is ``False``, the
+        total field is returned.
 
     Notes
     -----
@@ -90,18 +101,29 @@ def vertical_magnetic_flux_horizontal_loop(
     Parameters
     ----------
     frequencies : float, or numpy.ndarray
-    sigma : float, complex, or numpy.ndarray
+        frequencies in Hz
+    sigma : float, complex, or numpy.ndarray, optional
+        electrical conductivity in S/m. Can provide a complex conductivity
+        at each frequency if dispersive (i.e. induced polarization)
     mu : float, complex, or numpy.ndarray, optional
+        magnetic permeability in H/m. Can provide a complex permeability
+        at each frequency if dispersive (i.e. viscous remanent magnetization)
     radius : float, optional
+        radius of the loop in meters
     current: float, optional
+        transmitter current in A
     turns : int, optional
+        number of turns for the loop source
     secondary : bool, optional
-        whether to return the secondary field (primary if false)
+        if ``True``, the secondary field is returned. If ``False``, the total
+        field is returned. Default is ``True``
 
     Returns
     -------
-    bz : complex, or numpy.ndarray
-        The seecondary (primary if `secondary == False`) vertical magnetic flux density
+    complex, or numpy.ndarray
+        The vertical magnetic flux density in Teslas. If *secondary* is ``True``, only
+        the secondary field is returned. If *secondary* is ``False``, the
+        total field is returned.
 
     Notes
     -----
