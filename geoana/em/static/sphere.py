@@ -376,7 +376,8 @@ class ElectrostaticSphere:
 
         # primary field
         if field != 'total':
-            Ep = E0
+            Ep = np.zeros((*r.shape, 3))
+            Ep = Ep + E0
             if field == 'primary':
                 return Ep
 
@@ -453,9 +454,6 @@ class ElectrostaticSphere:
         >>> plt.show()
         """
 
-        Et = self.electric_field(xyz, field='total')
-        Ep = self.electric_field(xyz, field='primary')
-
         x, y, z = self._check_XYZ(xyz)
         x0, y0, z0 = self.location
         x = x-x0
@@ -466,11 +464,13 @@ class ElectrostaticSphere:
         sigma = np.full(r.shape, self.sigma_background)
         sigma[r <= self.radius] = self.sigma_sphere
 
+        Et = self.electric_field(xyz, field='total')
         Jt = sigma[..., None] * Et
         if field == 'total':
             return Jt
 
         if field != 'total':
+            Ep = self.electric_field(xyz, field='primary')
             Jp = self.sigma_background * Ep
             if field == 'primary':
                 return Jp
@@ -909,7 +909,7 @@ class MagnetostaticSphere:
         r_vec = xyz - self.location
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
-        Ht = np.zeros((*x.shape, 3))
+        Ht = np.zeros((*r.shape, 3))
         ind0 = r > self.radius
 
         # total field outside the sphere
@@ -923,7 +923,8 @@ class MagnetostaticSphere:
             return Ht
 
         if field != 'total':
-            Hp = H0
+            Hp = np.zeros((*r.shape, 3))
+            Hp = Hp + H0
             if field == 'primary':
                 return Hp
 

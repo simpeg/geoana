@@ -353,16 +353,24 @@ def Et_from_ESphere(
 
     et = np.zeros((*r.shape, 3))
     ind0 = r > radius
-    et[ind0] = 1
-    et[~ind0] = 3. * sig_b / (sig_s + 2. * sig_b) * amp[0]
+    et[ind0, 0] = amp[0] + amp[0] * radius ** 3. / (r[ind0] ** 5.) * sig_cur * (
+                2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.)
+    et[ind0, 1] = amp[0] * radius ** 3. / (r[ind0] ** 5.) * 3. * x[ind0] * y[ind0] * sig_cur
+    et[ind0, 2] = amp[0] * radius ** 3. / (r[ind0] ** 5.) * 3. * x[ind0] * z[ind0] * sig_cur
+    et[~ind0, 0] = 3. * sig_b / (sig_s + 2. * sig_b) * amp[0]
     return et
 
 
 def Ep_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
-    ep = amp
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+
+    ep = np.zeros((*x.shape, 3))
+    ep[..., 0] = amp[0]
     return ep
 
 
@@ -380,19 +388,12 @@ def Jt_from_ESphere(
 
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
-    sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
     sigma = np.full(r.shape, sig_b)
     sigma[r <= radius] = sig_s
 
-    et = np.zeros((*r.shape, 3))
-    ind0 = r > radius
-    et[ind0] = amp * (1. - sig_cur * radius ** 3. / r[ind0, None] ** 3) +\
-        3. * r_vec[ind0, None] @ amp * sig_cur * radius * r_vec[ind0] / r[ind0, None] ** 4
-    et[~ind0] = 3. * sig_b / (sig_s + 2. * sig_b) * amp
-
-    jt = sigma[..., None] * et
+    jt = sigma[..., None] * Et_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)
     return jt
 
 
@@ -400,8 +401,7 @@ def Jp_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
 
-    ep = amp
-    jp = sig_b * ep
+    jp = sig_b * Ep_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)
     return jp
 
 
@@ -488,10 +488,10 @@ class TestElectroStaticSphere:
 
     def testE(self):
         radius = 1.0
-        primary_field = [1., 1., 1.]
+        primary_field = None
         sig_s = 1.0
         sig_b = 1.0
-        location = [0., 0., 0.]
+        location = None
         ess = static.ElectrostaticSphere(
             radius=radius,
             primary_field=primary_field,
@@ -526,10 +526,10 @@ class TestElectroStaticSphere:
 
     def testJ(self):
         radius = 1.0
-        primary_field = [1., 1., 1.]
+        primary_field = None
         sig_s = 1.0
         sig_b = 1.0
-        location = [0., 0., 0.]
+        location = None
         ess = static.ElectrostaticSphere(
             radius=radius,
             primary_field=primary_field,
@@ -571,12 +571,13 @@ def Vt_from_Sphere(
 
     mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
     r_vec = XYZ - loc
+    x = r_vec[:, 0]
     r = np.linalg.norm(r_vec, axis=-1)
 
     vt = np.zeros_like(r)
     ind0 = r > radius
-    vt[ind0] = r_vec[ind0] @ -amp * (1. - mu_cur * radius ** 3. / r[ind0] ** 3.)
-    vt[~ind0] = r_vec[~ind0] @ -amp * 3. * mu_b / (mu_s + 2. * mu_b)
+    vt[ind0] = -amp[0] * x[ind0] * (1. - mu_cur * radius ** 3 / r[ind0] ** 3)
+    vt[~ind0] = -amp[0] * x[~ind0] * 3. * mu_b / (mu_s + 2. * mu_b)
     return vt
 
 
@@ -586,8 +587,9 @@ def Vp_from_Sphere(
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
     r_vec = XYZ - loc
+    x = r_vec[:, 0]
 
-    vp = r_vec @ -amp
+    vp = -amp[0] * x
     return vp
 
 
@@ -607,21 +609,31 @@ def Ht_from_Sphere(
 
     mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
     r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    y = r_vec[:, 1]
+    z = r_vec[:, 2]
     r = np.linalg.norm(r_vec, axis=-1)
 
     ht = np.zeros((*r.shape, 3))
     ind0 = r > radius
-    ht[ind0] = amp * (1. - mu_cur * radius ** 3. / r[ind0, None] ** 3) +\
-        3. * r_vec[ind0, None] @ -amp * mu_cur * radius * r_vec[ind0] / r[ind0, None] ** 4
-    ht[~ind0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp
+    ht[ind0, 0] = amp[0] + amp[0] * radius ** 3. / (r[ind0] ** 5.) * mu_cur * (
+                2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.)
+    ht[ind0, 1] = amp[0] * radius ** 3. / (r[ind0] ** 5.) * 3. * x[ind0] * y[ind0] * mu_cur
+    ht[ind0, 2] = amp[0] * radius ** 3. / (r[ind0] ** 5.) * 3. * x[ind0] * z[ind0] * mu_cur
+    ht[~ind0, 0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp[0]
     return ht
 
 
 def Hp_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
-    hp = amp
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+
+    hp = np.zeros((*x.shape, 3))
+    hp[..., 0] = amp[0]
     return hp
 
 
@@ -694,10 +706,10 @@ class TestMagnetoStaticSphere:
 
     def testV(self):
         radius = 1.0
-        primary_field = [1., 1., 1.]
+        primary_field = None
         mu_s = 1.0
         mu_b = 1.0
-        location = [0., 0., 0.]
+        location = None
         mss = static.MagnetostaticSphere(
             radius=radius,
             primary_field=primary_field,
@@ -733,10 +745,10 @@ class TestMagnetoStaticSphere:
 
     def testH(self):
         radius = 1.0
-        primary_field = [1., 1., 1.]
+        primary_field = None
         mu_s = 1.0
         mu_b = 1.0
-        location = [0., 0., 0.]
+        location = None
         mss = static.MagnetostaticSphere(
             radius=radius,
             primary_field=primary_field,
@@ -771,10 +783,10 @@ class TestMagnetoStaticSphere:
 
     def testB(self):
         radius = 1.0
-        primary_field = [1., 1., 1.]
+        primary_field = None
         mu_s = 1.0
         mu_b = 1.0
-        location = [0., 0., 0.]
+        location = None
         mss = static.MagnetostaticSphere(
             radius=radius,
             primary_field=primary_field,
