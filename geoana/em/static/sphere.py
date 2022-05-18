@@ -269,6 +269,7 @@ class ElectrostaticSphere:
         Vs = Vt - Vp
         if field == 'secondary':
             return Vs
+
         return Vt, Vp, Vs
 
     def electric_field(self, xyz, field='all'):
@@ -378,6 +379,7 @@ class ElectrostaticSphere:
         Es = Et - Ep
         if field == 'secondary':
             return Es
+
         return Et, Ep, Es
 
     def current_density(self, xyz, field='all'):
@@ -469,6 +471,7 @@ class ElectrostaticSphere:
         Js = Jt - Jp
         if field == 'secondary':
             return Js
+
         return Jt, Jp, Js
 
     def charge_density(self, xyz, dr=None):
@@ -808,6 +811,7 @@ class MagnetostaticSphere:
         Vs = Vt - Vp
         if field == 'secondary':
             return Vs
+
         return Vt, Vp, Vs
 
     def magnetic_field(self, xyz, field='all'):
@@ -916,6 +920,7 @@ class MagnetostaticSphere:
         Hs = Ht - Hp
         if field == 'secondary':
             return Hs
+
         return Ht, Hp, Hs
 
     def magnetic_flux_density(self, xyz, field='all'):
