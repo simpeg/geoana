@@ -202,21 +202,18 @@ class ElectrostaticSphere:
 
         Define the sphere.
 
-        >>> location = np.r_[0., 0., 0.]
         >>> sigma_sphere = 10. ** -1
         >>> sigma_background = 10. ** -3
         >>> radius = 1.0
-        >>> primary_field = np.r_[1., 1., 1.]
         >>> simulation = ElectrostaticSphere(
-        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=primary_field
+        >>>     location=None, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=None
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the magnetic potential.
 
-        >>> X, Y = np.meshgrid(np.linspace(-5, 5, 20), np.linspace(-5, 5, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> r = np.linalg.norm(xyz, axis=-1)
         >>> vt = simulation.potential(xyz, field='total')
         >>> vs = simulation.potential(xyz, field='secondary')
 
@@ -309,18 +306,16 @@ class ElectrostaticSphere:
 
         Define the sphere.
 
-        >>> location = np.r_[0., 0., 0.]
         >>> sigma_sphere = 10. ** -1
         >>> sigma_background = 10. ** -3
         >>> radius = 1.0
-        >>> primary_field = np.r_[1., 1., 1.]
         >>> simulation = ElectrostaticSphere(
-        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=primary_field
+        >>>     location=None, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=None
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the electric fields.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> et = simulation.electric_field(xyz, field='total')
@@ -416,18 +411,16 @@ class ElectrostaticSphere:
 
         Define the sphere.
 
-        >>> location = np.r_[0., 0., 0.]
         >>> sigma_sphere = 10. ** -1
         >>> sigma_background = 10. ** -3
         >>> radius = 1.0
-        >>> primary_field = np.r_[1., 1., 1.]
         >>> simulation = ElectrostaticSphere(
-        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=primary_field
+        >>>     location=None, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=None
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the current densities.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> jt = simulation.current_density(xyz, field='total')
@@ -508,18 +501,16 @@ class ElectrostaticSphere:
 
         Define the sphere.
 
-        >>> location = np.r_[0., 0., 0.]
         >>> sigma_sphere = 10. ** -1
         >>> sigma_background = 10. ** -3
         >>> radius = 1.0
-        >>> primary_field = [1., 1., 1.]
         >>> simulation = ElectrostaticSphere(
-        >>>     location=location, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=primary_field
+        >>>     location=None, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=None
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the charge density.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> q = simulation.charge_density(xyz)
@@ -750,21 +741,18 @@ class MagnetostaticSphere:
 
         Define the sphere.
 
-        >>> location = np.r_[0., 0., 0.]
         >>> mu_sphere = 10. ** -1
         >>> mu_background = 10. ** -3
         >>> radius = 1.0
-        >>> primary_field = [1., 1., 1.]
         >>> simulation = MagnetostaticSphere(
-        >>>     location=location, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=primary_field
+        >>>     location=None, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=None
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the magnetic potential.
 
-        >>> X, Y = np.meshgrid(np.linspace(-5, 5, 20), np.linspace(-5, 5, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> r = np.linalg.norm(xyz, axis=-1)
         >>> vt = simulation.potential(xyz, field='total')
         >>> vs = simulation.potential(xyz, field='secondary')
 
@@ -858,18 +846,16 @@ class MagnetostaticSphere:
 
         Define the sphere.
 
-        >>> location = np.r_[0., 0., 0.]
         >>> mu_sphere = 10. ** -1
         >>> mu_background = 10. ** -3
         >>> radius = 1.0
-        >>> primary_field = [1., 1., 1.]
         >>> simulation = MagnetostaticSphere(
-        >>>     location=location, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=primary_field
+        >>>     location=None, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=None
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the magnetic fields.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> ht = simulation.magnetic_field(xyz, field='total')
@@ -967,18 +953,16 @@ class MagnetostaticSphere:
 
         Define the sphere.
 
-        >>> location = np.r_[0., 0., 0.]
         >>> mu_sphere = 10. ** -1
         >>> mu_background = 10. ** -3
         >>> radius = 1.0
-        >>> primary_field = [1., 1., 1.]
         >>> simulation = MagnetostaticSphere(
-        >>>     location=location, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=primary_field
+        >>>     location=None, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=None
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the magnetic flux densities.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> bt = simulation.magnetic_flux_density(xyz, field='total')
@@ -1005,12 +989,20 @@ class MagnetostaticSphere:
         >>> plt.show()
         """
 
+        bt = self.magnetic_field(xyz, field='total') * mu_0
         if field == 'total':
-            return self.magnetic_field(xyz, field='total') * mu_0
-        if field == 'primary':
-            return self.magnetic_field(xyz, field='primary') * mu_0
+            return bt
+
+        if field != 'total':
+            bp = self.magnetic_field(xyz, field='primary') * mu_0
+            if field == 'primary':
+                return bp
+
+        bs = bt - bp
         if field == 'secondary':
-            return self.magnetic_field(xyz, field='secondary') * mu_0
+            return bs
+
+        return bt, bp, bs
 
 
 
