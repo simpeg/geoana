@@ -533,7 +533,7 @@ class ElectrostaticSphere:
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
-        Ep = self.electric_field(xyz, field='primary')
+        E0 = self.primary_field
 
         x, y, z = self._check_XYZ(xyz)
         x0, y0, z0 = self.location
@@ -549,7 +549,7 @@ class ElectrostaticSphere:
         ind = (r < self.radius + 0.5 * dr) & (r > self.radius - 0.5 * dr)
 
         rho = np.zeros((*r.shape, 3))
-        rho[ind] = epsilon_0 * 3. * Ep * sig_cur * r_vec[ind] / r[ind, None]
+        rho[ind] = epsilon_0 * 3. * (r_vec @ E0) * sig_cur / r[ind]
 
         return rho
 
@@ -1018,7 +1018,3 @@ class MagnetostaticSphere:
             return Bs
 
         return Bt, Bp, Bs
-
-
-
-
