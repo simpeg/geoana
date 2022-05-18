@@ -308,12 +308,13 @@ def Vt_from_ESphere(
 
     sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
     r_vec = XYZ - loc
+    x = r_vec[:, 0]
     r = np.linalg.norm(r_vec, axis=-1)
 
     vt = np.zeros_like(r)
     ind0 = r > radius
-    vt[ind0] = r_vec[ind0] @ -amp * (1. - sig_cur * radius ** 3. / r[ind0] ** 3.)
-    vt[~ind0] = r_vec[~ind0] @ -amp * 3. * sig_b / (sig_s + 2. * sig_b)
+    vt[ind0] = -amp[0] * x[ind0] * (1. - sig_cur * radius ** 3 / r[ind0] ** 3)
+    vt[~ind0] = -amp[0] * x[~ind0] * 3. * sig_b / (sig_s + 2. * sig_b)
     return vt
 
 
@@ -323,8 +324,9 @@ def Vp_from_ESphere(
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
     r_vec = XYZ - loc
+    x = r_vec[:, 0]
 
-    vp = r_vec @ -amp
+    vp = -amp[0] * x
     return vp
 
 
@@ -344,13 +346,15 @@ def Et_from_ESphere(
 
     sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
     r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    y = r_vec[:, 1]
+    z = r_vec[:, 2]
     r = np.linalg.norm(r_vec, axis=-1)
 
     et = np.zeros((*r.shape, 3))
     ind0 = r > radius
-    et[ind0] = amp * (1. - sig_cur * radius ** 3. / r[ind0, None] ** 3) +\
-        3. * r_vec[ind0, None] @ amp * sig_cur * radius * r_vec[ind0] / r[ind0, None] ** 4
-    et[~ind0] = 3. * sig_b / (sig_s + 2. * sig_b) * amp
+    et[ind0] = 1
+    et[~ind0] = 3. * sig_b / (sig_s + 2. * sig_b) * amp[0]
     return et
 
 
@@ -415,16 +419,15 @@ class TestElectroStaticSphere:
         radius = 1.0
         sigma_sphere = 1.0
         sigma_background = 1.0
-        primary_field = np.r_[1., 1., 1.]
-        ess = static.ElectrostaticSphere(radius, sigma_sphere, sigma_background, primary_field)
-        assert np.all(ess.primary_field == np.r_[1., 1., 1.])
+        ess = static.ElectrostaticSphere(radius, sigma_sphere, sigma_background)
+        assert np.all(ess.primary_field == np.r_[1., 0., 0.])
         assert ess.radius == 1.0
         assert ess.sigma_sphere == 1.0
         assert ess.sigma_background == 1.0
         assert np.all(ess.location == np.r_[0., 0., 0.])
 
     def test_errors(self):
-        ess = static.ElectrostaticSphere(primary_field=np.r_[1., 1., 1.], radius=1.0, sigma_sphere=1.0,
+        ess = static.ElectrostaticSphere(primary_field=None, radius=1.0, sigma_sphere=1.0,
                                          sigma_background=1.0, location=None)
         with pytest.raises(ValueError):
             ess.sigma_sphere = -1
@@ -447,10 +450,10 @@ class TestElectroStaticSphere:
 
     def testV(self):
         radius = 1.0
-        primary_field = [1., 1., 1.]
+        primary_field = None
         sig_s = 1.0
         sig_b = 1.0
-        location = [0., 0., 0.]
+        location = None
         ess = static.ElectrostaticSphere(
             radius=radius,
             primary_field=primary_field,
@@ -660,16 +663,15 @@ class TestMagnetoStaticSphere:
         radius = 1.0
         mu_sphere = 1.0
         mu_background = 1.0
-        primary_field = np.r_[1., 1., 1.]
-        mss = static.MagnetostaticSphere(radius, mu_sphere, mu_background, primary_field)
-        assert np.all(mss.primary_field == np.r_[1., 1., 1.])
+        mss = static.MagnetostaticSphere(radius, mu_sphere, mu_background)
+        assert np.all(mss.primary_field == np.r_[1., 0., 0.])
         assert mss.radius == 1.0
         assert mss.mu_sphere == 1.0
         assert mss.mu_background == 1.0
         assert np.all(mss.location == np.r_[0., 0., 0.])
 
     def test_errors(self):
-        mss = static.MagnetostaticSphere(primary_field=np.r_[1., 1., 1.], radius=1.0, mu_sphere=1.0, mu_background=1.0,
+        mss = static.MagnetostaticSphere(primary_field=None, radius=1.0, mu_sphere=1.0, mu_background=1.0,
                                          location=None)
         with pytest.raises(ValueError):
             mss.mu_sphere = -1

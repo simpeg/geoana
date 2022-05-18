@@ -18,18 +18,20 @@ class ElectrostaticSphere:
     sigma_background : float
         background conductivity (S/m)
     primary_field : (3) array_like, optional
-        amplitude of primary electric field.
+        amplitude of primary electric field.  Default is (1, 0, 0).
     location : (3) array_like, optional
         center of the sphere. Default is (0, 0, 0).
     """
 
     def __init__(
-        self, radius, sigma_sphere, sigma_background, primary_field, location=None
+        self, radius, sigma_sphere, sigma_background, primary_field=None, location=None
     ):
 
         self.radius = radius
         self.sigma_sphere = sigma_sphere
         self.sigma_background = sigma_background
+        if primary_field is None:
+            primary_field = np.r_[1., 0., 0.]
         self.primary_field = primary_field
         if location is None:
             location = np.r_[0., 0., 0.]
@@ -96,7 +98,7 @@ class ElectrostaticSphere:
         Returns
         -------
         (3) numpy.ndarray of float
-            Amplitude of the primary current density.
+            Amplitude of the primary current density. Default = np.r_[1,0,0]
         """
         return self._primary_field
 
@@ -575,18 +577,20 @@ class MagnetostaticSphere:
         mu_background : float
             background permeability (H/m).
         primary_field : (3) array_like, optional
-            amplitude of primary magnetic field
+            amplitude of primary magnetic field.  Default is (1, 0, 0)
         location : (3) array_like, optional
-            Center of the sphere. Defaults is (0, 0, 0).
+            Center of the sphere. Default is (0, 0, 0).
         """
 
     def __init__(
-        self, radius, mu_sphere, mu_background, primary_field, location=None
+        self, radius, mu_sphere, mu_background, primary_field=None, location=None
     ):
 
         self.radius = radius
         self.mu_sphere = mu_sphere
         self.mu_background = mu_background
+        if primary_field is None:
+            primary_field = np.r_[1., 0., 0.]
         self.primary_field = primary_field
         if location is None:
             location = np.r_[0, 0, 0]
@@ -653,7 +657,7 @@ class MagnetostaticSphere:
         Returns
         -------
         (3) numpy.ndarray of float
-            Amplitude of the primary current density.
+            Amplitude of the primary current density.  Default = np.r_[1,0,0]
         """
         return self._primary_field
 
