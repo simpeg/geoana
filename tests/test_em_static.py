@@ -649,7 +649,14 @@ def Bt_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    bt = Ht_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) * mu_0
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
+    mu = np.full(r.shape, mu_b)
+    mu[r <= radius] = mu_s
+
+    bt = mu[..., None] * Et_from_ESphere(XYZ, loc, mu_s, mu_b, radius, amp)
     return bt
 
 
@@ -657,7 +664,7 @@ def Bp_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    bp = Hp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) * mu_0
+    bp = mu_b * Ep_from_ESphere(XYZ, loc, mu_s, mu_b, radius, amp)
     return bp
 
 
@@ -665,7 +672,7 @@ def Bs_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    bs = Hs_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) * mu_0
+    bs = Bt_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) - Bp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp)
     return bs
 
 

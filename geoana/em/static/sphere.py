@@ -1,7 +1,5 @@
 import numpy as np
 from scipy.constants import epsilon_0
-from scipy.constants import mu_0
-
 
 class ElectrostaticSphere:
     """Class for electrostatic solutions for a sphere in a wholespace.
@@ -14,9 +12,9 @@ class ElectrostaticSphere:
     radius : float
         radius of sphere (m).
     sigma_sphere : float
-        conductivity of target sphere (S/m)
+        conductivity of target sphere (S/m).
     sigma_background : float
-        background conductivity (S/m)
+        background conductivity (S/m).
     primary_field : (3) array_like, optional
         amplitude of primary electric field.  Default is (1, 0, 0).
     location : (3) array_like, optional
@@ -39,12 +37,12 @@ class ElectrostaticSphere:
 
     @property
     def sigma_sphere(self):
-        """Electrical conductivity of the sphere in S/m
+        """Electrical conductivity of the sphere in S/m.
 
         Returns
         -------
         float
-            Electrical conductivity of the sphere in S/m
+            Electrical conductivity of the sphere in S/m.
         """
         return self._sigma_sphere
 
@@ -57,12 +55,12 @@ class ElectrostaticSphere:
 
     @property
     def sigma_background(self):
-        """Electrical conductivity of the background in S/m
+        """Electrical conductivity of the background in S/m.
 
         Returns
         -------
         float
-            Electrical conductivity of the background in S/m
+            Electrical conductivity of the background in S/m.
         """
         return self._sigma_background
 
@@ -75,12 +73,12 @@ class ElectrostaticSphere:
 
     @property
     def radius(self):
-        """Radius of the sphere in meters
+        """Radius of the sphere in meters.
 
         Returns
         -------
         float
-            Radius of the sphere in meters
+            Radius of the sphere in meters.
         """
         return self._radius
 
@@ -118,7 +116,7 @@ class ElectrostaticSphere:
 
     @property
     def location(self):
-        """Center of the sphere
+        """Center of the sphere.
 
         Returns
         -------
@@ -209,7 +207,7 @@ class ElectrostaticSphere:
         >>>     location=None, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=None
         >>> )
 
-        Now we create a set of gridded locations, take the distances and compute the magnetic potential.
+        Now we create a set of gridded locations and compute the magnetic potential.
 
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
@@ -313,7 +311,7 @@ class ElectrostaticSphere:
         >>>     location=None, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=None
         >>> )
 
-        Now we create a set of gridded locations, take the distances and compute the electric fields.
+        Now we create a set of gridded locations and compute the electric fields.
 
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
@@ -418,7 +416,7 @@ class ElectrostaticSphere:
         >>>     location=None, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=None
         >>> )
 
-        Now we create a set of gridded locations, take the distances and compute the current densities.
+        Now we create a set of gridded locations and compute the current densities.
 
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
@@ -508,7 +506,7 @@ class ElectrostaticSphere:
         >>>     location=None, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=None
         >>> )
 
-        Now we create a set of gridded locations, take the distances and compute the charge density.
+        Now we create a set of gridded locations and compute the charge density.
 
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
@@ -748,7 +746,7 @@ class MagnetostaticSphere:
         >>>     location=None, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=None
         >>> )
 
-        Now we create a set of gridded locations, take the distances and compute the magnetic potential.
+        Now we create a set of gridded locations and compute the magnetic potential.
 
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
@@ -853,7 +851,7 @@ class MagnetostaticSphere:
         >>>     location=None, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=None
         >>> )
 
-        Now we create a set of gridded locations, take the distances and compute the magnetic fields.
+        Now we create a set of gridded locations and compute the magnetic fields.
 
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
@@ -960,7 +958,7 @@ class MagnetostaticSphere:
         >>>     location=None, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=None
         >>> )
 
-        Now we create a set of gridded locations, take the distances and compute the magnetic flux densities.
+        Now we create a set of gridded locations and compute the magnetic flux densities.
 
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
@@ -989,20 +987,32 @@ class MagnetostaticSphere:
         >>> plt.show()
         """
 
-        bt = self.magnetic_field(xyz, field='total') * mu_0
+        x, y, z = self._check_XYZ(xyz)
+        x0, y0, z0 = self.location
+        x = x - x0
+        y = y - y0
+        z = z - z0
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+
+        mu = np.full(r.shape, self.mu_background)
+        mu[r <= self.radius] = self.mu_sphere
+
+        Ht = self.magnetic_field(xyz, field='total')
+        Bt = mu[..., None] * Ht
         if field == 'total':
-            return bt
+            return Bt
 
         if field != 'total':
-            bp = self.magnetic_field(xyz, field='primary') * mu_0
+            Hp = self.magnetic_field(xyz, field='primary')
+            Bp = self.mu_background * Hp
             if field == 'primary':
-                return bp
+                return Bp
 
-        bs = bt - bp
+        Bs = Bt - Bp
         if field == 'secondary':
-            return bs
+            return Bs
 
-        return bt, bp, bs
+        return Bt, Bp, Bs
 
 
 
