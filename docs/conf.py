@@ -92,7 +92,6 @@ version = u'0.2.2'
 # The full version, including alpha/beta/rc tags.
 release = u'0.2.2'
 
-
 linkcheck_retries = 3
 linkcheck_timeout = 500
 

@@ -1,3 +1,4 @@
+import pytest
 import unittest
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
@@ -299,74 +300,529 @@ class TestEM_Static(unittest.TestCase):
                     self.assertTrue(dipole_passed)
 
 
-class Test_StaticSphere(unittest.TestCase):
+def Vt_from_ESphere(
+    XYZ, loc, sig_s, sig_b, radius, amp
+):
 
-    def testV(self):
-        x, y, z = np.mgrid[-10:10:5j, -10:10:5j, -10:10:5j]
-        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0)
-        np.testing.assert_equal(sphere.location, np.r_[0, 0, 0])
-        sphere.location = [0.1, 0.3, 0.5]
-        XYZ = np.stack([x, y, z], axis=-1)
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
-        Vt1 = sphere.potential((x, y, z), field='total')
-        Vt2 = sphere.potential(XYZ, field='total')
-        np.testing.assert_equal(Vt1, Vt2)
+    sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    r = np.linalg.norm(r_vec, axis=-1)
 
-        with self.assertRaises(ValueError):
-            Vt = sphere.potential((x[0:3], y, z))
-        with self.assertRaises(TypeError):
-            Vt = sphere.potential("xyzd")
+    vt = np.zeros_like(r)
+    ind0 = r > radius
+    vt[ind0] = -amp[0] * x[ind0] * (1. - sig_cur * radius ** 3 / r[ind0] ** 3)
+    vt[~ind0] = -amp[0] * x[~ind0] * 3. * sig_b / (sig_s + 2. * sig_b)
+    return vt
 
-        Vt1 = sphere.potential((x, y, z), field='total')
-        Vp1 = sphere.potential((x, y, z), field='primary')
-        Vs1 = sphere.potential((x, y, z), field='secondary')
-        Vt2, Vp2, Vs2 = sphere.potential((x, y, z), field='all')
-        np.testing.assert_equal(Vt1, Vt2)
-        np.testing.assert_equal(Vp1, Vp2)
-        np.testing.assert_equal(Vs1, Vs2)
 
-    def testE(self):
-        x, y, z = np.mgrid[-10:10:5j, -10:10:5j, -10:10:5j]
-        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
+def Vp_from_ESphere(
+    XYZ, loc, sig_s, sig_b, radius, amp
+):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
-        Vt1 = sphere.electric_field((x, y, z), field='total')
-        Vp1 = sphere.electric_field((x, y, z), field='primary')
-        Vs1 = sphere.electric_field((x, y, z), field='secondary')
-        Vt2, Vp2, Vs2 = sphere.electric_field((x, y, z), field='all')
-        np.testing.assert_equal(Vt1, Vt2)
-        np.testing.assert_equal(Vp1, Vp2)
-        np.testing.assert_equal(Vs1, Vs2)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
 
-    def testJ(self):
-        x, y, z = np.mgrid[-10:10:5j, -10:10:5j, -10:10:5j]
-        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
+    vp = -amp[0] * x
+    return vp
 
-        Vt1 = sphere.current_density((x, y, z), field='total')
-        Vp1 = sphere.current_density((x, y, z), field='primary')
-        Vs1 = sphere.current_density((x, y, z), field='secondary')
-        Vt2, Vp2, Vs2 = sphere.current_density((x, y, z), field='all')
-        np.testing.assert_equal(Vt1, Vt2)
-        np.testing.assert_equal(Vp1, Vp2)
-        np.testing.assert_equal(Vs1, Vs2)
 
-    def testQ(self):
-        x, y, z = np.mgrid[-10:10:51j, -10:10:51j, -10:10:51j]
-        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
-        q = sphere.charge_density((x, y, z))
-        print(np.sum(q))
+def Vs_from_ESphere(
+    XYZ, loc, sig_s, sig_b, radius, amp
+):
+
+    vs = Vt_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp) - Vp_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)
+    return vs
+
+
+def Et_from_ESphere(
+    XYZ, loc, sig_s, sig_b, radius, amp
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    y = r_vec[:, 1]
+    z = r_vec[:, 2]
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    et = np.zeros((*r.shape, 3))
+    ind0 = r > radius
+    et[ind0, 0] = amp[0] + amp[0] * radius ** 3. / (r[ind0] ** 5.) * sig_cur * (
+                2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.)
+    et[ind0, 1] = amp[0] * radius ** 3. / (r[ind0] ** 5.) * 3. * x[ind0] * y[ind0] * sig_cur
+    et[ind0, 2] = amp[0] * radius ** 3. / (r[ind0] ** 5.) * 3. * x[ind0] * z[ind0] * sig_cur
+    et[~ind0, 0] = 3. * sig_b / (sig_s + 2. * sig_b) * amp[0]
+    return et
+
+
+def Ep_from_ESphere(
+    XYZ, loc, sig_s, sig_b, radius, amp
+):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+
+    ep = np.zeros((*x.shape, 3))
+    ep[..., 0] = amp[0]
+    return ep
+
+
+def Es_from_ESphere(
+    XYZ, loc, sig_s, sig_b, radius, amp
+):
+
+    es = Et_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp) - Ep_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)
+    return es
+
+
+def Jt_from_ESphere(
+    XYZ, loc, sig_s, sig_b, radius, amp
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
+    sigma = np.full(r.shape, sig_b)
+    sigma[r <= radius] = sig_s
+
+    jt = sigma[..., None] * Et_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)
+    return jt
+
+
+def Jp_from_ESphere(
+    XYZ, loc, sig_s, sig_b, radius, amp
+):
+
+    jp = sig_b * Ep_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)
+    return jp
+
+
+def Js_from_ESphere(
+    XYZ, loc, sig_s, sig_b, radius, amp
+):
+
+    js = Jt_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp) - Jp_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)
+    return js
+
+
+class TestElectroStaticSphere:
+
+    def test_defaults(self):
+        radius = 1.0
+        sigma_sphere = 1.0
+        sigma_background = 1.0
+        ess = static.ElectrostaticSphere(radius, sigma_sphere, sigma_background)
+        assert np.all(ess.primary_field == np.r_[1., 0., 0.])
+        assert ess.radius == 1.0
+        assert ess.sigma_sphere == 1.0
+        assert ess.sigma_background == 1.0
+        assert np.all(ess.location == np.r_[0., 0., 0.])
 
     def test_errors(self):
-        sphere = static.ElectrostaticSphere(3.4, 1E-1, 1E-4, 2.0, [0.1, 0.3, 0.5])
-        with self.assertRaises(ValueError):
-            sphere.location = [[0, 0, 1],[0, 1, 0]]
-        with self.assertRaises(ValueError):
-            sphere.location = [0, 1, 2, 3]
-        with self.assertRaises(ValueError):
-            sphere.radius = -1
-        with self.assertRaises(ValueError):
-            sphere.sigma_sphere = -1
-        with self.assertRaises(ValueError):
-            sphere.sigma_background = -1
+        ess = static.ElectrostaticSphere(primary_field=None, radius=1.0, sigma_sphere=1.0,
+                                         sigma_background=1.0, location=None)
+        with pytest.raises(ValueError):
+            ess.sigma_sphere = -1
+        with pytest.raises(ValueError):
+            ess.sigma_background = -1
+        with pytest.raises(ValueError):
+            ess.radius = -2
+        with pytest.raises(ValueError):
+            ess.location = [0, 1, 2, 3, 4, 5]
+        with pytest.raises(ValueError):
+            ess.location = [[0, 0, 1, 4], [0, 1, 0, 3]]
+        with pytest.raises(TypeError):
+            ess.location = ["string"]
+        with pytest.raises(ValueError):
+            ess.primary_field = [0, 1, 2, 3, 4, 5]
+        with pytest.raises(ValueError):
+            ess.primary_field = [[0, 0, 1, 4], [0, 1, 0, 3]]
+        with pytest.raises(TypeError):
+            ess.primary_field = ["string"]
 
-if __name__ == '__main__':
-    unittest.main()
+    def testV(self):
+        radius = 1.0
+        primary_field = None
+        sig_s = 1.0
+        sig_b = 1.0
+        location = None
+        ess = static.ElectrostaticSphere(
+            radius=radius,
+            primary_field=primary_field,
+            sigma_background=sig_b,
+            sigma_sphere=sig_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        vttest = Vt_from_ESphere(
+            xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+        vptest = Vp_from_ESphere(
+            xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+        vstest = Vs_from_ESphere(
+            xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+        print(
+            "\n\nTesting Electric Potential V for Sphere\n"
+        )
+
+        vt = ess.potential(xyz, field='total')
+        vp = ess.potential(xyz, field='primary')
+        vs = ess.potential(xyz, field='secondary')
+        np.testing.assert_equal(vttest, vt)
+        np.testing.assert_equal(vptest, vp)
+        np.testing.assert_equal(vstest, vs)
+
+    def testE(self):
+        radius = 1.0
+        primary_field = None
+        sig_s = 1.0
+        sig_b = 1.0
+        location = None
+        ess = static.ElectrostaticSphere(
+            radius=radius,
+            primary_field=primary_field,
+            sigma_background=sig_b,
+            sigma_sphere=sig_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        ettest = Et_from_ESphere(
+            xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+        eptest = Ep_from_ESphere(
+            xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+        estest = Es_from_ESphere(
+            xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+        print(
+            "\n\nTesting Electric Potential V for Sphere\n"
+        )
+
+        et = ess.electric_field(xyz, field='total')
+        ep = ess.electric_field(xyz, field='primary')
+        es = ess.electric_field(xyz, field='secondary')
+        np.testing.assert_equal(ettest, et)
+        np.testing.assert_equal(eptest, ep)
+        np.testing.assert_equal(estest, es)
+
+    def testJ(self):
+        radius = 1.0
+        primary_field = None
+        sig_s = 1.0
+        sig_b = 1.0
+        location = None
+        ess = static.ElectrostaticSphere(
+            radius=radius,
+            primary_field=primary_field,
+            sigma_background=sig_b,
+            sigma_sphere=sig_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        jttest = Jt_from_ESphere(
+            xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+        jptest = Jp_from_ESphere(
+            xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+        jstest = Js_from_ESphere(
+            xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+        print(
+            "\n\nTesting Current Density J for Sphere\n"
+        )
+
+        jt = ess.current_density(xyz, field='total')
+        jp = ess.current_density(xyz, field='primary')
+        js = ess.current_density(xyz, field='secondary')
+        np.testing.assert_equal(jttest, jt)
+        np.testing.assert_equal(jptest, jp)
+        np.testing.assert_equal(jstest, js)
+
+
+def Vt_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    vt = np.zeros_like(r)
+    ind0 = r > radius
+    vt[ind0] = -amp[0] * x[ind0] * (1. - mu_cur * radius ** 3 / r[ind0] ** 3)
+    vt[~ind0] = -amp[0] * x[~ind0] * 3. * mu_b / (mu_s + 2. * mu_b)
+    return vt
+
+
+def Vp_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+
+    vp = -amp[0] * x
+    return vp
+
+
+def Vs_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    vs = Vt_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) - Vp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp)
+    return vs
+
+
+def Ht_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    y = r_vec[:, 1]
+    z = r_vec[:, 2]
+    r = np.linalg.norm(r_vec, axis=-1)
+
+    ht = np.zeros((*r.shape, 3))
+    ind0 = r > radius
+    ht[ind0, 0] = amp[0] + amp[0] * radius ** 3. / (r[ind0] ** 5.) * mu_cur * (
+                2. * x[ind0] ** 2. - y[ind0] ** 2. - z[ind0] ** 2.)
+    ht[ind0, 1] = amp[0] * radius ** 3. / (r[ind0] ** 5.) * 3. * x[ind0] * y[ind0] * mu_cur
+    ht[ind0, 2] = amp[0] * radius ** 3. / (r[ind0] ** 5.) * 3. * x[ind0] * z[ind0] * mu_cur
+    ht[~ind0, 0] = 3. * mu_b / (mu_s + 2. * mu_b) * amp[0]
+    return ht
+
+
+def Hp_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+
+    hp = np.zeros((*x.shape, 3))
+    hp[..., 0] = amp[0]
+    return hp
+
+
+def Hs_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    hs = Ht_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) - Hp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp)
+    return hs
+
+
+def Bt_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    r_vec = XYZ - loc
+    r = np.linalg.norm(r_vec, axis=-1)
+    mu = np.full(r.shape, mu_b)
+    mu[r <= radius] = mu_s
+
+    bt = mu[..., None] * Et_from_ESphere(XYZ, loc, mu_s, mu_b, radius, amp)
+    return bt
+
+
+def Bp_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    bp = mu_b * Ep_from_ESphere(XYZ, loc, mu_s, mu_b, radius, amp)
+    return bp
+
+
+def Bs_from_Sphere(
+    XYZ, loc, mu_s, mu_b, radius, amp
+):
+
+    bs = Bt_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp) - Bp_from_Sphere(XYZ, loc, mu_s, mu_b, radius, amp)
+    return bs
+
+
+class TestMagnetoStaticSphere:
+
+    def test_defaults(self):
+        radius = 1.0
+        mu_sphere = 1.0
+        mu_background = 1.0
+        mss = static.MagnetostaticSphere(radius, mu_sphere, mu_background)
+        assert np.all(mss.primary_field == np.r_[1., 0., 0.])
+        assert mss.radius == 1.0
+        assert mss.mu_sphere == 1.0
+        assert mss.mu_background == 1.0
+        assert np.all(mss.location == np.r_[0., 0., 0.])
+
+    def test_errors(self):
+        mss = static.MagnetostaticSphere(primary_field=None, radius=1.0, mu_sphere=1.0, mu_background=1.0,
+                                         location=None)
+        with pytest.raises(ValueError):
+            mss.mu_sphere = -1
+        with pytest.raises(ValueError):
+            mss.mu_background = -1
+        with pytest.raises(ValueError):
+            mss.radius = -2
+        with pytest.raises(ValueError):
+            mss.location = [0, 1, 2, 3, 4, 5]
+        with pytest.raises(ValueError):
+            mss.location = [[0, 0, 1, 4], [0, 1, 0, 3]]
+        with pytest.raises(TypeError):
+            mss.location = ["string"]
+        with pytest.raises(ValueError):
+            mss.primary_field = [0, 1, 2, 3, 4, 5]
+        with pytest.raises(ValueError):
+            mss.primary_field = [[0, 0, 1, 4], [0, 1, 0, 3]]
+        with pytest.raises(TypeError):
+            mss.primary_field = ["string"]
+
+    def testV(self):
+        radius = 1.0
+        primary_field = None
+        mu_s = 1.0
+        mu_b = 1.0
+        location = None
+        mss = static.MagnetostaticSphere(
+            radius=radius,
+            primary_field=primary_field,
+            mu_background=mu_b,
+            mu_sphere=mu_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        vttest = Vt_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
+        )
+        vptest = Vp_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
+        )
+        vstest = Vs_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
+        )
+        print(
+            "\n\nTesting Magnetic Potential V for Sphere\n"
+        )
+
+        vt = mss.potential(xyz, field='total')
+        vp = mss.potential(xyz, field='primary')
+        vs = mss.potential(xyz, field='secondary')
+        np.testing.assert_equal(vttest, vt)
+        np.testing.assert_equal(vptest, vp)
+        np.testing.assert_equal(vstest, vs)
+
+
+    def testH(self):
+        radius = 1.0
+        primary_field = None
+        mu_s = 1.0
+        mu_b = 1.0
+        location = None
+        mss = static.MagnetostaticSphere(
+            radius=radius,
+            primary_field=primary_field,
+            mu_background=mu_b,
+            mu_sphere=mu_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        httest = Ht_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
+        )
+        hptest = Hp_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
+        )
+        hstest = Hs_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
+        )
+        print(
+            "\n\nTesting Magnetic Field H for Sphere\n"
+        )
+
+        ht = mss.magnetic_field(xyz, field='total')
+        hp = mss.magnetic_field(xyz, field='primary')
+        hs = mss.magnetic_field(xyz, field='secondary')
+        np.testing.assert_equal(httest, ht)
+        np.testing.assert_equal(hptest, hp)
+        np.testing.assert_equal(hstest, hs)
+
+    def testB(self):
+        radius = 1.0
+        primary_field = None
+        mu_s = 1.0
+        mu_b = 1.0
+        location = None
+        mss = static.MagnetostaticSphere(
+            radius=radius,
+            primary_field=primary_field,
+            mu_background=mu_b,
+            mu_sphere=mu_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        btest = Bt_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
+        )
+        bptest = Bp_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
+        )
+        bstest = Bs_from_Sphere(
+            xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
+        )
+        print(
+            "\n\nTesting Magnetic Flux Density B for Sphere\n"
+        )
+
+        bt = mss.magnetic_flux_density(xyz, field='total')
+        bp = mss.magnetic_flux_density(xyz, field='primary')
+        bs = mss.magnetic_flux_density(xyz, field='secondary')
+        np.testing.assert_equal(btest, bt)
+        np.testing.assert_equal(bptest, bp)
+        np.testing.assert_equal(bstest, bs)
+
