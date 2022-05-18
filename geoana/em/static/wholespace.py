@@ -6,7 +6,7 @@ from ... import spatial
 
 __all__ = [
     "MagneticDipoleWholeSpace", "CircularLoopWholeSpace",
-    "MagneticPoleWholeSpace"
+    "MagneticPoleWholeSpace", "PointCurrentWholeSpace"
 ]
 
 
@@ -817,3 +817,25 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         """
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
+
+
+class PointCurrentWholeSpace:
+    """Class for a point current in a wholespace.
+
+        The ``PointCurrentWholeSpace`` class is used to analytically compute the
+        potentials, currents and electric fields within a wholespace due to a point current.
+
+        Parameters
+        ----------
+        current : float
+            Electrical current in the loop (A). Default is 1.
+        """
+
+    def potential(self):
+        return 1
+
+    def current(self):
+        return 1
+
+    def electric_field(self):
+        return 1
