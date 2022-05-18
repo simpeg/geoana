@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.constants import epsilon_0
-from geoana.utils import check_ndarray_dim
+from geoana.utils import check_xyz_dim
 
 
 class ElectrostaticSphere:
@@ -148,7 +148,7 @@ class ElectrostaticSphere:
         V : (..., ) np.ndarray
             If only requesting a single field.
         """
-        XYZ = check_ndarray_dim(XYZ)
+        XYZ = check_xyz_dim(XYZ)
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         E0 = self.amplitude
@@ -193,7 +193,7 @@ class ElectrostaticSphere:
         E : (..., 3) np.ndarray
             If only requesting a single field.
         """
-        XYZ = check_ndarray_dim(XYZ)
+        XYZ = check_xyz_dim(XYZ)
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         E0 = self.amplitude
@@ -241,7 +241,7 @@ class ElectrostaticSphere:
         J : (..., 3) np.ndarray
             If only requesting a single field.
         """
-        XYZ = check_ndarray_dim(XYZ)
+        XYZ = check_xyz_dim(XYZ)
 
         Et, Ep, Es = self.electric_field(XYZ, field='all')
         if field != 'total':
@@ -279,7 +279,7 @@ class ElectrostaticSphere:
         -------
         rho: (..., ) np.ndarray
         """
-        XYZ = check_ndarray_dim(XYZ)
+        XYZ = check_xyz_dim(XYZ)
 
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
