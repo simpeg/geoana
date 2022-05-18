@@ -7,7 +7,7 @@ class ElectrostaticSphere:
     """Class for electrostatic solutions for a sphere in a wholespace.
 
     The ``ElectrostaticSphere`` class is used to analytically compute the electric
-    potentials, fields, currents and change densities for a sphere in a wholespace.
+    potentials, fields, currents and charge densities for a sphere in a wholespace.
     For this class, we assume a homogeneous primary electric field along the
     :math:`\\hat{x}` direction.
 

@@ -20,12 +20,12 @@ def omega(frequency):
 
     Parameters
     ----------
-    frequency : float, (n) numpy.ndarray
+    frequency : float, numpy.ndarray
         frequency or frequencies (Hz)
 
     Returns
     -------
-    float, (n) numpy.ndarray
+    float, numpy.ndarray
         Angular frequency or frequencies in rad/s
 
     """

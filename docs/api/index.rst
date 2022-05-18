@@ -28,6 +28,16 @@ Details about Earthquakes
 
   geoana.earthquake.oksar
 
+Gravity
+===========
+
+Details about Gravity
+
+.. toctree::
+  :maxdepth: 2
+
+  geoana.gravity
+
 Utilities
 =========
 
