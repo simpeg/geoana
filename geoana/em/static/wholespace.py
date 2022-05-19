@@ -823,16 +823,16 @@ class PointCurrentWholeSpace:
     """Class for a point current in a wholespace.
 
     The ``PointCurrentWholeSpace`` class is used to analytically compute the
-    potentials, currents and electric fields within a wholespace due to a point current.
+    potentials, current densities and electric fields within a wholespace due to a point current.
 
     Parameters
     ----------
     current : float
-        Electrical current in the point current (A). Default is 1.
+        Electrical current in the point current (A). Default is 1A.
     rho : float
-        Resistivity in the point current (:math:`\\omega \\cdot m`).
+        Resistivity in the point current (:math:`\\Omega \\cdot m`).
     location : array_like, optional
-        Location at which we are observing in 3D space (m). Default is (0, 0, 0)
+        Location at which we are observing in 3D space (m). Default is (0, 0, 0).
     """
 
     def __init__(self, rho, current=1.0, location=None):
@@ -845,12 +845,12 @@ class PointCurrentWholeSpace:
 
     @property
     def current(self):
-        """Current in the point current in Amps
+        """Current in the point current in Amps.
 
         Returns
         -------
         float
-            Current in the point current in Amps
+            Current in the point current in Amps.
         """
         return self._current
 
@@ -869,12 +869,12 @@ class PointCurrentWholeSpace:
 
     @property
     def rho(self):
-        """Resistivity in the point current in :math:`\\omega \\cdot m`
+        """Resistivity in the point current in :math:`\\Omega \\cdot m`
 
         Returns
         -------
         float
-            Resistivity in the point current in :math:`\\omega \\cdot m`
+            Resistivity in the point current in :math:`\\Omega \\cdot m`
         """
         return self._rho
 
@@ -898,7 +898,7 @@ class PointCurrentWholeSpace:
         Returns
         -------
         (3) numpy.ndarray of float
-            Location of observer in 3D space. Default = np.r_[0,0,0]
+            Location of observer in 3D space. Default = np.r_[0,0,0].
         """
         return self._location
 
@@ -978,7 +978,7 @@ class PointCurrentWholeSpace:
 
        .. math::
 
-            E = \\frac{I}{4 \\pi R^2}
+            \\mathbf{E} = -\\nabla V
 
         Parameters
         ----------
@@ -1033,7 +1033,7 @@ class PointCurrentWholeSpace:
 
        .. math::
 
-            J = \\frac{I}{4 \\pi R^2}
+            \\mathbf{J} = \\frac{\\mathbf{E}}{\\rho}
 
         Parameters
         ----------

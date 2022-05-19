@@ -844,12 +844,7 @@ def J_from_PointCurrentW(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    j = cur / (4 * np.pi * r ** 2)
+    j = E_from_PointCurrentW(XYZ, loc, rho, cur) / rho
     return j
 
 
@@ -983,12 +978,7 @@ def J_from_PointCurrentH(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    j = cur / (2 * np.pi * r ** 2)
+    j = E_from_PointCurrentH(XYZ, loc, rho, cur) / rho
     return j
 
 
