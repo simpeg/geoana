@@ -833,7 +833,7 @@ class MagnetostaticSphere:
 
         # total field outside the sphere
         Ht[ind0] = H0 * (1. - mu_cur * self.radius ** 3. / r[ind0, None] ** 3) +\
-            3. * (r_vec[ind0, None] @ H0)[..., None] * mu_cur * self.radius * r_vec[ind0] / r[ind0, None] ** 4
+            3. * (r_vec[ind0] @ H0)[..., None] * mu_cur * self.radius * r_vec[ind0] / r[ind0, None] ** 4
 
         # inside the sphere
         Ht[~ind0] = 3. * mu0 / (mu1 + 2. * mu0) * H0
