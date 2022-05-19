@@ -825,4 +825,3 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(btest, bt)
         np.testing.assert_equal(bptest, bp)
         np.testing.assert_equal(bstest, bs)
-

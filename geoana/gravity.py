@@ -18,6 +18,7 @@ Simulation Classes
 
 import numpy as np
 from scipy.constants import G
+from geoana.utils import check_xyz_dim
 
 
 class PointMass:
@@ -142,7 +143,7 @@ class PointMass:
         >>> plt.title('Gravitational Potential as a function of distance from point mass')
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
         u_g = (G * self.mass) / r
@@ -199,7 +200,7 @@ class PointMass:
         >>> plt.title('Gravitational Field Lines for a Point Mass')
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
         g_vec = -G * self.mass * r_vec / r[..., None] ** 3
@@ -260,7 +261,7 @@ class PointMass:
         >>> ax9.contourf(X, Y, g_tens[:,:,2,2])
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
         g_tens = -G * self.mass * (np.eye(3) / r[..., None, None] ** 3 -
@@ -406,7 +407,7 @@ class Sphere(PointMass):
         >>> plt.title('Gravitational Potential as a function of distance from sphere')
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
         u_g = np.zeros_like(r)
@@ -472,7 +473,7 @@ class Sphere(PointMass):
         >>> plt.title('Gravitational Field Lines for a Sphere')
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
         g_vec = np.zeros((*r.shape, 3))
@@ -543,7 +544,7 @@ class Sphere(PointMass):
         >>> ax9.contourf(X, Y, g_tens[:,:,2,2])
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1)
         g_tens = np.zeros((*r.shape, 3, 3))
