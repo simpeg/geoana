@@ -830,7 +830,7 @@ class PointCurrentWholeSpace:
     current : float
         Electrical current in the point current (A). Default is 1.
     rho : float
-        Resistivity in the point current (:math:`\\ohm \\dot` m).
+        Resistivity in the point current (:math:`\\omega \\cdot m`).
     location : array_like, optional
         Location at which we are observing in 3D space (m). Default is (0, 0, 0)
     """
@@ -869,12 +869,12 @@ class PointCurrentWholeSpace:
 
     @property
     def rho(self):
-        """Resistivity in the point current in :math:`\\ohm \\dot` m
+        """Resistivity in the point current in :math:`\\omega \\cdot m`
 
         Returns
         -------
         float
-            Resistivity in the point current in :math:`\\ohm \\dot` m
+            Resistivity in the point current in :math:`\\omega \\cdot m`
         """
         return self._rho
 
@@ -893,12 +893,12 @@ class PointCurrentWholeSpace:
 
     @property
     def location(self):
-        """Center of the sphere.
+        """Location of observer in 3D space.
 
         Returns
         -------
         (3) numpy.ndarray of float
-            Center of the sphere. Default = np.r_[0,0,0]
+            Location of observer in 3D space. Default = np.r_[0,0,0]
         """
         return self._location
 
@@ -964,7 +964,7 @@ class PointCurrentWholeSpace:
         >>> plt.plot(r, v)
         >>> plt.xlabel('Distance from point current')
         >>> plt.ylabel('Electric potential')
-        >>> plt.title('Electric Potential as a function of distance from point current')
+        >>> plt.title('Electric Potential as a function of distance from Point Current in a Wholespace')
         >>> plt.show()
         """
 
@@ -972,64 +972,6 @@ class PointCurrentWholeSpace:
         r = np.linalg.norm(r_vec, axis=-1)
         v = self.rho * self.current / (4 * np.pi * r)
         return v
-
-    def current_density(self, xyz):
-        """Current density for a point current in a wholespace.
-
-       .. math::
-
-            J = \\frac{I}{4 \\pi R^2}
-
-        Parameters
-        ----------
-        xyz : (..., 3) numpy.ndarray
-            Locations to evaluate at in units m.
-
-        Returns
-        -------
-        J : (..., ) np.ndarray
-            Current density of point current in units :math:`\\frac{A}{m^2}`.
-
-        Examples
-        --------
-        Here, we define a point current with current=1A in a wholespace and plot the current density.
-
-        >>> import numpy as np
-        >>> import matplotlib.pyplot as plt
-        >>> from matplotlib import patches
-        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
-        >>> from geoana.em.static import PointCurrentWholeSpace
-
-        Define the point current.
-
-        >>> rho = 1.0
-        >>> current = 1.0
-        >>> simulation = PointCurrentWholeSpace(
-        >>>     current=current, rho=rho, location=None
-        >>> )
-
-        Now we create a set of gridded locations and compute the current density.
-
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> Z = np.zeros_like(X) + 0.25
-        >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> j = simulation.current_density(xyz)
-
-        Finally, we plot the curent density.
-
-        >>> plt.pcolor(X, Y, j, shading='auto')
-        >>> cb1 = plt.colorbar()
-        >>> cb1.set_label(label= 'Current Density ($A/m^2$)')
-        >>> plt.ylabel('Y coordinate ($m$)')
-        >>> plt.xlabel('X coordinate ($m$)')
-        >>> plt.title('Current Density for a Point Current in a Wholespace')
-        >>> plt.show()
-        """
-
-        r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)
-        j = self.current / (4 * np.pi * r ** 2)
-        return j
 
     def electric_field(self, xyz):
         """Electric field for a point current in a wholespace.
@@ -1045,7 +987,7 @@ class PointCurrentWholeSpace:
 
         Returns
         -------
-        E : (..., ) np.ndarray
+        E : (..., 3) np.ndarray
             Electric field of point current in units :math:`\\frac{V}{m^2}`.
 
         Examples
@@ -1085,3 +1027,58 @@ class PointCurrentWholeSpace:
         r = np.linalg.norm(r_vec, axis=-1)
         e = self.rho * self.current * r_vec / (4 * np.pi * r[..., None] ** 3)
         return e
+
+    def current_density(self, xyz):
+        """Current density for a point current in a wholespace.
+
+       .. math::
+
+            J = \\frac{I}{4 \\pi R^2}
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Locations to evaluate at in units m.
+
+        Returns
+        -------
+        J : (..., 3) np.ndarray
+            Current density of point current in units :math:`\\frac{A}{m^2}`.
+
+        Examples
+        --------
+        Here, we define a point current with current=1A in a wholespace and plot the current density.
+
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> from geoana.em.static import PointCurrentWholeSpace
+
+        Define the point current.
+
+        >>> rho = 1.0
+        >>> current = 1.0
+        >>> simulation = PointCurrentWholeSpace(
+        >>>     current=current, rho=rho, location=None
+        >>> )
+
+        Now we create a set of gridded locations and compute the current density.
+
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X) + 0.25
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> j = simulation.current_density(xyz)
+
+        Finally, we plot the curent density.
+
+        >>> j_amp = np.linalg.norm(j, axis=-1)
+        >>> plt.pcolor(X, Y, j_amp, shading='auto')
+        >>> cb1 = plt.colorbar()
+        >>> cb1.set_label(label= 'Current Density ($A/m^2$)')
+        >>> plt.ylabel('Y coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Current Density for a Point Current in a Wholespace')
+        >>> plt.show()
+        """
+
+        j = self.electric_field(xyz) / self.rho
+        return j
