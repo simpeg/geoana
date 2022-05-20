@@ -880,8 +880,6 @@ class TestPointCurrentWholeSpace:
         with pytest.raises(TypeError):
             pcws.current = "string"
         with pytest.raises(ValueError):
-            pcws.current = -1
-        with pytest.raises(ValueError):
             pcws.location = [0, 1, 2, 3]
         with pytest.raises(ValueError):
             pcws.location = [[0, 0], [0, 1]]
@@ -1014,13 +1012,13 @@ class TestPointCurrentHalfSpace:
         with pytest.raises(TypeError):
             pcws.current = "box"
         with pytest.raises(ValueError):
-            pcws.current = -2
-        with pytest.raises(ValueError):
             pcws.location = [0, 1, 2, 3]
         with pytest.raises(ValueError):
             pcws.location = [[0, 0], [0, 1]]
         with pytest.raises(TypeError):
             pcws.location = ["string"]
+        with pytest.raises(ValueError):
+            pcws.location = [0, 0, 1]
 
     def test_potential(self):
         rho = 1.0

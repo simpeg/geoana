@@ -1,7 +1,7 @@
 import numpy as np
 
 __all__ = [
-    "PointCurrentHalfSpace"
+    "PointCurrentHalfSpace", "PointCurrentFourElectrodeArray"
 ]
 
 
@@ -10,6 +10,7 @@ class PointCurrentHalfSpace:
 
     The ``PointCurrentHalfSpace`` class is used to analytically compute the
     potentials, current densities and electric fields within a halfspace due to a point current.
+    Surface is assumed to be at z=0.
 
     Parameters
     ----------
@@ -47,9 +48,6 @@ class PointCurrentHalfSpace:
             value = float(value)
         except:
             raise TypeError(f"current must be a number, got {type(value)}")
-
-        if value <= 0.0:
-            raise ValueError("current must be greater than 0")
 
         self._current = value
 
@@ -101,7 +99,31 @@ class PointCurrentHalfSpace:
                 f"location must be array_like with shape (3,), got {len(vec)}"
             )
 
+        if np.any(vec[..., -1] > 0):
+            raise ValueError(
+                f"z value must be less than or equal to 0 in a halfspace, got {(vec[2])}"
+            )
+
         self._location = vec
+
+    def _check_XYZ(self, XYZ):
+        if len(XYZ) == 3:
+            x, y, z = XYZ
+            x = np.asarray(x, dtype=float)
+            y = np.asarray(y, dtype=float)
+            z = np.asarray(z, dtype=float)
+        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
+            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
+        else:
+            raise TypeError(
+                "XYZ must be either a length three tuple of each dimension, "
+                "or a numpy.ndarray of shape (..., 3)."
+                )
+        if not (x.shape == y.shape and x.shape == z.shape):
+            raise ValueError(
+                "x, y, z must all have the same shape"
+            )
+        return x, y, z
 
     def potential(self, xyz):
         """Electric potential for a point current in a halfspace.
@@ -154,8 +176,17 @@ class PointCurrentHalfSpace:
         >>> plt.show()
         """
 
-        r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)
+        x0, y0, z0 = self.location
+        x, y, z = self._check_XYZ(xyz)
+        x = x - x0
+        y = y - y0
+        z = z - z0
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        if np.any(xyz[..., -1] > 0):
+            raise ValueError(
+                f"z value must be less than or equal to 0 in a halfspace, got {(xyz[2])}"
+            )
+
         v = self.rho * self.current / (2 * np.pi * r)
         return v
 
@@ -209,8 +240,18 @@ class PointCurrentHalfSpace:
         >>> plt.show()
         """
 
+        x0, y0, z0 = self.location
+        x, y, z = self._check_XYZ(xyz)
+        x = x - x0
+        y = y - y0
+        z = z - z0
         r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        if np.any(xyz[..., -1] > 0):
+            raise ValueError(
+                f"z value must be less than or equal to 0 in a halfspace, got {(xyz[2])}"
+            )
+
         e = self.rho * self.current * r_vec / (2 * np.pi * r[..., None] ** 3)
         return e
 
@@ -268,3 +309,21 @@ class PointCurrentHalfSpace:
 
         j = self.electric_field(xyz) / self.rho
         return j
+
+
+class PointCurrentFourElectrodeArray:
+    """Class for a point current in a four electrode array.
+
+    The ``PointCurrentFourElectrodeArray`` class is used to analytically compute the
+    potentials, current densities and electric fields within a four electrode array in a halfspace
+    due to a point current.
+
+    Parameters
+    ----------
+    current : float
+        Electrical current in the point current (A). Default is 1A.
+    rho : float
+        Resistivity in the point current (:math:`\\Omega \\cdot m`).
+    location : array_like, optional
+        Location at which we are observing in 3D space (m). Default is (0, 0, 0).
+    """

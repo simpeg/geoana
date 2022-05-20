@@ -862,9 +862,6 @@ class PointCurrentWholeSpace:
         except:
             raise TypeError(f"current must be a number, got {type(value)}")
 
-        if value <= 0.0:
-            raise ValueError("current must be greater than 0")
-
         self._current = value
 
     @property
@@ -968,8 +965,13 @@ class PointCurrentWholeSpace:
         >>> plt.show()
         """
 
-        r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)
+        x0, y0, z0 = self.location
+        x, y, z = self._check_XYZ(xyz)
+        x = x - x0
+        y = y - y0
+        z = z - z0
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+
         v = self.rho * self.current / (4 * np.pi * r)
         return v
 
@@ -1023,8 +1025,14 @@ class PointCurrentWholeSpace:
         >>> plt.show()
         """
 
+        x0, y0, z0 = self.location
+        x, y, z = self._check_XYZ(xyz)
+        x = x - x0
+        y = y - y0
+        z = z - z0
         r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+
         e = self.rho * self.current * r_vec / (4 * np.pi * r[..., None] ** 3)
         return e
 

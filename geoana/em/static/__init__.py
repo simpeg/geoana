@@ -36,10 +36,7 @@ from geoana.em.static.wholespace import (
 )
 
 from geoana.em.static.halfspace import (
-    PointCurrentHalfSpace
-)
-
-from geoana.em.static.electrode_array import (
+    PointCurrentHalfSpace,
     PointCurrentFourElectrodeArray
 )
 
