@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.constants import epsilon_0
+from geoana.utils import check_xyz_dim
 
 class ElectrostaticSphere:
     """Class for electrostatic solutions for a sphere in a wholespace.
@@ -140,25 +141,6 @@ class ElectrostaticSphere:
 
         self._location = vec
 
-    def _check_XYZ(self, XYZ):
-        if len(XYZ) == 3:
-            x, y, z = XYZ
-            x = np.asarray(x, dtype=float)
-            y = np.asarray(y, dtype=float)
-            z = np.asarray(z, dtype=float)
-        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
-            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
-        else:
-            raise TypeError(
-                "XYZ must be either a length three tuple of each dimension, "
-                "or a numpy.ndarray of shape (..., 3)."
-                )
-        if not (x.shape == y.shape and x.shape == z.shape):
-            raise ValueError(
-                "x, y, z must all have the same shape"
-            )
-        return x, y, z
-
     def potential(self, xyz, field='all'):
         """Electric potential for a conductive sphere in a uniform electrostatic field.
 
@@ -233,18 +215,13 @@ class ElectrostaticSphere:
         >>> plt.tight_layout()
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         E0 = self.primary_field
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
-        x0, y0, z0 = self.location
-        x, y, z = self._check_XYZ(xyz)
-        x = x-x0
-        y = y-y0
-        z = z-z0
         r_vec = xyz - self.location
-        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        r = np.linalg.norm(r_vec, axis=-1)
 
         Vt = np.zeros_like(r)
         ind0 = r > self.radius
@@ -340,26 +317,20 @@ class ElectrostaticSphere:
         >>> plt.tight_layout()
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         E0 = self.primary_field
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
-
-        x, y, z = self._check_XYZ(xyz)
-        x0, y0, z0 = self.location
-        x = x-x0
-        y = y-y0
-        z = z-z0
         r_vec = xyz - self.location
-        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        r = np.linalg.norm(r_vec, axis=-1)
 
         Et = np.zeros((*r.shape, 3))
         ind0 = r > self.radius
 
         # total field outside the sphere
         Et[ind0] = E0 * (1. - sig_cur * self.radius ** 3. / r[ind0, None] ** 3) +\
-            3. * (r_vec[ind0, None] @ E0) * sig_cur * self.radius * r_vec[ind0] / r[ind0, None] ** 4
+            3. * (r_vec[ind0] @ E0)[..., None] * sig_cur * self.radius * r_vec[ind0] / r[ind0, None] ** 4
 
         # inside the sphere
         Et[~ind0] = 3. * sig0 / (sig1 + 2. * sig0) * E0
@@ -446,13 +417,8 @@ class ElectrostaticSphere:
         >>> plt.tight_layout()
         >>> plt.show()
         """
-
-        x, y, z = self._check_XYZ(xyz)
-        x0, y0, z0 = self.location
-        x = x-x0
-        y = y-y0
-        z = z-z0
-        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        xyz = check_xyz_dim(xyz)
+        r = np.linalg.norm(xyz - self.location, axis=-1)
 
         sigma = np.full(r.shape, self.sigma_background)
         sigma[r <= self.radius] = self.sigma_sphere
@@ -529,19 +495,14 @@ class ElectrostaticSphere:
         >>> ax.set_aspect('equal')
         >>> plt.show()
         """
+        xyz = check_xyz_dim(xyz)
 
         sig0 = self.sigma_background
         sig1 = self.sigma_sphere
         sig_cur = (sig1 - sig0) / (sig1 + 2 * sig0)
-        Ep = self.electric_field(xyz, field='primary')
-
-        x, y, z = self._check_XYZ(xyz)
-        x0, y0, z0 = self.location
-        x = x-x0
-        y = y-y0
-        z = z-z0
+        E0 = self.primary_field
         r_vec = xyz - self.location
-        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        r = np.linalg.norm(r_vec, axis=-1)
 
         if dr is None:
             dr = 0.05 * self.radius
@@ -549,7 +510,7 @@ class ElectrostaticSphere:
         ind = (r < self.radius + 0.5 * dr) & (r > self.radius - 0.5 * dr)
 
         rho = np.zeros((*r.shape, 3))
-        rho[ind] = epsilon_0 * 3. * Ep * sig_cur * r_vec[ind] / r[ind, None]
+        rho[ind] = epsilon_0 * 3. * (r_vec[ind] @ E0) * sig_cur / r[ind]
 
         return rho
 
@@ -694,25 +655,6 @@ class MagnetostaticSphere:
 
         self._location = vec
 
-    def _check_XYZ(self, XYZ):
-        if len(XYZ) == 3:
-            x, y, z = XYZ
-            x = np.asarray(x, dtype=float)
-            y = np.asarray(y, dtype=float)
-            z = np.asarray(z, dtype=float)
-        elif isinstance(XYZ, np.ndarray) and XYZ.shape[-1] == 3:
-            x, y, z = XYZ[..., 0], XYZ[..., 1], XYZ[..., 2]
-        else:
-            raise TypeError(
-                "XYZ must be either a length three tuple of each dimension, "
-                "or a numpy.ndarray of shape (..., 3)."
-            )
-        if not (x.shape == y.shape and x.shape == z.shape):
-            raise ValueError(
-                "x, y, z must all have the same shape"
-            )
-        return x, y, z
-
     def potential(self, xyz, field='all'):
         """Magnetic potential for a permeable sphere in a uniform magnetostatic field.
 
@@ -775,18 +717,13 @@ class MagnetostaticSphere:
         >>> plt.tight_layout()
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         mu0 = self.mu_background
         mu1 = self.mu_sphere
         H0 = self.primary_field
         mu_cur = (mu1 - mu0) / (mu1 + 2 * mu0)
-        x0, y0, z0 = self.location
-        x, y, z = self._check_XYZ(xyz)
-        x = x - x0
-        y = y - y0
-        z = z - z0
         r_vec = xyz - self.location
-        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        r = np.linalg.norm(r_vec, axis=-1)
 
         Vt = np.zeros_like(r)
         ind0 = r > self.radius
@@ -883,26 +820,20 @@ class MagnetostaticSphere:
         >>> plt.tight_layout()
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         mu0 = self.mu_background
         mu1 = self.mu_sphere
         H0 = self.primary_field
         mu_cur = (mu1 - mu0) / (mu1 + 2 * mu0)
-
-        x, y, z = self._check_XYZ(xyz)
-        x0, y0, z0 = self.location
-        x = x - x0
-        y = y - y0
-        z = z - z0
         r_vec = xyz - self.location
-        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        r = np.linalg.norm(r_vec, axis=-1)
 
         Ht = np.zeros((*r.shape, 3))
         ind0 = r > self.radius
 
         # total field outside the sphere
         Ht[ind0] = H0 * (1. - mu_cur * self.radius ** 3. / r[ind0, None] ** 3) +\
-            3. * r_vec[ind0, None] @ H0 * mu_cur * self.radius * r_vec[ind0] / r[ind0, None] ** 4
+            3. * (r_vec[ind0] @ H0)[..., None] * mu_cur * self.radius * r_vec[ind0] / r[ind0, None] ** 4
 
         # inside the sphere
         Ht[~ind0] = 3. * mu0 / (mu1 + 2. * mu0) * H0
@@ -992,12 +923,8 @@ class MagnetostaticSphere:
         >>> plt.show()
         """
 
-        x, y, z = self._check_XYZ(xyz)
-        x0, y0, z0 = self.location
-        x = x - x0
-        y = y - y0
-        z = z - z0
-        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        xyz = check_xyz_dim(xyz)
+        r = np.linalg.norm(xyz - self.location, axis=-1)
 
         mu = np.full(r.shape, self.mu_background)
         mu[r <= self.radius] = self.mu_sphere
@@ -1018,7 +945,3 @@ class MagnetostaticSphere:
             return Bs
 
         return Bt, Bp, Bs
-
-
-
-

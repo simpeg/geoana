@@ -825,6 +825,7 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(btest, bt)
         np.testing.assert_equal(bptest, bp)
         np.testing.assert_equal(bstest, bs)
+<<<<<<< HEAD
 
 
 def V_from_PointCurrentW(
@@ -1092,3 +1093,5 @@ class TestPointCurrentHalfSpace:
         e = pcws.electric_field(xyz)
         np.testing.assert_equal(etest, e)
 
+=======
+>>>>>>> main
