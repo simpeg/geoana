@@ -484,15 +484,12 @@ class ElectrostaticSphere:
 
         Finally, we plot the charge density.
 
-        >>> fig, ax = plt.subplots(figsize=(18,6))
-        >>> im = ax.pcolor(X, Y, q, shading='auto')
-        >>> cb1 = plt.colorbar(im, ax=ax)
+        >>> plt.pcolor(X, Y, q, shading='auto')
+        >>> cb1 = plt.colorbar()
         >>> cb1.set_label(label= 'Charge Density ($C/m^2$)')
-        >>> ax.add_patch(patches.Circle((0, 0), radius, fill=False, linestyle='--'))
-        >>> ax.set_ylabel('Y coordinate ($m$)')
-        >>> ax.set_xlabel('X coordinate ($m$)')
-        >>> ax.set_title('Charge Accumulation')
-        >>> ax.set_aspect('equal')
+        >>> plt.ylabel('Y coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Charge Accumulation')
         >>> plt.show()
         """
         xyz = check_xyz_dim(xyz)
@@ -510,7 +507,7 @@ class ElectrostaticSphere:
         ind = (r < self.radius + 0.5 * dr) & (r > self.radius - 0.5 * dr)
 
         rho = np.zeros((*r.shape, 3))
-        rho[ind] = epsilon_0 * 3. * (r_vec[ind] @ E0) * sig_cur / r[ind]
+        rho[ind] = epsilon_0 * 3. * (r_vec[ind] @ E0)[..., None] * sig_cur / r[ind, None]
 
         return rho
 

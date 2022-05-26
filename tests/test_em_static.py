@@ -972,14 +972,6 @@ def V_from_PointCurrentH(
     return v
 
 
-def J_from_PointCurrentH(
-    XYZ, loc, rho, cur
-):
-
-    j = E_from_PointCurrentH(XYZ, loc, rho, cur) / rho
-    return j
-
-
 def E_from_PointCurrentH(
     XYZ, loc, rho, cur
 ):
@@ -991,6 +983,14 @@ def E_from_PointCurrentH(
 
     e = rho * cur * r_vec / (2 * np.pi * r[..., None] ** 3)
     return e
+
+
+def J_from_PointCurrentH(
+    XYZ, loc, rho, cur
+):
+
+    j = E_from_PointCurrentH(XYZ, loc, rho, cur) / rho
+    return j
 
 
 class TestPointCurrentHalfSpace:
@@ -1044,7 +1044,7 @@ class TestPointCurrentHalfSpace:
     def test_potential(self):
         rho = 1.0
         current = 1.0
-        location = np.r_[0, 0, 0]
+        location = np.r_[0., 0., 0.]
         pchs = static.PointCurrentHalfSpace(
             current=current,
             rho=rho,
@@ -1090,6 +1090,30 @@ class TestPointCurrentHalfSpace:
         np.testing.assert_equal(etest, e)
 
     def test_current_density(self):
+        rho = 1.0
+        current = 1.0
+        location = None
+        pchs = static.PointCurrentHalfSpace(
+            current=current,
+            rho=rho,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 0., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        jtest = J_from_PointCurrentH(
+            xyz, pchs.location, pchs.rho, pchs.current
+        )
+        print(
+            "\n\nTesting Current Density J for Point Current in Halfspace\n"
+        )
+
+        j = pchs.current_density(xyz)
+        np.testing.assert_equal(jtest, j)
+
+    def test_four_electrode_array(self):
         rho = 1.0
         current = 1.0
         location = None

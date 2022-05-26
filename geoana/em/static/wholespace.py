@@ -954,12 +954,13 @@ class PointCurrentWholeSpace:
         >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> r = np.linalg.norm(xyz, axis=-1)
         >>> v = simulation.potential(xyz)
 
         Finally, we plot the electric potential as a function of distance.
 
-        >>> plt.plot(r, v)
+        >>> plt.pcolor(X, Y, v)
+        >>> cb1 = plt.colorbar()
+        >>> cb1.set_label(label= 'Potential (V)')
         >>> plt.xlabel('Distance from point current')
         >>> plt.ylabel('Electric potential')
         >>> plt.title('Electric Potential as a function of distance from Point Current in a Wholespace')

@@ -4,7 +4,7 @@ from geoana.em.static import PointCurrentWholeSpace
 from geoana.utils import check_xyz_dim
 
 __all__ = [
-    "PointCurrentHalfSpace", "PointCurrentFourElectrodeArray"
+    "PointCurrentHalfSpace"
 ]
 
 
@@ -143,7 +143,7 @@ class PointCurrentHalfSpace:
         Examples
         --------
         Here, we define a point current with current=1A in a halfspace and plot the electric
-        potential as a function of distance.
+        potential.
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
@@ -157,17 +157,18 @@ class PointCurrentHalfSpace:
         >>>     current=current, rho=rho, location=np.r_[1, 1, -1]
         >>> )
 
-        Now we create a set of gridded locations, take the distances and compute the electric potential.
+        Now we create a set of gridded locations and compute the electric potential.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
         >>> Z = np.zeros_like(X)
         >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> r = np.linalg.norm(xyz, axis=-1)
         >>> v = simulation.potential(xyz)
 
-        Finally, we plot the electric potential as a function of distance.
+        Finally, we plot the electric potential.
 
-        >>> plt.plot(r, v)
+        >>> plt.pcolor(X, Y, v)
+        >>> cb1 = plt.colorbar()
+        >>> cb1.set_label(label= 'Potential (V)')
         >>> plt.xlabel('Distance from point current')
         >>> plt.ylabel('Electric potential')
         >>> plt.title('Electric Potential as a function of distance from Point Current in a Halfspace')
@@ -219,7 +220,7 @@ class PointCurrentHalfSpace:
 
         Now we create a set of gridded locations and compute the electric field.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
         >>> Z = np.zeros_like(X)
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> e = simulation.electric_field(xyz)
@@ -272,12 +273,12 @@ class PointCurrentHalfSpace:
         >>> rho = 1.0
         >>> current = 1.0
         >>> simulation = PointCurrentHalfSpace(
-        >>>     current=current, rho=rho, location=None
+        >>>     current=current, rho=rho, location=np.r_[1, 1, -1]
         >>> )
 
         Now we create a set of gridded locations and compute the current density.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
         >>> Z = np.zeros_like(X)
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> j = simulation.current_density(xyz)
@@ -297,104 +298,25 @@ class PointCurrentHalfSpace:
         j = self.electric_field(xyz) / self.rho
         return j
 
+    def four_electrode_array(self, xyz):
+        """Potential for a four electrode array.
 
-class PointCurrentFourElectrodeArray:
-    """Class for a point current in a four electrode array.
-
-    The ``PointCurrentFourElectrodeArray`` class is used to analytically compute the
-    potentials, current densities and electric fields within a four electrode array in a halfspace
-    due to a point current.  Surface is assumed to be at z=0.
-
-    Parameters
-    ----------
-    current : float
-        Electrical current in the point current (A). Default is 1A.
-    rho : float
-        Resistivity in the point current (:math:`\\Omega \\cdot m`).
-    location : array_like, optional
-        Locations at which we are observing in 3D space (m). Default is (0, 0, 0).
-    """
-
-    def __init__(self, rho, current=1.0, location=None):
-
-        self.current = current
-        self.rho = rho
-        if location is None:
-            location = np.r_[0, 0, 0]
-        self.location = location
-
-    @property
-    def current(self):
-        """Current in the point current in Amps.
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Locations to evaluate at in units m.
 
         Returns
         -------
-        float
-            Current in the point current in Amps.
+        V : (..., 3) np.ndarray
+            Potential of four electrode array in units V.
         """
-        return self._current
 
-    @current.setter
-    def current(self, value):
-
-        try:
-            value = float(value)
-        except:
-            raise TypeError(f"current must be a number, got {type(value)}")
-
-        self._current = value
-
-    @property
-    def rho(self):
-        """Resistivity in the point current in :math:`\\Omega \\cdot m`.
-
-        Returns
-        -------
-        float
-            Resistivity in the point current in :math:`\\Omega \\cdot m`.
-        """
-        return self._rho
-
-    @rho.setter
-    def rho(self, value):
-
-        try:
-            value = float(value)
-        except:
-            raise TypeError(f"current must be a number, got {type(value)}")
-
-        if value <= 0.0:
-            raise ValueError("current must be greater than 0")
-
-        self._rho = value
-
-    @property
-    def location(self):
-        """Location of observer in 3D space.
-
-        Returns
-        -------
-        (3) numpy.ndarray of float
-            Location of observer in 3D space. Default = np.r_[0,0,0].
-        """
-        return self._location
-
-    @location.setter
-    def location(self, vec):
-
-        try:
-            vec = np.atleast_1d(vec).astype(float)
-        except:
-            raise TypeError(f"location must be array_like, got {type(vec)}")
-
-        if len(vec) != 3:
+        xyz = check_xyz_dim(xyz)
+        if np.any(xyz[..., -1] > 0):
             raise ValueError(
-                f"location must be array_like with shape (3,), got {len(vec)}"
+                f"z value must be less than or equal to 0 in a halfspace, got {(xyz[..., -1])}"
             )
 
-        if np.any(vec[..., -1] > 0):
-            raise ValueError(
-                f"z value must be less than or equal to 0 in a halfspace, got {(vec[..., -1])}"
-            )
-
-        self._location = vec
+        v = 1
+        return v
