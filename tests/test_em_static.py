@@ -1065,6 +1065,14 @@ class TestPointCurrentHalfSpace:
         v = pchs.potential(xyz)
         np.testing.assert_equal(vtest, v)
 
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        with pytest.raises(ValueError):
+            pchs.potential(xyz)
+
     def test_electric_field(self):
         rho = 1.0
         current = 1.0
@@ -1088,6 +1096,14 @@ class TestPointCurrentHalfSpace:
 
         e = pchs.electric_field(xyz)
         np.testing.assert_equal(etest, e)
+
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        with pytest.raises(ValueError):
+            pchs.electric_field(xyz)
 
     def test_current_density(self):
         rho = 1.0
@@ -1113,6 +1129,14 @@ class TestPointCurrentHalfSpace:
         j = pchs.current_density(xyz)
         np.testing.assert_equal(jtest, j)
 
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        with pytest.raises(ValueError):
+            pchs.current_density(xyz)
+
     def test_four_electrode_array(self):
         rho = 1.0
         current = 1.0
@@ -1127,13 +1151,13 @@ class TestPointCurrentHalfSpace:
         z = np.linspace(-40., 0., 50)
         xyz = discretize.utils.ndgrid([x, y, z])
 
-        jtest = J_from_PointCurrentH(
-            xyz, pchs.location, pchs.rho, pchs.current
-        )
-        print(
-            "\n\nTesting Current Density J for Point Current in Halfspace\n"
-        )
+        j = pchs.four_electrode_array(xyz)
+        np.testing.assert_equal(1, j)
 
-        j = pchs.current_density(xyz)
-        np.testing.assert_equal(jtest, j)
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
 
+        with pytest.raises(ValueError):
+            pchs.four_electrode_array(xyz)
