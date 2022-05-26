@@ -27,18 +27,16 @@ class PointCurrentHalfSpace:
 
     def __init__(self, rho, current=1.0, location=None):
 
+        _primary = PointCurrentWholeSpace(rho, current=1.0, location=None)
+        _image = PointCurrentWholeSpace(rho, current=1.0, location=None)
+        self._primary = _primary
+        self._image = _image
+
         self.current = current
         self.rho = rho
         if location is None:
             location = np.r_[0, 0, 0]
         self.location = location
-        location_image = np.copy(location)
-        location_image[..., -1] = location_image[..., -1] * -1
-
-        _primary = PointCurrentWholeSpace(rho=self.rho, current=1.0, location=self.location)
-        _image = PointCurrentWholeSpace(rho=self.rho, current=1.0, location=location_image)
-        self._primary = _primary
-        self._image = _image
 
     @property
     def current(self):
@@ -60,6 +58,8 @@ class PointCurrentHalfSpace:
             raise TypeError(f"current must be a number, got {type(value)}")
 
         self._current = value
+        self._primary.current = value
+        self._image.current = value
 
     @property
     def rho(self):
@@ -84,6 +84,8 @@ class PointCurrentHalfSpace:
             raise ValueError("current must be greater than 0")
 
         self._rho = value
+        self._primary.rho = value
+        self._image.rho = value
 
     @property
     def location(self):
@@ -115,6 +117,11 @@ class PointCurrentHalfSpace:
             )
 
         self._location = vec
+        self._primary.location = vec
+
+        vec = np.copy(vec)
+        vec[-1] *= -1
+        self._image.location = vec
 
     def potential(self, xyz):
         """Electric potential for a point current in a halfspace.
@@ -147,7 +154,7 @@ class PointCurrentHalfSpace:
         >>> rho = 1.0
         >>> current = 1.0
         >>> simulation = PointCurrentHalfSpace(
-        >>>     current=current, rho=rho, location=None,
+        >>>     current=current, rho=rho, location=np.r_[1, 1, -1]
         >>> )
 
         Now we create a set of gridded locations, take the distances and compute the electric potential.
@@ -207,7 +214,7 @@ class PointCurrentHalfSpace:
         >>> rho = 1.0
         >>> current = 1.0
         >>> simulation = PointCurrentHalfSpace(
-        >>>     current=current, rho=rho, location=None
+        >>>     current=current, rho=rho, location=np.r_[1, 1, -1]
         >>> )
 
         Now we create a set of gridded locations and compute the electric field.

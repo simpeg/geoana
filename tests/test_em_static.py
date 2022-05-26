@@ -997,34 +997,55 @@ class TestPointCurrentHalfSpace:
 
     def test_defaults(self):
         rho = 1.0
-        pcws = static.PointCurrentHalfSpace(rho)
-        assert pcws.rho == 1.0
-        assert pcws.current == 1.0
-        assert np.all(pcws.location == np.r_[0., 0., 0.])
+        pchs = static.PointCurrentHalfSpace(rho)
+        assert pchs.rho == 1.0
+        assert pchs.current == 1.0
+        assert np.all(pchs.location == np.r_[0., 0., 0.])
 
     def test_error(self):
-        pcws = static.PointCurrentHalfSpace(rho=1.0, current=1.0, location=None)
+        pchs = static.PointCurrentHalfSpace(rho=1.0, current=1.0, location=None)
 
         with pytest.raises(TypeError):
-            pcws.rho = "box"
+            pchs.rho = "box"
         with pytest.raises(ValueError):
-            pcws.rho = -2
+            pchs.rho = -2
         with pytest.raises(TypeError):
-            pcws.current = "box"
+            pchs.current = "box"
         with pytest.raises(ValueError):
-            pcws.location = [0, 1, 2, 3]
+            pchs.location = [0, 1, 2, 3]
         with pytest.raises(ValueError):
-            pcws.location = [[0, 0], [0, 1]]
+            pchs.location = [[0, 0], [0, 1]]
         with pytest.raises(TypeError):
-            pcws.location = ["string"]
+            pchs.location = ["string"]
         with pytest.raises(ValueError):
-            pcws.location = [0, 0, 1]
+            pchs.location = [0, 0, 1]
+
+    def test_whole_space_objects(self):
+        pchs = static.PointCurrentHalfSpace(rho=1.0, current=1.0, location=None)
+
+        assert pchs._primary.rho == 1.0
+        assert pchs._image.rho == 1.0
+        assert pchs._primary.current == 1.0
+        assert pchs._image.current == 1.0
+        assert np.all(pchs._primary.location == np.r_[0., 0., 0.])
+        assert np.all(pchs._image.location == np.r_[0., 0., 0.])
+
+        pchs.rho = 2.0
+        pchs.current = 2.0
+        pchs.location = np.r_[1, 1, -1]
+
+        assert pchs._primary.rho == 2.0
+        assert pchs._image.rho == 2.0
+        assert pchs._primary.current == 2.0
+        assert pchs._image.current == 2.0
+        assert np.all(pchs._primary.location == np.r_[1., 1., -1.])
+        assert np.all(pchs._image.location == np.r_[1., 1., 1.])
 
     def test_potential(self):
         rho = 1.0
         current = 1.0
-        location = None
-        pcws = static.PointCurrentHalfSpace(
+        location = np.r_[0, 0, 0]
+        pchs = static.PointCurrentHalfSpace(
             current=current,
             rho=rho,
             location=location
@@ -1035,44 +1056,20 @@ class TestPointCurrentHalfSpace:
         xyz = discretize.utils.ndgrid([x, y, z])
 
         vtest = V_from_PointCurrentH(
-            xyz, pcws.location, pcws.rho, pcws.current
+            xyz, pchs.location, pchs.rho, pchs.current
         )
         print(
-            "\n\nTesting Electric Potential V for Point Current\n"
+            "\n\nTesting Electric Potential V for Point Current in Halfspace\n"
         )
 
-        v = pcws.potential(xyz)
+        v = pchs.potential(xyz)
         np.testing.assert_equal(vtest, v)
-
-    def test_current_density(self):
-        rho = 1.0
-        current = 1.0
-        location = None
-        pcws = static.PointCurrentHalfSpace(
-            current=current,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 0., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
-
-        jtest = J_from_PointCurrentH(
-            xyz, pcws.location, pcws.rho, pcws.current
-        )
-        print(
-            "\n\nTesting Current Density J for Point Current\n"
-        )
-
-        j = pcws.current_density(xyz)
-        np.testing.assert_equal(jtest, j)
 
     def test_electric_field(self):
         rho = 1.0
         current = 1.0
         location = None
-        pcws = static.PointCurrentHalfSpace(
+        pchs = static.PointCurrentHalfSpace(
             current=current,
             rho=rho,
             location=location
@@ -1083,11 +1080,36 @@ class TestPointCurrentHalfSpace:
         xyz = discretize.utils.ndgrid([x, y, z])
 
         etest = E_from_PointCurrentH(
-            xyz, pcws.location, pcws.rho, pcws.current
+            xyz, pchs.location, pchs.rho, pchs.current
         )
         print(
-            "\n\nTesting Electric Field E for Point Current\n"
+            "\n\nTesting Electric Field E for Point Current in Halfspace\n"
         )
 
-        e = pcws.electric_field(xyz)
+        e = pchs.electric_field(xyz)
         np.testing.assert_equal(etest, e)
+
+    def test_current_density(self):
+        rho = 1.0
+        current = 1.0
+        location = None
+        pchs = static.PointCurrentHalfSpace(
+            current=current,
+            rho=rho,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 0., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        jtest = J_from_PointCurrentH(
+            xyz, pchs.location, pchs.rho, pchs.current
+        )
+        print(
+            "\n\nTesting Current Density J for Point Current in Halfspace\n"
+        )
+
+        j = pchs.current_density(xyz)
+        np.testing.assert_equal(jtest, j)
+
