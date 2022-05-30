@@ -6,6 +6,7 @@ import discretize
 
 from geoana.em import static, fdem
 from geoana import spatial
+from geoana.em.static import electrode_array_potential
 
 TOL = 0.1
 
@@ -1137,27 +1138,26 @@ class TestPointCurrentHalfSpace:
         with pytest.raises(ValueError):
             pchs.current_density(xyz)
 
-    def test_four_electrode_array(self):
-        rho = 1.0
-        current = 1.0
-        location = None
-        pchs = static.PointCurrentHalfSpace(
-            current=current,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 0., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
 
-        j = pchs.four_electrode_array(xyz)
-        np.testing.assert_equal(1, j)
+def test_electrode_array_potential():
+    rho = 1.0
+    current = 1.0
+    location1 = np.r_[1., 1., -1.]
+    location2 = np.r_[1., 2., -1.]
+    x = np.linspace(-20., 20., 50)
+    y = np.linspace(-30., 30., 50)
+    z = np.linspace(-40., 0., 50)
+    xyz = discretize.utils.ndgrid([x, y, z])
 
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+    j = electrode_array_potential(xyz, rho, current, location1, location2)
+    np.testing.assert_equal(1, j)
 
-        with pytest.raises(ValueError):
-            pchs.four_electrode_array(xyz)
+    x = np.linspace(-20., 20., 50)
+    y = np.linspace(-30., 30., 50)
+    z = np.linspace(-40., 40., 50)
+    xyz = discretize.utils.ndgrid([x, y, z])
+
+    with pytest.raises(ValueError):
+        electrode_array_potential(xyz, rho, current, location1, location2)
+
+

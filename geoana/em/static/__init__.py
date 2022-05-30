@@ -21,6 +21,8 @@ Simulation Classes
   MagnetostaticSphere
   PointCurrentWholeSpace
   PointCurrentHalfSpace
+
+  electrode_array_potential
 """
 
 from geoana.em.static.sphere import ElectrostaticSphere
@@ -35,7 +37,8 @@ from geoana.em.static.wholespace import (
 )
 
 from geoana.em.static.halfspace import (
-    PointCurrentHalfSpace
+    PointCurrentHalfSpace,
+    electrode_array_potential
 )
 
 from geoana.em.static.freespace import LineCurrentFreeSpace

@@ -4,8 +4,72 @@ from geoana.em.static import PointCurrentWholeSpace
 from geoana.utils import check_xyz_dim
 
 __all__ = [
-    "PointCurrentHalfSpace"
+    "PointCurrentHalfSpace",
+    "electrode_array_potential"
 ]
+
+
+def electrode_array_potential(xyz, rho, current, location1, location2):
+    """Potential for a four electrode array.
+
+    Parameters
+    ----------
+    xyz : (..., 3) numpy.ndarray
+        Locations to evaluate at in units m.
+    rho :
+    current :
+    location1 :
+    location2 :
+
+    Returns
+    -------
+    V : (..., 3) np.ndarray
+        Potential of four electrode array in units V.
+
+    Examples
+    --------
+    Here, we define two point current with current=1A and current=-1A in a halfspace and plot the electric
+    potential in the four electrode array.
+
+    >>> import numpy as np
+    >>> import matplotlib.pyplot as plt
+    >>> from geoana.em.static import PointCurrentHalfSpace
+
+    Define the point currents.
+
+    >>> rho = 1.0
+    >>> current = 1.0
+    >>> location1 = [1., 1., -1.]
+    >>> location2 = [2., 2., -1.]
+
+    Now we create a set of gridded locations and compute the electric potential.
+
+    >>> X, Y = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
+    >>> Z = np.zeros_like(X)
+    >>> xyz = np.stack((X, Y, Z), axis=-1)
+    >>> v = electrode_array_potential(xyz, rho, current, location1, location2)
+
+    Finally, we plot the electric potential.
+
+    >>> plt.pcolor(X, Y, v)
+    >>> cb1 = plt.colorbar()
+    >>> cb1.set_label(label= 'Potential (V)')
+    >>> plt.xlabel('Distance from point current')
+    >>> plt.ylabel('Electric potential')
+    >>> plt.title('Electric Potential as a function of distance from Point Current in a Halfspace')
+    >>> plt.show()
+    """
+
+    xyz = check_xyz_dim(xyz)
+    if np.any(xyz[..., -1] > 0):
+        raise ValueError(
+            f"z value must be less than or equal to 0 in a halfspace, got {(xyz[..., -1])}"
+        )
+
+    a = PointCurrentHalfSpace(rho=rho, current=current, location=location1)
+    b = PointCurrentHalfSpace(rho=rho, current=-current, location=location2)
+    v = a.potential(xyz) - b.potential(xyz)
+    return v
 
 
 class PointCurrentHalfSpace:
@@ -297,26 +361,3 @@ class PointCurrentHalfSpace:
 
         j = self.electric_field(xyz) / self.rho
         return j
-
-    def four_electrode_array(self, xyz):
-        """Potential for a four electrode array.
-
-        Parameters
-        ----------
-        xyz : (..., 3) numpy.ndarray
-            Locations to evaluate at in units m.
-
-        Returns
-        -------
-        V : (..., 3) np.ndarray
-            Potential of four electrode array in units V.
-        """
-
-        xyz = check_xyz_dim(xyz)
-        if np.any(xyz[..., -1] > 0):
-            raise ValueError(
-                f"z value must be less than or equal to 0 in a halfspace, got {(xyz[..., -1])}"
-            )
-
-        v = 1
-        return v
