@@ -9,17 +9,19 @@ __all__ = [
 ]
 
 
-def electrode_array_potential(xyz, rho, current, location1, location2):
-    """Potential for a four electrode array.
+def electrode_array_potential(xyz1, xyz2, rho, current, location1, location2):
+    """Potential for a four electrode array.  Surface is assumed to be at z=0.
 
     Parameters
     ----------
-    xyz : (..., 3) numpy.ndarray
-        Locations to evaluate at in units m.
-    rho :
-    current :
-    location1 :
-    location2 :
+    xyz1 : (..., 3) numpy.ndarray
+        First location to evaluate at in units m.
+    xyz2 : (..., 3) numpy.ndarray
+        Second location to evaluate at in units m.
+    rho : Resistivity in the electrode array in :math:`\\Omega \\cdot m`.
+    current : Current in the electrode array in A.
+    location1 : Location of first electrode in 3D space in m.
+    location2 : Location of second electrode in 3D space in m.
 
     Returns
     -------
@@ -34,41 +36,58 @@ def electrode_array_potential(xyz, rho, current, location1, location2):
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
     >>> from geoana.em.static import PointCurrentHalfSpace
+    >>> from geoana.em.static import electrode_array_potential
 
     Define the point currents.
 
     >>> rho = 1.0
     >>> current = 1.0
-    >>> location1 = [1., 1., -1.]
-    >>> location2 = [2., 2., -1.]
+    >>> location1 = np.r_[1., 1., -1.]
+    >>> location2 = np.r_[2., 2., -1.]
 
     Now we create a set of gridded locations and compute the electric potential.
 
-    >>> X, Y = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
-    >>> Z = np.zeros_like(X)
-    >>> xyz = np.stack((X, Y, Z), axis=-1)
-    >>> v = electrode_array_potential(xyz, rho, current, location1, location2)
+    >>> X1, Y1 = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
+    >>> Z1 = np.zeros_like(X1)
+    >>> xyz1 = np.stack((X1, Y1, Z1), axis=-1)
+    >>> X2, Y2 = np.meshgrid(np.linspace(-2, 2, 20), np.linspace(-2, 2, 20))
+    >>> Z2 = np.zeros_like(X1)
+    >>> xyz2 = np.stack((X2, Y2, Z2), axis=-1)
+    >>> v = electrode_array_potential(xyz1, xyz2, rho, current, location1, location2)
 
     Finally, we plot the electric potential.
 
-    >>> plt.pcolor(X, Y, v)
+    >>> plt.pcolor(X1, Y1, v)
     >>> cb1 = plt.colorbar()
     >>> cb1.set_label(label= 'Potential (V)')
-    >>> plt.xlabel('Distance from point current')
-    >>> plt.ylabel('Electric potential')
-    >>> plt.title('Electric Potential as a function of distance from Point Current in a Halfspace')
+    >>> plt.xlabel('x')
+    >>> plt.ylabel('y')
+    >>> plt.title('Electric Potential of an electrode array in a Halfspace')
     >>> plt.show()
     """
 
-    xyz = check_xyz_dim(xyz)
-    if np.any(xyz[..., -1] > 0):
+    xyz1 = check_xyz_dim(xyz1)
+    xyz2 = check_xyz_dim(xyz2)
+    if np.any(xyz1[..., -1] > 0):
         raise ValueError(
-            f"z value must be less than or equal to 0 in a halfspace, got {(xyz[..., -1])}"
+            f"z value must be less than or equal to 0 in a halfspace, got {(xyz1[..., -1])}"
+        )
+    if np.any(xyz2[..., -1] > 0):
+        raise ValueError(
+            f"z value must be less than or equal to 0 in a halfspace, got {(xyz2[..., -1])}"
+        )
+    if np.any(location1[..., -1] > 0):
+        raise ValueError(
+            f"z value must be less than or equal to 0 in a halfspace, got {(location1[..., -1])}"
+        )
+    if np.any(location2[..., -1] > 0):
+        raise ValueError(
+            f"z value must be less than or equal to 0 in a halfspace, got {(location2[..., -1])}"
         )
 
     a = PointCurrentHalfSpace(rho=rho, current=current, location=location1)
     b = PointCurrentHalfSpace(rho=rho, current=-current, location=location2)
-    v = a.potential(xyz) - b.potential(xyz)
+    v = a.potential(xyz1) - a.potential(xyz2) - b.potential(xyz1) + b.potential(xyz2)
     return v
 
 
@@ -233,9 +252,9 @@ class PointCurrentHalfSpace:
         >>> plt.pcolor(X, Y, v)
         >>> cb1 = plt.colorbar()
         >>> cb1.set_label(label= 'Potential (V)')
-        >>> plt.xlabel('Distance from point current')
-        >>> plt.ylabel('Electric potential')
-        >>> plt.title('Electric Potential as a function of distance from Point Current in a Halfspace')
+        >>> plt.xlabel('x')
+        >>> plt.ylabel('y')
+        >>> plt.title('Electric Potential from Point Current in a Halfspace')
         >>> plt.show()
         """
 

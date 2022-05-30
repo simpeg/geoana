@@ -961,9 +961,9 @@ class PointCurrentWholeSpace:
         >>> plt.pcolor(X, Y, v)
         >>> cb1 = plt.colorbar()
         >>> cb1.set_label(label= 'Potential (V)')
-        >>> plt.xlabel('Distance from point current')
-        >>> plt.ylabel('Electric potential')
-        >>> plt.title('Electric Potential as a function of distance from Point Current in a Wholespace')
+        >>> plt.xlabel('x')
+        >>> plt.ylabel('y')
+        >>> plt.title('Electric Potential from Point Current in a Wholespace')
         >>> plt.show()
         """
 

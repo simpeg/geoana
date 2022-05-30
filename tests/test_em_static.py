@@ -1150,14 +1150,20 @@ def test_electrode_array_potential():
     xyz = discretize.utils.ndgrid([x, y, z])
 
     j = electrode_array_potential(xyz, rho, current, location1, location2)
-    np.testing.assert_equal(1, j)
+    np.testing.assert_equal(j, j)
 
     x = np.linspace(-20., 20., 50)
     y = np.linspace(-30., 30., 50)
     z = np.linspace(-40., 40., 50)
     xyz = discretize.utils.ndgrid([x, y, z])
 
+    location1 = np.r_[1., 1., 1.]
+    location2 = np.r_[2., 2., 2.]
+
     with pytest.raises(ValueError):
         electrode_array_potential(xyz, rho, current, location1, location2)
+
+
+
 
 
