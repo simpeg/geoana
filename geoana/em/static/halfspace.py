@@ -15,13 +15,17 @@ def electrode_array_potential(xyz1, xyz2, rho, current, location1, location2):
     Parameters
     ----------
     xyz1 : (..., 3) numpy.ndarray
-        First location to evaluate at in units m.
+        Location of first voltage electrode in units m.
     xyz2 : (..., 3) numpy.ndarray
-        Second location to evaluate at in units m.
-    rho : Resistivity in the electrode array in :math:`\\Omega \\cdot m`.
-    current : Current in the electrode array in A.
-    location1 : Location of first electrode in 3D space in m.
-    location2 : Location of second electrode in 3D space in m.
+        Location of second voltage electrode in units m.
+    rho : float
+        Resistivity in the electrode array in :math:`\\Omega \\cdot m`.
+    current : float
+        Current in the electrode array in A.
+    location1 : (..., 3) numpy.ndarray
+        Location of current source in 3D space in m.
+    location2 : (..., 3) numpy.ndarray
+        Location of current sink in 3D space in m.
 
     Returns
     -------
@@ -30,7 +34,7 @@ def electrode_array_potential(xyz1, xyz2, rho, current, location1, location2):
 
     Examples
     --------
-    Here, we define two point current with current=1A and current=-1A in a halfspace and plot the electric
+    Here, we define two point currents with current=1A and current=-1A in a halfspace and plot the electric
     potential in the four electrode array.
 
     >>> import numpy as np
@@ -68,21 +72,10 @@ def electrode_array_potential(xyz1, xyz2, rho, current, location1, location2):
 
     xyz1 = check_xyz_dim(xyz1)
     xyz2 = check_xyz_dim(xyz2)
-    if np.any(xyz1[..., -1] > 0):
+    if np.any(xyz1[..., -1] > 0) or np.any(xyz2[..., -1] > 0) or np.any(location1[..., -1] > 0) or\
+            np.any(location2[..., -1] > 0):
         raise ValueError(
-            f"z value must be less than or equal to 0 in a halfspace, got {(xyz1[..., -1])}"
-        )
-    if np.any(xyz2[..., -1] > 0):
-        raise ValueError(
-            f"z value must be less than or equal to 0 in a halfspace, got {(xyz2[..., -1])}"
-        )
-    if np.any(location1[..., -1] > 0):
-        raise ValueError(
-            f"z value must be less than or equal to 0 in a halfspace, got {(location1[..., -1])}"
-        )
-    if np.any(location2[..., -1] > 0):
-        raise ValueError(
-            f"z value must be less than or equal to 0 in a halfspace, got {(location2[..., -1])}"
+            f"z value must be less than or equal to 0 in a halfspace"
         )
 
     a = PointCurrentHalfSpace(rho=rho, current=current, location=location1)

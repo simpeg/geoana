@@ -1139,6 +1139,28 @@ class TestPointCurrentHalfSpace:
             pchs.current_density(xyz)
 
 
+def V_from_Electrode_Array():
+    rho = 1.0
+    current = 1.0
+    location1 = np.r_[1., 1., -1.]
+    location2 = np.r_[1., 2., -1.]
+    x = np.linspace(-20., 20., 50)
+    y = np.linspace(-30., 30., 50)
+    z = np.linspace(-40., 0., 50)
+    xyz1 = discretize.utils.ndgrid([x, y, z])
+    x = np.linspace(-20., 20., 50)
+    y = np.linspace(-30., 30., 50)
+    z = np.linspace(-40., 0., 50)
+    xyz2 = discretize.utils.ndgrid([x, y, z])
+    am = np.linalg.norm(xyz1 - location1)
+    bm = np.linalg.norm(xyz2 - location1)
+    an = np.linalg.norm(xyz1 - location2)
+    bn = np.linalg.norm(xyz2 - location2)
+
+    v = (rho * current / (2 * np.pi)) * (1 / am - 1 / bm - 1 / an + 1 / bn)
+    return v
+
+
 def test_electrode_array_potential():
     rho = 1.0
     current = 1.0
@@ -1147,21 +1169,30 @@ def test_electrode_array_potential():
     x = np.linspace(-20., 20., 50)
     y = np.linspace(-30., 30., 50)
     z = np.linspace(-40., 0., 50)
-    xyz = discretize.utils.ndgrid([x, y, z])
+    xyz1 = discretize.utils.ndgrid([x, y, z])
+    x = np.linspace(-20., 20., 50)
+    y = np.linspace(-30., 30., 50)
+    z = np.linspace(-40., 0., 50)
+    xyz2 = discretize.utils.ndgrid([x, y, z])
 
-    j = electrode_array_potential(xyz, rho, current, location1, location2)
-    np.testing.assert_equal(j, j)
+    jtest = V_from_Electrode_Array()
+    j = electrode_array_potential(xyz1, xyz2, rho, current, location1, location2)
+    np.testing.assert_equal(jtest, j)
 
     x = np.linspace(-20., 20., 50)
     y = np.linspace(-30., 30., 50)
     z = np.linspace(-40., 40., 50)
-    xyz = discretize.utils.ndgrid([x, y, z])
+    xyz1 = discretize.utils.ndgrid([x, y, z])
+    x = np.linspace(-20., 20., 50)
+    y = np.linspace(-30., 30., 50)
+    z = np.linspace(-40., 40., 50)
+    xyz2 = discretize.utils.ndgrid([x, y, z])
 
     location1 = np.r_[1., 1., 1.]
     location2 = np.r_[2., 2., 2.]
 
     with pytest.raises(ValueError):
-        electrode_array_potential(xyz, rho, current, location1, location2)
+        electrode_array_potential(xyz1, xyz2, rho, current, location1, location2)
 
 
 
