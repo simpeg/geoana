@@ -46,32 +46,35 @@ def electrode_array_potential(xyz1, xyz2, rho, current, location1, location2):
 
     >>> rho = 1.0
     >>> current = 1.0
-    >>> location1 = np.r_[1., 1., -1.]
-    >>> location2 = np.r_[2., 2., -1.]
+    >>> location1 = np.r_[1., -1., 0.]
+    >>> location2 = np.r_[1., 1., 0.]
 
     Now we create a set of gridded locations and compute the electric potential.
 
-    >>> X1, Y1 = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
+    >>> X1, Y1 = np.meshgrid(np.linspace(-2, 3, 20), np.linspace(-2, 3, 20))
     >>> Z1 = np.zeros_like(X1)
     >>> xyz1 = np.stack((X1, Y1, Z1), axis=-1)
-    >>> X2, Y2 = np.meshgrid(np.linspace(-2, 2, 20), np.linspace(-2, 2, 20))
+    >>> X2, Y2 = np.meshgrid(np.linspace(-1, 2, 20), np.linspace(-1, 2, 20))
     >>> Z2 = np.zeros_like(X1)
     >>> xyz2 = np.stack((X2, Y2, Z2), axis=-1)
     >>> v = electrode_array_potential(xyz1, xyz2, rho, current, location1, location2)
 
     Finally, we plot the electric potential.
 
-    >>> plt.pcolor(X1, Y1, v)
+    >>> plt.pcolor(np.linspace(-20, 20, 20), np.linspace(-20, 20, 20), v)
     >>> cb1 = plt.colorbar()
     >>> cb1.set_label(label= 'Potential (V)')
     >>> plt.xlabel('x')
     >>> plt.ylabel('y')
-    >>> plt.title('Electric Potential of an electrode array in a Halfspace')
+    >>> plt.title('Electric Potential of a Four Electrode Array in a Halfspace')
     >>> plt.show()
     """
 
     xyz1 = check_xyz_dim(xyz1)
     xyz2 = check_xyz_dim(xyz2)
+    location1 = check_xyz_dim(location1)
+    location2 = check_xyz_dim(location2)
+
     if np.any(xyz1[..., -1] > 0) or np.any(xyz2[..., -1] > 0) or np.any(location1[..., -1] > 0) or\
             np.any(location2[..., -1] > 0):
         raise ValueError(
@@ -230,12 +233,12 @@ class PointCurrentHalfSpace:
         >>> rho = 1.0
         >>> current = 1.0
         >>> simulation = PointCurrentHalfSpace(
-        >>>     current=current, rho=rho, location=np.r_[1, 1, -1]
+        >>>     current=current, rho=rho, location=np.r_[0., 0., -1.]
         >>> )
 
         Now we create a set of gridded locations and compute the electric potential.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
         >>> Z = np.zeros_like(X)
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> v = simulation.potential(xyz)
@@ -275,7 +278,7 @@ class PointCurrentHalfSpace:
         Returns
         -------
         E : (..., 3) np.ndarray
-            Electric field of point current in units :math:`\\frac{V}{m^2}`.
+            Electric field of point current in units :math:`\\frac{V}{m}`.
 
         Examples
         --------
@@ -291,19 +294,23 @@ class PointCurrentHalfSpace:
         >>> rho = 1.0
         >>> current = 1.0
         >>> simulation = PointCurrentHalfSpace(
-        >>>     current=current, rho=rho, location=np.r_[1, 1, -1]
+        >>>     current=current, rho=rho, location=np.r_[0., 0., -1.]
         >>> )
 
         Now we create a set of gridded locations and compute the electric field.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
         >>> Z = np.zeros_like(X)
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> e = simulation.electric_field(xyz)
 
         Finally, we plot the electric field lines.
 
-        >>> plt.quiver(X, Y, e[:,:,0], e[:,:,1])
+        >>> e_amp = np.linalg.norm(e, axis=-1)
+        >>> plt.pcolor(X, Y, e_amp)
+        >>> cb = plt.colorbar()
+        >>> cb.set_label(label= 'Amplitude ($V/m$)')
+        >>> plt.streamplot(X, Y, e[..., 0], e[..., 1], density=0.50)
         >>> plt.xlabel('x')
         >>> plt.ylabel('y')
         >>> plt.title('Electric Field Lines for a Point Current in a Halfspace')
@@ -349,12 +356,12 @@ class PointCurrentHalfSpace:
         >>> rho = 1.0
         >>> current = 1.0
         >>> simulation = PointCurrentHalfSpace(
-        >>>     current=current, rho=rho, location=np.r_[1, 1, -1]
+        >>>     current=current, rho=rho, location=np.r_[0., 0., -1.]
         >>> )
 
         Now we create a set of gridded locations and compute the current density.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 3, 20), np.linspace(-1, 3, 20))
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
         >>> Z = np.zeros_like(X)
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> j = simulation.current_density(xyz)

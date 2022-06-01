@@ -989,7 +989,7 @@ class PointCurrentWholeSpace:
         Returns
         -------
         E : (..., 3) np.ndarray
-            Electric field of point current in units :math:`\\frac{V}{m^2}`.
+            Electric field of point current in units :math:`\\frac{V}{m}`.
 
         Examples
         --------
@@ -1017,7 +1017,11 @@ class PointCurrentWholeSpace:
 
         Finally, we plot the electric field lines.
 
-        >>> plt.quiver(X, Y, e[:,:,0], e[:,:,1])
+        >>> e_amp = np.linalg.norm(e, axis=-1)
+        >>> plt.pcolor(X, Y, e_amp)
+        >>> cb = plt.colorbar()
+        >>> cb.set_label(label= 'Amplitude ($V/m$)')
+        >>> plt.streamplot(X, Y, e[..., 0], e[..., 1], density=0.50)
         >>> plt.xlabel('x')
         >>> plt.ylabel('y')
         >>> plt.title('Electric Field Lines for a Point Current in a Wholespace')
