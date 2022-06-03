@@ -1142,14 +1142,14 @@ class TestDipoleHalfSpace:
 
     def test_defaults(self):
         rho = 1.0
-        locations = np.array([np.r_[1, 1, -2], np.r_[0, 0, -1]])
-        dhs = static.DipoleHalfSpace(rho, locations)
+        dhs = static.DipoleHalfSpace(rho)
         assert dhs.rho == 1.0
         assert dhs.current == 1.0
-        assert np.all(dhs.locations == np.array([np.r_[1, 1, -2], np.r_[0, 0, -1]]))
+        assert np.all(dhs.location_a == np.r_[-1, 0, 0])
+        assert np.all(dhs.location_b == np.r_[1, 0, 0])
 
     def test_error(self):
-        dhs = static.DipoleHalfSpace(rho=1.0, current=1.0, locations=np.array([np.r_[1, 1, -2], np.r_[0, 0, -1]]))
+        dhs = static.DipoleHalfSpace(rho=1.0, current=1.0, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0])
 
         with pytest.raises(TypeError):
             dhs.rho = "box"
@@ -1158,29 +1158,36 @@ class TestDipoleHalfSpace:
         with pytest.raises(TypeError):
             dhs.current = "box"
         with pytest.raises(TypeError):
-            dhs.locations = ["string"]
+            dhs.location_a = ["string"]
         with pytest.raises(ValueError):
-            dhs.locations = [1, 1, -1]
+            dhs.location_a = [1, 1, -1, -1]
         with pytest.raises(ValueError):
-            dhs.locations = [0, 0, 1]
+            dhs.location_a = [0, 0, 1]
+        with pytest.raises(TypeError):
+            dhs.location_b = ["string"]
+        with pytest.raises(ValueError):
+            dhs.location_b = [1, 1, -1, -1]
+        with pytest.raises(ValueError):
+            dhs.location_b = [0, 0, 1]
 
     def test_half_space_objects(self):
-        dhs = static.DipoleHalfSpace(rho=1.0, current=1.0, locations=np.array([np.r_[1, 1, -2], np.r_[0, 0, -1]]))
+        dhs = static.DipoleHalfSpace(rho=1.0, current=1.0, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0])
 
-        assert dhs._primary.rho == 1.0
-        assert dhs._secondary.rho == 1.0
-        assert dhs._primary.current == 1.0
-        assert dhs._secondary.current == -1.0
-        assert np.all(dhs._primary.location == np.r_[1, 1, -2])
-        assert np.all(dhs._secondary.location == np.r_[0, 0, -1])
+        assert dhs._a.rho == 1.0
+        assert dhs._b.rho == 1.0
+        assert dhs._a.current == 1.0
+        assert dhs._b.current == -1.0
+        assert np.all(dhs._a.location == np.r_[-1, 0, 0])
+        assert np.all(dhs._b.location == np.r_[1, 0, 0])
 
         dhs.rho = 2.0
         dhs.current = 2.0
-        dhs.locations = np.array([np.r_[1, 1, -1], np.r_[0, 0, -2]])
+        dhs.location_a = np.r_[1, 0, 0]
+        dhs.location_b = np.r_[-1, 0, 0]
 
-        assert dhs._primary.rho == 2.0
-        assert dhs._secondary.rho == 2.0
-        assert dhs._primary.current == 2.0
-        assert dhs._secondary.current == -2.0
-        assert np.all(dhs._primary.location == np.r_[1, 1, -1])
-        assert np.all(dhs._secondary.location == np.r_[0, 0, -2])
+        assert dhs._a.rho == 2.0
+        assert dhs._b.rho == 2.0
+        assert dhs._a.current == 2.0
+        assert dhs._b.current == -2.0
+        assert np.all(dhs._a.location == np.r_[1, 0, 0])
+        assert np.all(dhs._b.location == np.r_[-1, 0, 0])

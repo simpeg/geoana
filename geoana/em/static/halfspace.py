@@ -334,8 +334,10 @@ class DipoleHalfSpace:
             Electrical current in the point current (A). Default is 1A.
         rho : float
             Resistivity in the point current (:math:`\\Omega \\cdot m`).
-        locations : array_like
-            Locations of the M and N electrodes (m).
+        location_a : array_like
+            Location of the A current electrode (m). Default is (-1, 0, 0).
+        location_b : array_like
+            Location of the B current electrode (m). Default is (1, 0, 0).
         """
 
     def __init__(self, rho, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0], current=1.0):
@@ -429,6 +431,7 @@ class DipoleHalfSpace:
             )
 
         self._location_a = vec
+        self._a.location = vec
 
     @property
     def location_b(self):
@@ -460,6 +463,7 @@ class DipoleHalfSpace:
             )
 
         self._location_b = vec
+        self._b.location = vec
 
     def potential(self, xyz_m, xyz_n=None):
         """Electric potential for a dipole in a halfspace.
@@ -487,6 +491,7 @@ class DipoleHalfSpace:
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> from geoana.em.static import DipoleHalfSpace
 
         Define the dipole source.
@@ -501,19 +506,29 @@ class DipoleHalfSpace:
 
         Now we create a set of gridded locations and compute the electric potential.
 
-        >>> X, Y = np.meshgrid(np.linspace(-3, 1, 20), np.linspace(-1, 1, 20))
-        >>> Z = np.zeros_like(X)
-        >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> v = simulation.potential(xyz_m=xyz, xyz_n=None)
+        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 2, 20), np.linspace(-2, 2, 20))
+        >>> Z = np.zeros_like(X1)
+        >>> xyz1 = np.stack((X1, Y1, Z), axis=-1)
+        >>> xyz2 = np.stack((X2, Y2, Z), axis=-1)
+        >>> v1 = simulation.potential(xyz_m=xyz1, xyz_n=None)
+        >>> v2 = simulation.potential(xyz_m=xyz1, xyz_n=xyz2)
 
         Finally, we plot the electric potential.
 
-        >>> plt.pcolor(np.linspace(-100, 100, 20), np.linspace(-100, 100, 20), v)
-        >>> cb1 = plt.colorbar()
-        >>> cb1.set_label(label= 'Potential (V)')
-        >>> plt.xlabel('x')
-        >>> plt.ylabel('y')
-        >>> plt.title('Electric Potential from Dipole Source in a Halfspace')
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['3 Electrodes', '4 Electrodes']
+        >>> for ax, V, title in zip(axs.flatten(), [v1, v2], titles):
+        >>>     im = ax.pcolor(X1, Y1, V, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Potential (V)')
+        >>>     ax.set_ylabel('Y coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_title(title)
+        >>>     ax.set_aspect('equal')
+        >>> plt.tight_layout()
         >>> plt.show()
         """
 
@@ -569,6 +584,7 @@ class DipoleHalfSpace:
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> from geoana.em.static import DipoleHalfSpace
 
         Define the dipole source.
@@ -583,21 +599,31 @@ class DipoleHalfSpace:
 
         Now we create a set of gridded locations and compute the electric field.
 
-        >>> X, Y = np.meshgrid(np.linspace(-3, 1, 20), np.linspace(-3, 1, 20))
-        >>> Z = np.zeros_like(X)
-        >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> e = simulation.electric_field(xyz_m=xyz, xyz_n=None)
+        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 2, 20), np.linspace(-2, 2, 20))
+        >>> Z = np.zeros_like(X1)
+        >>> xyz1 = np.stack((X1, Y1, Z), axis=-1)
+        >>> xyz2 = np.stack((X2, Y2, Z), axis=-1)
+        >>> e1 = simulation.electric_field(xyz_m=xyz1, xyz_n=None)
+        >>> e2 = simulation.electric_field(xyz_m=xyz1, xyz_n=xyz2)
 
         Finally, we plot the electric field.
 
-        >>> e_amp = np.linalg.norm(e, axis=-1)
-        >>> plt.pcolor(np.linspace(-50, 50, 20), np.linspace(-50, 50, 20), e_amp)
-        >>> cb1 = plt.colorbar()
-        >>> cb1.set_label(label= 'Amplitude ($V/m$)')
-        >>> plt.streamplot(np.linspace(-50, 50, 20), np.linspace(-50, 50, 20), e[..., 0], e[..., 1], density=0.75)
-        >>> plt.xlabel('x')
-        >>> plt.ylabel('y')
-        >>> plt.title('Electric Field from Dipole Source in a Halfspace')
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['3 Electrodes', '4 Electrodes']
+        >>> for ax, E, title in zip(axs.flatten(), [e1, e2], titles):
+        >>>     E_amp = np.linalg.norm(E, axis=-1)
+        >>>     im = ax.pcolor(X1, Y1, E_amp, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Amplitude ($V/m$)')
+        >>>     ax.streamplot(X1, Y1, E[..., 0], E[..., 1], density=0.75)
+        >>>     ax.set_ylabel('Y coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
         >>> plt.show()
         """
 
@@ -654,6 +680,7 @@ class DipoleHalfSpace:
 
         >>> import numpy as np
         >>> import matplotlib.pyplot as plt
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> from geoana.em.static import DipoleHalfSpace
 
         Define the dipole source.
@@ -668,21 +695,31 @@ class DipoleHalfSpace:
 
         Now we create a set of gridded locations and compute the current density.
 
-        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> Z = np.zeros_like(X)
-        >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> j = simulation.current_density(xyz_m=xyz, xyz_n=None)
+        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 2, 20), np.linspace(-2, 2, 20))
+        >>> Z = np.zeros_like(X1)
+        >>> xyz1 = np.stack((X1, Y1, Z), axis=-1)
+        >>> xyz2 = np.stack((X2, Y2, Z), axis=-1)
+        >>> j1 = simulation.electric_field(xyz_m=xyz1, xyz_n=None)
+        >>> j2 = simulation.electric_field(xyz_m=xyz1, xyz_n=xyz2)
 
         Finally, we plot the current density.
 
-        >>> j_amp = np.linalg.norm(j, axis=-1)
-        >>> plt.pcolor(np.linspace(-10, 10, 20), np.linspace(-10, 10, 20), j_amp)
-        >>> cb1 = plt.colorbar()
-        >>> cb1.set_label(label= 'Current Density ($A/m^2$)')
-        >>> plt.streamplot(np.linspace(-10, 10, 20), np.linspace(-10, 10, 20), j[..., 0], j[..., 1], density=0.75)
-        >>> plt.xlabel('x')
-        >>> plt.ylabel('y')
-        >>> plt.title('Current Density from Dipole Source in a Halfspace')
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['3 Electrodes', '4 Electrodes']
+        >>> for ax, J, title in zip(axs.flatten(), [j1, j2], titles):
+        >>>     J_amp = np.linalg.norm(J, axis=-1)
+        >>>     im = ax.pcolor(X1, Y1, J_amp, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Current Density ($A/m^2$)')
+        >>>     ax.streamplot(X1, Y1, J[..., 0], J[..., 1], density=0.75)
+        >>>     ax.set_ylabel('Y coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
         >>> plt.show()
         """
 
