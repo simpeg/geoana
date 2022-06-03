@@ -1160,6 +1160,8 @@ class TestDipoleHalfSpace:
         with pytest.raises(TypeError):
             dhs.locations = ["string"]
         with pytest.raises(ValueError):
+            dhs.locations = [1, 1, -1]
+        with pytest.raises(ValueError):
             dhs.locations = [0, 0, 1]
 
     def test_half_space_objects(self):

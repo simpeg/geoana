@@ -338,16 +338,17 @@ class DipoleHalfSpace:
             Locations of the M and N electrodes (m).
         """
 
-    def __init__(self, rho, locations, current=1.0):
+    def __init__(self, rho, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0], current=1.0):
 
-        _primary = PointCurrentHalfSpace(rho, current=1.0, location=locations[0])
-        _secondary = PointCurrentHalfSpace(rho, current=-1.0, location=locations[1])
-        self._primary = _primary
-        self._secondary = _secondary
+        _a = PointCurrentHalfSpace(rho, current=1.0, location=location_a)
+        _b = PointCurrentHalfSpace(rho, current=-1.0, location=location_b)
+        self._a = _a
+        self._b = _b
 
         self.current = current
         self.rho = rho
-        self.locations = locations
+        self.location_a = location_a
+        self.location_b = location_b
 
     @property
     def current(self):
@@ -369,8 +370,8 @@ class DipoleHalfSpace:
             raise TypeError(f"current must be a number, got {type(value)}")
 
         self._current = value
-        self._primary.current = value
-        self._secondary.current = -value
+        self._a.current = value
+        self._b.current = -value
 
     @property
     def rho(self):
@@ -395,49 +396,85 @@ class DipoleHalfSpace:
             raise ValueError("current must be greater than 0")
 
         self._rho = value
-        self._primary.rho = value
-        self._secondary.rho = value
+        self._a.rho = value
+        self._b.rho = value
 
     @property
-    def locations(self):
-        """Locations of the two voltage electrodes.
+    def location_a(self):
+        """Location of the A current electrode.
 
         Returns
         -------
-        (2, 3) numpy.ndarray of float
-            Locations of the two voltage electrodes.
+        (3) numpy.ndarray of float
+            Location of the A current electrode.
         """
-        return self._locations
+        return self._location_a
 
-    @locations.setter
-    def locations(self, vec):
+    @location_a.setter
+    def location_a(self, vec):
 
         try:
             vec = np.atleast_1d(vec).astype(float)
         except:
             raise TypeError(f"location must be array_like, got {type(vec)}")
 
+        if len(vec) != 3:
+            raise ValueError(
+                f"location must be array_like with shape (3,), got {len(vec)}"
+            )
+
         if np.any(vec[..., -1] > 0):
             raise ValueError(
                 f"z value must be less than or equal to 0 in a halfspace, got {(vec[..., -1])}"
             )
 
-        self._locations = vec
-        self._primary.location = vec[0]
-        self._secondary.location = vec[1]
+        self._location_a = vec
 
-    def potential(self, xyz):
+    @property
+    def location_b(self):
+        """Location of the B current electrode.
+
+        Returns
+        -------
+        (3) numpy.ndarray of float
+            Location of the B current electrode.
+        """
+        return self._location_b
+
+    @location_b.setter
+    def location_b(self, vec):
+
+        try:
+            vec = np.atleast_1d(vec).astype(float)
+        except:
+            raise TypeError(f"location must be array_like, got {type(vec)}")
+
+        if len(vec) != 3:
+            raise ValueError(
+                f"location must be array_like with shape (3,), got {len(vec)}"
+            )
+
+        if np.any(vec[..., -1] > 0):
+            raise ValueError(
+                f"z value must be less than or equal to 0 in a halfspace, got {(vec[..., -1])}"
+            )
+
+        self._location_b = vec
+
+    def potential(self, xyz_m, xyz_n=None):
         """Electric potential for a dipole in a halfspace.
 
         This method computes the potential for a dipole in a halfspace at
         the set of gridded xyz locations provided. Where :math:`\\rho` is the
         electric resistivity, I is the current and R is the distance between
-        the location we want to evaluate at and the point current.
+        the locations we want to evaluate at and the dipole source.
 
         Parameters
         ----------
-        xyz : (2, ..., 3) numpy.ndarray
-            Locations of the A and B electrodes.
+        xyz_m : (..., 3) numpy.ndarray
+            Location of the M voltage electrode.
+        xyz_n : (..., 3) numpy.ndarray, optional
+            Location of the N voltage electrode.
 
         Returns
         -------
@@ -456,23 +493,22 @@ class DipoleHalfSpace:
 
         >>> rho = 1.0
         >>> current = 1.0
+        >>> location_a = np.r_[-1, 0, 0]
+        >>> location_b = np.r_[1, 0, 0]
         >>> simulation = DipoleHalfSpace(
-        >>>     current=current, rho=rho, locations=np.array([np.r_[1, 1, -1], np.r_[0, 0, -1]])
+        >>>     current=current, rho=rho, location_a=location_a, location_b=location_b
         >>> )
 
         Now we create a set of gridded locations and compute the electric potential.
 
-        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 1, 20), np.linspace(-1, 2, 20))
-        >>> Z = np.zeros_like(X1)
-        >>> xyz1 = np.stack((X1, Y1, Z), axis=-1)
-        >>> xyz2 = np.stack((X2, Y2, Z), axis=-1)
-        >>> xyz = np.array([xyz1, xyz2])
-        >>> v = simulation.potential(xyz)
+        >>> X, Y = np.meshgrid(np.linspace(-3, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X)
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> v = simulation.potential(xyz_m=xyz, xyz_n=None)
 
         Finally, we plot the electric potential.
 
-        >>> plt.pcolor(np.linspace(-10, 10, 20), np.linspace(-10, 10, 20), v)
+        >>> plt.pcolor(np.linspace(-100, 100, 20), np.linspace(-100, 100, 20), v)
         >>> cb1 = plt.colorbar()
         >>> cb1.set_label(label= 'Potential (V)')
         >>> plt.xlabel('x')
@@ -481,22 +517,33 @@ class DipoleHalfSpace:
         >>> plt.show()
         """
 
-        xyz = check_xyz_dim(xyz)
-        if np.any(xyz[..., -1] > 0):
+        xyz_m = check_xyz_dim(xyz_m)
+        if xyz_n is not None:
+            xyz_n = check_xyz_dim(xyz_n)
+            if np.any(xyz_n[..., -1] > 0):
+                raise ValueError(
+                    f"z value must be less than or equal to 0 in a halfspace, got {(xyz_n[..., -1])}"
+                )
+
+        if np.any(xyz_m[..., -1] > 0):
             raise ValueError(
-                f"z value must be less than or equal to 0 in a halfspace, got {(xyz[..., -1])}"
+                f"z value must be less than or equal to 0 in a halfspace, got {(xyz_m[..., -1])}"
             )
 
-        vm = self._primary.potential(xyz[0]) - self._secondary.potential(xyz[0])
-        vn = self._primary.potential(xyz[1]) + self._secondary.potential(xyz[1])
-        v = vm - vn
-        return v
+        vm = self._a.potential(xyz_m) - self._b.potential(xyz_m)
 
-    def electric_field(self, xyz):
+        if xyz_n is not None:
+            vn = self._a.potential(xyz_n) + self._b.potential(xyz_n)
+            v = vm - vn
+            return v
+        else:
+            return vm
+
+    def electric_field(self, xyz_m, xyz_n=None):
         """Electric field for a dipole source in a halfspace.
 
         This method computes the electric field for a dipole source in a halfspace at
-        the set of gridded xyz locations provided. Where :math:`- \\nabla V`
+        the set of gridded xyz locations provided. Where :math:`-\\nabla V`
         is the negative gradient of the electric potential for a dipole source.
         The electric field :math:`\\mathbf{E}` is:
 
@@ -506,8 +553,10 @@ class DipoleHalfSpace:
 
         Parameters
         ----------
-        xyz : (2, ..., 3) numpy.ndarray
-            Locations to evaluate at in units m.
+        xyz_m : (..., 3) numpy.ndarray
+            Location of the M voltage electrode.
+        xyz_n : (..., 3) numpy.ndarray, optional
+            Location of the N voltage electrode.
 
         Returns
         -------
@@ -526,44 +575,55 @@ class DipoleHalfSpace:
 
         >>> rho = 1.0
         >>> current = 1.0
+        >>> location_a = np.r_[-1, 0, 0]
+        >>> location_b = np.r_[1, 0, 0]
         >>> simulation = DipoleHalfSpace(
-        >>>     current=current, rho=rho, locations=np.array([np.r_[1, 1, -1], np.r_[0, 0, -1]])
+        >>>     current=current, rho=rho, location_a=location_a, location_b=location_b
         >>> )
 
         Now we create a set of gridded locations and compute the electric field.
 
-        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 1, 20), np.linspace(-1, 2, 20))
-        >>> Z = np.zeros_like(X1)
-        >>> xyz1 = np.stack((X1, Y1, Z), axis=-1)
-        >>> xyz2 = np.stack((X2, Y2, Z), axis=-1)
-        >>> xyz = np.array([xyz1, xyz2])
-        >>> e = simulation.electric_field(xyz)
+        >>> X, Y = np.meshgrid(np.linspace(-3, 1, 20), np.linspace(-3, 1, 20))
+        >>> Z = np.zeros_like(X)
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> e = simulation.electric_field(xyz_m=xyz, xyz_n=None)
 
         Finally, we plot the electric field.
 
         >>> e_amp = np.linalg.norm(e, axis=-1)
-        >>> plt.pcolor(np.linspace(-10, 10, 20), np.linspace(-10, 10, 20), e_amp)
+        >>> plt.pcolor(np.linspace(-50, 50, 20), np.linspace(-50, 50, 20), e_amp)
         >>> cb1 = plt.colorbar()
         >>> cb1.set_label(label= 'Amplitude ($V/m$)')
+        >>> plt.streamplot(np.linspace(-50, 50, 20), np.linspace(-50, 50, 20), e[..., 0], e[..., 1], density=0.75)
         >>> plt.xlabel('x')
         >>> plt.ylabel('y')
         >>> plt.title('Electric Field from Dipole Source in a Halfspace')
         >>> plt.show()
         """
 
-        xyz = check_xyz_dim(xyz)
-        if np.any(xyz[..., -1] > 0):
+        xyz_m = check_xyz_dim(xyz_m)
+        if xyz_n is not None:
+            xyz_n = check_xyz_dim(xyz_n)
+            if np.any(xyz_n[..., -1] > 0):
+                raise ValueError(
+                    f"z value must be less than or equal to 0 in a halfspace, got {(xyz_n[..., -1])}"
+                )
+
+        if np.any(xyz_m[..., -1] > 0):
             raise ValueError(
-                f"z value must be less than or equal to 0 in a halfspace, got {(xyz[..., -1])}"
+                f"z value must be less than or equal to 0 in a halfspace, got {(xyz_m[..., -1])}"
             )
 
-        em = self._primary.electric_field(xyz[0]) - self._secondary.electric_field(xyz[0])
-        en = self._primary.electric_field(xyz[1]) + self._secondary.electric_field(xyz[1])
-        e = em - en
-        return e
+        vm = self._a.electric_field(xyz_m) - self._b.electric_field(xyz_m)
 
-    def current_density(self, xyz):
+        if xyz_n is not None:
+            vn = self._a.electric_field(xyz_n) + self._b.electric_field(xyz_n)
+            v = vm - vn
+            return v
+        else:
+            return vm
+
+    def current_density(self, xyz_m, xyz_n=None):
         """Current density for a dipole source in a halfspace.
 
        This method computes the current density for a dipole source in a halfspace at
@@ -578,8 +638,10 @@ class DipoleHalfSpace:
 
         Parameters
         ----------
-        xyz : (2, ..., 3) numpy.ndarray
-            Locations to evaluate at in units m.
+        xyz_m : (..., 3) numpy.ndarray
+            Location of the M voltage electrode.
+        xyz_n : (..., 3) numpy.ndarray, optional
+            Location of the N voltage electrode.
 
         Returns
         -------
@@ -598,19 +660,18 @@ class DipoleHalfSpace:
 
         >>> rho = 1.0
         >>> current = 1.0
+        >>> location_a = np.r_[-1, 0, 0]
+        >>> location_b = np.r_[1, 0, 0]
         >>> simulation = DipoleHalfSpace(
-        >>>     current=current, rho=rho, locations=np.array([np.r_[1, 1, -1], np.r_[0, 0, -1]])
+        >>>     current=current, rho=rho, location_a=location_a, location_b=location_b
         >>> )
 
         Now we create a set of gridded locations and compute the current density.
 
-        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 1, 20), np.linspace(-1, 2, 20))
-        >>> Z = np.zeros_like(X1)
-        >>> xyz1 = np.stack((X1, Y1, Z), axis=-1)
-        >>> xyz2 = np.stack((X2, Y2, Z), axis=-1)
-        >>> xyz = np.array([xyz1, xyz2])
-        >>> j = simulation.current_density(xyz)
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X)
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> j = simulation.current_density(xyz_m=xyz, xyz_n=None)
 
         Finally, we plot the current density.
 
@@ -618,11 +679,18 @@ class DipoleHalfSpace:
         >>> plt.pcolor(np.linspace(-10, 10, 20), np.linspace(-10, 10, 20), j_amp)
         >>> cb1 = plt.colorbar()
         >>> cb1.set_label(label= 'Current Density ($A/m^2$)')
+        >>> plt.streamplot(np.linspace(-10, 10, 20), np.linspace(-10, 10, 20), j[..., 0], j[..., 1], density=0.75)
         >>> plt.xlabel('x')
         >>> plt.ylabel('y')
         >>> plt.title('Current Density from Dipole Source in a Halfspace')
         >>> plt.show()
         """
 
-        j = self.electric_field(xyz) / self.rho
-        return j
+        jm = self.electric_field(xyz_m) / self.rho
+
+        if xyz_n is not None:
+            jn = self.electric_field(xyz_n) / self.rho
+            j = jm - jn
+            return j
+        else:
+            return jm
