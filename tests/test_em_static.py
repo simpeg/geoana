@@ -1148,7 +1148,7 @@ def V_from_Dipole1(
     r1 = np.linalg.norm(r_vec1, axis=-1)
     r2 = np.linalg.norm(r_vec2, axis=-1)
 
-    v = rho * cur / (2 * np.pi) * (1 / (r1 - r2))
+    v = rho * cur / (2 * np.pi * r1) - rho * -cur / (2 * np.pi * r2)
     return v
 
 
@@ -1168,7 +1168,9 @@ def V_from_Dipole2(
     r3 = np.linalg.norm(r_vec3, axis=-1)
     r4 = np.linalg.norm(r_vec4, axis=-1)
 
-    v = rho * cur / (2 * np.pi) * (1 / (r1 - r2 - r3 + r4))
+    vm = rho * cur / (2 * np.pi * r1) - rho * -cur / (2 * np.pi * r2)
+    vn = rho * cur / (2 * np.pi * r3) - rho * -cur / (2 * np.pi * r4)
+    v = vm - vn
     return v
 
 
@@ -1182,7 +1184,7 @@ def E_from_Dipole1(
     r1 = np.linalg.norm(r_vec1, axis=-1)
     r2 = np.linalg.norm(r_vec2, axis=-1)
 
-    e = rho * cur / (2 * np.pi) * (r_vec1 / r1[..., None] ** 3 - r_vec2 / r2[..., None] ** 3)
+    e = rho * cur * r_vec1 / (2 * np.pi * r1[..., None] ** 3) - rho * -cur * r_vec2 / (2 * np.pi * r2[..., None] ** 3)
     return e
 
 
@@ -1202,8 +1204,9 @@ def E_from_Dipole2(
     r3 = np.linalg.norm(r_vec3, axis=-1)
     r4 = np.linalg.norm(r_vec4, axis=-1)
 
-    e = rho * cur / (2 * np.pi) * (r_vec1 / r1[..., None] ** 3 - r_vec2 / r2[..., None] ** 3 -
-                                   r_vec3 / r3[..., None] ** 3 + r_vec4 / r4[..., None] ** 3)
+    em = rho * cur * r_vec1 / (2 * np.pi * r1[..., None] ** 3) - rho * -cur * r_vec2 / (2 * np.pi * r2[..., None] ** 3)
+    en = rho * cur * r_vec3 / (2 * np.pi * r3[..., None] ** 3) - rho * -cur * r_vec4 / (2 * np.pi * r4[..., None] ** 3)
+    e = em - en
     return e
 
 
@@ -1290,13 +1293,11 @@ class TestDipoleHalfSpace:
         vtest1 = V_from_Dipole1(
             xyz1, None, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
         )
-        print(
-            "\n\nTesting Electric Potential V for Dipole in Halfspace\n"
-        )
 
         vtest2 = V_from_Dipole2(
             xyz1, xyz2, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
         )
+
         print(
             "\n\nTesting Electric Potential V for Dipole in Halfspace\n"
         )
@@ -1332,13 +1333,11 @@ class TestDipoleHalfSpace:
         etest1 = E_from_Dipole1(
             xyz1, None, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
         )
-        print(
-            "\n\nTesting Electric Field V for Dipole in Halfspace\n"
-        )
 
         etest2 = E_from_Dipole2(
             xyz1, xyz2, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
         )
+
         print(
             "\n\nTesting Electric Field V for Dipole in Halfspace\n"
         )
@@ -1374,15 +1373,13 @@ class TestDipoleHalfSpace:
         jtest1 = J_from_Dipole1(
             xyz1, None, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
         )
-        print(
-            "\n\nTesting Electric Field V for Dipole in Halfspace\n"
-        )
 
         jtest2 = J_from_Dipole2(
             xyz1, xyz2, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
         )
+
         print(
-            "\n\nTesting Electric Field V for Dipole in Halfspace\n"
+            "\n\nTesting Current Density V for Dipole in Halfspace\n"
         )
 
         j1 = dhs.current_density(xyz1)
