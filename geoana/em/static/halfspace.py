@@ -533,6 +533,11 @@ class DipoleHalfSpace:
         """
 
         xyz_m = check_xyz_dim(xyz_m)
+        if np.any(xyz_m[..., -1] > 0):
+            raise ValueError(
+                f"z value must be less than or equal to 0 in a halfspace, got {(xyz_m[..., -1])}"
+            )
+
         if xyz_n is not None:
             xyz_n = check_xyz_dim(xyz_n)
             if np.any(xyz_n[..., -1] > 0):
@@ -540,15 +545,10 @@ class DipoleHalfSpace:
                     f"z value must be less than or equal to 0 in a halfspace, got {(xyz_n[..., -1])}"
                 )
 
-        if np.any(xyz_m[..., -1] > 0):
-            raise ValueError(
-                f"z value must be less than or equal to 0 in a halfspace, got {(xyz_m[..., -1])}"
-            )
-
         vm = self._a.potential(xyz_m) - self._b.potential(xyz_m)
 
         if xyz_n is not None:
-            vn = self._a.potential(xyz_n) + self._b.potential(xyz_n)
+            vn = self._a.potential(xyz_n) - self._b.potential(xyz_n)
             v = vm - vn
             return v
         else:
@@ -628,6 +628,11 @@ class DipoleHalfSpace:
         """
 
         xyz_m = check_xyz_dim(xyz_m)
+        if np.any(xyz_m[..., -1] > 0):
+            raise ValueError(
+                f"z value must be less than or equal to 0 in a halfspace, got {(xyz_m[..., -1])}"
+            )
+
         if xyz_n is not None:
             xyz_n = check_xyz_dim(xyz_n)
             if np.any(xyz_n[..., -1] > 0):
@@ -635,19 +640,14 @@ class DipoleHalfSpace:
                     f"z value must be less than or equal to 0 in a halfspace, got {(xyz_n[..., -1])}"
                 )
 
-        if np.any(xyz_m[..., -1] > 0):
-            raise ValueError(
-                f"z value must be less than or equal to 0 in a halfspace, got {(xyz_m[..., -1])}"
-            )
-
-        vm = self._a.electric_field(xyz_m) - self._b.electric_field(xyz_m)
+        em = self._a.electric_field(xyz_m) - self._b.electric_field(xyz_m)
 
         if xyz_n is not None:
-            vn = self._a.electric_field(xyz_n) + self._b.electric_field(xyz_n)
-            v = vm - vn
-            return v
+            en = self._a.electric_field(xyz_n) - self._b.electric_field(xyz_n)
+            e = em - en
+            return e
         else:
-            return vm
+            return em
 
     def current_density(self, xyz_m, xyz_n=None):
         """Current density for a dipole source in a halfspace.

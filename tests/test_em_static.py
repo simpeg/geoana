@@ -1138,6 +1138,89 @@ class TestPointCurrentHalfSpace:
             pchs.current_density(xyz)
 
 
+def V_from_Dipole1(
+        XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
+):
+    XYZ_M = discretize.utils.asArray_N_x_Dim(XYZ_M, 3)
+
+    r_vec1 = XYZ_M - loc_a
+    r_vec2 = XYZ_M - loc_b
+    r1 = np.linalg.norm(r_vec1, axis=-1)
+    r2 = np.linalg.norm(r_vec2, axis=-1)
+
+    v = rho * cur / (2 * np.pi) * (1 / (r1 - r2))
+    return v
+
+
+def V_from_Dipole2(
+        XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
+):
+    XYZ_M = discretize.utils.asArray_N_x_Dim(XYZ_M, 3)
+    XYZ_N = discretize.utils.asArray_N_x_Dim(XYZ_N, 3)
+
+    r_vec1 = XYZ_M - loc_a
+    r_vec2 = XYZ_M - loc_b
+    r1 = np.linalg.norm(r_vec1, axis=-1)
+    r2 = np.linalg.norm(r_vec2, axis=-1)
+
+    r_vec3 = XYZ_N - loc_a
+    r_vec4 = XYZ_N - loc_b
+    r3 = np.linalg.norm(r_vec3, axis=-1)
+    r4 = np.linalg.norm(r_vec4, axis=-1)
+
+    v = rho * cur / (2 * np.pi) * (1 / (r1 - r2 - r3 + r4))
+    return v
+
+
+def E_from_Dipole1(
+        XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
+):
+    XYZ_M = discretize.utils.asArray_N_x_Dim(XYZ_M, 3)
+
+    r_vec1 = XYZ_M - loc_a
+    r_vec2 = XYZ_M - loc_b
+    r1 = np.linalg.norm(r_vec1, axis=-1)
+    r2 = np.linalg.norm(r_vec2, axis=-1)
+
+    e = rho * cur / (2 * np.pi) * (r_vec1 / r1[..., None] ** 3 - r_vec2 / r2[..., None] ** 3)
+    return e
+
+
+def E_from_Dipole2(
+        XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
+):
+    XYZ_M = discretize.utils.asArray_N_x_Dim(XYZ_M, 3)
+    XYZ_N = discretize.utils.asArray_N_x_Dim(XYZ_N, 3)
+
+    r_vec1 = XYZ_M - loc_a
+    r_vec2 = XYZ_M - loc_b
+    r1 = np.linalg.norm(r_vec1, axis=-1)
+    r2 = np.linalg.norm(r_vec2, axis=-1)
+
+    r_vec3 = XYZ_N - loc_a
+    r_vec4 = XYZ_N - loc_b
+    r3 = np.linalg.norm(r_vec3, axis=-1)
+    r4 = np.linalg.norm(r_vec4, axis=-1)
+
+    e = rho * cur / (2 * np.pi) * (r_vec1 / r1[..., None] ** 3 - r_vec2 / r2[..., None] ** 3 -
+                                   r_vec3 / r3[..., None] ** 3 + r_vec4 / r4[..., None] ** 3)
+    return e
+
+
+def J_from_Dipole1(
+        XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
+):
+    j = E_from_Dipole1(XYZ_M, None, rho, cur, loc_a, loc_b) / rho
+    return j
+
+
+def J_from_Dipole2(
+        XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
+):
+    j = E_from_Dipole2(XYZ_M, XYZ_N, rho, cur, loc_a, loc_b) / rho
+    return j
+
+
 class TestDipoleHalfSpace:
 
     def test_defaults(self):
@@ -1191,3 +1274,130 @@ class TestDipoleHalfSpace:
         assert dhs._b.current == -2.0
         assert np.all(dhs._a.location == np.r_[1, 0, 0])
         assert np.all(dhs._b.location == np.r_[-1, 0, 0])
+
+    def test_potential(self):
+        dhs = static.DipoleHalfSpace(rho=1.0, current=1.0, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0])
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 0., 50)
+        xyz1 = discretize.utils.ndgrid([x, y, z])
+
+        x = np.linspace(-30., 20., 50)
+        y = np.linspace(-20., 30., 50)
+        z = np.linspace(-30., 0., 50)
+        xyz2 = discretize.utils.ndgrid([x, y, z])
+
+        vtest1 = V_from_Dipole1(
+            xyz1, None, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
+        )
+        print(
+            "\n\nTesting Electric Potential V for Dipole in Halfspace\n"
+        )
+
+        vtest2 = V_from_Dipole2(
+            xyz1, xyz2, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
+        )
+        print(
+            "\n\nTesting Electric Potential V for Dipole in Halfspace\n"
+        )
+
+        v1 = dhs.potential(xyz1)
+        v2 = dhs.potential(xyz1, xyz2)
+        np.testing.assert_equal(vtest1, v1)
+        np.testing.assert_equal(vtest2, v2)
+
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz1 = discretize.utils.ndgrid([x, y, z])
+        xyz2 = discretize.utils.ndgrid([x, y, z])
+
+        with pytest.raises(ValueError):
+            dhs.potential(xyz1)
+        with pytest.raises(ValueError):
+            dhs.potential(xyz1, xyz2)
+
+    def test_electric_field(self):
+        dhs = static.DipoleHalfSpace(rho=1.0, current=1.0, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0])
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 0., 50)
+        xyz1 = discretize.utils.ndgrid([x, y, z])
+
+        x = np.linspace(-30., 20., 50)
+        y = np.linspace(-20., 30., 50)
+        z = np.linspace(-30., 0., 50)
+        xyz2 = discretize.utils.ndgrid([x, y, z])
+
+        etest1 = E_from_Dipole1(
+            xyz1, None, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
+        )
+        print(
+            "\n\nTesting Electric Field V for Dipole in Halfspace\n"
+        )
+
+        etest2 = E_from_Dipole2(
+            xyz1, xyz2, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
+        )
+        print(
+            "\n\nTesting Electric Field V for Dipole in Halfspace\n"
+        )
+
+        e1 = dhs.electric_field(xyz1)
+        e2 = dhs.electric_field(xyz1, xyz2)
+        np.testing.assert_equal(etest1, e1)
+        np.testing.assert_equal(etest2, e2)
+
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz1 = discretize.utils.ndgrid([x, y, z])
+        xyz2 = discretize.utils.ndgrid([x, y, z])
+
+        with pytest.raises(ValueError):
+            dhs.electric_field(xyz1)
+        with pytest.raises(ValueError):
+            dhs.electric_field(xyz1, xyz2)
+
+    def test_current_density(self):
+        dhs = static.DipoleHalfSpace(rho=1.0, current=1.0, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0])
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 0., 50)
+        xyz1 = discretize.utils.ndgrid([x, y, z])
+
+        x = np.linspace(-30., 20., 50)
+        y = np.linspace(-20., 30., 50)
+        z = np.linspace(-30., 0., 50)
+        xyz2 = discretize.utils.ndgrid([x, y, z])
+
+        jtest1 = J_from_Dipole1(
+            xyz1, None, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
+        )
+        print(
+            "\n\nTesting Electric Field V for Dipole in Halfspace\n"
+        )
+
+        jtest2 = J_from_Dipole2(
+            xyz1, xyz2, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
+        )
+        print(
+            "\n\nTesting Electric Field V for Dipole in Halfspace\n"
+        )
+
+        j1 = dhs.current_density(xyz1)
+        j2 = dhs.current_density(xyz1, xyz2)
+        np.testing.assert_equal(jtest1, j1)
+        np.testing.assert_equal(jtest2, j2)
+
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz1 = discretize.utils.ndgrid([x, y, z])
+        xyz2 = discretize.utils.ndgrid([x, y, z])
+
+        with pytest.raises(ValueError):
+            dhs.current_density(xyz1)
+        with pytest.raises(ValueError):
+            dhs.current_density(xyz1, xyz2)
+
