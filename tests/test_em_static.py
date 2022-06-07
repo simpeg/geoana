@@ -14,24 +14,46 @@ class TestEM_Static(unittest.TestCase):
 
     def setUp(self):
         self.mdws = static.MagneticDipoleWholeSpace()
+        self.mpws = static.MagneticPoleWholeSpace()
         self.clws = static.CircularLoopWholeSpace()
 
     def test_defaults(self):
         self.assertTrue(self.mdws.sigma == 1.0)
+        self.assertTrue(self.mpws.sigma == 1.0)
         self.assertTrue(self.clws.sigma == 1.0)
 
         self.assertTrue(self.mdws.mu == mu_0)
+        self.assertTrue(self.mpws.mu == mu_0)
         self.assertTrue(self.clws.mu == mu_0)
 
         self.assertTrue(self.mdws.epsilon == epsilon_0)
+        self.assertTrue(self.mpws.epsilon == epsilon_0)
         self.assertTrue(self.clws.epsilon == epsilon_0)
 
         self.assertTrue(np.all(self.mdws.orientation == np.r_[1., 0., 0.]))
+        self.assertTrue(np.all(self.mpws.orientation == np.r_[1., 0., 0.]))
         self.assertTrue(np.all(self.clws.orientation == np.r_[1., 0., 0.]))
 
         self.assertTrue(self.mdws.moment == 1.0)
+        self.assertTrue(self.mpws.moment == 1.0)
         self.assertTrue(self.clws.current == 1.0)
         self.assertTrue(self.clws.radius == np.sqrt(1/np.pi))
+
+    def test_errors(self):
+        with pytest.raises(TypeError):
+            self.clws.radius = "box"
+        with pytest.raises(ValueError):
+            self.clws.radius = -2
+        with pytest.raises(TypeError):
+            self.clws.current = "box"
+        with pytest.raises(ValueError):
+            self.clws.current = -2
+        with pytest.raises(TypeError):
+            x = np.linspace(-20., 20., 50)
+            y = np.linspace(-30., 30., 50)
+            z = np.linspace(-40., 40., 50)
+            xyz = discretize.utils.ndgrid([x, y, z])
+            self.clws.magnetic_flux_density(xyz, coordinates='square')
 
     def test_vector_potential(self):
         n = 50
@@ -413,6 +435,26 @@ def Js_from_ESphere(
     return js
 
 
+def rho_from_ESphere(
+    XYZ, dr, loc, sig_s, sig_b, radius, amp
+):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    y = r_vec[:, 1]
+    r = np.linalg.norm(r_vec, axis=-1)
+    if dr is None:
+        dr = 0.05 * radius
+
+    ind = (r < radius + 0.5 * dr) & (r > radius - 0.5 * dr)
+    rho = np.zeros_like(r)
+    rho[ind] = epsilon_0 * 3 * Ep_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)[ind, 0] * sig_cur * x[ind] / \
+        (np.sqrt(x[ind]**2 + y[ind]**2))
+    return rho
+
+
 class TestElectroStaticSphere:
 
     def test_defaults(self):
@@ -486,6 +528,11 @@ class TestElectroStaticSphere:
         np.testing.assert_equal(vptest, vp)
         np.testing.assert_equal(vstest, vs)
 
+        vt, vp, vs = ess.potential(xyz, field='all')
+        np.testing.assert_equal(vttest, vt)
+        np.testing.assert_equal(vptest, vp)
+        np.testing.assert_equal(vstest, vs)
+
     def testE(self):
         radius = 1.0
         primary_field = None
@@ -520,6 +567,11 @@ class TestElectroStaticSphere:
         et = ess.electric_field(xyz, field='total')
         ep = ess.electric_field(xyz, field='primary')
         es = ess.electric_field(xyz, field='secondary')
+        np.testing.assert_equal(ettest, et)
+        np.testing.assert_equal(eptest, ep)
+        np.testing.assert_equal(estest, es)
+
+        et, ep, es =ess.electric_field(xyz, field='all')
         np.testing.assert_equal(ettest, et)
         np.testing.assert_equal(eptest, ep)
         np.testing.assert_equal(estest, es)
@@ -561,6 +613,37 @@ class TestElectroStaticSphere:
         np.testing.assert_equal(jttest, jt)
         np.testing.assert_equal(jptest, jp)
         np.testing.assert_equal(jstest, js)
+
+        jt, jp, js = ess.current_density(xyz, field='all')
+        np.testing.assert_equal(jttest, jt)
+        np.testing.assert_equal(jptest, jp)
+        np.testing.assert_equal(jstest, js)
+
+
+    def test_rho(self):
+        radius = 1.0
+        primary_field = None
+        sig_s = 1.0
+        sig_b = 1.0
+        location = None
+        ess = static.ElectrostaticSphere(
+            radius=radius,
+            primary_field=primary_field,
+            sigma_background=sig_b,
+            sigma_sphere=sig_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        rho_test = rho_from_ESphere(
+            xyz, None, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+
+        rho = ess.charge_density(xyz)
+        np.testing.assert_equal(rho_test, rho)
 
 
 def Vt_from_Sphere(
@@ -749,6 +832,10 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(vptest, vp)
         np.testing.assert_equal(vstest, vs)
 
+        vt, vp, vs = mss.potential(xyz, field='all')
+        np.testing.assert_equal(vttest, vt)
+        np.testing.assert_equal(vptest, vp)
+        np.testing.assert_equal(vstest, vs)
 
     def testH(self):
         radius = 1.0
@@ -788,6 +875,11 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(hptest, hp)
         np.testing.assert_equal(hstest, hs)
 
+        ht, hp, hs = mss.magnetic_field(xyz, field='all')
+        np.testing.assert_equal(httest, ht)
+        np.testing.assert_equal(hptest, hp)
+        np.testing.assert_equal(hstest, hs)
+
     def testB(self):
         radius = 1.0
         primary_field = None
@@ -822,6 +914,11 @@ class TestMagnetoStaticSphere:
         bt = mss.magnetic_flux_density(xyz, field='total')
         bp = mss.magnetic_flux_density(xyz, field='primary')
         bs = mss.magnetic_flux_density(xyz, field='secondary')
+        np.testing.assert_equal(btest, bt)
+        np.testing.assert_equal(bptest, bp)
+        np.testing.assert_equal(bstest, bs)
+
+        bt, bp, bs = mss.magnetic_flux_density(xyz, field='all')
         np.testing.assert_equal(btest, bt)
         np.testing.assert_equal(bptest, bp)
         np.testing.assert_equal(bstest, bs)
