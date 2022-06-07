@@ -918,6 +918,12 @@ class PointCurrentWholeSpace:
     def potential(self, xyz):
         """Electric potential for a point current in a wholespace.
 
+        This method computes the potential for the point current in a wholespace at
+        the set of gridded xyz locations provided. Where :math:`\\rho` is the
+        electric resistivity, I is the current and R is the distance between
+        the location we want to evaluate at and the point current.
+        The potential V is:
+
         .. math::
 
             V = \\frac{\\rho I}{4 \\pi R}
@@ -952,7 +958,7 @@ class PointCurrentWholeSpace:
         Now we create a set of gridded locations, take the distances and compute the electric potential.
 
         >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> Z = np.zeros_like(X) + 0.25
+        >>> Z = np.zeros_like(X)
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> v = simulation.potential(xyz)
 
@@ -976,6 +982,11 @@ class PointCurrentWholeSpace:
 
     def electric_field(self, xyz):
         """Electric field for a point current in a wholespace.
+
+        This method computes the electric field for the point current in a wholespace at
+        the set of gridded xyz locations provided. Where :math:`- \\nabla V`
+        is the negative gradient of the electric potential for the point current.
+        The electric field :math:`\\mathbf{E}` is:
 
        .. math::
 
@@ -1011,7 +1022,7 @@ class PointCurrentWholeSpace:
         Now we create a set of gridded locations and compute the electric field.
 
         >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> Z = np.zeros_like(X) + 0.25
+        >>> Z = np.zeros_like(X)
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> e = simulation.electric_field(xyz)
 
@@ -1037,6 +1048,12 @@ class PointCurrentWholeSpace:
 
     def current_density(self, xyz):
         """Current density for a point current in a wholespace.
+
+        This method computes the curent density for the point current in a wholespace at
+        the set of gridded xyz locations provided. Where :math:`\\rho`
+        is the electric resistivity and :math:`\\mathbf{E}` is the electric field
+        for the point current.
+        The current density :math:`\\mathbf{J}` is:
 
        .. math::
 
@@ -1071,7 +1088,7 @@ class PointCurrentWholeSpace:
         Now we create a set of gridded locations and compute the current density.
 
         >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> Z = np.zeros_like(X) + 0.25
+        >>> Z = np.zeros_like(X)
         >>> xyz = np.stack((X, Y, Z), axis=-1)
         >>> j = simulation.current_density(xyz)
 
