@@ -1310,13 +1310,13 @@ class TestDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz1 = discretize.utils.ndgrid([x, y, z])
-        xyz2 = discretize.utils.ndgrid([x, y, z])
+        xyz3 = discretize.utils.ndgrid([x, y, z])
+        xyz4 = discretize.utils.ndgrid([x, y, z])
 
         with pytest.raises(ValueError):
-            dhs.potential(xyz1)
+            dhs.potential(xyz3)
         with pytest.raises(ValueError):
-            dhs.potential(xyz1, xyz2)
+            dhs.potential(xyz1, xyz4)
 
     def test_electric_field(self):
         dhs = static.DipoleHalfSpace(rho=1.0, current=1.0, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0])
@@ -1350,13 +1350,13 @@ class TestDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz1 = discretize.utils.ndgrid([x, y, z])
-        xyz2 = discretize.utils.ndgrid([x, y, z])
+        xyz3 = discretize.utils.ndgrid([x, y, z])
+        xyz4 = discretize.utils.ndgrid([x, y, z])
 
         with pytest.raises(ValueError):
-            dhs.electric_field(xyz1)
+            dhs.electric_field(xyz3)
         with pytest.raises(ValueError):
-            dhs.electric_field(xyz1, xyz2)
+            dhs.electric_field(xyz1, xyz4)
 
     def test_current_density(self):
         dhs = static.DipoleHalfSpace(rho=1.0, current=1.0, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0])
@@ -1390,11 +1390,11 @@ class TestDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz1 = discretize.utils.ndgrid([x, y, z])
-        xyz2 = discretize.utils.ndgrid([x, y, z])
+        xyz3 = discretize.utils.ndgrid([x, y, z])
+        xyz4 = discretize.utils.ndgrid([x, y, z])
 
         with pytest.raises(ValueError):
-            dhs.current_density(xyz1)
+            dhs.current_density(xyz3)
         with pytest.raises(ValueError):
-            dhs.current_density(xyz1, xyz2)
+            dhs.current_density(xyz1, xyz4)
 

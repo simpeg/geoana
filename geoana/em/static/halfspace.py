@@ -335,9 +335,9 @@ class DipoleHalfSpace:
         rho : float
             Resistivity in the point current (:math:`\\Omega \\cdot m`).
         location_a : array_like
-            Location of the A current electrode (m). Default is (-1, 0, 0).
+            Location of the A current source electrode (m). Default is (-1, 0, 0).
         location_b : array_like
-            Location of the B current electrode (m). Default is (1, 0, 0).
+            Location of the B current sink electrode (m). Default is (1, 0, 0).
         """
 
     def __init__(self, rho, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0], current=1.0):
@@ -354,12 +354,12 @@ class DipoleHalfSpace:
 
     @property
     def current(self):
-        """Current in the point current in Amps.
+        """Current in the dipole in Amps.
 
         Returns
         -------
         float
-            Current in the point current in Amps.
+            Current in the dipole in Amps.
         """
         return self._current
 
@@ -377,12 +377,12 @@ class DipoleHalfSpace:
 
     @property
     def rho(self):
-        """Resistivity in the point current in :math:`\\Omega \\cdot m`.
+        """Resistivity in the dipole in :math:`\\Omega \\cdot m`.
 
         Returns
         -------
         float
-            Resistivity in the point current in :math:`\\Omega \\cdot m`.
+            Resistivity in the dipole in :math:`\\Omega \\cdot m`.
         """
         return self._rho
 
@@ -403,12 +403,12 @@ class DipoleHalfSpace:
 
     @property
     def location_a(self):
-        """Location of the A current electrode.
+        """Location of the A current source electrode.
 
         Returns
         -------
         (3) numpy.ndarray of float
-            Location of the A current electrode.
+            Location of the A current source electrode. Default = np.r_[-1,0,0].
         """
         return self._location_a
 
@@ -435,12 +435,12 @@ class DipoleHalfSpace:
 
     @property
     def location_b(self):
-        """Location of the B current electrode.
+        """Location of the B current sink electrode.
 
         Returns
         -------
         (3) numpy.ndarray of float
-            Location of the B current electrode.
+            Location of the B current sink electrode. Default = np.r_[1,0,0].
         """
         return self._location_b
 
@@ -506,13 +506,13 @@ class DipoleHalfSpace:
 
         Now we create a set of gridded locations and compute the electric potential.
 
-        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 2, 20), np.linspace(-2, 2, 20))
+        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 2, 20), np.linspace(-1, 2, 20))
+        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 1, 20), np.linspace(-2, 1, 20))
         >>> Z = np.zeros_like(X1)
         >>> xyz1 = np.stack((X1, Y1, Z), axis=-1)
         >>> xyz2 = np.stack((X2, Y2, Z), axis=-1)
-        >>> v1 = simulation.potential(xyz_m=xyz1, xyz_n=None)
-        >>> v2 = simulation.potential(xyz_m=xyz1, xyz_n=xyz2)
+        >>> v1 = simulation.potential(xyz1)
+        >>> v2 = simulation.potential(xyz1, xyz2)
 
         Finally, we plot the electric potential.
 
@@ -599,13 +599,13 @@ class DipoleHalfSpace:
 
         Now we create a set of gridded locations and compute the electric field.
 
-        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 2, 20), np.linspace(-2, 2, 20))
+        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 2, 20), np.linspace(-1, 2, 20))
+        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 1, 20), np.linspace(-2, 1, 20))
         >>> Z = np.zeros_like(X1)
         >>> xyz1 = np.stack((X1, Y1, Z), axis=-1)
         >>> xyz2 = np.stack((X2, Y2, Z), axis=-1)
-        >>> e1 = simulation.electric_field(xyz_m=xyz1, xyz_n=None)
-        >>> e2 = simulation.electric_field(xyz_m=xyz1, xyz_n=xyz2)
+        >>> e1 = simulation.electric_field(xyz1)
+        >>> e2 = simulation.electric_field(xyz1, xyz2)
 
         Finally, we plot the electric field.
 
@@ -695,13 +695,13 @@ class DipoleHalfSpace:
 
         Now we create a set of gridded locations and compute the current density.
 
-        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 2, 20), np.linspace(-2, 2, 20))
+        >>> X1, Y1 = np.meshgrid(np.linspace(-1, 2, 20), np.linspace(-1, 2, 20))
+        >>> X2, Y2 = np.meshgrid(np.linspace(-2, 1, 20), np.linspace(-2, 1, 20))
         >>> Z = np.zeros_like(X1)
         >>> xyz1 = np.stack((X1, Y1, Z), axis=-1)
         >>> xyz2 = np.stack((X2, Y2, Z), axis=-1)
-        >>> j1 = simulation.electric_field(xyz_m=xyz1, xyz_n=None)
-        >>> j2 = simulation.electric_field(xyz_m=xyz1, xyz_n=xyz2)
+        >>> j1 = simulation.current_density(xyz1)
+        >>> j2 = simulation.current_density(xyz1, xyz2)
 
         Finally, we plot the current density.
 
