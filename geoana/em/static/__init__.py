@@ -19,6 +19,9 @@ Simulation Classes
   CircularLoopWholeSpace
   ElectrostaticSphere
   MagnetostaticSphere
+  PointCurrentWholeSpace
+  PointCurrentHalfSpace
+  DipoleHalfSpace
 """
 
 from geoana.em.static.sphere import ElectrostaticSphere
@@ -28,7 +31,13 @@ from geoana.em.static.sphere import MagnetostaticSphere
 from geoana.em.static.wholespace import (
     MagneticDipoleWholeSpace,
     MagneticPoleWholeSpace,
-    CircularLoopWholeSpace
+    CircularLoopWholeSpace,
+    PointCurrentWholeSpace
+)
+
+from geoana.em.static.halfspace import (
+    PointCurrentHalfSpace,
+    DipoleHalfSpace
 )
 
 from geoana.em.static.freespace import LineCurrentFreeSpace
