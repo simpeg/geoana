@@ -340,7 +340,7 @@ class DipoleHalfSpace:
             Location of the B current sink electrode (m). Default is (1, 0, 0).
         """
 
-    def __init__(self, rho, location_a=np.r_[-1, 0, 0], location_b=np.r_[1, 0, 0], current=1.0):
+    def __init__(self, rho, location_a=None, location_b=None, current=1.0):
 
         _a = PointCurrentHalfSpace(rho, current=1.0, location=location_a)
         _b = PointCurrentHalfSpace(rho, current=-1.0, location=location_b)
@@ -349,7 +349,11 @@ class DipoleHalfSpace:
 
         self.current = current
         self.rho = rho
+        if location_a is None:
+            location_a = np.r_[-1, 0, 0]
         self.location_a = location_a
+        if location_b is None:
+            location_b = np.r_[1, 0, 0]
         self.location_b = location_b
 
     @property
@@ -723,11 +727,6 @@ class DipoleHalfSpace:
         >>> plt.show()
         """
 
-        jm = self.electric_field(xyz_m) / self.rho
+        j = self.electric_field(xyz_m, xyz_n=xyz_n) / self.rho
+        return j
 
-        if xyz_n is not None:
-            jn = self.electric_field(xyz_n) / self.rho
-            j = jm - jn
-            return j
-        else:
-            return jm
