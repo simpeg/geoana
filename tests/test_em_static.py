@@ -487,6 +487,11 @@ class TestElectroStaticSphere:
         np.testing.assert_equal(vptest, vp)
         np.testing.assert_equal(vstest, vs)
 
+        vt, vp, vs = ess.potential(xyz, field='all')
+        np.testing.assert_equal(vttest, vt)
+        np.testing.assert_equal(vptest, vp)
+        np.testing.assert_equal(vstest, vs)
+
     def testE(self):
         radius = 1.0
         primary_field = None
@@ -525,6 +530,11 @@ class TestElectroStaticSphere:
         np.testing.assert_equal(eptest, ep)
         np.testing.assert_equal(estest, es)
 
+        et, ep, es = ess.electric_field(xyz, field='all')
+        np.testing.assert_equal(ettest, et)
+        np.testing.assert_equal(eptest, ep)
+        np.testing.assert_equal(estest, es)
+
     def testJ(self):
         radius = 1.0
         primary_field = None
@@ -559,6 +569,11 @@ class TestElectroStaticSphere:
         jt = ess.current_density(xyz, field='total')
         jp = ess.current_density(xyz, field='primary')
         js = ess.current_density(xyz, field='secondary')
+        np.testing.assert_equal(jttest, jt)
+        np.testing.assert_equal(jptest, jp)
+        np.testing.assert_equal(jstest, js)
+
+        jt, jp, js = ess.current_density(xyz, field='all')
         np.testing.assert_equal(jttest, jt)
         np.testing.assert_equal(jptest, jp)
         np.testing.assert_equal(jstest, js)
@@ -750,6 +765,11 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(vptest, vp)
         np.testing.assert_equal(vstest, vs)
 
+        vt, vp, vs = mss.potential(xyz, field='all')
+        np.testing.assert_equal(vttest, vt)
+        np.testing.assert_equal(vptest, vp)
+        np.testing.assert_equal(vstest, vs)
+
 
     def testH(self):
         radius = 1.0
@@ -789,6 +809,11 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(hptest, hp)
         np.testing.assert_equal(hstest, hs)
 
+        ht, hp, hs = mss.magnetic_field(xyz, field='all')
+        np.testing.assert_equal(httest, ht)
+        np.testing.assert_equal(hptest, hp)
+        np.testing.assert_equal(hstest, hs)
+
     def testB(self):
         radius = 1.0
         primary_field = None
@@ -823,6 +848,11 @@ class TestMagnetoStaticSphere:
         bt = mss.magnetic_flux_density(xyz, field='total')
         bp = mss.magnetic_flux_density(xyz, field='primary')
         bs = mss.magnetic_flux_density(xyz, field='secondary')
+        np.testing.assert_equal(btest, bt)
+        np.testing.assert_equal(bptest, bp)
+        np.testing.assert_equal(bstest, bs)
+
+        bt, bp, bs = mss.magnetic_flux_density(xyz, field='all')
         np.testing.assert_equal(btest, bt)
         np.testing.assert_equal(bptest, bp)
         np.testing.assert_equal(bstest, bs)
