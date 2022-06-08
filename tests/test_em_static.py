@@ -46,8 +46,6 @@ class TestEM_Static(unittest.TestCase):
             self.clws.radius = -2
         with pytest.raises(TypeError):
             self.clws.current = "box"
-        with pytest.raises(ValueError):
-            self.clws.current = -2
         with pytest.raises(TypeError):
             x = np.linspace(-20., 20., 50)
             y = np.linspace(-30., 30., 50)
@@ -389,9 +387,9 @@ def Ep_from_ESphere(
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
     r_vec = XYZ - loc
-    x = r_vec[:, 0]
+    r = np.linalg.norm(r_vec, axis=-1)
 
-    ep = np.zeros((*x.shape, 3))
+    ep = np.zeros((*r.shape, 3))
     ep[..., 0] = amp[0]
     return ep
 
@@ -618,7 +616,6 @@ class TestElectroStaticSphere:
         np.testing.assert_equal(jttest, jt)
         np.testing.assert_equal(jptest, jp)
         np.testing.assert_equal(jstest, js)
-
 
     def test_rho(self):
         radius = 1.0
