@@ -16,6 +16,7 @@ class TestEM_Static(unittest.TestCase):
         self.mdws = static.MagneticDipoleWholeSpace()
         self.mpws = static.MagneticPoleWholeSpace()
         self.clws = static.CircularLoopWholeSpace()
+        self.lcfs = static.LineCurrentFreeSpace(nodes=np.c_[1., 1., 1.])
 
     def test_defaults(self):
         self.assertTrue(self.mdws.sigma == 1.0)
@@ -34,12 +35,34 @@ class TestEM_Static(unittest.TestCase):
         self.assertTrue(np.all(self.mpws.orientation == np.r_[1., 0., 0.]))
         self.assertTrue(np.all(self.clws.orientation == np.r_[1., 0., 0.]))
 
+        self.assertTrue(np.all(self.lcfs.nodes == np.c_[1., 1., 1.]))
+
         self.assertTrue(self.mdws.moment == 1.0)
         self.assertTrue(self.mpws.moment == 1.0)
         self.assertTrue(self.clws.current == 1.0)
         self.assertTrue(self.clws.radius == np.sqrt(1/np.pi))
 
     def test_errors(self):
+        with pytest.raises(TypeError):
+            self.mdws.mu = "box"
+        with pytest.raises(ValueError):
+            self.mdws.mu = -2
+        with pytest.raises(TypeError):
+            self.mdws.moment = "box"
+        with pytest.raises(ValueError):
+            self.mdws.moment = -2
+        with pytest.raises(ValueError):
+            self.mdws.orientation = [0, 1, 2, 3, 4]
+        with pytest.raises(ValueError):
+            self.mdws.orientation = [[0, 0], [0, 1]]
+        with pytest.raises(TypeError):
+            self.mdws.orientation = ["string"]
+        with pytest.raises(ValueError):
+            self.clws.location = [0, 1, 2, 3]
+        with pytest.raises(ValueError):
+            self.clws.location = [[0, 0], [0, 1]]
+        with pytest.raises(TypeError):
+            self.clws.location = ["string"]
         with pytest.raises(TypeError):
             self.clws.radius = "box"
         with pytest.raises(ValueError):
@@ -52,6 +75,14 @@ class TestEM_Static(unittest.TestCase):
             z = np.linspace(-40., 40., 50)
             xyz = discretize.utils.ndgrid([x, y, z])
             self.clws.magnetic_flux_density(xyz, coordinates='square')
+        with pytest.raises(ValueError):
+            self.lcfs.nodes = [0, 1, 2, 3, 4, 5]
+        with pytest.raises(ValueError):
+            self.lcfs.nodes = [[0, 0], [0, 1]]
+        with pytest.raises(TypeError):
+            self.lcfs.nodes = ["string"]
+        with pytest.raises(TypeError):
+            self.lcfs.current = "box"
 
     def test_vector_potential(self):
         n = 50
@@ -179,6 +210,7 @@ class TestEM_Static(unittest.TestCase):
                             np.linalg.norm(b_mdws[inds])
                         )
                     )
+
                     print(
                         "Testing r = {}, loc = {}, orientation = {}".format(
                             radius, location, orientation

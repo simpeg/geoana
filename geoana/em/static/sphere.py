@@ -480,7 +480,7 @@ class ElectrostaticSphere:
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
         >>> xyz = np.stack((X, Y, Z), axis=-1)
-        >>> q = simulation.charge_density(xyz, None)
+        >>> q = simulation.charge_density(xyz, 0.5)
 
         Finally, we plot the charge density.
 
