@@ -525,7 +525,7 @@ class DipoleHalfSpace:
         >>>     divider = make_axes_locatable(ax)
         >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
         >>>     cb = plt.colorbar(im, cax=cax)
-        >>>     cb.set_label(label= 'Potential ($V/m$)')
+        >>>     cb.set_label(label= 'Potential (V)')
         >>>     ax.set_ylabel('Y coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
         >>>     ax.set_aspect('equal')
