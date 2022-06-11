@@ -70,9 +70,6 @@ def mkvc(x, n_dims=1):
     if isinstance(x, np.matrix):
         x = np.array(x)
 
-    if hasattr(x, 'tovec'):
-        x = x.tovec()
-
     assert isinstance(x, np.ndarray), "Vector must be a numpy array"
 
     if n_dims == 1:
