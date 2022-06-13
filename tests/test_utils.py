@@ -1,5 +1,5 @@
 import numpy as np
-from geoana.utils import check_xyz_dim, mkvc
+from geoana.utils import check_xyz_dim, mkvc, ndgrid
 import pytest
 
 
@@ -14,6 +14,43 @@ def test_mkvc():
     y_test = np.concatenate((y_test[:, 0], y_test[:, 1]), axis=None)
     y_new = mkvc(y)
     np.testing.assert_equal(y_test, y_new)
+
+
+def test_nd_grid():
+    x = np.array([1])
+    x_test = np.array([1])
+    x_new = ndgrid(x)
+    np.testing.assert_equal(x_test, x_new)
+
+    x = np.array([[1, 2, 3]])
+    x_test = np.array([[1, 2, 3]])
+    x_new = ndgrid(x)
+    np.testing.assert_equal(x_test, x_new)
+
+    x = np.array([[1, 2, 3]])
+    y = np.array([[4, 5]])
+    xy_test_1 = np.array([[1, 4], [2, 4], [3, 4], [1, 5], [2, 5], [3, 5]])
+    xy_new_1 = ndgrid(x, y)
+    x_test = np.array([[1, 1], [2, 2], [3, 3]])
+    y_test = np.array([[4, 5], [4, 5], [4, 5]])
+    x_new, y_new = ndgrid(x, y, vector=False)
+    np.testing.assert_equal(xy_test_1, xy_new_1)
+    np.testing.assert_equal(x_test, x_new)
+    np.testing.assert_equal(y_test, y_new)
+
+    x = np.array([[1, 2]])
+    y = np.array([[3, 4]])
+    z = np.array([[5, 6]])
+    xy_test_1 = np.array([[1, 3, 5], [2, 3, 5], [1, 4, 5], [2, 4, 5], [1, 3, 6], [2, 3, 6], [1, 4, 6], [2, 4, 6]])
+    xy_new_1 = ndgrid(x, y, z)
+    x_test = np.array([[[1, 1], [1, 1]], [[2, 2], [2, 2]]])
+    y_test = np.array([[[3, 3], [4, 4]], [[3, 3], [4, 4]]])
+    z_test = np.array([[[5, 6], [5, 6]], [[5, 6], [5, 6]]])
+    x_new, y_new, z_new = ndgrid(x, y, z, vector=False)
+    np.testing.assert_equal(xy_test_1, xy_new_1)
+    np.testing.assert_equal(x_test, x_new)
+    np.testing.assert_equal(y_test, y_new)
+    np.testing.assert_equal(z_test, z_new)
 
 
 def test_x_y_z_stack():
