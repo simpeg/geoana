@@ -1,8 +1,17 @@
 import unittest
+import pytest
 
 import numpy as np
 from geoana import spatial
 
+
+def test_errors():
+    x, y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+    xyz = np.stack((x, y), axis=-1)
+    with pytest.raises(AssertionError):
+        spatial.rotate_points_from_normals(xyz, np.r_[1, 1, 1], np.r_[1, 1, 0])
+    with pytest.raises(Exception):
+        spatial.vector_dot(xyz, np.r_[1, 1])
 
 class TestCoordinates(unittest.TestCase):
 
@@ -38,8 +47,6 @@ class TestCoordinates(unittest.TestCase):
             ),
             vec
         ))
-
-
 
         vec = np.r_[0, 1, 2].reshape(1, 3)
         grid = np.r_[1, np.pi/4, 0].reshape(1, 3)
