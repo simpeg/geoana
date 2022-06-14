@@ -1,4 +1,5 @@
 import unittest
+import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 from scipy.constants import mu_0
@@ -6,8 +7,57 @@ from geoana.em.fdem import MagneticDipoleHalfSpace, MagneticDipoleLayeredHalfSpa
 from geoana.kernels.tranverse_electric_reflections import (
     rTE_forward, rTE_gradient, _rTE_forward, _rTE_gradient
 )
+from scipy.special import iv, kv
+from geoana.em.fdem.base import sigma_hat
 
 from discretize.Tests import checkDerivative as check_derivative
+
+
+class TestHalfSpace:
+
+    def test_magnetic_field(self):
+        sigma = 1.0
+        moment = 2.0
+        frequencies = np.logspace(1, 4, 3)
+        w = 2 * np.pi * frequencies
+        sigh = sigma_hat(frequencies, sigma)
+        k = np.sqrt(-1j * w * mu_0 * sigh)
+
+        location = np.r_[0, 0, 0]
+        orientation = np.r_[1, 0, 0]
+        xyz = np.c_[5, 0, 0]
+        dxy = xyz[..., :2] - location[:2]
+        r = np.linalg.norm(dxy, axis=-1)
+        x = dxy[..., 0]
+        y = dxy[..., 1]
+
+        for dim in range(r.ndim):
+            k = k[:, None]
+
+        em_x = em_y = em_z = 0
+        src_x, src_y, src_z = orientation
+
+        alpha = 1j * k * r/2
+        ik1 = iv(1, alpha) * kv(1, alpha)
+        ik2 = iv(2, alpha) * kv(2, alpha)
+
+        dip_half = MagneticDipoleHalfSpace(
+            frequencies,
+            sigma=sigma,
+            orientation=orientation,
+            moment=moment,
+        )
+        phi = 2 / (k ** 2 * r ** 4) * (3 + k ** 2 * r ** 2 - (3 + 3j * k * r - k ** 2 * r ** 2) * np.exp(-1j * k * r))
+        dphi_dr = 2 / (k ** 2 * r ** 5) * (-2 * k ** 2 * r ** 2 - 12 + (-1j * k ** 3 * r ** 3 - 5 * k ** 2 * r ** 2 + 12j * k * r + 12) * np.exp(-1j * k * r))
+
+        em_x += src_x * (-1 / r ** 3) * (y ** 2 * phi + x ** 2 * r * dphi_dr)
+        em_y += src_x * (1 / r ** 3) * x * y * (phi - r * dphi_dr)
+        em_z -= src_x * (k ** 2 * x / r ** 2) * (ik1 - ik2)
+        e = moment / (4 * np.pi) * np.stack((em_x, em_y, em_z), axis=-1).squeeze()
+        e_test = dip_half.magnetic_field(xyz, field='total')
+
+        np.testing.assert_equal(e_test, e)
+
 
 class TestLayeredHalfspace(unittest.TestCase):
 
@@ -33,6 +83,17 @@ class TestLayeredHalfspace(unittest.TestCase):
                 orientation=orientation,
                 moment=moment,
             )
+
+            with pytest.raises(ValueError):
+                _dip_half = MagneticDipoleHalfSpace(
+                    frequencies,
+                    sigma=sigma,
+                    orientation=orientation,
+                    moment=moment,
+                    location=np.r_[1, 1, 1]
+                )
+                _dip_half._check_is_valid_location()
+
 
             em_layer_total = dip_layer.magnetic_field(xyz, field='total')
             em_half_total = dip_half.magnetic_field(xyz, field='total')

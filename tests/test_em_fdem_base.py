@@ -32,4 +32,3 @@ def test_base_fdem():
         fdem.ElectricDipoleWholeSpace(frequency=-1)
     with pytest.raises(TypeError):
         fdem.ElectricDipoleWholeSpace(frequency=np.array([[1, 2], [3, 4]]))
-
