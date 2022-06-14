@@ -343,7 +343,7 @@ class DipoleHalfSpace:
     def __init__(self, rho, location_a=None, location_b=None, current=1.0):
 
         _a = PointCurrentHalfSpace(rho, current=1.0, location=location_a)
-        _b = PointCurrentHalfSpace(rho, current=-1.0, location=location_b)
+        _b = PointCurrentHalfSpace(rho, current=1.0, location=location_b)
         self._a = _a
         self._b = _b
 
@@ -377,7 +377,7 @@ class DipoleHalfSpace:
 
         self._current = value
         self._a.current = value
-        self._b.current = -value
+        self._b.current = value
 
     @property
     def rho(self):
