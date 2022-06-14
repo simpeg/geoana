@@ -1148,7 +1148,7 @@ def V_from_Dipole1(
     r1 = np.linalg.norm(r_vec1, axis=-1)
     r2 = np.linalg.norm(r_vec2, axis=-1)
 
-    v = rho * cur / (2 * np.pi * r1) - rho * -cur / (2 * np.pi * r2)
+    v = rho * cur / (2 * np.pi * r1) - rho * cur / (2 * np.pi * r2)
     return v
 
 
@@ -1168,8 +1168,8 @@ def V_from_Dipole2(
     r3 = np.linalg.norm(r_vec3, axis=-1)
     r4 = np.linalg.norm(r_vec4, axis=-1)
 
-    vm = rho * cur / (2 * np.pi * r1) - rho * -cur / (2 * np.pi * r2)
-    vn = rho * cur / (2 * np.pi * r3) - rho * -cur / (2 * np.pi * r4)
+    vm = rho * cur / (2 * np.pi * r1) - rho * cur / (2 * np.pi * r2)
+    vn = rho * cur / (2 * np.pi * r3) - rho * cur / (2 * np.pi * r4)
     v = vm - vn
     return v
 
@@ -1184,7 +1184,7 @@ def E_from_Dipole1(
     r1 = np.linalg.norm(r_vec1, axis=-1)
     r2 = np.linalg.norm(r_vec2, axis=-1)
 
-    e = rho * cur * r_vec1 / (2 * np.pi * r1[..., None] ** 3) - rho * -cur * r_vec2 / (2 * np.pi * r2[..., None] ** 3)
+    e = rho * cur * r_vec1 / (2 * np.pi * r1[..., None] ** 3) - rho * cur * r_vec2 / (2 * np.pi * r2[..., None] ** 3)
     return e
 
 
@@ -1204,8 +1204,8 @@ def E_from_Dipole2(
     r3 = np.linalg.norm(r_vec3, axis=-1)
     r4 = np.linalg.norm(r_vec4, axis=-1)
 
-    em = rho * cur * r_vec1 / (2 * np.pi * r1[..., None] ** 3) - rho * -cur * r_vec2 / (2 * np.pi * r2[..., None] ** 3)
-    en = rho * cur * r_vec3 / (2 * np.pi * r3[..., None] ** 3) - rho * -cur * r_vec4 / (2 * np.pi * r4[..., None] ** 3)
+    em = rho * cur * r_vec1 / (2 * np.pi * r1[..., None] ** 3) - rho * cur * r_vec2 / (2 * np.pi * r2[..., None] ** 3)
+    en = rho * cur * r_vec3 / (2 * np.pi * r3[..., None] ** 3) - rho * cur * r_vec4 / (2 * np.pi * r4[..., None] ** 3)
     e = em - en
     return e
 
@@ -1262,7 +1262,7 @@ class TestDipoleHalfSpace:
         assert dhs._a.rho == 1.0
         assert dhs._b.rho == 1.0
         assert dhs._a.current == 1.0
-        assert dhs._b.current == -1.0
+        assert dhs._b.current == 1.0
         assert np.all(dhs._a.location == np.r_[-1, 0, 0])
         assert np.all(dhs._b.location == np.r_[1, 0, 0])
 
@@ -1274,7 +1274,7 @@ class TestDipoleHalfSpace:
         assert dhs._a.rho == 2.0
         assert dhs._b.rho == 2.0
         assert dhs._a.current == 2.0
-        assert dhs._b.current == -2.0
+        assert dhs._b.current == 2.0
         assert np.all(dhs._a.location == np.r_[1, 0, 0])
         assert np.all(dhs._b.location == np.r_[-1, 0, 0])
 
