@@ -26,9 +26,10 @@ def test_sigma_hat():
 
 
 def test_base_fdem():
+    edws = fdem.ElectricDipoleWholeSpace(1)
     with pytest.raises(TypeError):
-        fdem.ElectricDipoleWholeSpace(frequency="string")
+        edws.frequency = "string"
     with pytest.raises(ValueError):
-        fdem.ElectricDipoleWholeSpace(frequency=-1)
+        edws.frequency = -1
     with pytest.raises(TypeError):
-        fdem.ElectricDipoleWholeSpace(frequency=np.array([[1, 2], [3, 4]]))
+        edws.frequency = np.array([[1, 2], [3, 4]])

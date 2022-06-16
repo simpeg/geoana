@@ -2,7 +2,7 @@ import unittest
 import pytest
 import numpy as np
 from numpy.testing import assert_allclose
-from scipy.constants import mu_0
+from scipy.constants import mu_0, epsilon_0
 from geoana.em.fdem import MagneticDipoleHalfSpace, MagneticDipoleLayeredHalfSpace
 from geoana.kernels.tranverse_electric_reflections import (
     rTE_forward, rTE_gradient, _rTE_forward, _rTE_gradient
@@ -60,6 +60,93 @@ class TestHalfSpace:
 
 
 class TestLayeredHalfspace(unittest.TestCase):
+
+    def test_defaults(self):
+        frequencies = np.logspace(1, 4, 3)
+        sigma = 1
+        mu = mu_0
+        epsilon = epsilon_0
+        mag_layer = MagneticDipoleLayeredHalfSpace(
+            frequency=frequencies,
+            thickness=None,
+            sigma=sigma,
+            mu=mu,
+            epsilon=epsilon
+        )
+        assert mag_layer.thickness == []
+
+
+    def test_errors(self):
+        frequencies = np.logspace(1, 4, 3)
+        sigma = 1
+        mu = mu_0
+        epsilon = epsilon_0
+        thickness = 10 * np.ones(5)
+        mag_layer = MagneticDipoleLayeredHalfSpace(
+            frequency=frequencies,
+            thickness=thickness,
+            sigma=sigma,
+            mu=mu,
+            epsilon=epsilon
+        )
+        with pytest.raises(ValueError):
+            mag_layer.location = np.r_[1, 1, -1]
+            mag_layer._check_is_valid_location()
+
+        with pytest.raises(TypeError):
+            mag_layer.frequency = "string"
+        with pytest.raises(ValueError):
+            mag_layer.frequency = -1
+        with pytest.raises(TypeError):
+            mag_layer.frequency = np.array([[1, 2], [3, 4]])
+
+        with pytest.raises(TypeError):
+            mag_layer.thickness = "string"
+        with pytest.raises(ValueError):
+            mag_layer.thickness = -1
+        with pytest.raises(TypeError):
+            mag_layer.thickness = np.array([[1, 2], [3, 4]])
+
+        with pytest.raises(TypeError):
+            mag_layer.sigma = "string"
+        with pytest.raises(TypeError):
+            mag_layer.sigma = np.array([1, 2, 3])
+        with pytest.raises(ValueError):
+            mag_layer.sigma = 1-1j
+        with pytest.raises(ValueError):
+            mag_layer.sigma = -1
+        with pytest.raises(TypeError):
+            mag_layer.thickness = 2
+            mag_layer.sigma = np.array([1+1j, 1+2j, 1+3j])
+
+        with pytest.raises(TypeError):
+            mag_layer.mu = "string"
+        with pytest.raises(TypeError):
+            mag_layer.mu = np.array([1, 2, 3])
+        with pytest.raises(ValueError):
+            mag_layer.mu = 1-1j
+        with pytest.raises(ValueError):
+            mag_layer.mu = -1
+        with pytest.raises(TypeError):
+            mag_layer.thickness = 2
+            mag_layer.mu = np.array([1+1j, 1+2j, 1+3j])
+
+        with pytest.raises(TypeError):
+            mag_layer.epsilon = "string"
+        with pytest.raises(TypeError):
+            mag_layer.epsilon = np.array([1, 2, 3])
+        with pytest.raises(ValueError):
+            mag_layer.epsilon = 1-1j
+        with pytest.raises(ValueError):
+            mag_layer.epsilon = -1
+        with pytest.raises(TypeError):
+            mag_layer.thickness = 2
+            mag_layer.epsilon = np.array([1+1j, 1+2j, 1+3j])
+
+        with pytest.raises(NotImplementedError):
+            mag_layer.wavenumber()
+        with pytest.raises(NotImplementedError):
+            mag_layer.skin_depth()
 
     def test_magnetic_dipole(self):
         sigma = 1.0
