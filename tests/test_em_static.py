@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
 import discretize
+from scipy.special import ellipk, ellipe
 
 from geoana.em import static, fdem
 from geoana import spatial
@@ -230,6 +231,96 @@ class TestEM_Static(unittest.TestCase):
                     self.assertTrue(loop_passed_1)
                     self.assertTrue(loop_passed_2)
                     self.assertTrue(dipole_passed)
+
+    def test_dipole_magnetic_flux_density(self):
+        mdws = static.MagneticDipoleWholeSpace()
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+        n_obs = xyz.shape[0]
+
+        xyz_ = spatial.cylindrical_2_cartesian(xyz)
+        r = mdws.vector_distance(xyz_)
+        dxyz = spatial.repeat_scalar(mdws.distance(xyz_))
+        m_vec = mdws.moment * np.atleast_2d(mdws.orientation).repeat(n_obs, axis=0)
+        m_dot_r = (m_vec * r).sum(axis=1)
+        m_dot_r = np.atleast_2d(m_dot_r).T.repeat(3, axis=1)
+
+        b_test = (mu_0 / (4 * np.pi)) * ((3 * r * m_dot_r / (dxyz ** 5)) - m_vec / (dxyz ** 3))
+        b_test = spatial.cartesian_2_cylindrical(xyz_, b_test)
+
+        b = mdws.magnetic_flux_density(xyz, coordinates='cylindrical')
+        np.testing.assert_equal(b_test, b)
+
+    def test_pole_magnetic_flux_density(self):
+        mpws = static.MagneticPoleWholeSpace()
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        xyz_ = spatial.cylindrical_2_cartesian(xyz)
+        r = mpws.vector_distance(xyz_)
+        dxyz = spatial.repeat_scalar(mpws.distance(xyz_))
+
+        b_test = mpws.moment * mu_0 / (4 * np.pi * (dxyz ** 3)) * r
+        b_test = spatial.cartesian_2_cylindrical(xyz_, b_test)
+
+        b = mpws.magnetic_flux_density(xyz, coordinates='cylindrical')
+        np.testing.assert_equal(b_test, b)
+
+    def test_pole_magnetic_field(self):
+        mpws = static.MagneticPoleWholeSpace()
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        xyz_ = spatial.cylindrical_2_cartesian(xyz)
+        r = mpws.vector_distance(xyz_)
+        dxyz = spatial.repeat_scalar(mpws.distance(xyz_))
+
+        h_test = mpws.moment * mu_0 / (4 * np.pi * (dxyz ** 3)) * r
+        h_test = spatial.cartesian_2_cylindrical(xyz_, h_test)
+        h_test = h_test / mu_0
+
+        h = mpws.magnetic_field(xyz, coordinates='cylindrical')
+        np.testing.assert_equal(h_test, h)
+
+    def test_loop_magnetic_flux_density(self):
+        clws = static.CircularLoopWholeSpace()
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        xyz_ = np.atleast_2d(xyz)
+        xyz_ = spatial.cylindrical_2_cartesian(xyz_)
+        xyz_ = spatial.rotate_points_from_normals(xyz_, np.array(clws.orientation), np.r_[0, 0, 1],
+                                                  x0=np.array(clws.location))
+        dxyz = clws.vector_distance(xyz_)
+        rho = np.linalg.norm(dxyz[:, :2], axis=-1)
+        b = np.zeros((len(rho), 3))
+        ind_axial = rho == 0
+        b[ind_axial, -1] = mu_0 * clws.current * clws.radius ** 2 / (2 * (clws.radius ** 2 +
+                                                                          dxyz[ind_axial, 2] ** 2) ** (1.5))
+        alpha = rho[~ind_axial] / clws.radius
+        beta = dxyz[~ind_axial, 2] / clws.radius
+        gamma = dxyz[~ind_axial, 2] / rho[~ind_axial]
+        q = ((1 + alpha) ** 2 + beta ** 2)
+        k2 = 4 * alpha / q
+        b[~ind_axial, -1] = mu_0 * clws.current / (2 * clws.radius * np.pi * np.sqrt(q)) * \
+            (ellipe(k2) * (1 - alpha ** 2 - beta ** 2) / (q - 4 * alpha) + ellipk(k2))
+        b_rad = mu_0 * clws.current * gamma / (2 * clws.radius * np.pi * np.sqrt(q)) * \
+            (ellipe(k2) * (1 + alpha ** 2 + beta ** 2) / (q - 4 * alpha) - ellipk(k2))
+        b[~ind_axial, 0] = b_rad * (dxyz[~ind_axial, 0] / rho[~ind_axial])
+        b[~ind_axial, 1] = b_rad * (dxyz[~ind_axial, 1] / rho[~ind_axial])
+        b = spatial.rotate_points_from_normals(b, np.r_[0, 0, 1], np.array(clws.orientation),)
+        b = spatial.cartesian_2_cylindrical(xyz_, b)
+
+        b_test = clws.magnetic_flux_density(xyz, coordinates='cylindrical')
+        np.testing.assert_equal(b_test, b)
 
     def test_magnetic_field_3Dcyl(self):
         print("\n === Testing 3D Cyl Mesh === \n")
