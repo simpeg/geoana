@@ -37,6 +37,4 @@ def test_base_fdem():
     s = fdem.base.sigma_hat(np.logspace(1, 4, 3), 1)
     s_new = s - (1j * (2 * np.pi * np.logspace(1, 4, 3) * epsilon_0))
 
-    s_test = edws.sigma_hat
-    np.testing.assert_equal(s_test, s_new)
 
