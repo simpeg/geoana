@@ -55,3 +55,10 @@ def test_base_tdem():
     with pytest.raises(TypeError):
         tdem.VerticalMagneticDipoleHalfSpace(time=np.array([[1, 2], [3, 4]]))
 
+    pt = tdem.peak_time(2, 2)
+    dd = tdem.diffusion_distance(2, 2)
+    td = tdem.BaseTDEM(2, sigma=2)
+    pt_test = td.peak_time(2)
+    dd_test = td.diffusion_distance
+    np.testing.assert_equal(pt, pt_test)
+    np.testing.assert_equal(dd, dd_test)
