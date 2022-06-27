@@ -20,4 +20,5 @@ def configuration(parent_package="", top_path=None):
         ext, sources=["rTE.cpp", "_rTE.cpp"], include_dirs=[get_numpy_include_dirs()]
     )
 
+    config.add_extension('potential_prism', ['potential_prism_ufuncs.c'], include_dirs=[get_numpy_include_dirs()])
     return config
