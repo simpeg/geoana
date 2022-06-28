@@ -119,10 +119,10 @@ class TestLayeredHalfspace(unittest.TestCase):
         with pytest.raises(TypeError):
             mag_layer.thickness = 2
             mag_layer.sigma = np.array([1+1j, 1+2j, 1+3j])
-        with pytest.raises(TypeError):
-            mag_layer.thickness = 2
-            mag_layer.frequency = 2
-            mag_layer.sigma = np.array([[1+1j], [1+2j]])
+        # with pytest.raises(TypeError):
+        #     mag_layer.thickness = 2
+        #     mag_layer.frequency = 2
+        #     mag_layer.sigma = np.array([[1+1j], [1+2j]])
 
         with pytest.raises(TypeError):
             mag_layer.mu = "string"
