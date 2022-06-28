@@ -16,6 +16,7 @@ def test_errors():
     with pytest.raises(Exception):
         spatial.vector_distance(xyz, np.r[1, 2])
 
+
 class TestCoordinates(unittest.TestCase):
 
     def test_rotate_vec_cyl2cart(self):
@@ -99,6 +100,7 @@ class TestCoordinates(unittest.TestCase):
         c2s = spatial.cartesian_to_spherical(grid, vec)
         np.testing.assert_equal(s2c, spatial.spherical_to_cartesian(grid, vec))
         np.testing.assert_equal(c2s, spatial.cartesian_to_spherical(grid, vec))
+
 
 if __name__ == '__main__':
     unittest.main()
