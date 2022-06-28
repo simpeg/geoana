@@ -343,7 +343,7 @@ class DipoleHalfSpace:
     def __init__(self, rho, location_a=None, location_b=None, current=1.0):
 
         _a = PointCurrentHalfSpace(rho, current=1.0, location=location_a)
-        _b = PointCurrentHalfSpace(rho, current=-1.0, location=location_b)
+        _b = PointCurrentHalfSpace(rho, current=1.0, location=location_b)
         self._a = _a
         self._b = _b
 
@@ -377,7 +377,7 @@ class DipoleHalfSpace:
 
         self._current = value
         self._a.current = value
-        self._b.current = -value
+        self._b.current = value
 
     @property
     def rho(self):
@@ -623,6 +623,19 @@ class DipoleHalfSpace:
         >>>     ax.set_xlabel('X coordinate ($m$)')
         >>>     ax.set_aspect('equal')
         >>>     ax.set_title(title)
+
+
+        Finally, we plot the electric field.
+
+        >>> E_amp = np.linalg.norm(e1, axis=-1)
+        >>> plt.pcolor(X, Y, E_amp, shading='auto')
+        >>> cb = plt.colorbar()
+        >>> cb.set_label(label= 'Electric Field ($V/m$)')
+        >>> plt.streamplot(X, Y, e1[..., 0], e1[..., 1], density=0.75)
+        >>> plt.ylabel('Y coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Electric Field from Dipole using 3 Electrodes')
+
         >>> plt.tight_layout()
         >>> plt.show()
         """
@@ -717,6 +730,17 @@ class DipoleHalfSpace:
         >>>     ax.set_xlabel('X coordinate ($m$)')
         >>>     ax.set_aspect('equal')
         >>>     ax.set_title(title)
+
+        Finally, we plot the current density.
+
+        >>> J_amp = np.linalg.norm(j1, axis=-1)
+        >>> plt.pcolor(X, Y, J_amp, shading='auto')
+        >>> cb = plt.colorbar()
+        >>> cb.set_label(label= 'Current Density ($A/m^2$)')
+        >>> plt.streamplot(X, Y, j1[..., 0], j1[..., 1], density=0.75)
+        >>> plt.ylabel('Y coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Current Density from Dipole using 3 Electrodes')
         >>> plt.tight_layout()
         >>> plt.show()
         """
