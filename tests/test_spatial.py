@@ -14,7 +14,7 @@ def test_errors():
     with pytest.raises(Exception):
         spatial.vector_dot(xyz, np.r_[1, 1])
     with pytest.raises(Exception):
-        spatial.vector_distance(xyz, np.r[1, 2])
+        spatial.vector_distance(xyz, np.r_[1, 2])
 
 
 class TestCoordinates(unittest.TestCase):
@@ -97,7 +97,18 @@ class TestCoordinates(unittest.TestCase):
         vec = np.r_[1., 0, 0].reshape(1, 3)
         grid = np.r_[1., np.pi / 4, 0].reshape(1, 3)
         s2c = spatial.spherical_2_cartesian(grid, vec)
-        c2s = spatial.cartesian_to_spherical(grid, vec)
+        c2s = spatial.cartesian_2_spherical(grid, vec)
+        np.testing.assert_equal(s2c, spatial.spherical_to_cartesian(grid, vec))
+        np.testing.assert_equal(c2s, spatial.cartesian_to_spherical(grid, vec))
+
+        s2c = spatial.spherical_2_cartesian(grid)
+        c2s = spatial.cartesian_2_spherical(grid)
+        np.testing.assert_equal(s2c, spatial.spherical_to_cartesian(grid))
+        np.testing.assert_equal(c2s, spatial.cartesian_to_spherical(grid))
+
+        vec = np.r_[1, 0, 0]
+        s2c = spatial.spherical_2_cartesian(grid, vec)
+        c2s = spatial.cartesian_2_spherical(grid, vec)
         np.testing.assert_equal(s2c, spatial.spherical_to_cartesian(grid, vec))
         np.testing.assert_equal(c2s, spatial.cartesian_to_spherical(grid, vec))
 
