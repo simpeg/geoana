@@ -19,6 +19,7 @@ Simulation Classes
 import numpy as np
 from scipy.constants import G
 from geoana.utils import check_xyz_dim
+from geoana.base import BasePrism
 from geoana.kernels import prism_f, prism_fz, prism_fzx, prism_fzy, prism_fzz
 
 
@@ -557,7 +558,7 @@ class Sphere(PointMass):
         return g_tens
 
 
-class Prism:
+class Prism(BasePrism):
     """Class for gravitational solutions for a prism.
 
     The ``Prism`` class is used to analytically compute the gravitational
@@ -565,20 +566,17 @@ class Prism:
 
     Parameters
     ----------
-    rho : float
-        Density of prism (:math:`\\frac{kg}{m^3}`).
     min_location : (3,) array_like
         (x, y, z) triplet of the minimum locations in each dimension
     max_location : (3,) array_like
         (x, y, z) triplet of the maximum locations in each dimension
+    rho : float, optional
+        Density of prism (:math:`\\frac{kg}{m^3}`).
     """
 
-    def __init__(self, rho, min_location, max_location):
+    def __init__(self, min_location, max_location, rho=1.0):
         self.rho = rho
-        self.min_location = min_location
-        self.max_location = max_location
-        if np.any(self.max_location <= self.min_location):
-            raise ValueError("Max location must be strictly greater than the minimum location")
+        super().__init__(min_location=min_location, max_location=max_location)
 
     @property
     def rho(self):
@@ -602,91 +600,7 @@ class Prism:
 
     @property
     def mass(self):
-        volume = np.prod(self.max_location - self.min_location)
-        return volume * self.rho
-
-    @property
-    def min_location(self):
-        """Location of the point mass.
-
-        Returns
-        -------
-        (3) numpy.ndarray of float
-            Location of the point mass in meters.
-        """
-        return self._min_location
-
-    @min_location.setter
-    def min_location(self, vec):
-
-        try:
-            vec = np.asarray(vec, dtype=float)
-        except:
-            raise TypeError(f"location must be array_like of float, got {type(vec)}")
-
-        vec = np.squeeze(vec)
-        if vec.shape != (3,):
-            raise ValueError(
-                f"location must be array_like with shape (3,), got {vec.shape}"
-            )
-
-        self._min_location = vec
-
-    @property
-    def max_location(self):
-        """Location of the point mass.
-
-        Returns
-        -------
-        (3) numpy.ndarray of float
-            Location of the point mass in meters.
-        """
-        return self._max_location
-
-    @max_location.setter
-    def max_location(self, vec):
-
-        try:
-            vec = np.asarray(vec, dtype=float)
-        except:
-            raise TypeError(f"location must be array_like of float, got {type(vec)}")
-
-        vec = np.squeeze(vec)
-        if vec.shape != (3,):
-            raise ValueError(
-                f"location must be array_like with shape (3,), got {vec.shape}"
-            )
-
-        self._max_location = vec
-
-    def _eval_integral(self, func, x, y, z, cycle=0):
-
-        x_min, y_min, z_min = self.min_location
-        x_max, y_max, z_max = self.max_location
-
-        x_min = x_min - x
-        y_min = y_min - y
-        z_min = z_min - z
-
-        x_max = x_max - x
-        y_max = y_max - y
-        z_max = z_max - z
-
-        for i in range(cycle):
-            x_min, y_min, z_min = y_min, z_min, x_min
-            x_max, y_max, z_max = y_max, z_max, x_max
-
-        v000 = func(x_min, y_min, z_min)
-        v001 = func(x_min, y_min, z_max)
-        v010 = func(x_min, y_max, z_min)
-        v011 = func(x_min, y_max, z_max)
-        v100 = func(x_max, y_min, z_min)
-        v101 = func(x_max, y_min, z_max)
-        v110 = func(x_max, y_max, z_min)
-        v111 = func(x_max, y_max, z_max)
-
-        val = - G * self.rho * (v111 - v110 - v101 + v100 - v011 + v010 + v001 - v000)
-        return val
+        return self.volume * self.rho
 
     def gravitational_potential(self, xyz):
         """
@@ -696,16 +610,16 @@ class Prism:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location in units m.
+            Observation locations in units m.
 
         Returns
         -------
         (..., ) numpy.ndarray
-            Gravitational potential at point mass location xyz in units :math:`\\frac{m^2}{s^2}`.
+            Gravitational potential of prism at location xyz in units :math:`\\frac{m^2}{s^2}`.
         """
         xyz = check_xyz_dim(xyz)
         # need to evaluate f node at each source locations
-        return self._eval_integral(prism_f, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+        return - G * self.rho * self._eval_def_int(prism_f, xyz[..., 0], xyz[..., 1], xyz[..., 2])
 
     def gravitational_field(self, xyz):
         """
@@ -715,19 +629,19 @@ class Prism:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location in units m.
+            Observation locations in units m.
 
         Returns
         -------
         (..., 3) numpy.ndarray
-            Gravitational field at point mass location xyz in units :math:`\\frac{m}{s^2}`.
+            Gravitational field of prism at location xyz in units :math:`\\frac{m}{s^2}`.
         """
         xyz = check_xyz_dim(xyz)
         # need to evaluate f node at each source locations
-        gx = self._eval_integral(prism_fz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=1)
-        gy = self._eval_integral(prism_fz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=2)
-        gz = self._eval_integral(prism_fz, xyz[..., 0], xyz[..., 1], xyz[..., 2])
-        return np.stack((gx, gy, gz), axis=-1)
+        gx = self._eval_def_int(prism_fz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=1)
+        gy = self._eval_def_int(prism_fz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=2)
+        gz = self._eval_def_int(prism_fz, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+        return - G * self.rho * np.stack((gx, gy, gz), axis=-1)
 
     def gravitational_gradient(self, xyz):
         """
@@ -736,29 +650,29 @@ class Prism:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location in units m.
+            Observation locations in units m.
 
         Returns
         -------
         (..., 3) numpy.ndarray
-            Gravitational field at point mass location xyz in units :math:`\\frac{m}{s^2}`.
+            Gravitational gradient of prism at location xyz in units :math:`\\frac{m}{s^2}`.
         """
         xyz = check_xyz_dim(xyz)
 
         # need to evaluate f node at each source locations
-        gxx = self._eval_integral(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=1)
-        gxy = self._eval_integral(prism_fzx, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=1)
-        gxz = self._eval_integral(prism_fzx, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+        gxx = self._eval_def_int(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=1)
+        gxy = self._eval_def_int(prism_fzx, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=1)
+        gxz = self._eval_def_int(prism_fzx, xyz[..., 0], xyz[..., 1], xyz[..., 2])
 
-        gyy = self._eval_integral(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=2)
-        gyz = self._eval_integral(prism_fzy, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+        gyy = self._eval_def_int(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=2)
+        gyz = self._eval_def_int(prism_fzy, xyz[..., 0], xyz[..., 1], xyz[..., 2])
 
         # gzz = - gxx - gyy - 4 * np.pi * G * rho[in_cell]
         # easiest to just calculate it using another integral
-        gzz = self._eval_integral(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+        gzz = self._eval_def_int(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2])
 
         first = np.stack([gxx, gxy, gxz], axis=-1)
         second = np.stack([gxy, gyy, gyz], axis=-1)
         third = np.stack([gxz, gyz, gzz], axis=-1)
 
-        return np.stack([first, second, third], axis=-1)
+        return - G * self.rho * np.stack([first, second, third], axis=-1)

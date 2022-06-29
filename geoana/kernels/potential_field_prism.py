@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def prism_f(x, y, z, r=None):
+def _prism_f(x, y, z):
     """
     Evaluates the indefinite volume integral for the 1/r kernel.
 
@@ -11,15 +11,12 @@ def prism_f(x, y, z, r=None):
     ----------
     x, y, z : (...) numpy.ndarray
         The nodal locations to evaluate the function at
-    r : (...) numpy.ndarray, optional
-        The distance of each node location to the origin (if pre-computed)
 
     Returns
     -------
     (...) numpy.ndarray
     """
-    if r is None:
-        r = np.sqrt(x * x + y * y + z * z)
+    r = np.sqrt(x * x + y * y + z * z)
     out = np.zeros_like(r)
 
     nz_x = x != 0.0
@@ -41,7 +38,7 @@ def prism_f(x, y, z, r=None):
     return out
 
 
-def prism_fz(x, y, z, r=None):
+def _prism_fz(x, y, z):
     """
     Evaluates the indefinite volume integral for the d/dz * 1/r kernel.
 
@@ -51,8 +48,6 @@ def prism_fz(x, y, z, r=None):
     ----------
     x, y, z : (...) numpy.ndarray
         The nodal locations to evaluate the function at
-    r : (...) numpy.ndarray, optional
-        The distance of each node location to the origin (if pre-computed)
 
     Returns
     -------
@@ -62,8 +57,7 @@ def prism_fz(x, y, z, r=None):
     -----
     Can be used to compute other directions by cycling the inputs
     """
-    if r is None:
-        r = np.sqrt(x * x + y * y + z * z)
+    r = np.sqrt(x * x + y * y + z * z)
     out = np.zeros_like(r)
 
     nz = x != 0.0
@@ -78,7 +72,7 @@ def prism_fz(x, y, z, r=None):
     return out
 
 
-def prism_fzz(x, y, z, r=None):
+def _prism_fzz(x, y, z):
     """
     Evaluates the indefinite volume integral for the d**2/dz**2 * 1/r kernel.
 
@@ -88,8 +82,6 @@ def prism_fzz(x, y, z, r=None):
     ----------
     x, y, z : (...) numpy.ndarray
         The nodal locations to evaluate the function at
-    r : (...) numpy.ndarray, optional
-        The distance of each node location to the origin (if pre-computed)
 
     Returns
     -------
@@ -99,8 +91,7 @@ def prism_fzz(x, y, z, r=None):
     -----
     Can be used to compute other directions by cycling the inputs.
     """
-    if r is None:
-        r = np.sqrt(x * x + y * y + z * z)
+    r = np.sqrt(x * x + y * y + z * z)
 
     out = np.zeros_like(r)
     nz = z != 0.0
@@ -108,7 +99,7 @@ def prism_fzz(x, y, z, r=None):
     return out
 
 
-def prism_fzx(x, y, z, r=None):
+def _prism_fzx(x, y, z):
     """
     Evaluates the indefinite volume integral for the d**2/(dz*dx) * 1/r kernel.
 
@@ -118,8 +109,6 @@ def prism_fzx(x, y, z, r=None):
     ----------
     x, y, z : (...) numpy.ndarray
         The nodal locations to evaluate the function at
-    r : (...) numpy.ndarray, optional
-        The distance of each node location to the origin (if pre-computed)
 
     Returns
     -------
@@ -129,8 +118,7 @@ def prism_fzx(x, y, z, r=None):
     -----
     Can be used to compute other directions by cycling the inputs.
     """
-    if r is None:
-        r = np.sqrt(x * x + y * y + z * z)
+    r = np.sqrt(x * x + y * y + z * z)
 
     out = np.zeros_like(r)
     v = y + r
@@ -143,7 +131,7 @@ def prism_fzx(x, y, z, r=None):
     return out
 
 
-def prism_fzy(x, y, z, r=None):
+def _prism_fzy(x, y, z):
     """
     Evaluates the indefinite volume integral for the d**2/(dz*dx) * 1/r kernel.
 
@@ -153,8 +141,6 @@ def prism_fzy(x, y, z, r=None):
     ----------
     x, y, z : (...) numpy.ndarray
         The nodal locations to evaluate the function at
-    r : (...) numpy.ndarray, optional
-        The distance of each node location to the origin (if pre-computed)
 
     Returns
     -------
@@ -164,8 +150,7 @@ def prism_fzy(x, y, z, r=None):
     -----
     Can be used to compute other directions by cycling the inputs.
     """
-    if r is None:
-        r = np.sqrt(x * x + y * y + z * z)
+    r = np.sqrt(x * x + y * y + z * z)
 
     out = np.zeros_like(r)
     v = x + r
@@ -178,18 +163,16 @@ def prism_fzy(x, y, z, r=None):
     return out
 
 
-def prism_fzzz(x, y, z, r=None):
+def _prism_fzzz(x, y, z):
     """
     Evaluates the indefinite volume integral for the d**3/(dz**3) * 1/r kernel.
 
-    This is used to evaluate the gravitational field of dense prisms.
+    This is used to evaluate the magnetic gradient of susceptible prisms.
 
     Parameters
     ----------
     x, y, z : (...) numpy.ndarray
         The nodal locations to evaluate the function at
-    r : (...) numpy.ndarray, optional
-        The distance of each node location to the origin (if pre-computed)
 
     Returns
     -------
@@ -199,8 +182,7 @@ def prism_fzzz(x, y, z, r=None):
     -----
     Can be used to compute other directions by cycling the inputs.
     """
-    if r is None:
-        r = np.sqrt(x * x + y * y + z * z)
+    r = np.sqrt(x * x + y * y + z * z)
 
     v2 = x * x + z * z
     v3 = y * y + z * z
@@ -215,18 +197,16 @@ def prism_fzzz(x, y, z, r=None):
     return out
 
 
-def prism_fxxy(x, y, z, r=None):
+def _prism_fxxy(x, y, z):
     """
     Evaluates the indefinite volume integral for the d**3/(dx**2 * dy) * 1/r kernel.
 
-    This is used to evaluate the gravitational field of dense prisms.
+    This is used to evaluate the magnetic gradient of susceptible prisms.
 
     Parameters
     ----------
     x, y, z : (...) numpy.ndarray
         The nodal locations to evaluate the function at
-    r : (...) numpy.ndarray, optional
-        The distance of each node location to the origin (if pre-computed)
 
     Returns
     -------
@@ -234,10 +214,9 @@ def prism_fxxy(x, y, z, r=None):
 
     Notes
     -----
-    Can be used to compute other directions by cycling the inputs.
+    Can be used to compute other components by cycling the inputs.
     """
-    if r is None:
-        r = np.sqrt(x * x + y * y + z * z)
+    r = np.sqrt(x * x + y * y + z * z)
 
     v = x * x + y * y
     out = np.zeros_like(r)
@@ -249,18 +228,16 @@ def prism_fxxy(x, y, z, r=None):
     return out
 
 
-def prism_fxxz(x, y, z, r=None):
+def _prism_fxxz(x, y, z):
     """
-    Evaluates the indefinite volume integral for the d**3/(dx**2 * dz) * 1/r kernel.
+    Evaluates the indefinite volume integral for the d**3/(dx**2 * dz) * 1/r kernel
 
-    This is used to evaluate the gravitational field of dense prisms.
+    This is used to evaluate the magnetic gradient of susceptible prisms.
 
     Parameters
     ----------
     x, y, z : (...) numpy.ndarray
         The nodal locations to evaluate the function at
-    r : (...) numpy.ndarray, optional
-        The distance of each node location to the origin (if pre-computed)
 
     Returns
     -------
@@ -270,8 +247,7 @@ def prism_fxxz(x, y, z, r=None):
     -----
     Can be used to compute other directions by cycling the inputs.
     """
-    if r is None:
-        r = np.sqrt(x * x + y * y + z * z)
+    r = np.sqrt(x * x + y * y + z * z)
 
     v = x * x + z * z
     out = np.zeros_like(r)
@@ -283,18 +259,16 @@ def prism_fxxz(x, y, z, r=None):
     return out
 
 
-def prism_fxyz(x, y, z, r=None):
+def _prism_fxyz(x, y, z):
     """
     Evaluates the indefinite volume integral for the d**3/(dx * dy * dz) * 1/r kernel.
 
-    This is used to evaluate the gravitational field of dense prisms.
+    This is used to evaluate the magnetic gradient of susceptible prisms.
 
     Parameters
     ----------
     x, y, z : (...) numpy.ndarray
         The nodal locations to evaluate the function at
-    r : (...) numpy.ndarray, optional
-        The distance of each node location to the origin (if pre-computed)
 
     Returns
     -------
@@ -304,10 +278,34 @@ def prism_fxyz(x, y, z, r=None):
     -----
     Can be used to compute other directions by cycling the inputs.
     """
-    if r is None:
-        r = np.sqrt(x * x + y * y + z * z)
+    r = np.sqrt(x * x + y * y + z * z)
     out = np.zeros_like(r)
     nz = r != 0.0
     out[nz] = 1 / r[nz]
 
     return out
+
+
+try:
+    from geoana.kernels._extensions.potential_field_prism import (
+        prism_f,
+        prism_fz,
+        prism_fzz,
+        prism_fzx,
+        prism_fzy,
+        prism_fzzz,
+        prism_fxxy,
+        prism_fxxz,
+        prism_fxyz,
+    )
+except ImportError:
+    # Store the above as the kernels
+    prism_f = _prism_f
+    prism_fz = _prism_fz
+    prism_fzz = _prism_fzz
+    prism_fzx = _prism_fzx
+    prism_fzy = _prism_fzy
+    prism_fzzz = _prism_fzzz
+    prism_fxxy = _prism_fxxy
+    prism_fxxz = _prism_fxxz
+    prism_fxyz = _prism_fxyz

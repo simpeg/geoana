@@ -40,6 +40,4 @@ from geoana.em.static.halfspace import (
     DipoleHalfSpace
 )
 
-from geoana.em.static.freespace import LineCurrentFreeSpace
-
-
+from geoana.em.static.freespace import LineCurrentFreeSpace, MagneticPrism
