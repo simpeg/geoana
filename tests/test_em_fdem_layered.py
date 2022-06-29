@@ -71,7 +71,7 @@ class TestLayeredHalfspace(unittest.TestCase):
         epsilon = epsilon_0
         MagneticDipoleLayeredHalfSpace(
             frequency=frequencies,
-            thickness=None,
+            thickness=1,
             sigma=sigma,
             mu=mu,
             epsilon=epsilon
