@@ -100,3 +100,4 @@ def test_bad_dim():
     xyz = np.random.rand(10, 3, 2)
     with pytest.raises(ValueError):
         xyz = check_xyz_dim(xyz)
+

@@ -13,6 +13,3 @@ def test_plot_2d_data():
     data = dipole_object.magnetic_flux_density(xyz)
     plot2Ddata(xyz[:, 0::2], data[:, 0::2], clim=np.array([1, 2]),
                vec=True, method='nearest', shade=True, figname='plot', dataloc=True)
-
-    # plot2Ddata(xyz, data, method='nearest', level=True)
-

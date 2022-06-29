@@ -34,9 +34,7 @@ def test_base_fdem():
     with pytest.raises(TypeError):
         edws.frequency = np.array([[1, 2], [3, 4]])
 
-    # sh = fdem.sigma_hat(np.logspace(1, 4, 3), 1)
-    # fd = fdem.BaseFDEM(frequency=1, sigma=1 - (1j * (2 * np.pi * epsilon_0)))
-    # sh_test = fd.sigma_hat
-    # np.testing.assert_equal(sh, sh_test)
+    fdem.sigma_hat(np.logspace(1, 4, 3), 1, quasistatic=True)
+
 
 

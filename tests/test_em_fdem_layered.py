@@ -69,15 +69,13 @@ class TestLayeredHalfspace(unittest.TestCase):
         sigma = 1
         mu = mu_0
         epsilon = epsilon_0
-        mag_layer = MagneticDipoleLayeredHalfSpace(
+        MagneticDipoleLayeredHalfSpace(
             frequency=frequencies,
-            thickness=1,
+            thickness=None,
             sigma=sigma,
             mu=mu,
             epsilon=epsilon
         )
-
-
 
     def test_errors(self):
         frequencies = np.logspace(1, 4, 3)
@@ -119,12 +117,11 @@ class TestLayeredHalfspace(unittest.TestCase):
         with pytest.raises(ValueError):
             mag_layer.sigma = -1
         with pytest.raises(TypeError):
-            mag_layer.thickness = 2
             mag_layer.sigma = np.array([1+1j, 1+2j, 1+3j])
-        # with pytest.raises(TypeError):
-        #     mag_layer.thickness = 2
-        #     mag_layer.frequency = 2
-        #     mag_layer.sigma = np.array([[1+1j], [1+2j]])
+        with pytest.raises(TypeError):
+            mag_layer.sigma = np.array([[1+1j], [1+2j], [1+3j]])
+        with pytest.raises(TypeError):
+            mag_layer.sigma = np.array([[[1+1j], [1+2j]]])
 
         with pytest.raises(TypeError):
             mag_layer.mu = "string"
@@ -135,8 +132,11 @@ class TestLayeredHalfspace(unittest.TestCase):
         with pytest.raises(ValueError):
             mag_layer.mu = -1
         with pytest.raises(TypeError):
-            mag_layer.thickness = 2
             mag_layer.mu = np.array([1+1j, 1+2j, 1+3j])
+        with pytest.raises(TypeError):
+            mag_layer.mu = np.array([[1+1j], [1+2j], [1+3j]])
+        with pytest.raises(TypeError):
+            mag_layer.mu = np.array([[[1+1j], [1+2j]]])
 
         with pytest.raises(TypeError):
             mag_layer.epsilon = "string"
@@ -147,8 +147,11 @@ class TestLayeredHalfspace(unittest.TestCase):
         with pytest.raises(ValueError):
             mag_layer.epsilon = -1
         with pytest.raises(TypeError):
-            mag_layer.thickness = 2
             mag_layer.epsilon = np.array([1+1j, 1+2j, 1+3j])
+        with pytest.raises(TypeError):
+            mag_layer.epsilon = np.array([[1+1j], [1+2j], [1+3j]])
+        with pytest.raises(TypeError):
+            mag_layer.epsilon = np.array([[[1+1j], [1+2j]]])
 
         with pytest.raises(NotImplementedError):
             mag_layer.wavenumber()
