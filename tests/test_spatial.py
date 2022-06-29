@@ -8,13 +8,15 @@ from geoana import spatial
 
 def test_errors():
     x, y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
-    xyz = np.stack((x, y), axis=-1)
+    xy = np.stack((x, y), axis=-1)
     with pytest.raises(AssertionError):
-        spatial.rotate_points_from_normals(xyz, np.r_[1, 1, 1], np.r_[1, 1, 0])
+        spatial.rotate_points_from_normals(xy, np.r_[1, 1, 1], np.r_[1, 1, 0])
     with pytest.raises(Exception):
-        spatial.vector_dot(xyz, np.r_[1, 1])
+        spatial.vector_dot(xy, np.r_[1, 1])
+    x, y = np.meshgrid(np.linspace(-1, 1, 3), np.linspace(-1, 1, 3))
+    xy = np.stack((x, y), axis=-1)
     with pytest.raises(Exception):
-        spatial.vector_distance(xyz, np.r_[1, 2])
+        spatial.vector_distance(xy, np.r_[1, 2])
 
 
 class TestCoordinates(unittest.TestCase):
