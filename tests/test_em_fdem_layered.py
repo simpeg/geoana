@@ -380,7 +380,6 @@ class TestCompiledVsNumpy(unittest.TestCase):
         assert_allclose(self.rTE1_dmu[non_zeros2], self.rTE2_dmu[non_zeros2])
 
 
-
 if __name__ == '__main__':
     unittest.main()
 
