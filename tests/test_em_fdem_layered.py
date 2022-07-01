@@ -69,12 +69,12 @@ class TestLayeredHalfspace(unittest.TestCase):
         sigma = 1
         mu = mu_0
         epsilon = epsilon_0
-        MagneticDipoleLayeredHalfSpace(
+        mag_layer = MagneticDipoleLayeredHalfSpace(
             frequency=frequencies,
             thickness=1,
             sigma=sigma,
             mu=mu,
-            epsilon=epsilon
+            epsilon=epsilon,
         )
 
     def test_errors(self):

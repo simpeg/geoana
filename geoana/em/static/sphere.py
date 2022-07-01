@@ -2,6 +2,7 @@ import numpy as np
 from scipy.constants import epsilon_0
 from geoana.utils import check_xyz_dim
 
+
 class ElectrostaticSphere:
     """Class for electrostatic solutions for a sphere in a wholespace.
 
