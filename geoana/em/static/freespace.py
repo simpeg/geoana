@@ -3,7 +3,7 @@ from scipy.constants import mu_0
 
 from ..base import BaseLineCurrent
 from geoana.utils import check_xyz_dim
-from geoana.base import BasePrism
+from geoana.shapes import BasePrism
 from geoana.kernels import (
     prism_fz,
     prism_fzz,
@@ -298,7 +298,7 @@ class MagneticPrism(BasePrism):
         # easiest to just calculate it using another integral
         gzz = self._eval_def_int(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2])
 
-        H = -1.0/(4 * np.pi) * np.stack(
+        H = - 1.0/(4 * np.pi) * np.stack(
             (
                 gxx * m_x + gxy * m_y + gxz * m_z,
                 gxy * m_x + gyy * m_y + gyz * m_z,

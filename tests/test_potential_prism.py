@@ -1,10 +1,11 @@
 import numpy as np
 from numpy.testing import assert_allclose
 from discretize.tests import check_derivative
+import pytest
 
 import geoana.kernels.potential_field_prism as pf
 import geoana.gravity as grav
-from geoana.em.static import MagneticPrism
+from geoana.em.static import MagneticPrism, MagneticDipoleWholeSpace
 
 
 class TestCompiledVsNumpy():
@@ -208,3 +209,76 @@ class TestMagPrismDerivatives():
             return Gv, J
 
         assert check_derivative(grav_field, self.z, num=3, plotIt=False)
+
+
+class TestGravityAccuracy():
+    x, y, z = np.mgrid[-100:100:101j, -100:100:101j, -100:100:101j]
+    xyz = np.stack((x, y, z), axis=-1)
+    xyz = xyz[np.linalg.norm(xyz, axis=-1) >= 10]
+    prism = grav.Prism([-1, -1, -1], [1, 1, 1], 2.0)
+    point = grav.PointMass(mass=prism.mass, location=prism.location)
+
+    def test_potential(self):
+        pot_prism = self.prism.gravitational_potential(self.xyz)
+        pot_point = self.point.gravitational_potential(self.xyz)
+        np.testing.assert_allclose(pot_prism, pot_point, rtol=1E-4)
+
+    def test_field(self):
+        gv_prism = self.prism.gravitational_field(self.xyz)
+        gv_point = self.point.gravitational_field(self.xyz)
+        np.testing.assert_allclose(gv_prism, gv_point, rtol=1E-3)
+
+    def test_gradient(self):
+        gg_prism = self.prism.gravitational_field(self.xyz)
+        gg_point = self.point.gravitational_field(self.xyz)
+        np.testing.assert_allclose(
+            gg_prism, gg_point, atol=(gg_prism.max() - gg_prism.min())*1E-3
+        )
+
+
+class TestMagneticAccuracy():
+    x, y, z = np.mgrid[-100:100:101j, -100:100:101j, -100:100:101j]
+    xyz = np.stack((x, y, z), axis=-1)
+    xyz = xyz[np.linalg.norm(xyz, axis=-1) >= 10]
+    prism = MagneticPrism([-1, -1, -1], [1, 1, 1], magnetization=[-1, 2, -0.5])
+    m_mag = np.linalg.norm(prism.moment)
+    m_unit = prism.moment/m_mag
+    dipole = MagneticDipoleWholeSpace(
+        location=prism.location, moment=m_mag, orientation=m_unit
+    )
+
+    def test_mag_field(self):
+        H_prism = self.prism.magnetic_field(self.xyz)
+        H_dipole = self.dipole.magnetic_field(self.xyz)
+        np.testing.assert_allclose(
+            H_prism, H_dipole, atol=(H_prism.max()-H_prism.min())*1E-3
+        )
+
+    def test_mag_flux(self):
+        B_prism = self.prism.magnetic_flux_density(self.xyz)
+        B_dipole = self.dipole.magnetic_flux_density(self.xyz)
+        np.testing.assert_allclose(
+            B_prism, B_dipole, atol=(B_prism.max()-B_dipole.min())*1E-3
+        )
+
+
+def test_mag_init_and_errors():
+    prism = MagneticPrism([-1, -1, -1], [1, 1, 1])
+    np.testing.assert_equal(prism.magnetization, [0.0, 0.0, 1.0])
+
+    np.testing.assert_equal(prism.moment, [0.0, 0.0, 8.0])
+
+    with pytest.raises(TypeError):
+        prism.magnetization = 'abc'
+
+    with pytest.raises(ValueError):
+        prism.magnetization = 1.0
+
+
+def test_grav_init_and_errors():
+    prism = grav.Prism([-1, -1, -1], [1, 1, 1])
+
+    assert prism.mass == 8.0
+
+    with pytest.raises(TypeError):
+        prism.rho = 'abc'

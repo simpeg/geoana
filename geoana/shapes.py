@@ -2,6 +2,18 @@ import numpy as np
 
 
 class BasePrism:
+    """Class for basic geometry of a prism.
+
+    The ``BasePrism`` class is used to define and validate basic geometry of an axis
+    aligned prism in three dimensions.
+
+    Parameters
+    ----------
+    min_location : (3,) numpy.ndarray of float
+        Minimum location triple of the axis aligned prism
+    max_location : (3,) numpy.ndarray of float
+        Maximum location triple of the axis aligned prism
+    """
 
     def __init__(self, min_location, max_location, **kwargs):
         super().__init__(**kwargs)
@@ -66,10 +78,22 @@ class BasePrism:
 
     @property
     def volume(self):
+        """ The volume of the prism
+
+        Returns
+        -------
+        float
+        """
         return np.prod(self.max_location - self.min_location)
 
     @property
     def location(self):
+        """ The center of the prism
+
+        Returns
+        -------
+        (3,) numpy.ndarray of float
+        """
         return 0.5 * (self.min_location + self.max_location)
 
     def _eval_def_int(self, func, x, y, z, cycle=0):

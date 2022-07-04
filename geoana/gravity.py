@@ -14,12 +14,13 @@ Simulation Classes
 
   PointMass
   Sphere
+  Prism
 """
 
 import numpy as np
 from scipy.constants import G
 from geoana.utils import check_xyz_dim
-from geoana.base import BasePrism
+from geoana.shapes import BasePrism
 from geoana.kernels import prism_f, prism_fz, prism_fzx, prism_fzy, prism_fzz
 
 
@@ -105,12 +106,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location in units m.
+            Observation locations in units m.
 
         Returns
         -------
         (..., ) numpy.ndarray
-            Gravitational potential at point mass location xyz in units :math:`\\frac{m^2}{s^2}`.
+            Gravitational potential at observation locations xyz in units :math:`\\frac{m^2}{s^2}`.
 
         Examples
         --------
@@ -163,12 +164,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location in units m.
+            Observation locations in units m.
 
         Returns
         -------
         (..., 3) numpy.ndarray
-            Gravitational field at point mass location xyz in units :math:`\\frac{m}{s^2}`.
+            Gravitational field at observation locations xyz in units :math:`\\frac{m}{s^2}`.
 
         Examples
         --------
@@ -215,12 +216,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location in units m.
+            Observation locations in units m.
 
         Returns
         -------
         (..., 3, 3) numpy.ndarray
-            Gravitational gradient at point mass location xyz in units :math:`\\frac{1}{s^2}`.
+            Gravitational gradient at observation locations xyz in units :math:`\\frac{1}{s^2}`.
 
         Examples
         --------
@@ -600,6 +601,13 @@ class Prism(BasePrism):
 
     @property
     def mass(self):
+        """ The mass of the prism
+
+        Returns
+        -------
+        mass : float
+            In :math:`kg`.
+        """
         return self.volume * self.rho
 
     def gravitational_potential(self, xyz):
