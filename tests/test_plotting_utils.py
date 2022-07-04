@@ -13,7 +13,7 @@ def test_plot_2d_data():
     dipole_object = MagneticDipoleWholeSpace(location=location, orientation=orientation, moment=moment)
     data1 = dipole_object.magnetic_flux_density(xyz)
     plot2Ddata(xyz[:, 0::2], data1[:, 0::2], clim=np.array([1, 2]),
-               vec=True, method='nearest', shade=True, figname='plot', dataloc=True)
+               vec=True, method='nearest', shade=True, figname='plot', dataloc=True, contourOpts={'vmin': 1, 'vmax': 2, })
 
     sigma_sphere = 10. ** -1
     sigma_background = 10. ** -3
@@ -25,5 +25,6 @@ def test_plot_2d_data():
 
     xyz = ndgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20), np.array([0]))
     data3 = dipole_object.vector_potential(xyz)
-    plot2Ddata(xyz[:, 0:2], data3[:, 0:2], vec=True, mask=np.full((400, ), True))
+    plot2Ddata(xyz[:, 0:2], data3[:, 0:2], vec=True, mask=np.full((400, ), True), contourOpts={'vmin': 0.8, 'vmax': 20, })
+
 
