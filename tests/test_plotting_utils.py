@@ -1,6 +1,5 @@
 import numpy as np
 from geoana.plotting_utils import plot2Ddata
-from geoana.utils import ndgrid
 from geoana.em.static import MagneticDipoleWholeSpace
 from geoana.em.static import ElectrostaticSphere
 
@@ -22,4 +21,4 @@ def test_plot_2d_data():
     simulation = ElectrostaticSphere(location=None, sigma_sphere=sigma_sphere,
                                      sigma_background=sigma_background, radius=radius, primary_field=None)
     data2 = simulation.potential(xyz, field='total')
-    plot2Ddata(xyz, data2, method='nearest', level=True)
+    plot2Ddata(xyz, data2, method='nearest', level=True, mask=np.full((20, ), True))
