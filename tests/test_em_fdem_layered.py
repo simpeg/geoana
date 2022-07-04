@@ -77,6 +77,8 @@ class TestLayeredHalfspace(unittest.TestCase):
             epsilon=epsilon,
         )
 
+        assert(mag_layer.sigma_hat == sigma_hat(frequencies[:, None], sigma).T)
+
     def test_errors(self):
         frequencies = np.logspace(1, 4, 3)
         sigma = 1

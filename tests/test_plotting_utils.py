@@ -6,7 +6,7 @@ from geoana.em.static import ElectrostaticSphere
 
 
 def test_plot_2d_data():
-    xyz = ndgrid(np.linspace(-1, 1, 5), np.array([0]), np.linspace(-1, 1, 5))
+    xyz = np.array([np.linspace(-2, 2, 20), np.linspace(-2, 2, 20), np.linspace(-2, 2, 20)]).T
     location = np.r_[0., 0., 0.]
     orientation = np.r_[0., 0., 1.]
     moment = 1.

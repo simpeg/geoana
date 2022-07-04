@@ -46,7 +46,6 @@ class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
         super().__init__(frequency=frequency, **kwargs)
         self._check_is_valid_location()
 
-
     def _check_is_valid_location(self):
         if self.location[2] < 0.0:
             raise ValueError("Source must be above the surface of the earth (i.e. z >= 0.0)")
@@ -109,7 +108,6 @@ class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
             raise TypeError(f"Thicknesses must be ('*') array")
 
         self._thickness = value
-
 
     @property
     def sigma(self):
