@@ -1,3 +1,19 @@
+"""
+======================================================
+Shapes (:mod:`geoana.shapes`)
+======================================================
+.. currentmodule:: geoana.shapes
+
+The ``geoana.shapes`` module contains the basic geometric building blocks for
+three dimensional objects.
+
+Shape Classes
+=============
+.. autosummary::
+  :toctree: generated/
+
+  BasePrism
+"""
 import numpy as np
 
 
