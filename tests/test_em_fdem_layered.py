@@ -71,13 +71,13 @@ class TestLayeredHalfspace(unittest.TestCase):
         epsilon = epsilon_0
         mag_layer = MagneticDipoleLayeredHalfSpace(
             frequency=frequencies,
-            thickness=1,
+            thickness=None,
             sigma=sigma,
             mu=mu,
             epsilon=epsilon,
         )
 
-        assert(mag_layer.sigma_hat == sigma_hat(frequencies[:, None], sigma).T)
+        np.testing.assert_equal(np.array([]), mag_layer.thickness)
 
     def test_errors(self):
         frequencies = np.logspace(1, 4, 3)

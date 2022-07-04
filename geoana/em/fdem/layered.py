@@ -95,14 +95,14 @@ class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
         # Ensure float or numpy array of float
         try:
             if value is None:
-                value = []
+                value = np.array([])
             else:
                 value = np.atleast_1d(value).astype(float)
         except:
             raise TypeError(f"thickness are not a valid type")
 
         # Enforce positivity and dimensions
-        if (value < 0.).any():
+        if len(value) > 0 and np.any(value < 0):
             raise ValueError("Thicknesses must be greater than 0")
         if value.ndim > 1:
             raise TypeError(f"Thicknesses must be ('*') array")
@@ -273,7 +273,7 @@ class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
 
     @property
     def sigma_hat(self):
-        _, sigma, epsilon, _ = self._get_valid_properties()
+        _, sigma, epsilon, _ = self._get_valid_properties_array()
         return sigma_hat(
             self.frequency[:, None], sigma, epsilon,
             quasistatic=self.quasistatic
