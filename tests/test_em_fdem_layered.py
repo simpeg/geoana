@@ -78,6 +78,7 @@ class TestLayeredHalfspace(unittest.TestCase):
         )
 
         np.testing.assert_equal(np.array([]), mag_layer.thickness)
+        np.testing.assert_equal(mag_layer.sigma_hat, sigma_hat(frequencies, sigma).T)
 
     def test_errors(self):
         frequencies = np.logspace(1, 4, 3)
