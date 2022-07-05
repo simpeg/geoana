@@ -1,4 +1,5 @@
 import unittest
+import pytest
 import numpy as np
 import discretize
 
@@ -125,7 +126,7 @@ class TestFDEMdipole(unittest.TestCase):
 
     def test_defaults(self):
         TOL = 1e-15
-        frequency = 1.0
+        frequency = 1
         mdws = fdem.MagneticDipoleWholeSpace(frequency)
         assert(mdws.sigma == 1.)
         assert(mdws.mu == mu_0)
@@ -138,12 +139,17 @@ class TestFDEMdipole(unittest.TestCase):
         assert(mdws.quasistatic is False)
         assert np.linalg.norm(
             mdws.wavenumber - np.sqrt(
-                mu_0 * epsilon_0 * (2*np.pi)**2  - 1j * mu_0 * 1. * 2*np.pi
+                mu_0 * epsilon_0 * (2*np.pi)**2 - 1j * mu_0 * 1. * 2*np.pi
             )
         ) <= TOL
         assert np.linalg.norm(
             mdws.wavenumber**2 - (
-                mu_0 * epsilon_0 * (2*np.pi)**2  - 1j * mu_0 * 1. * 2*np.pi
+                mu_0 * epsilon_0 * (2*np.pi)**2 - 1j * mu_0 * 1. * 2*np.pi
+            )
+        ) <= TOL
+        assert np.linalg.norm(
+            mdws.skin_depth - (np.sqrt(
+                (mu_0 * epsilon_0 / 2) * (np.sqrt(1 + 1 ** 2 / (2*np.pi * epsilon_0) ** 2) - 1)) / (2*np.pi)
             )
         ) <= TOL
 
