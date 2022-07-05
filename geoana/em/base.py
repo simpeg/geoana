@@ -410,9 +410,6 @@ class BaseMagneticDipole(BaseDipole):
         except:
             raise TypeError(f"moment must be a number, got {type(value)}")
 
-        if value <= 0.0:
-            raise ValueError("moment must be greater than 0")
-
         self._moment = value
 
 
