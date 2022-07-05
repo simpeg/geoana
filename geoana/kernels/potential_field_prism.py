@@ -55,7 +55,7 @@ def _prism_fz(x, y, z):
 
     Notes
     -----
-    Can be used to compute other directions by cycling the inputs
+    Can be used to compute other components by cycling the inputs
     """
     r = np.sqrt(x * x + y * y + z * z)
     out = np.zeros_like(r)
@@ -89,7 +89,7 @@ def _prism_fzz(x, y, z):
 
     Notes
     -----
-    Can be used to compute other directions by cycling the inputs.
+    Can be used to compute other components by cycling the inputs.
     """
     r = np.sqrt(x * x + y * y + z * z)
 
@@ -103,7 +103,7 @@ def _prism_fzx(x, y, z):
     """
     Evaluates the indefinite volume integral for the d**2/(dz*dx) * 1/r kernel.
 
-    This is used to evaluate the gravitational field of dense prisms.
+    This is used to evaluate the gravitational gradient of dense prisms.
 
     Parameters
     ----------
@@ -116,7 +116,7 @@ def _prism_fzx(x, y, z):
 
     Notes
     -----
-    Can be used to compute other directions by cycling the inputs.
+    Can be used to compute other components by cycling the inputs.
     """
     r = np.sqrt(x * x + y * y + z * z)
 
@@ -135,7 +135,7 @@ def _prism_fzy(x, y, z):
     """
     Evaluates the indefinite volume integral for the d**2/(dz*dx) * 1/r kernel.
 
-    This is used to evaluate the gravitational field of dense prisms.
+    This is used to evaluate the gravitational gradient of dense prisms.
 
     Parameters
     ----------
@@ -148,7 +148,7 @@ def _prism_fzy(x, y, z):
 
     Notes
     -----
-    Can be used to compute other directions by cycling the inputs.
+    Can be used to compute other components by cycling the inputs.
     """
     r = np.sqrt(x * x + y * y + z * z)
 
@@ -180,7 +180,7 @@ def _prism_fzzz(x, y, z):
 
     Notes
     -----
-    Can be used to compute other directions by cycling the inputs.
+    Can be used to compute other components by cycling the inputs.
     """
     r = np.sqrt(x * x + y * y + z * z)
 
@@ -245,7 +245,7 @@ def _prism_fxxz(x, y, z):
 
     Notes
     -----
-    Can be used to compute other directions by cycling the inputs.
+    Can be used to compute other components by cycling the inputs.
     """
     r = np.sqrt(x * x + y * y + z * z)
 
@@ -276,7 +276,7 @@ def _prism_fxyz(x, y, z):
 
     Notes
     -----
-    Can be used to compute other directions by cycling the inputs.
+    Can be used to compute other components by cycling the inputs.
     """
     r = np.sqrt(x * x + y * y + z * z)
     out = np.zeros_like(r)

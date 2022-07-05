@@ -5,22 +5,6 @@
 #include "numpy/npy_3kcompat.h"
 #include <math.h>
 
-/*
- * single_type_logit.c
- * This is the C code for creating your own
- * NumPy ufunc for a logit function.
- *
- * In this code we only define the ufunc for
- * a single dtype. The computations that must
- * be replaced to create a ufunc for
- * a different function are marked with BEGIN
- * and END.
- *
- * Details explaining the Python-C API can be found under
- * 'Extending and Embedding' and 'Python/C API' at
- * docs.python.org .
- */
-
 static PyMethodDef PrismMethods[] = {
     {NULL, NULL, 0, NULL}
 };
@@ -412,39 +396,135 @@ PyMODINIT_FUNC PyInit_potential_field_prism(void)
 
     prism_f = PyUFunc_FromFuncAndData(funcs_prism_f, data, types, 1, 3, 1,
                                     PyUFunc_None, "prism_f",
-                                    "prism_f_docstring", 0);
+"Evaluates the indefinite volume integral for the 1/r kernel.\n\n"
+"This is used to evaluate the gravitational potential of dense prisms.\n\n"
+"Parameters\n"
+"----------\n"
+"x, y, z : (...) numpy.ndarray\n"
+"    The nodal locations to evaluate the function at\n\n"
+"Returns\n"
+"-------\n"
+"(...) numpy.ndarray", 0);
 
     prism_fz = PyUFunc_FromFuncAndData(funcs_prism_fz, data, types, 1, 3, 1,
                                     PyUFunc_None, "prism_fz",
-                                    "prism_f_docstring", 0);
+"Evaluates the indefinite volume integral for the d/dz * 1/r kernel.\n\n"
+"This is used to evaluate the gravitational field of dense prisms.\n\n"
+"Parameters\n"
+"----------\n"
+"x, y, z : (...) numpy.ndarray\n"
+"    The nodal locations to evaluate the function at\n\n"
+"Returns\n"
+"-------\n"
+"(...) numpy.ndarray\n\n"
+"Notes\n"
+"-----\n"
+"Can be used to compute other components by cycling the inputs", 0);
 
     prism_fzz = PyUFunc_FromFuncAndData(funcs_prism_fzz, data, types, 1, 3, 1,
                                     PyUFunc_None, "prism_fzz",
-                                    "prism_f_docstring", 0);
+"Evaluates the indefinite volume integral for the d**2/dz**2 * 1/r kernel.\n\n"
+"This is used to evaluate the gravitational potential of dense prisms.\n\n"
+"Parameters\n"
+"----------\n"
+"x, y, z : (...) numpy.ndarray\n"
+"    The nodal locations to evaluate the function at\n\n"
+"Returns\n"
+"-------\n"
+"  (...) numpy.ndarray\n\n"
+"Notes\n"
+"-----\n"
+"Can be used to compute other components by cycling the inputs", 0);
 
     prism_fzx = PyUFunc_FromFuncAndData(funcs_prism_fzx, data, types, 1, 3, 1,
                                     PyUFunc_None, "prism_fzx",
-                                    "prism_f_docstring", 0);
+"Evaluates the indefinite volume integral for the d**2/(dz*dx) * 1/r kernel.\n\n"
+"This is used to evaluate the gravitational potential of dense prisms.\n\n"
+"Parameters\n"
+"----------\n"
+"x, y, z : (...) numpy.ndarray\n"
+"    The nodal locations to evaluate the function at\n\n"
+"Returns\n"
+"-------\n"
+"(...) numpy.ndarray\n\n"
+"Notes\n"
+"-----\n"
+"Can be used to compute other components by cycling the inputs", 0);
 
     prism_fzy = PyUFunc_FromFuncAndData(funcs_prism_fzy, data, types, 1, 3, 1,
                                     PyUFunc_None, "prism_fzy",
-                                    "prism_f_docstring", 0);
+"Evaluates the indefinite volume integral for the d**2/(dz*dx) * 1/r kernel.\n\n"
+"This is used to evaluate the gravitational potential of dense prisms.\n\n"
+"Parameters\n"
+"----------\n"
+"x, y, z : (...) numpy.ndarray\n"
+"    The nodal locations to evaluate the function at\n\n"
+"Returns\n"
+"-------\n"
+"(...) numpy.ndarray\n\n"
+"Notes\n"
+"-----\n"
+"Can be used to compute other components by cycling the inputs", 0);
 
     prism_fzzz = PyUFunc_FromFuncAndData(funcs_prism_fzzz, data, types, 1, 3, 1,
                                     PyUFunc_None, "prism_fzzz",
-                                    "prism_f_docstring", 0);
+"Evaluates the indefinite volume integral for the d**3/(dz**3) * 1/r kernel.\n\n"
+"This is used to evaluate the magnetic gradient of susceptible prisms.\n\n"
+"Parameters\n"
+"----------\n"
+"x, y, z : (...) numpy.ndarray\n"
+"    The nodal locations to evaluate the function at\n\n"
+"Returns\n"
+"-------\n"
+"(...) numpy.ndarray\n\n"
+"Notes\n"
+"-----\n"
+"Can be used to compute other components by cycling the inputs", 0);
 
     prism_fxxy = PyUFunc_FromFuncAndData(funcs_prism_fxxy, data, types, 1, 3, 1,
                                     PyUFunc_None, "prism_fxxy",
-                                    "prism_f_docstring", 0);
+"Evaluates the indefinite volume integral for the d**3/(dx**2 * dy) * 1/r kernel.\n\n"
+"This is used to evaluate the magnetic gradient of susceptible prisms.\n\n"
+"Parameters\n"
+"----------\n"
+"x, y, z : (...) numpy.ndarray\n"
+"    The nodal locations to evaluate the function at\n\n"
+"Returns\n"
+"-------\n"
+"(...) numpy.ndarray\n\n"
+"Notes\n"
+"-----\n"
+"Can be used to compute other components by cycling the inputs", 0);
 
     prism_fxxz = PyUFunc_FromFuncAndData(funcs_prism_fxxz, data, types, 1, 3, 1,
                                     PyUFunc_None, "prism_fxxz",
-                                    "prism_f_docstring", 0);
+"Evaluates the indefinite volume integral for the d**3/(dx**2 * dz) * 1/r kernel.\n\n"
+"This is used to evaluate the magnetic gradient of susceptible prisms.\n\n"
+"Parameters\n"
+"----------\n"
+"x, y, z : (...) numpy.ndarray\n"
+"    The nodal locations to evaluate the function at\n\n"
+"Returns\n"
+"-------\n"
+"(...) numpy.ndarray\n\n"
+"Notes\n"
+"-----\n"
+"Can be used to compute other components by cycling the inputs", 0);
 
     prism_fxyz = PyUFunc_FromFuncAndData(funcs_prism_fxyz, data, types, 1, 3, 1,
                                     PyUFunc_None, "prism_fxyz",
-                                    "prism_f_docstring", 0);
+"Evaluates the indefinite volume integral for the d**3/(dx * dy * dz) * 1/r kernel.\n\n"
+"This is used to evaluate the magnetic gradient of susceptible prisms.\n\n"
+"Parameters\n"
+"----------\n"
+"x, y, z : (...) numpy.ndarray\n"
+"    The nodal locations to evaluate the function at\n\n"
+"Returns\n"
+"-------\n"
+"(...) numpy.ndarray\n\n"
+"Notes\n"
+"-----\n"
+"Can be used to compute other components by cycling the inputs", 0);
 
     d = PyModule_GetDict(m);
 
