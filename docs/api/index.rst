@@ -46,7 +46,7 @@ functions for performing useful operations.
 .. toctree::
   :maxdepth: 2
 
-  geoana.base_shapes
+  geoana.shapes
   geoana.utils
   geoana.spatial
   geoana.plotting_utils
