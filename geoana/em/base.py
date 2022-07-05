@@ -363,9 +363,6 @@ class BaseElectricDipole(BaseDipole):
         except:
             raise TypeError(f"current must be a number, got {type(value)}")
 
-        if value <= 0.0:
-            raise ValueError("current must be greater than 0")
-
         self._current = value
 
 

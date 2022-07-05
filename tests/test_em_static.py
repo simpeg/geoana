@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
 import discretize
+from scipy.special import ellipk, ellipe
 
 from geoana.em import static, fdem
 from geoana import spatial
@@ -14,24 +15,75 @@ class TestEM_Static(unittest.TestCase):
 
     def setUp(self):
         self.mdws = static.MagneticDipoleWholeSpace()
+        self.mpws = static.MagneticPoleWholeSpace()
         self.clws = static.CircularLoopWholeSpace()
+        self.lcfs = static.LineCurrentFreeSpace(nodes=np.c_[1., 1., 1.])
 
     def test_defaults(self):
         self.assertTrue(self.mdws.sigma == 1.0)
+        self.assertTrue(self.mpws.sigma == 1.0)
         self.assertTrue(self.clws.sigma == 1.0)
 
         self.assertTrue(self.mdws.mu == mu_0)
+        self.assertTrue(self.mpws.mu == mu_0)
         self.assertTrue(self.clws.mu == mu_0)
 
         self.assertTrue(self.mdws.epsilon == epsilon_0)
+        self.assertTrue(self.mpws.epsilon == epsilon_0)
         self.assertTrue(self.clws.epsilon == epsilon_0)
 
         self.assertTrue(np.all(self.mdws.orientation == np.r_[1., 0., 0.]))
+        self.assertTrue(np.all(self.mpws.orientation == np.r_[1., 0., 0.]))
         self.assertTrue(np.all(self.clws.orientation == np.r_[1., 0., 0.]))
 
+        self.assertTrue(np.all(self.lcfs.nodes == np.c_[1., 1., 1.]))
+
         self.assertTrue(self.mdws.moment == 1.0)
+        self.assertTrue(self.mpws.moment == 1.0)
         self.assertTrue(self.clws.current == 1.0)
         self.assertTrue(self.clws.radius == np.sqrt(1/np.pi))
+
+    def test_errors(self):
+        with pytest.raises(TypeError):
+            self.mdws.mu = "box"
+        with pytest.raises(ValueError):
+            self.mdws.mu = -2
+        with pytest.raises(TypeError):
+            self.mdws.moment = "box"
+        with pytest.raises(ValueError):
+            self.mdws.moment = -2
+        with pytest.raises(ValueError):
+            self.mdws.orientation = [0, 1, 2, 3, 4]
+        with pytest.raises(ValueError):
+            self.mdws.orientation = [[0, 0], [0, 1]]
+        with pytest.raises(TypeError):
+            self.mdws.orientation = ["string"]
+        with pytest.raises(ValueError):
+            self.clws.location = [0, 1, 2, 3]
+        with pytest.raises(ValueError):
+            self.clws.location = [[0, 0], [0, 1]]
+        with pytest.raises(TypeError):
+            self.clws.location = ["string"]
+        with pytest.raises(TypeError):
+            self.clws.radius = "box"
+        with pytest.raises(ValueError):
+            self.clws.radius = -2
+        with pytest.raises(TypeError):
+            self.clws.current = "box"
+        with pytest.raises(TypeError):
+            x = np.linspace(-20., 20., 50)
+            y = np.linspace(-30., 30., 50)
+            z = np.linspace(-40., 40., 50)
+            xyz = discretize.utils.ndgrid([x, y, z])
+            self.clws.magnetic_flux_density(xyz, coordinates='square')
+        with pytest.raises(ValueError):
+            self.lcfs.nodes = [0, 1, 2, 3, 4, 5]
+        with pytest.raises(ValueError):
+            self.lcfs.nodes = [[0, 0], [0, 1]]
+        with pytest.raises(TypeError):
+            self.lcfs.nodes = ["string"]
+        with pytest.raises(TypeError):
+            self.lcfs.current = "box"
 
     def test_vector_potential(self):
         n = 50
@@ -159,6 +211,7 @@ class TestEM_Static(unittest.TestCase):
                             np.linalg.norm(b_mdws[inds])
                         )
                     )
+
                     print(
                         "Testing r = {}, loc = {}, orientation = {}".format(
                             radius, location, orientation
@@ -178,6 +231,96 @@ class TestEM_Static(unittest.TestCase):
                     self.assertTrue(loop_passed_1)
                     self.assertTrue(loop_passed_2)
                     self.assertTrue(dipole_passed)
+
+    def test_dipole_magnetic_flux_density(self):
+        mdws = static.MagneticDipoleWholeSpace()
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+        n_obs = xyz.shape[0]
+
+        xyz_ = spatial.cylindrical_2_cartesian(xyz)
+        r = mdws.vector_distance(xyz_)
+        dxyz = spatial.repeat_scalar(mdws.distance(xyz_))
+        m_vec = mdws.moment * np.atleast_2d(mdws.orientation).repeat(n_obs, axis=0)
+        m_dot_r = (m_vec * r).sum(axis=1)
+        m_dot_r = np.atleast_2d(m_dot_r).T.repeat(3, axis=1)
+
+        b_test = (mu_0 / (4 * np.pi)) * ((3 * r * m_dot_r / (dxyz ** 5)) - m_vec / (dxyz ** 3))
+        b_test = spatial.cartesian_2_cylindrical(xyz_, b_test)
+
+        b = mdws.magnetic_flux_density(xyz, coordinates='cylindrical')
+        np.testing.assert_equal(b_test, b)
+
+    def test_pole_magnetic_flux_density(self):
+        mpws = static.MagneticPoleWholeSpace()
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        xyz_ = spatial.cylindrical_2_cartesian(xyz)
+        r = mpws.vector_distance(xyz_)
+        dxyz = spatial.repeat_scalar(mpws.distance(xyz_))
+
+        b_test = mpws.moment * mu_0 / (4 * np.pi * (dxyz ** 3)) * r
+        b_test = spatial.cartesian_2_cylindrical(xyz_, b_test)
+
+        b = mpws.magnetic_flux_density(xyz, coordinates='cylindrical')
+        np.testing.assert_equal(b_test, b)
+
+    def test_pole_magnetic_field(self):
+        mpws = static.MagneticPoleWholeSpace()
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        xyz_ = spatial.cylindrical_2_cartesian(xyz)
+        r = mpws.vector_distance(xyz_)
+        dxyz = spatial.repeat_scalar(mpws.distance(xyz_))
+
+        h_test = mpws.moment * mu_0 / (4 * np.pi * (dxyz ** 3)) * r
+        h_test = spatial.cartesian_2_cylindrical(xyz_, h_test)
+        h_test = h_test / mu_0
+
+        h = mpws.magnetic_field(xyz, coordinates='cylindrical')
+        np.testing.assert_equal(h_test, h)
+
+    def test_loop_magnetic_flux_density(self):
+        clws = static.CircularLoopWholeSpace()
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        xyz_ = np.atleast_2d(xyz)
+        xyz_ = spatial.cylindrical_2_cartesian(xyz_)
+        xyz_ = spatial.rotate_points_from_normals(xyz_, np.array(clws.orientation), np.r_[0, 0, 1],
+                                                  x0=np.array(clws.location))
+        dxyz = clws.vector_distance(xyz_)
+        rho = np.linalg.norm(dxyz[:, :2], axis=-1)
+        b = np.zeros((len(rho), 3))
+        ind_axial = rho == 0
+        b[ind_axial, -1] = mu_0 * clws.current * clws.radius ** 2 / (2 * (clws.radius ** 2 +
+                                                                          dxyz[ind_axial, 2] ** 2) ** (1.5))
+        alpha = rho[~ind_axial] / clws.radius
+        beta = dxyz[~ind_axial, 2] / clws.radius
+        gamma = dxyz[~ind_axial, 2] / rho[~ind_axial]
+        q = ((1 + alpha) ** 2 + beta ** 2)
+        k2 = 4 * alpha / q
+        b[~ind_axial, -1] = mu_0 * clws.current / (2 * clws.radius * np.pi * np.sqrt(q)) * \
+            (ellipe(k2) * (1 - alpha ** 2 - beta ** 2) / (q - 4 * alpha) + ellipk(k2))
+        b_rad = mu_0 * clws.current * gamma / (2 * clws.radius * np.pi * np.sqrt(q)) * \
+            (ellipe(k2) * (1 + alpha ** 2 + beta ** 2) / (q - 4 * alpha) - ellipk(k2))
+        b[~ind_axial, 0] = b_rad * (dxyz[~ind_axial, 0] / rho[~ind_axial])
+        b[~ind_axial, 1] = b_rad * (dxyz[~ind_axial, 1] / rho[~ind_axial])
+        b = spatial.rotate_points_from_normals(b, np.r_[0, 0, 1], np.array(clws.orientation),)
+        b = spatial.cartesian_2_cylindrical(xyz_, b)
+
+        b_test = clws.magnetic_flux_density(xyz, coordinates='cylindrical')
+        np.testing.assert_equal(b_test, b)
 
     def test_magnetic_field_3Dcyl(self):
         print("\n === Testing 3D Cyl Mesh === \n")
@@ -367,9 +510,9 @@ def Ep_from_ESphere(
     XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
 
     r_vec = XYZ - loc
-    x = r_vec[:, 0]
+    r = np.linalg.norm(r_vec, axis=-1)
 
-    ep = np.zeros((*x.shape, 3))
+    ep = np.zeros((*r.shape, 3))
     ep[..., 0] = amp[0]
     return ep
 
@@ -411,6 +554,26 @@ def Js_from_ESphere(
 
     js = Jt_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp) - Jp_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)
     return js
+
+
+def rho_from_ESphere(
+    XYZ, dr, loc, sig_s, sig_b, radius, amp
+):
+    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+
+    sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
+    r_vec = XYZ - loc
+    x = r_vec[:, 0]
+    y = r_vec[:, 1]
+    r = np.linalg.norm(r_vec, axis=-1)
+    if dr is None:
+        dr = 0.05 * radius
+
+    ind = (r < radius + 0.5 * dr) & (r > radius - 0.5 * dr)
+    rho = np.zeros_like(r)
+    rho[ind] = epsilon_0 * 3 * Ep_from_ESphere(XYZ, loc, sig_s, sig_b, radius, amp)[ind, 0] * sig_cur * x[ind] / \
+        (np.sqrt(x[ind]**2 + y[ind]**2))
+    return rho
 
 
 class TestElectroStaticSphere:
@@ -486,6 +649,11 @@ class TestElectroStaticSphere:
         np.testing.assert_equal(vptest, vp)
         np.testing.assert_equal(vstest, vs)
 
+        vt, vp, vs = ess.potential(xyz, field='all')
+        np.testing.assert_equal(vttest, vt)
+        np.testing.assert_equal(vptest, vp)
+        np.testing.assert_equal(vstest, vs)
+
     def testE(self):
         radius = 1.0
         primary_field = None
@@ -520,6 +688,11 @@ class TestElectroStaticSphere:
         et = ess.electric_field(xyz, field='total')
         ep = ess.electric_field(xyz, field='primary')
         es = ess.electric_field(xyz, field='secondary')
+        np.testing.assert_equal(ettest, et)
+        np.testing.assert_equal(eptest, ep)
+        np.testing.assert_equal(estest, es)
+
+        et, ep, es =ess.electric_field(xyz, field='all')
         np.testing.assert_equal(ettest, et)
         np.testing.assert_equal(eptest, ep)
         np.testing.assert_equal(estest, es)
@@ -561,6 +734,36 @@ class TestElectroStaticSphere:
         np.testing.assert_equal(jttest, jt)
         np.testing.assert_equal(jptest, jp)
         np.testing.assert_equal(jstest, js)
+
+        jt, jp, js = ess.current_density(xyz, field='all')
+        np.testing.assert_equal(jttest, jt)
+        np.testing.assert_equal(jptest, jp)
+        np.testing.assert_equal(jstest, js)
+
+    def test_rho(self):
+        radius = 1.0
+        primary_field = None
+        sig_s = 1.0
+        sig_b = 1.0
+        location = None
+        ess = static.ElectrostaticSphere(
+            radius=radius,
+            primary_field=primary_field,
+            sigma_background=sig_b,
+            sigma_sphere=sig_s,
+            location=location
+        )
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+
+        rho_test = rho_from_ESphere(
+            xyz, None, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
+        )
+
+        rho = ess.charge_density(xyz)
+        np.testing.assert_equal(rho_test, rho)
 
 
 def Vt_from_Sphere(
@@ -749,6 +952,10 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(vptest, vp)
         np.testing.assert_equal(vstest, vs)
 
+        vt, vp, vs = mss.potential(xyz, field='all')
+        np.testing.assert_equal(vttest, vt)
+        np.testing.assert_equal(vptest, vp)
+        np.testing.assert_equal(vstest, vs)
 
     def testH(self):
         radius = 1.0
@@ -788,6 +995,11 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(hptest, hp)
         np.testing.assert_equal(hstest, hs)
 
+        ht, hp, hs = mss.magnetic_field(xyz, field='all')
+        np.testing.assert_equal(httest, ht)
+        np.testing.assert_equal(hptest, hp)
+        np.testing.assert_equal(hstest, hs)
+
     def testB(self):
         radius = 1.0
         primary_field = None
@@ -822,6 +1034,11 @@ class TestMagnetoStaticSphere:
         bt = mss.magnetic_flux_density(xyz, field='total')
         bp = mss.magnetic_flux_density(xyz, field='primary')
         bs = mss.magnetic_flux_density(xyz, field='secondary')
+        np.testing.assert_equal(btest, bt)
+        np.testing.assert_equal(bptest, bp)
+        np.testing.assert_equal(bstest, bs)
+
+        bt, bp, bs = mss.magnetic_flux_density(xyz, field='all')
         np.testing.assert_equal(btest, bt)
         np.testing.assert_equal(bptest, bp)
         np.testing.assert_equal(bstest, bs)
