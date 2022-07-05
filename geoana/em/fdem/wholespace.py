@@ -686,7 +686,6 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         return (first_term * second_term).squeeze()
 
-
     def current_density(self, xyz):
         r"""Current density for the harmonic magnetic dipole at a set of gridded locations.
 
@@ -983,3 +982,80 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         """
         return self.mu * self.magnetic_field(xyz)
+
+
+class HarmonicPlaneWave(BaseFDEM):
+    """
+    Class for simulating the fields for a harmonic planewave in a wholespace.
+    """
+
+    def electric_field(self, xyz):
+        r"""Electric field for the harmonic planewave at a set of gridded locations.
+
+        .. math::
+            \nabla^2 \mathbf{E} + k^2 \mathbf{E} = 0
+
+        where
+
+        .. math::
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (n_freq, n_loc, 3) numpy.array of complex
+            Electric field at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
+        """
+
+        n_freq = len(self.frequency)
+        n_loc = np.shape(xyz)[0]
+
+        k = self.wavenumber
+        z = xyz[:, 2]
+
+        kz = np.outer(k, z)
+        ikz = 1j * kz
+
+    def magnetic_field(self, xyz):
+        r"""Magnetic field for the harmonic planewave at a set of gridded locations.
+
+        .. math::
+            \nabla^2 \mathbf{H} + k^2 \mathbf{H} = 0
+
+        where
+
+        .. math::
+            k = \sqrt{\omega^2 \mu \varepsilon - i \omega \mu \sigma}
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (n_freq, n_loc, 3) numpy.array of complex
+            Magnetic field at all frequencies for the gridded
+            locations provided. Output array is squeezed when n_freq and/or
+            n_loc = 1.
+        """
+
+        n_freq = len(self.frequency)
+        n_loc = np.shape(xyz)[0]
+
+        k = self.wavenumber
+        z = xyz[:, 2]
+
+        kz = np.outer(k, z)
+        ikz = 1j * kz
+
+
+
+
+

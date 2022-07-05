@@ -671,3 +671,9 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         """
 
         return self.mu * self.magnetic_field_time_deriv(xyz)
+
+
+class TransientPlaneWave(BaseTDEM):
+    """
+    Class for simulating the fields for a transient planewave in a wholespace.
+    """

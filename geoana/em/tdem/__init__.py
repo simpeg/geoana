@@ -15,6 +15,7 @@ Simulation Classes
   BaseTDEM
   ElectricDipoleWholeSpace
   VerticalMagneticDipoleHalfSpace
+  TransientPlaneWave
 
 Utility Functions
 =================
@@ -37,7 +38,7 @@ Utility Functions
 """
 from geoana.em.tdem.base import peak_time, diffusion_distance, theta, BaseTDEM
 
-from geoana.em.tdem.wholespace import ElectricDipoleWholeSpace
+from geoana.em.tdem.wholespace import ElectricDipoleWholeSpace, TransientPlaneWave
 
 from geoana.em.tdem.halfspace import VerticalMagneticDipoleHalfSpace
 
