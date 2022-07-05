@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from geoana.earthquake import oksar
 import numpy as np
 

@@ -1,4 +1,5 @@
 import unittest
+import pytest
 import numpy as np
 
 from scipy.constants import mu_0, epsilon_0
@@ -69,7 +70,7 @@ def E_from_EDWS(
 class TestFDEMdipole(unittest.TestCase):
 
     def test_defaults(self):
-        frequency = 1.0
+        frequency = 1
         edws = fdem.ElectricDipoleWholeSpace(frequency)
         assert(edws.sigma == 1)
         assert(edws.mu == mu_0)
@@ -78,6 +79,23 @@ class TestFDEMdipole(unittest.TestCase):
         assert(edws.length == 1.)
         assert(np.all(edws.location == np.r_[0., 0., 0.]))
         assert(edws.frequency == 1.)
+
+    def test_errors(self):
+        edws = fdem.ElectricDipoleWholeSpace(1)
+        with pytest.raises(TypeError):
+            edws.current = "box"
+        with pytest.raises(TypeError):
+            edws.length = "box"
+        with pytest.raises(ValueError):
+            edws.length = -2
+        with pytest.raises(TypeError):
+            edws.sigma = "box"
+        with pytest.raises(ValueError):
+            edws.sigma = -2
+        with pytest.raises(TypeError):
+            edws.epsilon = "box"
+        with pytest.raises(ValueError):
+            edws.epsilon = -2
 
     def compare_fields(name, field, ftest):
 
