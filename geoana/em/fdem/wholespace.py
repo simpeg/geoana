@@ -987,7 +987,78 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 class HarmonicPlaneWave(BaseFDEM):
     """
     Class for simulating the fields for a harmonic planewave in a wholespace.
+
+    Parameters
+    ----------
+    amplitude : float
+        amplitude of primary electric field.  Default is 1
+    orientation : (2) array_like or {'X','Y'}
+        Orientation of the planewave. Can be defined using as an ``array_like`` of length 2,
+        or by using one of {'X','Y'} to define a planewave along the x or y direction.
+        Default is 'X'.
     """
+
+    def __init__(
+        self, amplitude=1.0, orientation='X', **kwargs
+    ):
+
+        self.amplitude = amplitude
+        self.orientation = orientation
+        super().__init__(**kwargs)
+
+    @property
+    def amplitude(self):
+        """Amplitude of the primary field.
+
+        Returns
+        -------
+        float
+            Amplitude of the primary field. Default = 1
+        """
+        return self._amplitude
+
+    @amplitude.setter
+    def amplitude(self, item):
+
+        item = float(item)
+        self._amplitude = item
+
+    @property
+    def orientation(self):
+        """Orientation of the planewave as a normalized vector
+
+        Returns
+        -------
+        (2) numpy.ndarray of float or str in {'X','Y'}
+            planewave orientation, normalized to unit magnitude
+        """
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, var):
+
+        if isinstance(var, str):
+            if var.upper() == 'X':
+                var = np.r_[1., 0.]
+            elif var.upper() == 'Y':
+                var = np.r_[0., 1.]
+        else:
+            try:
+                var = np.asarray(var, dtype=float)
+            except:
+                raise TypeError(
+                    f"orientation must be str or array_like, got {type(var)}"
+                )
+            var = np.squeeze(var)
+            if var.shape != (2,):
+                raise ValueError(
+                    f"orientation must be array_like with shape (2,), got {len(var)}"
+                )
+
+            # Normalize the orientation
+            var /= np.linalg.norm(var)
+
+        self._orientation = var
 
     def electric_field(self, xyz):
         r"""Electric field for the harmonic planewave at a set of gridded locations.
@@ -1013,14 +1084,25 @@ class HarmonicPlaneWave(BaseFDEM):
             n_loc = 1.
         """
 
-        n_freq = len(self.frequency)
-        n_loc = np.shape(xyz)[0]
-
         k = self.wavenumber
-        z = xyz[:, 2]
+        e0 = self.amplitude
 
+        z = xyz[:, 2]
         kz = np.outer(k, z)
         ikz = 1j * kz
+
+        if self.orientation == 'X':
+            ex = e0 * np.exp(ikz)
+            ey = np.zeros_like(z)
+            ez = np.zeros_like(z)
+            return ex, ey, ez
+        elif self.orientation == 'Y':
+            ex = np.zeros_like(z)
+            ey = e0 * np.exp(ikz)
+            ez = np.zeros_like(z)
+            return ex, ey, ez
+        else:
+            raise NotImplementedError()
 
     def magnetic_field(self, xyz):
         r"""Magnetic field for the harmonic planewave at a set of gridded locations.
@@ -1046,14 +1128,28 @@ class HarmonicPlaneWave(BaseFDEM):
             n_loc = 1.
         """
 
-        n_freq = len(self.frequency)
-        n_loc = np.shape(xyz)[0]
-
         k = self.wavenumber
-        z = xyz[:, 2]
+        e0 = self.amplitude
 
+        z = xyz[:, 2]
         kz = np.outer(k, z)
         ikz = 1j * kz
+        Z = self.omega * self.mu / k
+
+        if self.orientation == 'X':
+            hx = e0 / Z * np.exp(ikz)
+            hy = np.zeros_like(z)
+            hz = np.zeros_like(z)
+            return hx, hy, hz
+        elif self.orientation == 'Y':
+            hx = np.zeros_like(z)
+            hy = e0 / Z * np.exp(ikz)
+            hz = np.zeros_like(z)
+            return hx, hy, hz
+        else:
+            raise NotImplementedError()
+
+
 
 
 
