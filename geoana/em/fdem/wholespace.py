@@ -992,8 +992,8 @@ class HarmonicPlaneWave(BaseFDEM):
     ----------
     amplitude : float
         amplitude of primary electric field.  Default is 1
-    orientation : (2) array_like or {'X','Y'}
-        Orientation of the planewave. Can be defined using as an ``array_like`` of length 2,
+    orientation : (3) array_like or {'X','Y'}
+        Orientation of the planewave. Can be defined using as an ``array_like`` of length 3,
         or by using one of {'X','Y'} to define a planewave along the x or y direction.
         Default is 'X'.
     """
@@ -1029,7 +1029,7 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Returns
         -------
-        (2) numpy.ndarray of float or str in {'X','Y'}
+        (3) numpy.ndarray of float or str in {'X','Y'}
             planewave orientation, normalized to unit magnitude
         """
         return self._orientation
@@ -1039,9 +1039,9 @@ class HarmonicPlaneWave(BaseFDEM):
 
         if isinstance(var, str):
             if var.upper() == 'X':
-                var = np.r_[1., 0.]
+                var = np.r_[1., 0., 0.]
             elif var.upper() == 'Y':
-                var = np.r_[0., 1.]
+                var = np.r_[0., 1., 0.]
         else:
             try:
                 var = np.asarray(var, dtype=float)
@@ -1050,9 +1050,13 @@ class HarmonicPlaneWave(BaseFDEM):
                     f"orientation must be str or array_like, got {type(var)}"
                 )
             var = np.squeeze(var)
-            if var.shape != (2,):
+            if var.shape != (3,):
                 raise ValueError(
-                    f"orientation must be array_like with shape (2,), got {len(var)}"
+                    f"orientation must be array_like with shape (3,), got {len(var)}"
+                )
+            if var[2] != 0:
+                raise ValueError(
+                    f"z axis of orientation must be 0 in order to stay in the xy-plane, got {var[2]}"
                 )
 
             # Normalize the orientation
@@ -1090,18 +1094,16 @@ class HarmonicPlaneWave(BaseFDEM):
         kz = np.outer(k, z)
         ikz = 1j * kz
 
-        if self.orientation == 'X':
+        if np.all(self.orientation == np.r_[1., 0., 0.]):
             ex = e0 * np.exp(ikz)
             ey = np.zeros_like(z)
             ez = np.zeros_like(z)
             return ex, ey, ez
-        elif self.orientation == 'Y':
+        elif np.all(self.orientation == np.r_[0., 1., 0.]):
             ex = np.zeros_like(z)
             ey = e0 * np.exp(ikz)
             ez = np.zeros_like(z)
             return ex, ey, ez
-        else:
-            raise NotImplementedError()
 
     def current_density(self, xyz):
         r"""Current density for the harmonic planewave at a set of gridded locations.
@@ -1125,18 +1127,16 @@ class HarmonicPlaneWave(BaseFDEM):
         kz = np.outer(k, z)
         ikz = 1j * kz
 
-        if self.orientation == 'X':
+        if np.all(self.orientation == np.r_[1., 0., 0.]):
             jx = self.sigma * e0 * np.exp(ikz)
             jy = np.zeros_like(z)
             jz = np.zeros_like(z)
             return jx, jy, jz
-        elif self.orientation == 'Y':
+        elif np.all(self.orientation == np.r_[0., 1., 0.]):
             jx = np.zeros_like(z)
             jy = self.sigma * e0 * np.exp(ikz)
             jz = np.zeros_like(z)
             return jx, jy, jz
-        else:
-            raise NotImplementedError()
 
     def magnetic_field(self, xyz):
         r"""Magnetic field for the harmonic planewave at a set of gridded locations.
@@ -1169,18 +1169,16 @@ class HarmonicPlaneWave(BaseFDEM):
         ikz = 1j * kz
         Z = self.omega * self.mu / k
 
-        if self.orientation == 'X':
+        if np.all(self.orientation == np.r_[1., 0., 0.]):
             hx = e0 / Z * np.exp(ikz)
             hy = np.zeros_like(z)
             hz = np.zeros_like(z)
             return hx, hy, hz
-        elif self.orientation == 'Y':
+        elif np.all(self.orientation == np.r_[0., 1., 0.]):
             hx = np.zeros_like(z)
             hy = e0 / Z * np.exp(ikz)
             hz = np.zeros_like(z)
             return hx, hy, hz
-        else:
-            raise NotImplementedError()
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the harmonic planewave at a set of gridded locations.
@@ -1205,18 +1203,17 @@ class HarmonicPlaneWave(BaseFDEM):
         ikz = 1j * kz
         Z = self.omega * self.mu / k
 
-        if self.orientation == 'X':
+        if np.all(self.orientation == np.r_[1., 0., 0.]):
             bx = self.mu * e0 / Z * np.exp(ikz)
             by = np.zeros_like(z)
             bz = np.zeros_like(z)
             return bx, by, bz
-        elif self.orientation == 'Y':
+        elif np.all(self.orientation == np.r_[0., 1., 0.]):
             bx = np.zeros_like(z)
             by = self.mu * e0 / Z * np.exp(ikz)
             bz = np.zeros_like(z)
             return bx, by, bz
-        else:
-            raise NotImplementedError()
+
 
 
 
