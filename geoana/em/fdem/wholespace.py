@@ -1078,10 +1078,9 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Returns
         -------
-        (n_freq, n_loc, 3) numpy.array of complex
+        (3, ) numpy.array of complex
             Electric field at all frequencies for the gridded
-            locations provided. Output array is squeezed when n_freq and/or
-            n_loc = 1.
+            locations provided.
         """
 
         k = self.wavenumber
@@ -1104,6 +1103,41 @@ class HarmonicPlaneWave(BaseFDEM):
         else:
             raise NotImplementedError()
 
+    def current_density(self, xyz):
+        r"""Current density for the harmonic planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (3, ) numpy.array of complex
+            Current density at all frequencies for the gridded
+            locations provided.
+        """
+
+        k = self.wavenumber
+        e0 = self.amplitude
+
+        z = xyz[:, 2]
+        kz = np.outer(k, z)
+        ikz = 1j * kz
+
+        if self.orientation == 'X':
+            jx = self.sigma * e0 * np.exp(ikz)
+            jy = np.zeros_like(z)
+            jz = np.zeros_like(z)
+            return jx, jy, jz
+        elif self.orientation == 'Y':
+            jx = np.zeros_like(z)
+            jy = self.sigma * e0 * np.exp(ikz)
+            jz = np.zeros_like(z)
+            return jx, jy, jz
+        else:
+            raise NotImplementedError()
+
     def magnetic_field(self, xyz):
         r"""Magnetic field for the harmonic planewave at a set of gridded locations.
 
@@ -1122,10 +1156,9 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Returns
         -------
-        (n_freq, n_loc, 3) numpy.array of complex
+        (3, ) numpy.array of complex
             Magnetic field at all frequencies for the gridded
-            locations provided. Output array is squeezed when n_freq and/or
-            n_loc = 1.
+            locations provided.
         """
 
         k = self.wavenumber
@@ -1146,6 +1179,42 @@ class HarmonicPlaneWave(BaseFDEM):
             hy = e0 / Z * np.exp(ikz)
             hz = np.zeros_like(z)
             return hx, hy, hz
+        else:
+            raise NotImplementedError()
+
+    def magnetic_flux_density(self, xyz):
+        r"""Magnetic flux density for the harmonic planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (3, ) numpy.array of complex
+            Magnetic flux density at all frequencies for the gridded
+            locations provided.
+        """
+
+        k = self.wavenumber
+        e0 = self.amplitude
+
+        z = xyz[:, 2]
+        kz = np.outer(k, z)
+        ikz = 1j * kz
+        Z = self.omega * self.mu / k
+
+        if self.orientation == 'X':
+            bx = self.mu * e0 / Z * np.exp(ikz)
+            by = np.zeros_like(z)
+            bz = np.zeros_like(z)
+            return bx, by, bz
+        elif self.orientation == 'Y':
+            bx = np.zeros_like(z)
+            by = self.mu * e0 / Z * np.exp(ikz)
+            bz = np.zeros_like(z)
+            return bx, by, bz
         else:
             raise NotImplementedError()
 
