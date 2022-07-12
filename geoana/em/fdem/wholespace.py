@@ -1170,13 +1170,13 @@ class HarmonicPlaneWave(BaseFDEM):
         Z = self.omega * self.mu / k
 
         if np.all(self.orientation == np.r_[1., 0., 0.]):
-            hx = e0 / Z * np.exp(ikz)
+            hx = e0 / Z[..., None] * np.exp(ikz)
             hy = np.zeros_like(z)
             hz = np.zeros_like(z)
             return hx, hy, hz
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
             hx = np.zeros_like(z)
-            hy = e0 / Z * np.exp(ikz)
+            hy = e0 / Z[..., None] * np.exp(ikz)
             hz = np.zeros_like(z)
             return hx, hy, hz
 
@@ -1204,13 +1204,13 @@ class HarmonicPlaneWave(BaseFDEM):
         Z = self.omega * self.mu / k
 
         if np.all(self.orientation == np.r_[1., 0., 0.]):
-            bx = self.mu * e0 / Z * np.exp(ikz)
+            bx = self.mu * e0 / Z[..., None] * np.exp(ikz)
             by = np.zeros_like(z)
             bz = np.zeros_like(z)
             return bx, by, bz
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
             bx = np.zeros_like(z)
-            by = self.mu * e0 / Z * np.exp(ikz)
+            by = self.mu * e0 / Z[..., None] * np.exp(ikz)
             bz = np.zeros_like(z)
             return bx, by, bz
 

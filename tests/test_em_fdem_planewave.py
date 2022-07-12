@@ -114,7 +114,6 @@ class TestHarmonicPlaneWave:
         np.testing.assert_equal(jy, hpw.current_density(xyz)[1])
         np.testing.assert_equal(jz, hpw.current_density(xyz)[2])
 
-    """
     def test_magnetic_field(self):
         frequencies = np.logspace(1, 4, 3)
         amplitude = 1.0
@@ -134,7 +133,7 @@ class TestHarmonicPlaneWave:
         ikz = 1j * kz
         Z = w * mu_0 / k
 
-        hx = amplitude / Z * np.exp(ikz)
+        hx = amplitude / Z[..., None] * np.exp(ikz)
         hy = np.zeros_like(z)
         hz = np.zeros_like(z)
 
@@ -146,13 +145,50 @@ class TestHarmonicPlaneWave:
         hpw.orientation = 'Y'
 
         hx = np.zeros_like(z)
-        hy = amplitude / Z * np.exp(ikz)
+        hy = amplitude / Z[..., None] * np.exp(ikz)
         hz = np.zeros_like(z)
 
         np.testing.assert_equal(hx, hpw.magnetic_field(xyz)[0])
         np.testing.assert_equal(hy, hpw.magnetic_field(xyz)[1])
         np.testing.assert_equal(hz, hpw.magnetic_field(xyz)[2])
-    """
+        
+    def test_magnetic_flux_density(self):
+        frequencies = np.logspace(1, 4, 3)
+        amplitude = 1.0
+        hpw = fdem.HarmonicPlaneWave(frequency=frequencies, amplitude=amplitude)
+
+        # test x orientation
+        w = 2 * np.pi * frequencies
+        k = np.sqrt(w ** 2 * mu_0 * epsilon_0 - 1j * w * mu_0)
+
+        x = np.linspace(-20., 20., 50)
+        y = np.linspace(-30., 30., 50)
+        z = np.linspace(-40., 40., 50)
+        xyz = discretize.utils.ndgrid([x, y, z])
+        z = xyz[:, 2]
+
+        kz = np.outer(k, z)
+        ikz = 1j * kz
+        Z = w * mu_0 / k
+
+        bx = mu_0 * amplitude / Z[..., None] * np.exp(ikz)
+        by = np.zeros_like(z)
+        bz = np.zeros_like(z)
+
+        np.testing.assert_equal(bx, hpw.magnetic_flux_density(xyz)[0])
+        np.testing.assert_equal(by, hpw.magnetic_flux_density(xyz)[1])
+        np.testing.assert_equal(bz, hpw.magnetic_flux_density(xyz)[2])
+
+        # test y orientation
+        hpw.orientation = 'Y'
+
+        bx = np.zeros_like(z)
+        by = mu_0 * amplitude / Z[..., None] * np.exp(ikz)
+        bz = np.zeros_like(z)
+
+        np.testing.assert_equal(bx, hpw.magnetic_flux_density(xyz)[0])
+        np.testing.assert_equal(by, hpw.magnetic_flux_density(xyz)[1])
+        np.testing.assert_equal(bz, hpw.magnetic_flux_density(xyz)[2])
 
 
 
