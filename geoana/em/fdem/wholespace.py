@@ -1085,6 +1085,41 @@ class HarmonicPlaneWave(BaseFDEM):
         (3, ) numpy.array of complex
             Electric field at all frequencies for the gridded
             locations provided.
+
+        Examples
+        --------
+        Here, we define a harmonic planewave in the x direction in a wholespace.
+
+        >>> from geoana.em.fdem import HarmonicPlaneWave
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the harmonic planewave.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> orientation = 'X'
+        >>> sigma = 1.0
+        >>> simulation = HarmonicPlaneWave(
+        >>>     frequency=frequency, orientation=orientation, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the electric field.
+
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X)
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> e = simulation.electric_field(xyz)
+
+        Finally, we plot the x oriented electric field.
+
+        >>> e_amp = np.linalg.norm(e, axis=-1)
+        >>> plt.pcolor(X, Y, e_amp, shading='auto')
+        >>> cb1 = plt.colorbar()
+        >>> cb1.set_label(label= 'Electric Field ($V/m$)')
+        >>> plt.ylabel('Y coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Electric Field for a Harmonic Planewave in a Wholespace')
+        >>> plt.show()
         """
 
         k = self.wavenumber
@@ -1096,14 +1131,14 @@ class HarmonicPlaneWave(BaseFDEM):
 
         if np.all(self.orientation == np.r_[1., 0., 0.]):
             ex = e0 * np.exp(ikz)
-            ey = np.zeros_like(z)
-            ez = np.zeros_like(z)
-            return ex, ey, ez
+            ey = np.zeros_like(ikz)
+            ez = np.zeros_like(ikz)
+            return np.stack((ex, ey, ez), axis=0).squeeze()
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            ex = np.zeros_like(z)
+            ex = np.zeros_like(ikz)
             ey = e0 * np.exp(ikz)
-            ez = np.zeros_like(z)
-            return ex, ey, ez
+            ez = np.zeros_like(ikz)
+            return np.stack((ex, ey, ez), axis=0).squeeze()
 
     def current_density(self, xyz):
         r"""Current density for the harmonic planewave at a set of gridded locations.
@@ -1129,14 +1164,14 @@ class HarmonicPlaneWave(BaseFDEM):
 
         if np.all(self.orientation == np.r_[1., 0., 0.]):
             jx = self.sigma * e0 * np.exp(ikz)
-            jy = np.zeros_like(z)
-            jz = np.zeros_like(z)
-            return jx, jy, jz
+            jy = np.zeros_like(ikz)
+            jz = np.zeros_like(ikz)
+            return np.stack((jx, jy, jz), axis=0).squeeze()
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            jx = np.zeros_like(z)
+            jx = np.zeros_like(ikz)
             jy = self.sigma * e0 * np.exp(ikz)
-            jz = np.zeros_like(z)
-            return jx, jy, jz
+            jz = np.zeros_like(ikz)
+            return np.stack((jx, jy, jz), axis=0).squeeze()
 
     def magnetic_field(self, xyz):
         r"""Magnetic field for the harmonic planewave at a set of gridded locations.
@@ -1171,14 +1206,14 @@ class HarmonicPlaneWave(BaseFDEM):
 
         if np.all(self.orientation == np.r_[1., 0., 0.]):
             hx = e0 / Z[..., None] * np.exp(ikz)
-            hy = np.zeros_like(z)
-            hz = np.zeros_like(z)
-            return hx, hy, hz
+            hy = np.zeros_like(ikz)
+            hz = np.zeros_like(ikz)
+            return np.stack((hx, hy, hz), axis=0).squeeze()
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            hx = np.zeros_like(z)
+            hx = np.zeros_like(ikz)
             hy = e0 / Z[..., None] * np.exp(ikz)
-            hz = np.zeros_like(z)
-            return hx, hy, hz
+            hz = np.zeros_like(ikz)
+            return np.stack((hx, hy, hz), axis=0).squeeze()
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the harmonic planewave at a set of gridded locations.
@@ -1205,14 +1240,14 @@ class HarmonicPlaneWave(BaseFDEM):
 
         if np.all(self.orientation == np.r_[1., 0., 0.]):
             bx = self.mu * e0 / Z[..., None] * np.exp(ikz)
-            by = np.zeros_like(z)
-            bz = np.zeros_like(z)
-            return bx, by, bz
+            by = np.zeros_like(ikz)
+            bz = np.zeros_like(ikz)
+            return np.stack((bx, by, bz), axis=0).squeeze()
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            bx = np.zeros_like(z)
+            bx = np.zeros_like(ikz)
             by = self.mu * e0 / Z[..., None] * np.exp(ikz)
-            bz = np.zeros_like(z)
-            return bx, by, bz
+            bz = np.zeros_like(ikz)
+            return np.stack((bx, by, bz), axis=0).squeeze()
 
 
 

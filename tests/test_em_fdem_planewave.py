@@ -9,10 +9,9 @@ class TestHarmonicPlaneWave:
 
     def test_defaults(self):
         frequencies = np.logspace(1, 4, 3)
-        amplitude = 1.0
         sigma = 1.0
         w = 2 * np.pi * frequencies
-        hpw = fdem.HarmonicPlaneWave(frequency=frequencies, amplitude=amplitude, sigma=sigma)
+        hpw = fdem.HarmonicPlaneWave(frequency=frequencies, sigma=sigma)
         assert np.all(hpw.frequency == np.logspace(1, 4, 3))
         assert hpw.amplitude == 1.0
         assert np.all(hpw.orientation == np.r_[1., 0., 0.])
@@ -24,8 +23,7 @@ class TestHarmonicPlaneWave:
 
     def test_errors(self):
         frequencies = np.logspace(1, 4, 3)
-        amplitude = 1.0
-        hpw = fdem.HarmonicPlaneWave(frequency=frequencies, amplitude=amplitude)
+        hpw = fdem.HarmonicPlaneWave(frequency=frequencies)
         with pytest.raises(TypeError):
             hpw.frequency = "string"
         with pytest.raises(ValueError):
@@ -41,8 +39,7 @@ class TestHarmonicPlaneWave:
 
     def test_electric_field(self):
         frequencies = np.logspace(1, 4, 3)
-        amplitude = 1.0
-        hpw = fdem.HarmonicPlaneWave(frequency=frequencies, amplitude=amplitude)
+        hpw = fdem.HarmonicPlaneWave(frequency=frequencies)
 
         # test x orientation
         w = 2 * np.pi * frequencies
@@ -57,9 +54,9 @@ class TestHarmonicPlaneWave:
         kz = np.outer(k, z)
         ikz = 1j * kz
 
-        ex = amplitude * np.exp(ikz)
-        ey = np.zeros_like(z)
-        ez = np.zeros_like(z)
+        ex = np.exp(ikz)
+        ey = np.zeros_like(ikz)
+        ez = np.zeros_like(ikz)
 
         np.testing.assert_equal(ex, hpw.electric_field(xyz)[0])
         np.testing.assert_equal(ey, hpw.electric_field(xyz)[1])
@@ -68,9 +65,9 @@ class TestHarmonicPlaneWave:
         # test y orientation
         hpw.orientation = 'Y'
 
-        ex = np.zeros_like(z)
-        ey = amplitude * np.exp(ikz)
-        ez = np.zeros_like(z)
+        ex = np.zeros_like(ikz)
+        ey = np.exp(ikz)
+        ez = np.zeros_like(ikz)
 
         np.testing.assert_equal(ex, hpw.electric_field(xyz)[0])
         np.testing.assert_equal(ey, hpw.electric_field(xyz)[1])
@@ -78,9 +75,8 @@ class TestHarmonicPlaneWave:
 
     def test_current_density(self):
         frequencies = np.logspace(1, 4, 3)
-        amplitude = 1.0
         sigma = 2.0
-        hpw = fdem.HarmonicPlaneWave(frequency=frequencies, amplitude=amplitude, sigma=sigma)
+        hpw = fdem.HarmonicPlaneWave(frequency=frequencies, sigma=sigma)
 
         # test x orientation
         w = 2 * np.pi * frequencies
@@ -95,9 +91,9 @@ class TestHarmonicPlaneWave:
         kz = np.outer(k, z)
         ikz = 1j * kz
 
-        jx = 2 * amplitude * np.exp(ikz)
-        jy = np.zeros_like(z)
-        jz = np.zeros_like(z)
+        jx = 2 * np.exp(ikz)
+        jy = np.zeros_like(ikz)
+        jz = np.zeros_like(ikz)
 
         np.testing.assert_equal(jx, hpw.current_density(xyz)[0])
         np.testing.assert_equal(jy, hpw.current_density(xyz)[1])
@@ -106,9 +102,9 @@ class TestHarmonicPlaneWave:
         # test y orientation
         hpw.orientation = 'Y'
 
-        jx = np.zeros_like(z)
-        jy = 2 * amplitude * np.exp(ikz)
-        jz = np.zeros_like(z)
+        jx = np.zeros_like(ikz)
+        jy = 2 * np.exp(ikz)
+        jz = np.zeros_like(ikz)
 
         np.testing.assert_equal(jx, hpw.current_density(xyz)[0])
         np.testing.assert_equal(jy, hpw.current_density(xyz)[1])
@@ -116,8 +112,7 @@ class TestHarmonicPlaneWave:
 
     def test_magnetic_field(self):
         frequencies = np.logspace(1, 4, 3)
-        amplitude = 1.0
-        hpw = fdem.HarmonicPlaneWave(frequency=frequencies, amplitude=amplitude)
+        hpw = fdem.HarmonicPlaneWave(frequency=frequencies)
 
         # test x orientation
         w = 2 * np.pi * frequencies
@@ -133,9 +128,9 @@ class TestHarmonicPlaneWave:
         ikz = 1j * kz
         Z = w * mu_0 / k
 
-        hx = amplitude / Z[..., None] * np.exp(ikz)
-        hy = np.zeros_like(z)
-        hz = np.zeros_like(z)
+        hx = 1 / Z[..., None] * np.exp(ikz)
+        hy = np.zeros_like(ikz)
+        hz = np.zeros_like(ikz)
 
         np.testing.assert_equal(hx, hpw.magnetic_field(xyz)[0])
         np.testing.assert_equal(hy, hpw.magnetic_field(xyz)[1])
@@ -144,9 +139,9 @@ class TestHarmonicPlaneWave:
         # test y orientation
         hpw.orientation = 'Y'
 
-        hx = np.zeros_like(z)
-        hy = amplitude / Z[..., None] * np.exp(ikz)
-        hz = np.zeros_like(z)
+        hx = np.zeros_like(ikz)
+        hy = 1 / Z[..., None] * np.exp(ikz)
+        hz = np.zeros_like(ikz)
 
         np.testing.assert_equal(hx, hpw.magnetic_field(xyz)[0])
         np.testing.assert_equal(hy, hpw.magnetic_field(xyz)[1])
@@ -154,8 +149,7 @@ class TestHarmonicPlaneWave:
         
     def test_magnetic_flux_density(self):
         frequencies = np.logspace(1, 4, 3)
-        amplitude = 1.0
-        hpw = fdem.HarmonicPlaneWave(frequency=frequencies, amplitude=amplitude)
+        hpw = fdem.HarmonicPlaneWave(frequency=frequencies)
 
         # test x orientation
         w = 2 * np.pi * frequencies
@@ -171,9 +165,9 @@ class TestHarmonicPlaneWave:
         ikz = 1j * kz
         Z = w * mu_0 / k
 
-        bx = mu_0 * amplitude / Z[..., None] * np.exp(ikz)
-        by = np.zeros_like(z)
-        bz = np.zeros_like(z)
+        bx = mu_0 / Z[..., None] * np.exp(ikz)
+        by = np.zeros_like(ikz)
+        bz = np.zeros_like(ikz)
 
         np.testing.assert_equal(bx, hpw.magnetic_flux_density(xyz)[0])
         np.testing.assert_equal(by, hpw.magnetic_flux_density(xyz)[1])
@@ -182,9 +176,9 @@ class TestHarmonicPlaneWave:
         # test y orientation
         hpw.orientation = 'Y'
 
-        bx = np.zeros_like(z)
-        by = mu_0 * amplitude / Z[..., None] * np.exp(ikz)
-        bz = np.zeros_like(z)
+        bx = np.zeros_like(ikz)
+        by = mu_0 / Z[..., None] * np.exp(ikz)
+        bz = np.zeros_like(ikz)
 
         np.testing.assert_equal(bx, hpw.magnetic_flux_density(xyz)[0])
         np.testing.assert_equal(by, hpw.magnetic_flux_density(xyz)[1])

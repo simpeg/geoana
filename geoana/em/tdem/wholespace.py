@@ -676,4 +676,241 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 class TransientPlaneWave(BaseTDEM):
     """
     Class for simulating the fields for a transient planewave in a wholespace.
+
+    Parameters
+    ----------
+    amplitude : float
+        amplitude of primary electric field.  Default is 1
+    orientation : (3) array_like or {'X','Y'}
+        Orientation of the planewave. Can be defined using as an ``array_like`` of length 3,
+        or by using one of {'X','Y'} to define a planewave along the x or y direction.
+        Default is 'X'.
     """
+
+    def __init__(
+        self, amplitude=1.0, orientation='X', **kwargs
+    ):
+
+        self.amplitude = amplitude
+        self.orientation = orientation
+        super().__init__(**kwargs)
+
+    @property
+    def amplitude(self):
+        """Amplitude of the primary field.
+
+        Returns
+        -------
+        float
+            Amplitude of the primary field. Default = 1
+        """
+        return self._amplitude
+
+    @amplitude.setter
+    def amplitude(self, item):
+
+        item = float(item)
+        self._amplitude = item
+
+    @property
+    def orientation(self):
+        """Orientation of the planewave as a normalized vector
+
+        Returns
+        -------
+        (3) numpy.ndarray of float or str in {'X','Y'}
+            planewave orientation, normalized to unit magnitude
+        """
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, var):
+
+        if isinstance(var, str):
+            if var.upper() == 'X':
+                var = np.r_[1., 0., 0.]
+            elif var.upper() == 'Y':
+                var = np.r_[0., 1., 0.]
+        else:
+            try:
+                var = np.asarray(var, dtype=float)
+            except:
+                raise TypeError(
+                    f"orientation must be str or array_like, got {type(var)}"
+                )
+            var = np.squeeze(var)
+            if var.shape != (3,):
+                raise ValueError(
+                    f"orientation must be array_like with shape (3,), got {len(var)}"
+                )
+            if var[2] != 0:
+                raise ValueError(
+                    f"z axis of orientation must be 0 in order to stay in the xy-plane, got {var[2]}"
+                )
+
+            # Normalize the orientation
+            var /= np.linalg.norm(var)
+
+        self._orientation = var
+
+    def electric_field(self, xyz):
+        r"""Electric field for the transient planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (3, ) numpy.array of complex
+            Electric field at all frequencies for the gridded
+            locations provided.
+
+        Examples
+        --------
+        Here, we define a transient planewave in the x direction in a wholespace.
+
+        >>> from geoana.em.fdem import HarmonicPlaneWave
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the transient planewave.
+
+        >>> frequency = np.logspace(1, 3, 3)
+        >>> orientation = 'X'
+        >>> sigma = 1.0
+        >>> simulation = HarmonicPlaneWave(
+        >>>     frequency=frequency, orientation=orientation, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the electric field.
+
+        >>> X, Y = np.meshgrid(np.linspace(-1, 1, 20), np.linspace(-1, 1, 20))
+        >>> Z = np.zeros_like(X)
+        >>> xyz = np.stack((X, Y, Z), axis=-1)
+        >>> e = simulation.electric_field(xyz)
+
+        Finally, we plot the x oriented electric field.
+
+        >>> plt.pcolor(X, Y, e, shading='auto')
+        >>> cb1 = plt.colorbar()
+        >>> cb1.set_label(label= 'Electric Field ($V/m$)')
+        >>> plt.ylabel('Y coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Electric Field for a Harmonic Planewave in a Wholespace')
+        >>> plt.show()
+        """
+
+        e0 = self.amplitude
+
+        z = xyz[:, 2]
+        bunja = -e0 * (self.mu * self.sigma) ** 0.5 * z * np.exp(-(self.mu * self.sigma * z ** 2) / (4 * self.time))
+        bunmo = 2 * np.pi ** 0.5 * self.time ** 1.5
+
+        if np.all(self.orientation == np.r_[1., 0., 0.]):
+            ex = bunja / bunmo
+            ey = np.zeros_like(z)
+            ez = np.zeros_like(z)
+            return np.stack((ex, ey, ez), axis=0).squeeze()
+        elif np.all(self.orientation == np.r_[0., 1., 0.]):
+            ex = np.zeros_like(z)
+            ey = bunja / bunmo
+            ez = np.zeros_like(z)
+            return np.stack((ex, ey, ez), axis=0).squeeze()
+
+    def current_density(self, xyz):
+        r"""Current density for the transient planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (3, ) numpy.array of complex
+            Current density at all frequencies for the gridded
+            locations provided.
+        """
+
+        e0 = self.amplitude
+
+        z = xyz[:, 2]
+        bunja = -e0 * (self.mu * self.sigma) ** 0.5 * z * np.exp(-(self.mu * self.sigma * z ** 2) / (4 * self.time))
+        bunmo = 2 * np.pi ** 0.5 * self.time ** 1.5
+
+        if np.all(self.orientation == np.r_[1., 0., 0.]):
+            jx = self.sigma * bunja / bunmo
+            jy = np.zeros_like(z)
+            jz = np.zeros_like(z)
+            return np.stack((jx, jy, jz), axis=0).squeeze()
+        elif np.all(self.orientation == np.r_[0., 1., 0.]):
+            jx = np.zeros_like(z)
+            jy = self.sigma * bunja / bunmo
+            jz = np.zeros_like(z)
+            return np.stack((jx, jy, jz), axis=0).squeeze()
+
+    def magnetic_field(self, xyz):
+        r"""Magnetic field for the harmonic planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (3, ) numpy.array of complex
+            Magnetic field at all frequencies for the gridded
+            locations provided.
+        """
+
+        e0 = self.amplitude
+
+        z = xyz[:, 2]
+
+        if np.all(self.orientation == np.r_[1., 0., 0.]):
+            hx = np.zeros_like(z)
+            hy = (e0 * np.sqrt(self.sigma / (np.pi * self.mu * self.time)) *
+                  np.exp(-(self.mu * self.sigma * z ** 2) / (4 * self.time)))
+            hz = np.zeros_like(z)
+            return np.stack((hx, hy, hz), axis=0).squeeze()
+        elif np.all(self.orientation == np.r_[0., 1., 0.]):
+            hx = (e0 * np.sqrt(self.sigma / (np.pi * self.mu * self.time)) *
+                  np.exp(-(self.mu * self.sigma * z ** 2) / (4 * self.time)))
+            hy = np.zeros_like(z)
+            hz = np.zeros_like(z)
+            return np.stack((hx, hy, hz), axis=0).squeeze()
+
+    def magnetic_flux_density(self, xyz):
+        r"""Magnetic flux density for the transient planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (n, 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (3, ) numpy.array of complex
+            Magnetic flux density at all frequencies for the gridded
+            locations provided.
+        """
+
+        e0 = self.amplitude
+
+        z = xyz[:, 2]
+
+        if np.all(self.orientation == np.r_[1., 0., 0.]):
+            bx = np.zeros_like(z)
+            by = self.mu * (e0 * np.sqrt(self.sigma / (np.pi * self.mu * self.time)) *
+                  np.exp(-(self.mu * self.sigma * z ** 2) / (4 * self.time)))
+            bz = np.zeros_like(z)
+            return np.stack((bx, by, bz), axis=0).squeeze()
+        elif np.all(self.orientation == np.r_[0., 1., 0.]):
+            bx = self.mu * (e0 * np.sqrt(self.sigma / (np.pi * self.mu * self.time)) *
+                  np.exp(-(self.mu * self.sigma * z ** 2) / (4 * self.time)))
+            by = np.zeros_like(z)
+            bz = np.zeros_like(z)
+            return np.stack((bx, by, bz), axis=0).squeeze()
