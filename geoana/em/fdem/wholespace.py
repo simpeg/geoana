@@ -1093,11 +1093,12 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> from geoana.em.fdem import HarmonicPlaneWave
         >>> import numpy as np
         >>> from geoana.utils import ndgrid
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> import matplotlib.pyplot as plt
 
         Let us begin by defining the harmonic planewave in the x-direction.
 
-        >>> frequency = np.logspace(1, 3, 3)
+        >>> frequency = 1
         >>> orientation = 'X'
         >>> sigma = 1.0
         >>> simulation = HarmonicPlaneWave(
@@ -1106,18 +1107,26 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Now we create a set of gridded locations and compute the electric field.
 
-        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.array([0]), np.linspace(-1, 1, 20))
+        >>> x = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1, 1, 20)
+        >>> xyz = ndgrid(x, np.array([0]), z)
         >>> ex, ey, ez = simulation.electric_field(xyz)
 
         Finally, we plot the x-oriented electric field.
 
-        >>> e_amp = np.linalg.norm(ex.T, axis=-1)
-        >>> plt.pcolor(xyz[:, 0], xyz[:, 1], e_amp, shading='auto')
-        >>> cb1 = plt.colorbar()
-        >>> cb1.set_label(label= 'Electric Field ($V/m$)')
-        >>> plt.ylabel('Y coordinate ($m$)')
-        >>> plt.xlabel('X coordinate ($m$)')
-        >>> plt.title('Electric Field for a Harmonic Planewave in a Wholespace')
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['Real Part', 'Imaginary Part']
+        >>> for ax, V, title in zip(axs.flatten(), [np.real(ex).reshape(20, 20), np.imag(ex).reshape(20, 20)], titles):
+        >>>     im = ax.pcolor(x, z, V, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Electric Field ($V/m$)')
+        >>>     ax.set_ylabel('Z coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
         >>> plt.show()
         """
 
@@ -1125,19 +1134,21 @@ class HarmonicPlaneWave(BaseFDEM):
         e0 = self.amplitude
 
         z = xyz[:, 2]
-        kz = np.outer(k, z)
+        kz = np.outer(z, k)
         ikz = 1j * kz
 
         if np.all(self.orientation == np.r_[1., 0., 0.]):
             ex = e0 * np.exp(ikz)
-            ey = np.zeros_like(ikz)
-            ez = np.zeros_like(ikz)
+            ey = np.zeros_like(z)
+            ez = np.zeros_like(z)
             return ex, ey, ez
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            ex = np.zeros_like(ikz)
+            ex = np.zeros_like(z)
             ey = e0 * np.exp(ikz)
-            ez = np.zeros_like(ikz)
+            ez = np.zeros_like(z)
             return ex, ey, ez
+        else:
+            NotImplementedError
 
     def current_density(self, xyz):
         r"""Current density for the harmonic planewave at a set of gridded locations.
@@ -1160,11 +1171,12 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> from geoana.em.fdem import HarmonicPlaneWave
         >>> import numpy as np
         >>> from geoana.utils import ndgrid
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> import matplotlib.pyplot as plt
 
         Let us begin by defining the harmonic planewave in the x-direction.
 
-        >>> frequency = np.logspace(1, 3, 3)
+        >>> frequency = 1
         >>> orientation = 'X'
         >>> sigma = 1.0
         >>> simulation = HarmonicPlaneWave(
@@ -1173,38 +1185,41 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Now we create a set of gridded locations and compute the current density.
 
-        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.array([0]), np.linspace(-1, 1, 20))
-        >>> jx, jy, jz = simulation.current_density()(xyz)
+        >>> x = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1, 1, 20)
+        >>> xyz = ndgrid(x, np.array([0]), z)
+        >>> jx, jy, jz = simulation.current_density(xyz)
 
         Finally, we plot the x-oriented current density.
 
-        >>> j_amp = np.linalg.norm(jx.T, axis=-1)
-        >>> plt.pcolor(xyz[:, 0], xyz[:, 1], j_amp, shading='auto')
-        >>> cb1 = plt.colorbar()
-        >>> cb1.set_label(label= 'Current Density ($A/m^2$)')
-        >>> plt.ylabel('Y coordinate ($m$)')
-        >>> plt.xlabel('X coordinate ($m$)')
-        >>> plt.title('Electric Field for a Harmonic Planewave in a Wholespace')
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['Real Part', 'Imaginary Part']
+        >>> for ax, V, title in zip(axs.flatten(), [np.real(jx).reshape(20, 20), np.imag(jx).reshape(20, 20)], titles):
+        >>>     im = ax.pcolor(x, z, V, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Current Density ($A/m^2$)')
+        >>>     ax.set_ylabel('Z coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
         >>> plt.show()
         """
 
-        k = self.wavenumber
-        e0 = self.amplitude
-
-        z = xyz[:, 2]
-        kz = np.outer(k, z)
-        ikz = 1j * kz
-
         if np.all(self.orientation == np.r_[1., 0., 0.]):
-            jx = self.sigma * e0 * np.exp(ikz)
-            jy = np.zeros_like(ikz)
-            jz = np.zeros_like(ikz)
+            jx = self.sigma * self.electric_field(xyz)[0]
+            jy = self.sigma * self.electric_field(xyz)[1]
+            jz = self.sigma * self.electric_field(xyz)[2]
             return jx, jy, jz
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            jx = np.zeros_like(ikz)
-            jy = self.sigma * e0 * np.exp(ikz)
-            jz = np.zeros_like(ikz)
+            jx = self.sigma * self.electric_field(xyz)[0]
+            jy = self.sigma * self.electric_field(xyz)[1]
+            jz = self.sigma * self.electric_field(xyz)[2]
             return jx, jy, jz
+        else:
+            NotImplementedError
 
     def magnetic_field(self, xyz):
         r"""Magnetic field for the harmonic planewave at a set of gridded locations.
@@ -1235,11 +1250,12 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> from geoana.em.fdem import HarmonicPlaneWave
         >>> import numpy as np
         >>> from geoana.utils import ndgrid
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> import matplotlib.pyplot as plt
 
         Let us begin by defining the harmonic planewave in the x-direction.
 
-        >>> frequency = np.logspace(1, 3, 3)
+        >>> frequency = 1
         >>> orientation = 'X'
         >>> sigma = 1.0
         >>> simulation = HarmonicPlaneWave(
@@ -1248,18 +1264,26 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Now we create a set of gridded locations and compute the magnetic field.
 
-        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.array([0]), np.linspace(-1, 1, 20))
+        >>> x = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1, 1, 20)
+        >>> xyz = ndgrid(x, np.array([0]), z)
         >>> hx, hy, hz = simulation.magnetic_field(xyz)
 
         Finally, we plot the x-oriented magnetic field.
 
-        >>> h_amp = np.linalg.norm(hx.T, axis=-1)
-        >>> plt.pcolor(xyz[:, 0], xyz[:, 1], h_amp, shading='auto')
-        >>> cb1 = plt.colorbar()
-        >>> cb1.set_label(label= 'Magnetic Field ($A/m$)')
-        >>> plt.ylabel('Y coordinate ($m$)')
-        >>> plt.xlabel('X coordinate ($m$)')
-        >>> plt.title('Magnetic Field for a Harmonic Planewave in a Wholespace')
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['Real Part', 'Imaginary Part']
+        >>> for ax, V, title in zip(axs.flatten(), [np.real(hy).reshape(20, 20), np.imag(hy).reshape(20, 20)], titles):
+        >>>     im = ax.pcolor(x, z, V, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Magnetic Field ($A/m$)')
+        >>>     ax.set_ylabel('Z coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
         >>> plt.show()
         """
 
@@ -1267,20 +1291,22 @@ class HarmonicPlaneWave(BaseFDEM):
         e0 = self.amplitude
 
         z = xyz[:, 2]
-        kz = np.outer(k, z)
+        kz = np.outer(z, k)
         ikz = 1j * kz
         Z = self.omega * self.mu / k
 
         if np.all(self.orientation == np.r_[1., 0., 0.]):
-            hx = e0 / Z[..., None] * np.exp(ikz)
-            hy = np.zeros_like(ikz)
-            hz = np.zeros_like(ikz)
+            hx = np.zeros_like(z)
+            hy = e0 / Z * np.exp(ikz)
+            hz = np.zeros_like(z)
             return hx, hy, hz
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            hx = np.zeros_like(ikz)
-            hy = e0 / Z[..., None] * np.exp(ikz)
-            hz = np.zeros_like(ikz)
+            hx = e0 / Z * np.exp(ikz)
+            hy = np.zeros_like(z)
+            hz = np.zeros_like(z)
             return hx, hy, hz
+        else:
+            NotImplementedError
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the harmonic planewave at a set of gridded locations.
@@ -1303,11 +1329,12 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> from geoana.em.fdem import HarmonicPlaneWave
         >>> import numpy as np
         >>> from geoana.utils import ndgrid
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
         >>> import matplotlib.pyplot as plt
 
         Let us begin by defining the harmonic planewave in the x-direction.
 
-        >>> frequency = np.logspace(1, 3, 3)
+        >>> frequency = 1
         >>> orientation = 'X'
         >>> sigma = 1.0
         >>> simulation = HarmonicPlaneWave(
@@ -1316,39 +1343,41 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Now we create a set of gridded locations and compute the magnetic flux density.
 
-        >>> xyz = ndgrid(np.linspace(-1, 1, 20), np.array([0]), np.linspace(-1, 1, 20))
+        >>> x = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1, 1, 20)
+        >>> xyz = ndgrid(x, np.array([0]), z)
         >>> bx, by, bz = simulation.magnetic_flux_density(xyz)
 
         Finally, we plot the x-oriented magnetic flux density.
 
-        >>> b_amp = np.linalg.norm(bx.T, axis=-1)
-        >>> plt.pcolor(xyz[:, 0], xyz[:, 1], b_amp, shading='auto')
-        >>> cb1 = plt.colorbar()
-        >>> cb1.set_label(label= 'Magnetic Flux Density (T)')
-        >>> plt.ylabel('Y coordinate ($m$)')
-        >>> plt.xlabel('X coordinate ($m$)')
-        >>> plt.title('Magnetic Flux Density for a Harmonic Planewave in a Wholespace')
+        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> titles = ['Real Part', 'Imaginary Part']
+        >>> for ax, V, title in zip(axs.flatten(), [np.real(by).reshape(20, 20), np.imag(by).reshape(20, 20)], titles):
+        >>>     im = ax.pcolor(x, z, V, shading='auto')
+        >>>     divider = make_axes_locatable(ax)
+        >>>     cax = divider.append_axes("right", size="5%", pad=0.05)
+        >>>     cb = plt.colorbar(im, cax=cax)
+        >>>     cb.set_label(label= 'Magnetic Flux Density (T)')
+        >>>     ax.set_ylabel('Z coordinate ($m$)')
+        >>>     ax.set_xlabel('X coordinate ($m$)')
+        >>>     ax.set_aspect('equal')
+        >>>     ax.set_title(title)
+        >>> plt.tight_layout()
         >>> plt.show()
         """
 
-        k = self.wavenumber
-        e0 = self.amplitude
-
-        z = xyz[:, 2]
-        kz = np.outer(k, z)
-        ikz = 1j * kz
-        Z = self.omega * self.mu / k
-
         if np.all(self.orientation == np.r_[1., 0., 0.]):
-            bx = self.mu * e0 / Z[..., None] * np.exp(ikz)
-            by = np.zeros_like(ikz)
-            bz = np.zeros_like(ikz)
+            bx = self.mu * self.magnetic_field(xyz)[0]
+            by = self.mu * self.magnetic_field(xyz)[1]
+            bz = self.mu * self.magnetic_field(xyz)[2]
             return bx, by, bz
         elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            bx = np.zeros_like(ikz)
-            by = self.mu * e0 / Z[..., None] * np.exp(ikz)
-            bz = np.zeros_like(ikz)
+            bx = self.mu * self.magnetic_field(xyz)[0]
+            by = self.mu * self.magnetic_field(xyz)[1]
+            bz = self.mu * self.magnetic_field(xyz)[2]
             return bx, by, bz
+        else:
+            NotImplementedError
 
 
 

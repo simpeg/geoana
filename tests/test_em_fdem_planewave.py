@@ -51,12 +51,12 @@ class TestHarmonicPlaneWave:
         xyz = discretize.utils.ndgrid([x, y, z])
         z = xyz[:, 2]
 
-        kz = np.outer(k, z)
+        kz = np.outer(z, k)
         ikz = 1j * kz
 
         ex = np.exp(ikz)
-        ey = np.zeros_like(ikz)
-        ez = np.zeros_like(ikz)
+        ey = np.zeros_like(z)
+        ez = np.zeros_like(z)
 
         np.testing.assert_equal(ex, hpw.electric_field(xyz)[0])
         np.testing.assert_equal(ey, hpw.electric_field(xyz)[1])
@@ -65,9 +65,9 @@ class TestHarmonicPlaneWave:
         # test y orientation
         hpw.orientation = 'Y'
 
-        ex = np.zeros_like(ikz)
+        ex = np.zeros_like(z)
         ey = np.exp(ikz)
-        ez = np.zeros_like(ikz)
+        ez = np.zeros_like(z)
 
         np.testing.assert_equal(ex, hpw.electric_field(xyz)[0])
         np.testing.assert_equal(ey, hpw.electric_field(xyz)[1])
@@ -88,12 +88,12 @@ class TestHarmonicPlaneWave:
         xyz = discretize.utils.ndgrid([x, y, z])
         z = xyz[:, 2]
 
-        kz = np.outer(k, z)
+        kz = np.outer(z, k)
         ikz = 1j * kz
 
         jx = 2 * np.exp(ikz)
-        jy = np.zeros_like(ikz)
-        jz = np.zeros_like(ikz)
+        jy = np.zeros_like(z)
+        jz = np.zeros_like(z)
 
         np.testing.assert_equal(jx, hpw.current_density(xyz)[0])
         np.testing.assert_equal(jy, hpw.current_density(xyz)[1])
@@ -102,9 +102,9 @@ class TestHarmonicPlaneWave:
         # test y orientation
         hpw.orientation = 'Y'
 
-        jx = np.zeros_like(ikz)
+        jx = np.zeros_like(z)
         jy = 2 * np.exp(ikz)
-        jz = np.zeros_like(ikz)
+        jz = np.zeros_like(z)
 
         np.testing.assert_equal(jx, hpw.current_density(xyz)[0])
         np.testing.assert_equal(jy, hpw.current_density(xyz)[1])
@@ -124,13 +124,13 @@ class TestHarmonicPlaneWave:
         xyz = discretize.utils.ndgrid([x, y, z])
         z = xyz[:, 2]
 
-        kz = np.outer(k, z)
+        kz = np.outer(z, k)
         ikz = 1j * kz
         Z = w * mu_0 / k
 
-        hx = 1 / Z[..., None] * np.exp(ikz)
-        hy = np.zeros_like(ikz)
-        hz = np.zeros_like(ikz)
+        hx = np.zeros_like(z)
+        hy = 1 / Z * np.exp(ikz)
+        hz = np.zeros_like(z)
 
         np.testing.assert_equal(hx, hpw.magnetic_field(xyz)[0])
         np.testing.assert_equal(hy, hpw.magnetic_field(xyz)[1])
@@ -139,9 +139,9 @@ class TestHarmonicPlaneWave:
         # test y orientation
         hpw.orientation = 'Y'
 
-        hx = np.zeros_like(ikz)
-        hy = 1 / Z[..., None] * np.exp(ikz)
-        hz = np.zeros_like(ikz)
+        hx = 1 / Z * np.exp(ikz)
+        hy = np.zeros_like(z)
+        hz = np.zeros_like(z)
 
         np.testing.assert_equal(hx, hpw.magnetic_field(xyz)[0])
         np.testing.assert_equal(hy, hpw.magnetic_field(xyz)[1])
@@ -161,13 +161,13 @@ class TestHarmonicPlaneWave:
         xyz = discretize.utils.ndgrid([x, y, z])
         z = xyz[:, 2]
 
-        kz = np.outer(k, z)
+        kz = np.outer(z, k)
         ikz = 1j * kz
         Z = w * mu_0 / k
 
-        bx = mu_0 / Z[..., None] * np.exp(ikz)
-        by = np.zeros_like(ikz)
-        bz = np.zeros_like(ikz)
+        bx = np.zeros_like(z)
+        by = mu_0 / Z * np.exp(ikz)
+        bz = np.zeros_like(z)
 
         np.testing.assert_equal(bx, hpw.magnetic_flux_density(xyz)[0])
         np.testing.assert_equal(by, hpw.magnetic_flux_density(xyz)[1])
@@ -176,9 +176,9 @@ class TestHarmonicPlaneWave:
         # test y orientation
         hpw.orientation = 'Y'
 
-        bx = np.zeros_like(ikz)
-        by = mu_0 / Z[..., None] * np.exp(ikz)
-        bz = np.zeros_like(ikz)
+        bx = mu_0 / Z * np.exp(ikz)
+        by = np.zeros_like(z)
+        bz = np.zeros_like(z)
 
         np.testing.assert_equal(bx, hpw.magnetic_flux_density(xyz)[0])
         np.testing.assert_equal(by, hpw.magnetic_flux_density(xyz)[1])
