@@ -160,8 +160,6 @@ class TestHarmonicPlaneWave:
         z = xyz[:, 2]
 
         kz = np.outer(z, k)
-        ikz = 1j * kz
-        Z = w * mu_0 / k
 
         bx = np.zeros_like(z)
         by = mu_0 * hpw.magnetic_field(xyz)[1]
