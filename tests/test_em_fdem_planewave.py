@@ -73,6 +73,10 @@ class TestHarmonicPlaneWave:
         np.testing.assert_equal(ey, hpw.electric_field(xyz)[1])
         np.testing.assert_equal(ez, hpw.electric_field(xyz)[2])
 
+        with pytest.raises(NotImplementedError):
+            hpw.orientation = 'Z'
+            return hpw.electric_field(xyz)
+
     def test_current_density(self):
         frequencies = np.logspace(1, 4, 3)
         sigma = 2.0

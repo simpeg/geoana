@@ -1147,8 +1147,6 @@ class HarmonicPlaneWave(BaseFDEM):
             ey = e0 * np.exp(ikz)
             ez = np.zeros_like(z)
             return ex, ey, ez
-        else:
-            NotImplementedError
 
     def current_density(self, xyz):
         r"""Current density for the harmonic planewave at a set of gridded locations.
@@ -1218,8 +1216,6 @@ class HarmonicPlaneWave(BaseFDEM):
             jy = self.sigma * self.electric_field(xyz)[1]
             jz = self.sigma * self.electric_field(xyz)[2]
             return jx, jy, jz
-        else:
-            NotImplementedError
 
     def magnetic_field(self, xyz):
         r"""Magnetic field for the harmonic planewave at a set of gridded locations.
@@ -1305,8 +1301,6 @@ class HarmonicPlaneWave(BaseFDEM):
             hy = np.zeros_like(z)
             hz = np.zeros_like(z)
             return hx, hy, hz
-        else:
-            NotImplementedError
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the harmonic planewave at a set of gridded locations.
@@ -1376,8 +1370,6 @@ class HarmonicPlaneWave(BaseFDEM):
             by = self.mu * self.magnetic_field(xyz)[1]
             bz = self.mu * self.magnetic_field(xyz)[2]
             return bx, by, bz
-        else:
-            NotImplementedError
 
 
 
