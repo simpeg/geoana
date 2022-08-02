@@ -73,10 +73,6 @@ class TestHarmonicPlaneWave:
         np.testing.assert_equal(ey, hpw.electric_field(xyz)[1])
         np.testing.assert_equal(ez, hpw.electric_field(xyz)[2])
 
-        with pytest.raises(NotImplementedError):
-            hpw.orientation = 'Z'
-            return hpw.electric_field(xyz)
-
     def test_current_density(self):
         frequencies = np.logspace(1, 4, 3)
         sigma = 2.0
@@ -115,7 +111,7 @@ class TestHarmonicPlaneWave:
         np.testing.assert_equal(jz, hpw.current_density(xyz)[2])
 
     def test_magnetic_field(self):
-        hpw = fdem.HarmonicPlaneWave(frequency=1)
+        hpw = fdem.HarmonicPlaneWave(frequency=1, sigma=1)
 
         # test x orientation
         w = 2 * np.pi
@@ -151,7 +147,7 @@ class TestHarmonicPlaneWave:
         np.testing.assert_equal(hz, hpw.magnetic_field(xyz)[2])
         
     def test_magnetic_flux_density(self):
-        hpw = fdem.HarmonicPlaneWave(frequency=1)
+        hpw = fdem.HarmonicPlaneWave(frequency=1, sigma=1)
 
         # test x orientation
         w = 2 * np.pi
