@@ -132,7 +132,7 @@ class TestHarmonicPlaneWave:
         hz = np.zeros_like(z)
 
         np.testing.assert_equal(hx, hpw.magnetic_field(xyz)[0])
-        np.testing.assert_equal(hy, hpw.magnetic_field(xyz)[1])
+        np.testing.assert_allclose(hy, hpw.magnetic_field(xyz)[1], atol=1E-9)
         np.testing.assert_equal(hz, hpw.magnetic_field(xyz)[2])
 
         # test y orientation
@@ -142,7 +142,7 @@ class TestHarmonicPlaneWave:
         hy = np.zeros_like(z)
         hz = np.zeros_like(z)
 
-        np.testing.assert_equal(hx, hpw.magnetic_field(xyz)[0])
+        np.testing.assert_allclose(hx, hpw.magnetic_field(xyz)[0], atol=1E-9)
         np.testing.assert_equal(hy, hpw.magnetic_field(xyz)[1])
         np.testing.assert_equal(hz, hpw.magnetic_field(xyz)[2])
         
