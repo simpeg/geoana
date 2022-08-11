@@ -99,6 +99,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
                 supported_coordinates, coordinates
             )
         )
+        xyz = check_xyz_dim(xyz)
 
         n_obs = xyz.shape[0]
 
@@ -190,7 +191,6 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
         >>> ax.set_xlabel('X')
         >>> ax.set_ylabel('Z')
         >>> ax.set_title('Magnetic flux density at y=0')
-
         """
 
         supported_coordinates = ["cartesian", "cylindrical"]
@@ -200,27 +200,20 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
                 supported_coordinates, coordinates
             )
         )
-
-        n_obs = xyz.shape[0]
+        xyz = check_xyz_dim(xyz)
 
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
-        r = self.vector_distance(xyz)
-        dxyz = spatial.repeat_scalar(self.distance(xyz))
-        m_vec = (
-            self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
-        )
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1)[..., None]
+        m_vec = self.moment * self.orientation
 
-        m_dot_r = (m_vec * r).sum(axis=1)
-
-        # Repeat the scalars
-        m_dot_r = np.atleast_2d(m_dot_r).T.repeat(3, axis=1)
-        # dxyz = np.atleast_2d(dxyz).T.repeat(3, axis=1)
+        m_dot_r = np.einsum('...i,i->...', r_vec, m_vec)[..., None]
 
         b = (self.mu / (4 * np.pi)) * (
-            (3.0 * r * m_dot_r / (dxyz ** 5)) -
-            m_vec / (dxyz ** 3)
+            (3.0 * r_vec * m_dot_r / (r ** 5)) -
+            m_vec / (r ** 3)
         )
 
         if coordinates.lower() == "cylindrical":
@@ -354,8 +347,7 @@ class MagneticPoleWholeSpace(BaseEM, BaseMagneticDipole):
                 supported_coordinates, coordinates
             )
         )
-
-        n_obs = xyz.shape[0]
+        xyz = check_xyz_dim(xyz)
 
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
@@ -576,6 +568,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
                 supported_coordinates, coordinates
             )
         )
+        xyz = check_xyz_dim(xyz)
 
         # convert coordinates if not cartesian
         if coordinates.lower() == "cylindrical":
@@ -688,7 +681,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         >>> ax.set_title('Magnetic flux density at y=0')
 
         """
-        xyz = np.atleast_2d(xyz)
+        xyz = check_xyz_dim(xyz)
         # convert coordinates if not cartesian
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)

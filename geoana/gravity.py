@@ -14,11 +14,14 @@ Simulation Classes
 
   PointMass
   Sphere
+  Prism
 """
 
 import numpy as np
 from scipy.constants import G
 from geoana.utils import check_xyz_dim
+from geoana.shapes import BasePrism
+from geoana.kernels import prism_f, prism_fz, prism_fzx, prism_fzy, prism_fzz
 
 
 class PointMass:
@@ -103,12 +106,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location in units m.
+            Observation locations in units m.
 
         Returns
         -------
         (..., ) numpy.ndarray
-            Gravitational potential at point mass location xyz in units :math:`\\frac{m^2}{s^2}`.
+            Gravitational potential at observation locations xyz in units :math:`\\frac{m^2}{s^2}`.
 
         Examples
         --------
@@ -161,12 +164,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location in units m.
+            Observation locations in units m.
 
         Returns
         -------
         (..., 3) numpy.ndarray
-            Gravitational field at point mass location xyz in units :math:`\\frac{m}{s^2}`.
+            Gravitational field at observation locations xyz in units :math:`\\frac{m}{s^2}`.
 
         Examples
         --------
@@ -213,12 +216,12 @@ class PointMass:
         Parameters
         ----------
         xyz : (..., 3) numpy.ndarray
-            Point mass location in units m.
+            Observation locations in units m.
 
         Returns
         -------
         (..., 3, 3) numpy.ndarray
-            Gravitational gradient at point mass location xyz in units :math:`\\frac{1}{s^2}`.
+            Gravitational gradient at observation locations xyz in units :math:`\\frac{1}{s^2}`.
 
         Examples
         --------
@@ -554,3 +557,130 @@ class Sphere(PointMass):
         g_tens[~ind0] = -G * 4 / 3 * np.pi * self.rho * np.eye(3)
         g_tens[ind1] = np.NaN
         return g_tens
+
+
+class Prism(BasePrism):
+    """Class for gravitational solutions for a prism.
+
+    The ``Prism`` class is used to analytically compute the gravitational
+    potentials, fields, and gradients for a prism with constant denisty.
+
+    Parameters
+    ----------
+    min_location : (3,) array_like
+        (x, y, z) triplet of the minimum locations in each dimension
+    max_location : (3,) array_like
+        (x, y, z) triplet of the maximum locations in each dimension
+    rho : float, optional
+        Density of prism (:math:`\\frac{kg}{m^3}`).
+    """
+
+    def __init__(self, min_location, max_location, rho=1.0):
+        self.rho = rho
+        super().__init__(min_location=min_location, max_location=max_location)
+
+    @property
+    def rho(self):
+        """ The density of the prism.
+
+        Returns
+        -------
+        density : float
+            In :math:`\\frac{kg}{m^3}`.
+        """
+        return self._rho
+
+    @rho.setter
+    def rho(self, value):
+        try:
+            value = float(value)
+        except:
+            raise TypeError(f"mass must be a number, got {type(value)}")
+
+        self._rho = value
+
+    @property
+    def mass(self):
+        """ The mass of the prism
+
+        Returns
+        -------
+        mass : float
+            In :math:`kg`.
+        """
+        return self.volume * self.rho
+
+    def gravitational_potential(self, xyz):
+        """
+        Gravitational potential due to a prism.
+
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Observation locations in units m.
+
+        Returns
+        -------
+        (..., ) numpy.ndarray
+            Gravitational potential of prism at location xyz in units :math:`\\frac{m^2}{s^2}`.
+        """
+        xyz = check_xyz_dim(xyz)
+        # need to evaluate f node at each source locations
+        return - G * self.rho * self._eval_def_int(prism_f, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+
+    def gravitational_field(self, xyz):
+        """
+        Gravitational field due to a prism.
+
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Observation locations in units m.
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            Gravitational field of prism at location xyz in units :math:`\\frac{m}{s^2}`.
+        """
+        xyz = check_xyz_dim(xyz)
+        # need to evaluate f node at each source locations
+        gx = self._eval_def_int(prism_fz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=1)
+        gy = self._eval_def_int(prism_fz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=2)
+        gz = self._eval_def_int(prism_fz, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+        return - G * self.rho * np.stack((gx, gy, gz), axis=-1)
+
+    def gravitational_gradient(self, xyz):
+        """
+        Gravitational gradient due to a prism.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Observation locations in units m.
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            Gravitational gradient of prism at location xyz in units :math:`\\frac{m}{s^2}`.
+        """
+        xyz = check_xyz_dim(xyz)
+
+        # need to evaluate f node at each source locations
+        gxx = self._eval_def_int(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=1)
+        gxy = self._eval_def_int(prism_fzx, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=1)
+        gxz = self._eval_def_int(prism_fzx, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+
+        gyy = self._eval_def_int(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2], cycle=2)
+        gyz = self._eval_def_int(prism_fzy, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+
+        # gzz = - gxx - gyy - 4 * np.pi * G * rho[in_cell]
+        # easiest to just calculate it using another integral
+        gzz = self._eval_def_int(prism_fzz, xyz[..., 0], xyz[..., 1], xyz[..., 2])
+
+        first = np.stack([gxx, gxy, gxz], axis=-1)
+        second = np.stack([gxy, gyy, gyz], axis=-1)
+        third = np.stack([gxz, gyz, gzz], axis=-1)
+
+        return - G * self.rho * np.stack([first, second, third], axis=-1)

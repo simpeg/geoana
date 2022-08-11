@@ -4,7 +4,7 @@ import os.path
 base_path = os.path.abspath(os.path.dirname(__file__))
 
 def configuration(parent_package="", top_path=None):
-    from numpy.distutils.misc_util import Configuration, get_numpy_include_dirs
+    from numpy.distutils.misc_util import Configuration, get_numpy_include_dirs, get_info
 
     config = Configuration("_extensions", parent_package, top_path)
 
@@ -17,7 +17,11 @@ def configuration(parent_package="", top_path=None):
         pass
 
     config.add_extension(
-        ext, sources=["rTE.cpp", "_rTE.cpp"], include_dirs=[get_numpy_include_dirs()]
+        ext, sources=["rTE.cpp", "_rTE.cpp"],
+        include_dirs=[get_numpy_include_dirs()]
     )
 
+    config.add_extension(
+        'potential_field_prism', sources=['potential_field_prism.c']
+    )
     return config
