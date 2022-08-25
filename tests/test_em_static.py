@@ -51,8 +51,6 @@ class TestEM_Static(unittest.TestCase):
         with pytest.raises(TypeError):
             self.mdws.moment = "box"
         with pytest.raises(ValueError):
-            self.mdws.moment = -2
-        with pytest.raises(ValueError):
             self.mdws.orientation = [0, 1, 2, 3, 4]
         with pytest.raises(ValueError):
             self.mdws.orientation = [[0, 0], [0, 1]]
