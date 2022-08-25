@@ -150,16 +150,12 @@ class TestHarmonicPlaneWave:
         hpw = fdem.HarmonicPlaneWave(frequency=1, sigma=1)
 
         # test x orientation
-        w = 2 * np.pi
-        k = np.sqrt(w ** 2 * mu_0 * epsilon_0 - 1j * w * mu_0)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
         xyz = discretize.utils.ndgrid([x, y, z])
         z = xyz[:, 2]
-
-        kz = np.outer(z, k)
 
         bx = np.zeros_like(z)
         by = mu_0 * hpw.magnetic_field(xyz)[1]

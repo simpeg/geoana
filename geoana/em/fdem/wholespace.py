@@ -986,15 +986,15 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
 class HarmonicPlaneWave(BaseFDEM):
     """
-    Class for simulating the fields for a harmonic planewave in a wholespace.
+    Class for simulating the fields and densities for a harmonic planewave in a wholespace.
 
     Parameters
     ----------
     amplitude : float
-        amplitude of primary electric field.  Default is 1
+        amplitude of primary electric field.  Default is 1A.
     orientation : (3) array_like or {'X','Y'}
         Orientation of the planewave. Can be defined using as an ``array_like`` of length 3,
-        or by using one of {'X','Y'} to define a planewave along the x or y direction.
+        with z = 0 or by using one of {'X','Y'} to define a planewave along the x or y direction.
         Default is 'X'.
     """
 
@@ -1013,7 +1013,7 @@ class HarmonicPlaneWave(BaseFDEM):
         Returns
         -------
         float
-            Amplitude of the primary field. Default = 1
+            Amplitude of the primary field. Default = 1A
         """
         return self._amplitude
 
@@ -1108,13 +1108,13 @@ class HarmonicPlaneWave(BaseFDEM):
         Now we create a set of gridded locations and compute the electric field.
 
         >>> x = np.linspace(-1, 1, 20)
-        >>> z = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
         >>> ex, ey, ez = simulation.electric_field(xyz)
 
-        Finally, we plot the x-oriented electric field.
+        Finally, we plot the real and imaginary parts of the x-oriented electric field.
 
-        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> fig, axs = plt.subplots(2, 1, figsize=(14, 12))
         >>> titles = ['Real Part', 'Imaginary Part']
         >>> for ax, V, title in zip(axs.flatten(), [np.real(ex).reshape(20, 20), np.imag(ex).reshape(20, 20)], titles):
         >>>     im = ax.pcolor(x, z, V, shading='auto')
@@ -1124,7 +1124,6 @@ class HarmonicPlaneWave(BaseFDEM):
         >>>     cb.set_label(label= 'Electric Field ($V/m$)')
         >>>     ax.set_ylabel('Z coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
-        >>>     ax.set_aspect('equal')
         >>>     ax.set_title(title)
         >>> plt.tight_layout()
         >>> plt.show()
@@ -1184,13 +1183,13 @@ class HarmonicPlaneWave(BaseFDEM):
         Now we create a set of gridded locations and compute the current density.
 
         >>> x = np.linspace(-1, 1, 20)
-        >>> z = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
         >>> jx, jy, jz = simulation.current_density(xyz)
 
-        Finally, we plot the x-oriented current density.
+        Finally, we plot the real and imaginary parts of the x-oriented current density.
 
-        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> fig, axs = plt.subplots(2, 1, figsize=(14, 12))
         >>> titles = ['Real Part', 'Imaginary Part']
         >>> for ax, V, title in zip(axs.flatten(), [np.real(jx).reshape(20, 20), np.imag(jx).reshape(20, 20)], titles):
         >>>     im = ax.pcolor(x, z, V, shading='auto')
@@ -1200,7 +1199,6 @@ class HarmonicPlaneWave(BaseFDEM):
         >>>     cb.set_label(label= 'Current Density ($A/m^2$)')
         >>>     ax.set_ylabel('Z coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
-        >>>     ax.set_aspect('equal')
         >>>     ax.set_title(title)
         >>> plt.tight_layout()
         >>> plt.show()
@@ -1261,13 +1259,13 @@ class HarmonicPlaneWave(BaseFDEM):
         Now we create a set of gridded locations and compute the magnetic field.
 
         >>> x = np.linspace(-1, 1, 20)
-        >>> z = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
         >>> hx, hy, hz = simulation.magnetic_field(xyz)
 
-        Finally, we plot the x-oriented magnetic field.
+        Finally, we plot the real and imaginary parts of the x-oriented magnetic field.
 
-        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> fig, axs = plt.subplots(2, 1, figsize=(14, 12))
         >>> titles = ['Real Part', 'Imaginary Part']
         >>> for ax, V, title in zip(axs.flatten(), [np.real(hy).reshape(20, 20), np.imag(hy).reshape(20, 20)], titles):
         >>>     im = ax.pcolor(x, z, V, shading='auto')
@@ -1277,7 +1275,6 @@ class HarmonicPlaneWave(BaseFDEM):
         >>>     cb.set_label(label= 'Magnetic Field ($A/m$)')
         >>>     ax.set_ylabel('Z coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
-        >>>     ax.set_aspect('equal')
         >>>     ax.set_title(title)
         >>> plt.tight_layout()
         >>> plt.show()
@@ -1338,13 +1335,13 @@ class HarmonicPlaneWave(BaseFDEM):
         Now we create a set of gridded locations and compute the magnetic flux density.
 
         >>> x = np.linspace(-1, 1, 20)
-        >>> z = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
         >>> bx, by, bz = simulation.magnetic_flux_density(xyz)
 
-        Finally, we plot the x-oriented magnetic flux density.
+        Finally, we plot the real and imaginary parts of the x-oriented magnetic flux density.
 
-        >>> fig, axs = plt.subplots(1, 2, figsize=(18,12))
+        >>> fig, axs = plt.subplots(2, 1, figsize=(14, 12))
         >>> titles = ['Real Part', 'Imaginary Part']
         >>> for ax, V, title in zip(axs.flatten(), [np.real(by).reshape(20, 20), np.imag(by).reshape(20, 20)], titles):
         >>>     im = ax.pcolor(x, z, V, shading='auto')
@@ -1354,7 +1351,6 @@ class HarmonicPlaneWave(BaseFDEM):
         >>>     cb.set_label(label= 'Magnetic Flux Density (T)')
         >>>     ax.set_ylabel('Z coordinate ($m$)')
         >>>     ax.set_xlabel('X coordinate ($m$)')
-        >>>     ax.set_aspect('equal')
         >>>     ax.set_title(title)
         >>> plt.tight_layout()
         >>> plt.show()

@@ -789,7 +789,7 @@ class TransientPlaneWave(BaseTDEM):
         Now we create a set of gridded locations and compute the electric field.
 
         >>> x = np.linspace(-1, 1, 20)
-        >>> z = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
         >>> ex, ey, ez = simulation.electric_field(xyz)
 
@@ -857,7 +857,7 @@ class TransientPlaneWave(BaseTDEM):
         Now we create a set of gridded locations and compute the electric field.
 
         >>> x = np.linspace(-1, 1, 20)
-        >>> z = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
         >>> jx, jy, jz = simulation.current_density(xyz)
 
@@ -919,7 +919,7 @@ class TransientPlaneWave(BaseTDEM):
         Now we create a set of gridded locations and compute the electric field.
 
         >>> x = np.linspace(-1, 1, 20)
-        >>> z = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
         >>> hx, hy, hz = simulation.magnetic_field(xyz)
 
@@ -987,7 +987,7 @@ class TransientPlaneWave(BaseTDEM):
         Now we create a set of gridded locations and compute the magnetic flux density.
 
         >>> x = np.linspace(-1, 1, 20)
-        >>> z = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
         >>> bx, by, bz = simulation.magnetic_flux_density(xyz)
 
