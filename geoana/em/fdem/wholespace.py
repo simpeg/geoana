@@ -1,6 +1,7 @@
 import numpy as np
 from geoana.em.fdem.base import BaseFDEM
 from geoana.spatial import repeat_scalar
+from geoana.utils import check_xyz_dim
 from geoana.em.base import BaseElectricDipole, BaseMagneticDipole
 
 
@@ -987,6 +988,7 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 class HarmonicPlaneWave(BaseFDEM):
     """
     Class for simulating the fields and densities for a harmonic planewave in a wholespace.
+    The direction of propogation is assumed to be vertically downwards.
 
     Parameters
     ----------
@@ -1077,12 +1079,12 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (3, ) numpy.array of complex
+        (n_f, ..., 3) numpy.array of complex
             Electric field at all frequencies for the gridded
             locations provided.
 
@@ -1110,7 +1112,10 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> x = np.linspace(-1, 1, 20)
         >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
-        >>> ex, ey, ez = simulation.electric_field(xyz)
+        >>> e_vec = simulation.electric_field(xyz)
+        >>> ex = e_vec[..., 0]
+        >>> ey = e_vec[..., 1]
+        >>> ez = e_vec[..., 2]
 
         Finally, we plot the real and imaginary parts of the x-oriented electric field.
 
@@ -1128,24 +1133,16 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.tight_layout()
         >>> plt.show()
         """
+        xyz = check_xyz_dim(xyz)
 
         k = self.wavenumber
         e0 = self.amplitude
 
-        z = xyz[:, 2]
-        kz = np.outer(z, k)
+        z = xyz[..., 2]
+        kz = np.outer(k, z).reshape((len(k), *z.shape))
         ikz = 1j * kz
 
-        if np.all(self.orientation == np.r_[1., 0., 0.]):
-            ex = e0 * np.exp(ikz)
-            ey = np.zeros_like(z)
-            ez = np.zeros_like(z)
-            return ex, ey, ez
-        elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            ex = np.zeros_like(z)
-            ey = e0 * np.exp(ikz)
-            ez = np.zeros_like(z)
-            return ex, ey, ez
+        return e0 * self.orientation * np.exp(ikz)[..., None]
 
     def current_density(self, xyz):
         r"""Current density for the harmonic planewave at a set of gridded locations.
@@ -1157,7 +1154,7 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Returns
         -------
-        (3, ) numpy.array of complex
+        (n_f, ..., 3) numpy.array of complex
             Current density at all frequencies for the gridded
             locations provided.
 
@@ -1185,7 +1182,10 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> x = np.linspace(-1, 1, 20)
         >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
-        >>> jx, jy, jz = simulation.current_density(xyz)
+        >>> j_vec = simulation.current_density(xyz)
+        >>> jx = j_vec[..., 0]
+        >>> jy = j_vec[..., 1]
+        >>> jz = j_vec[..., 2]
 
         Finally, we plot the real and imaginary parts of the x-oriented current density.
 
@@ -1203,17 +1203,10 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.tight_layout()
         >>> plt.show()
         """
-
-        if np.all(self.orientation == np.r_[1., 0., 0.]):
-            jx = self.sigma * self.electric_field(xyz)[0]
-            jy = self.sigma * self.electric_field(xyz)[1]
-            jz = self.sigma * self.electric_field(xyz)[2]
-            return jx, jy, jz
-        elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            jx = self.sigma * self.electric_field(xyz)[0]
-            jy = self.sigma * self.electric_field(xyz)[1]
-            jz = self.sigma * self.electric_field(xyz)[2]
-            return jx, jy, jz
+        e_vec = self.electric_field(xyz)
+        sigma = self.sigma
+        for i in range(1, e_vec.ndim): sigma = sigma[..., None]
+        return sigma * e_vec
 
     def magnetic_field(self, xyz):
         r"""Magnetic field for the harmonic planewave at a set of gridded locations.
@@ -1228,12 +1221,12 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (3, ) numpy.array of complex
+        (n_f, ..., 3) numpy.array of complex
             Magnetic field at all frequencies for the gridded
             locations provided.
 
@@ -1261,7 +1254,10 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> x = np.linspace(-1, 1, 20)
         >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
-        >>> hx, hy, hz = simulation.magnetic_field(xyz)
+        >>> h_vec = simulation.magnetic_field(xyz)
+        >>> hx = h_vec[..., 0]
+        >>> hy = h_vec[..., 1]
+        >>> hz = h_vec[..., 2]
 
         Finally, we plot the real and imaginary parts of the x-oriented magnetic field.
 
@@ -1279,37 +1275,22 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.tight_layout()
         >>> plt.show()
         """
-
-        k = self.wavenumber
-        e0 = self.amplitude
-
-        z = xyz[:, 2]
-        kz = np.outer(z, k)
-        ikz = 1j * kz
-        Z = self.omega * self.mu / k
-
-        if np.all(self.orientation == np.r_[1., 0., 0.]):
-            hx = np.zeros_like(z)
-            hy = e0 / Z * np.exp(ikz)
-            hz = np.zeros_like(z)
-            return hx, hy, hz
-        elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            hx = e0 / Z * np.exp(ikz)
-            hy = np.zeros_like(z)
-            hz = np.zeros_like(z)
-            return hx, hy, hz
+        b_vec = self.magnetic_flux_density(xyz)
+        mu = self.mu
+        for i in range(1, b_vec.ndim): mu = mu[..., None]
+        return b_vec / mu
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the harmonic planewave at a set of gridded locations.
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (3, ) numpy.array of complex
+        (n_f, ..., 3) numpy.array of complex
             Magnetic flux density at all frequencies for the gridded
             locations provided.
 
@@ -1337,7 +1318,10 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> x = np.linspace(-1, 1, 20)
         >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
-        >>> bx, by, bz = simulation.magnetic_flux_density(xyz)
+        >>> b_vec = simulation.magnetic_flux_density(xyz)
+        >>> bx = b_vec[..., 0]
+        >>> by = b_vec[..., 1]
+        >>> bz = b_vec[..., 2]
 
         Finally, we plot the real and imaginary parts of the x-oriented magnetic flux density.
 
@@ -1355,22 +1339,25 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.tight_layout()
         >>> plt.show()
         """
+        xyz = check_xyz_dim(xyz)
 
-        if np.all(self.orientation == np.r_[1., 0., 0.]):
-            bx = self.mu * self.magnetic_field(xyz)[0]
-            by = self.mu * self.magnetic_field(xyz)[1]
-            bz = self.mu * self.magnetic_field(xyz)[2]
-            return bx, by, bz
-        elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            bx = self.mu * self.magnetic_field(xyz)[0]
-            by = self.mu * self.magnetic_field(xyz)[1]
-            bz = self.mu * self.magnetic_field(xyz)[2]
-            return bx, by, bz
+        k = self.wavenumber
+        omega = self.omega
+        e0 = self.amplitude
 
+        z = xyz[..., 2]
+        for i in range(z.ndim):
+            k = k[..., None]
+            omega = omega[..., None]
+        kz = k * z
+        ikz = 1j * kz
 
+        # e = e0 * np.exp(ikz)[..., None]
+        # Curl E = - i * omega * B
+        # b = i / omega * d_z * e
+        b = - e0 * k / omega * np.exp(ikz)
 
-
-
-
-
-
+        # b direction is perpendicular to the E orientation and the
+        # direction of wave travel.
+        b_dir = np.cross([0, 0, -1], self.orientation)
+        return b_dir * b[..., None]

@@ -2,6 +2,7 @@ from scipy.special import erf
 import numpy as np
 from geoana.em.tdem.base import BaseTDEM
 from geoana.spatial import repeat_scalar
+from geoana.utils import check_xyz_dim
 from geoana.em.base import BaseElectricDipole
 
 ###############################################################################
@@ -676,6 +677,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 class TransientPlaneWave(BaseTDEM):
     """
     Class for simulating the fields for a transient planewave in a wholespace.
+    The wave is assumed to be propogating vertically downward.
 
     Parameters
     ----------
@@ -758,12 +760,12 @@ class TransientPlaneWave(BaseTDEM):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (3, ) numpy.array of complex
+        (n_t, ..., 3) numpy.array of float
             Electric field at all frequencies for the gridded
             locations provided.
 
@@ -791,7 +793,8 @@ class TransientPlaneWave(BaseTDEM):
         >>> x = np.linspace(-1, 1, 20)
         >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
-        >>> ex, ey, ez = simulation.electric_field(xyz)
+        >>> e_vec = simulation.electric_field(xyz)
+        >>> ex = e_vec[..., 0]
 
         Finally, we plot the x-oriented electric field.
 
@@ -803,35 +806,31 @@ class TransientPlaneWave(BaseTDEM):
         >>> plt.title('Electric Field of a Transient Planewave in the x-direction in a Wholespace')
         >>> plt.show()
         """
-
+        xyz = check_xyz_dim(xyz)
         e0 = self.amplitude
 
-        z = xyz[:, 2]
-        bunja = -e0 * (self.mu * self.sigma) ** 0.5 * z * np.exp(-(self.mu * self.sigma * z ** 2) / (4 * self.time))
-        bunmo = 2 * np.pi ** 0.5 * self.time ** 1.5
+        z = xyz[..., 2]
+        t = self.time
+        for i in range(z.ndim): t = t[..., None]
+        mu = self.mu
+        sigma = self.sigma
 
-        if np.all(self.orientation == np.r_[1., 0., 0.]):
-            ex = bunja / bunmo
-            ey = np.zeros_like(z)
-            ez = np.zeros_like(z)
-            return ex, ey, ez
-        elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            ex = np.zeros_like(z)
-            ey = bunja / bunmo
-            ez = np.zeros_like(z)
-            return ex, ey, ez
+        bunja = -e0 * (mu * sigma) ** 0.5 * z * np.exp(-(mu * sigma * z ** 2) / (4 * t))
+        bunmo = 2 * np.pi ** 0.5 * t ** 1.5
+        
+        return self.orientation * (bunja / bunmo)[..., None]
 
     def current_density(self, xyz):
         r"""Current density for the transient planewave at a set of gridded locations.
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (3, ) numpy.array of complex
+        (n_t, ..., 3) numpy.array of float
             Current density at all frequencies for the gridded
             locations provided.
 
@@ -859,7 +858,8 @@ class TransientPlaneWave(BaseTDEM):
         >>> x = np.linspace(-1, 1, 20)
         >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
-        >>> jx, jy, jz = simulation.current_density(xyz)
+        >>> j_vec = simulation.current_density(xyz)
+        >>> jx = j_vec[..., 0]
 
         Finally, we plot the x-oriented current density.
 
@@ -871,29 +871,19 @@ class TransientPlaneWave(BaseTDEM):
         >>> plt.title('Current Density of a Transient Planewave in the x-direction in a Wholespace')
         >>> plt.show()
         """
-
-        if np.all(self.orientation == np.r_[1., 0., 0.]):
-            jx = self.sigma * self.electric_field(xyz)[0]
-            jy = self.sigma * self.electric_field(xyz)[1]
-            jz = self.sigma * self.electric_field(xyz)[2]
-            return jx, jy, jz
-        elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            jx = self.sigma * self.electric_field(xyz)[0]
-            jy = self.sigma * self.electric_field(xyz)[1]
-            jz = self.sigma * self.electric_field(xyz)[2]
-            return jx, jy, jz
+        return self.sigma * self.electric_field(xyz)
 
     def magnetic_field(self, xyz):
         r"""Magnetic field for the harmonic planewave at a set of gridded locations.
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (...,, 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (3, ) numpy.array of complex
+        (n_t, ..., 3) numpy.array of float
             Magnetic field at all frequencies for the gridded
             locations provided.
 
@@ -921,7 +911,8 @@ class TransientPlaneWave(BaseTDEM):
         >>> x = np.linspace(-1, 1, 20)
         >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
-        >>> hx, hy, hz = simulation.magnetic_field(xyz)
+        >>> h_vec = simulation.magnetic_field(xyz)
+        >>> hy = h_vec[..., 1]
 
         Finally, we plot the x-oriented magnetic field.
 
@@ -933,35 +924,19 @@ class TransientPlaneWave(BaseTDEM):
         >>> plt.title('Magnetic Field of a Transient Planewave in the x-direction in a Wholespace')
         >>> plt.show()
         """
-
-        e0 = self.amplitude
-
-        z = xyz[:, 2]
-
-        if np.all(self.orientation == np.r_[1., 0., 0.]):
-            hx = np.zeros_like(z)
-            hy = (e0 * np.sqrt(self.sigma / (np.pi * self.mu * self.time)) *
-                  np.exp(-(self.mu * self.sigma * z ** 2) / (4 * self.time)))
-            hz = np.zeros_like(z)
-            return hx, hy, hz
-        elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            hx = (e0 * np.sqrt(self.sigma / (np.pi * self.mu * self.time)) *
-                  np.exp(-(self.mu * self.sigma * z ** 2) / (4 * self.time)))
-            hy = np.zeros_like(z)
-            hz = np.zeros_like(z)
-            return hx, hy, hz
+        return self.magnetic_flux_density(xyz) / self.mu
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the transient planewave at a set of gridded locations.
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (3, ) numpy.array of complex
+        (n_t, ..., 3) numpy.array of float
             Magnetic flux density at all frequencies for the gridded
             locations provided.
 
@@ -989,7 +964,8 @@ class TransientPlaneWave(BaseTDEM):
         >>> x = np.linspace(-1, 1, 20)
         >>> z = np.linspace(-1000, 0, 20)
         >>> xyz = ndgrid(x, np.array([0]), z)
-        >>> bx, by, bz = simulation.magnetic_flux_density(xyz)
+        >>> b_vec = simulation.magnetic_flux_density(xyz)
+        >>> by = b_vec[..., 1]
 
         Finally, we plot the x-oriented magnetic flux density.
 
@@ -1001,15 +977,19 @@ class TransientPlaneWave(BaseTDEM):
         >>> plt.title('Magnetic Flux Density of a Transient Planewave in the x-direction in a Wholespace')
         >>> plt.show()
         """
+        xyz = check_xyz_dim(xyz)
 
-        if np.all(self.orientation == np.r_[1., 0., 0.]):
-            bx = self.mu * self.magnetic_field(xyz)[0]
-            by = self.mu * self.magnetic_field(xyz)[1]
-            bz = self.mu * self.magnetic_field(xyz)[2]
-            return bx, by, bz
-        elif np.all(self.orientation == np.r_[0., 1., 0.]):
-            bx = self.mu * self.magnetic_field(xyz)[0]
-            by = self.mu * self.magnetic_field(xyz)[1]
-            bz = self.mu * self.magnetic_field(xyz)[2]
-            return bx, by, bz
+        e0 = self.amplitude
 
+        z = xyz[..., 2]
+        t = self.times
+        for i in range(z.ndim): t = t[..., None]
+        mu = self.mu
+        sigma = self.sigma
+
+        # Curl E = -dB/dt
+        b_amp = - e0 * np.sqrt(sigma * mu / (np.pi * t)) * np.exp((-mu * sigma * z ** 2)/(4 * t))
+        
+        b_dir = np.cross([0, 0, -1], self.orientation)
+
+        return b_dir * b_amp[..., None]
