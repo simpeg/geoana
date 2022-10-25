@@ -21,7 +21,7 @@ static void double_prism_f(char **args, const npy_intp *dimensions,
     npy_intp inx_step = steps[0], iny_step = steps[1], inz_step = steps[2];
     npy_intp out_step = steps[3];
 
-    double x, y, z, v, r;
+    double x, y, z, v, r, temp;
 
     for (i = 0; i < n; i++) {
         /* BEGIN main ufunc computation */
@@ -32,19 +32,31 @@ static void double_prism_f(char **args, const npy_intp *dimensions,
         r = sqrt(x * x + y * y + z * z);
         if (x != 0.0){
             if (y != 0.0){
-                v -= x * y * log(z + r);
+                temp = z + r;
+                // check if x & y were small relative to -z
+                if (temp > 0){
+                    v -= x * y * log(temp);
+                }
             }
             v += 0.5 * x * x * atan( y * z / (x * r));
         }
         if (y != 0.0){
             if (z != 0.0){
-                v -= y *z * log(x + r);
+                temp = x + r;
+                // check if y & z were small relative to -x
+                if (temp > 0){
+                    v -= y *z * log(temp);
+                }
             }
             v += 0.5 * y * y * atan(z * x / (y * r));
         }
         if (z != 0.0){
             if (x != 0.0){
-                v -= z * x * log(y + r);
+                temp = y + r;
+                // check if x & z were small relative to -y
+                if (temp > 0){
+                    v -= z * x * log(temp);
+                }
             }
             v += 0.5 * z * z * atan(x * y / (z * r));
         }
@@ -71,7 +83,7 @@ static void double_prism_fz(char **args, const npy_intp *dimensions,
     npy_intp inx_step = steps[0], iny_step = steps[1], inz_step = steps[2];
     npy_intp out_step = steps[3];
 
-    double x, y, z, v, r;
+    double x, y, z, v, r, temp;
 
     for (i = 0; i < n; i++) {
         /* BEGIN main ufunc computation */
@@ -81,10 +93,18 @@ static void double_prism_fz(char **args, const npy_intp *dimensions,
         v = 0.0;
         r = sqrt(x * x + y * y + z * z);
         if (x != 0.0){
-            v += x * log(y + r);
+            temp = y + r;
+            // check if x & z were small relative to -y
+            if (temp > 0.0){
+                v += x * log(temp);
+            }
         }
         if (y != 0.0){
-            v += y * log(x + r);
+            temp = x + r;
+            // check if y & z were small relative to -x
+            if (temp > 0.0){
+                v += y * log(temp);
+            }
         }
         if (z != 0.0){
             v -= z * atan(x * y / (z * r));

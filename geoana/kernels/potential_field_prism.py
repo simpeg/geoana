@@ -23,14 +23,17 @@ def _prism_f(x, y, z):
     nz_y = y != 0.0
     nz_z = z != 0.0
 
-    nz = nz_x & nz_y
-    out[nz] -= x[nz] * y[nz] * np.log(z[nz] + r[nz])
+    temp = z + r
+    nz = nz_x & nz_y & (temp > 0.0)
+    out[nz] -= x[nz] * y[nz] * np.log(temp[nz])
 
-    nz = nz_y & nz_z
-    out[nz] -= y[nz] * z[nz] * np.log(x[nz] + r[nz])
+    temp = x + r
+    nz = nz_y & nz_z & (temp > 0.0)
+    out[nz] -= y[nz] * z[nz] * np.log(temp[nz])
 
-    nz = nz_x & nz_z
-    out[nz] -= x[nz] * z[nz] * np.log(y[nz] + r[nz])
+    temp = y + r
+    nz = nz_x & nz_z & (temp > 0.0)
+    out[nz] -= x[nz] * z[nz] * np.log(temp[nz])
 
     out[nz_x] += 0.5 * x[nz_x] * x[nz_x] * np.arctan(y[nz_x] * z[nz_x] / (x[nz_x] * r[nz_x]))
     out[nz_y] += 0.5 * y[nz_y] * y[nz_y] * np.arctan(x[nz_y] * z[nz_y] / (y[nz_y] * r[nz_y]))
@@ -60,11 +63,13 @@ def _prism_fz(x, y, z):
     r = np.sqrt(x * x + y * y + z * z)
     out = np.zeros_like(r)
 
-    nz = x != 0.0
-    out[nz] += x[nz] * np.log(y[nz] + r[nz])
+    temp = y + r
+    nz = (x != 0.0) & (temp > 0)
+    out[nz] += x[nz] * np.log(temp[nz])
 
-    nz = y != 0.0
-    out[nz] += y[nz] * np.log(x[nz] + r[nz])
+    temp = x + r
+    nz = (y != 0.0) & (temp > 0)
+    out[nz] += y[nz] * np.log(temp[nz])
 
     nz = z != 0.0
     out[nz] -= z[nz] * np.arctan(x[nz]*y[nz]/(z[nz]*r[nz]))
