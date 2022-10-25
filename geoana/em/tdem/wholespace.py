@@ -811,13 +811,14 @@ class TransientPlaneWave(BaseTDEM):
 
         z = xyz[..., 2]
         t = self.time
-        for i in range(z.ndim): t = t[..., None]
+        for i in range(z.ndim):
+            t = t[..., None]
         mu = self.mu
         sigma = self.sigma
 
         bunja = -e0 * (mu * sigma) ** 0.5 * z * np.exp(-(mu * sigma * z ** 2) / (4 * t))
         bunmo = 2 * np.pi ** 0.5 * t ** 1.5
-        
+
         return self.orientation * (bunja / bunmo)[..., None]
 
     def current_density(self, xyz):
@@ -982,14 +983,16 @@ class TransientPlaneWave(BaseTDEM):
         e0 = self.amplitude
 
         z = xyz[..., 2]
-        t = self.times
-        for i in range(z.ndim): t = t[..., None]
+        t = self.time
+        for i in range(z.ndim):
+            t = t[..., None]
         mu = self.mu
         sigma = self.sigma
 
         # Curl E = -dB/dt
         b_amp = - e0 * np.sqrt(sigma * mu / (np.pi * t)) * np.exp((-mu * sigma * z ** 2)/(4 * t))
-        
-        b_dir = np.cross([0, 0, -1], self.orientation)
+
+        # account for the orientation in the cross product
+        b_dir = np.cross(self.orientation, [0, 0, 1])
 
         return b_dir * b_amp[..., None]

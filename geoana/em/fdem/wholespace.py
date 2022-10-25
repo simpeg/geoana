@@ -1139,7 +1139,9 @@ class HarmonicPlaneWave(BaseFDEM):
         e0 = self.amplitude
 
         z = xyz[..., 2]
-        kz = np.outer(k, z).reshape((len(k), *z.shape))
+        for i in range(z.ndim):
+            k = k[..., None]
+        kz = k * z
         ikz = 1j * kz
 
         return e0 * self.orientation * np.exp(ikz)[..., None]
@@ -1203,10 +1205,7 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.tight_layout()
         >>> plt.show()
         """
-        e_vec = self.electric_field(xyz)
-        sigma = self.sigma
-        for i in range(1, e_vec.ndim): sigma = sigma[..., None]
-        return sigma * e_vec
+        return self.sigma * self.electric_field(xyz)
 
     def magnetic_field(self, xyz):
         r"""Magnetic field for the harmonic planewave at a set of gridded locations.
@@ -1275,10 +1274,7 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.tight_layout()
         >>> plt.show()
         """
-        b_vec = self.magnetic_flux_density(xyz)
-        mu = self.mu
-        for i in range(1, b_vec.ndim): mu = mu[..., None]
-        return b_vec / mu
+        return self.magnetic_flux_density(xyz) / self.mu
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the harmonic planewave at a set of gridded locations.
@@ -1357,7 +1353,6 @@ class HarmonicPlaneWave(BaseFDEM):
         # b = i / omega * d_z * e
         b = - e0 * k / omega * np.exp(ikz)
 
-        # b direction is perpendicular to the E orientation and the
-        # direction of wave travel.
-        b_dir = np.cross([0, 0, -1], self.orientation)
+        # account for the orientation in the cross product
+        b_dir = np.cross(self.orientation, [0, 0, 1])
         return b_dir * b[..., None]
