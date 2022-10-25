@@ -118,7 +118,7 @@ def test_magnetic_field():
     xyz = discretize.utils.ndgrid([x, y, z])
     z = xyz[:, 2]
 
-    hy = (np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
+    hy = -(np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
     hx = np.zeros_like(hy)
     hz = np.zeros_like(hy)
 
@@ -131,7 +131,7 @@ def test_magnetic_field():
     # test y orientation
     tpw.orientation = 'Y'
 
-    hx = -(np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
+    hx = (np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
     hy = np.zeros_like(hx)
     hz = np.zeros_like(hx)
 
@@ -153,7 +153,7 @@ def test_magnetic_flux_density():
     xyz = discretize.utils.ndgrid([x, y, z])
     z = xyz[:, 2]
 
-    by = mu_0 * (np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
+    by = -mu_0 * (np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
     bx = np.zeros_like(by)
     bz = np.zeros_like(by)
 
@@ -166,7 +166,7 @@ def test_magnetic_flux_density():
     # test y orientation
     tpw.orientation = 'Y'
 
-    bx = -mu_0 * (np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
+    bx = mu_0 * (np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
     by = np.zeros_like(bx)
     bz = np.zeros_like(bx)
 
@@ -175,3 +175,26 @@ def test_magnetic_flux_density():
     np.testing.assert_allclose(bx, b_vec[..., 0], rtol=1E-15)
     np.testing.assert_equal(by, b_vec[..., 1])
     np.testing.assert_equal(bz, b_vec[..., 2])
+
+
+def test_prop_direction():
+    tpw = tdem.TransientPlaneWave(sigma=1.0, time=1.0)
+    loc = [0, 0, -10]
+
+    tpw.orientation = "x"
+
+    e_vec = tpw.electric_field(loc).squeeze()
+    b_vec = tpw.magnetic_flux_density(loc).squeeze()
+
+    prop_dir = np.cross(e_vec, b_vec)
+    prop_dir /= np.linalg.norm(prop_dir)
+    np.testing.assert_allclose(prop_dir, [0, 0, -1])
+
+    tpw.orientation = "y"
+
+    e_vec = tpw.electric_field(loc).squeeze()
+    b_vec = tpw.magnetic_flux_density(loc).squeeze()
+
+    prop_dir = np.cross(e_vec, b_vec)
+    prop_dir /= np.linalg.norm(prop_dir)
+    np.testing.assert_allclose(prop_dir, [0, 0, -1])

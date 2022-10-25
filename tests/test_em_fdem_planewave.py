@@ -138,7 +138,7 @@ def test_magnetic_field():
     Z = w * mu_0 / k
 
     hx = np.zeros_like(z)
-    hy = 1 / Z * np.exp(ikz)
+    hy = -1 / Z * np.exp(ikz)
     hz = np.zeros_like(z)
 
     h_vec = hpw.magnetic_field(xyz)[0]
@@ -150,7 +150,7 @@ def test_magnetic_field():
     # test y orientation
     hpw.orientation = 'Y'
 
-    hx = - 1 / Z * np.exp(ikz)
+    hx = 1 / Z * np.exp(ikz)
     hy = np.zeros_like(z)
     hz = np.zeros_like(z)
 
@@ -179,7 +179,7 @@ def test_magnetic_flux_density():
     Z = w / k
 
     bx = np.zeros_like(z)
-    by = 1 / Z * np.exp(ikz)
+    by = -1 / Z * np.exp(ikz)
     bz = np.zeros_like(z)
 
     b_vec = hpw.magnetic_flux_density(xyz)[0]
@@ -191,7 +191,7 @@ def test_magnetic_flux_density():
     # test y orientation
     hpw.orientation = 'Y'
 
-    bx = -1 / Z * np.exp(ikz)
+    bx = 1 / Z * np.exp(ikz)
     by = np.zeros_like(z)
     bz = np.zeros_like(z)
 

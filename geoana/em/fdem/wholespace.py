@@ -1354,5 +1354,6 @@ class HarmonicPlaneWave(BaseFDEM):
         b = - e0 * k / omega * np.exp(ikz)
 
         # account for the orientation in the cross product
-        b_dir = np.cross(self.orientation, [0, 0, 1])
+        # take cross product with the propagation direction
+        b_dir = np.cross(self.orientation, [0, 0, -1])
         return b_dir * b[..., None]

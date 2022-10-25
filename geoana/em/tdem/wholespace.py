@@ -993,6 +993,7 @@ class TransientPlaneWave(BaseTDEM):
         b_amp = - e0 * np.sqrt(sigma * mu / (np.pi * t)) * np.exp((-mu * sigma * z ** 2)/(4 * t))
 
         # account for the orientation in the cross product
-        b_dir = np.cross(self.orientation, [0, 0, 1])
+        # take cross product with the propagation direction
+        b_dir = np.cross(self.orientation, [0, 0, -1])
 
         return b_dir * b_amp[..., None]
