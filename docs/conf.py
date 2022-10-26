@@ -88,9 +88,9 @@ author = u'SimPEG Team'
 # built documents.
 #
 # The short X.Y version.
-version = u'0.3.0'
+version = u'0.4.0'
 # The full version, including alpha/beta/rc tags.
-release = u'0.3.0'
+release = u'0.4.0'
 
 linkcheck_retries = 3
 linkcheck_timeout = 500
