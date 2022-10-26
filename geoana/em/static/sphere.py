@@ -190,7 +190,7 @@ class ElectrostaticSphere:
         >>>     location=None, sigma_sphere=sigma_sphere, sigma_background=sigma_background, radius=radius, primary_field=None
         >>> )
 
-        Now we create a set of gridded locations and compute the magnetic potential.
+        Now we create a set of gridded locations and compute the electric potentials.
 
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25
@@ -689,7 +689,7 @@ class MagnetostaticSphere:
         >>>     location=None, mu_sphere=mu_sphere, mu_background=mu_background, radius=radius, primary_field=None
         >>> )
 
-        Now we create a set of gridded locations and compute the magnetic potential.
+        Now we create a set of gridded locations and compute the magnetic potentials.
 
         >>> X, Y = np.meshgrid(np.linspace(-2*radius, 2*radius, 20), np.linspace(-2*radius, 2*radius, 20))
         >>> Z = np.zeros_like(X) + 0.25

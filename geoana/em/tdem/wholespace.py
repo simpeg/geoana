@@ -2,6 +2,7 @@ from scipy.special import erf
 import numpy as np
 from geoana.em.tdem.base import BaseTDEM
 from geoana.spatial import repeat_scalar
+from geoana.utils import check_xyz_dim
 from geoana.em.base import BaseElectricDipole
 
 ###############################################################################
@@ -671,3 +672,328 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         """
 
         return self.mu * self.magnetic_field_time_deriv(xyz)
+
+
+class TransientPlaneWave(BaseTDEM):
+    """
+    Class for simulating the fields for a transient planewave in a wholespace.
+    The wave is assumed to be propogating vertically downward.
+
+    Parameters
+    ----------
+    amplitude : float
+        amplitude of primary electric field.  Default is 1
+    orientation : (3) array_like or {'X','Y'}
+        Orientation of the planewave. Can be defined using as an ``array_like`` of length 3,
+        or by using one of {'X','Y'} to define a planewave along the x or y direction.
+        Default is 'X'.
+    """
+
+    def __init__(
+        self, amplitude=1.0, orientation='X', **kwargs
+    ):
+
+        self.amplitude = amplitude
+        self.orientation = orientation
+        super().__init__(**kwargs)
+
+    @property
+    def amplitude(self):
+        """Amplitude of the primary field.
+
+        Returns
+        -------
+        float
+            Amplitude of the primary field. Default = 1
+        """
+        return self._amplitude
+
+    @amplitude.setter
+    def amplitude(self, item):
+
+        item = float(item)
+        self._amplitude = item
+
+    @property
+    def orientation(self):
+        """Orientation of the planewave as a normalized vector
+
+        Returns
+        -------
+        (3) numpy.ndarray of float or str in {'X','Y'}
+            planewave orientation, normalized to unit magnitude
+        """
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, var):
+
+        if isinstance(var, str):
+            if var.upper() == 'X':
+                var = np.r_[1., 0., 0.]
+            elif var.upper() == 'Y':
+                var = np.r_[0., 1., 0.]
+        else:
+            try:
+                var = np.asarray(var, dtype=float)
+            except:
+                raise TypeError(
+                    f"orientation must be str or array_like, got {type(var)}"
+                )
+            var = np.squeeze(var)
+            if var.shape != (3,):
+                raise ValueError(
+                    f"orientation must be array_like with shape (3,), got {len(var)}"
+                )
+            if var[2] != 0:
+                raise ValueError(
+                    f"z axis of orientation must be 0 in order to stay in the xy-plane, got {var[2]}"
+                )
+
+            # Normalize the orientation
+            var /= np.linalg.norm(var)
+
+        self._orientation = var
+
+    def electric_field(self, xyz):
+        r"""Electric field for the transient planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (n_t, ..., 3) numpy.array of float
+            Electric field at all frequencies for the gridded
+            locations provided.
+
+        Examples
+        --------
+        Here, we define a transient planewave in the x-direction in a wholespace.
+
+        >>> from geoana.em.tdem import TransientPlaneWave
+        >>> import numpy as np
+        >>> from geoana.utils import ndgrid
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the transient planewave in the x-direction.
+
+        >>> time = 1.0
+        >>> orientation = 'X'
+        >>> sigma = 1.0
+        >>> simulation = TransientPlaneWave(
+        >>>     time=time, orientation=orientation, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the electric field.
+
+        >>> x = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
+        >>> xyz = ndgrid(x, np.array([0]), z)
+        >>> e_vec = simulation.electric_field(xyz)
+        >>> ex = e_vec[..., 0]
+
+        Finally, we plot the x-oriented electric field.
+
+        >>> plt.pcolor(x, z, ex.reshape(20, 20), shading='auto')
+        >>> cb = plt.colorbar()
+        >>> cb.set_label(label= 'Electric Field ($V/m$)')
+        >>> plt.ylabel('Z coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Electric Field of a Transient Planewave in the x-direction in a Wholespace')
+        >>> plt.show()
+        """
+        xyz = check_xyz_dim(xyz)
+        e0 = self.amplitude
+
+        z = xyz[..., 2]
+        t = self.time
+        for i in range(z.ndim):
+            t = t[..., None]
+        mu = self.mu
+        sigma = self.sigma
+
+        bunja = -e0 * (mu * sigma) ** 0.5 * z * np.exp(-(mu * sigma * z ** 2) / (4 * t))
+        bunmo = 2 * np.pi ** 0.5 * t ** 1.5
+
+        return self.orientation * (bunja / bunmo)[..., None]
+
+    def current_density(self, xyz):
+        r"""Current density for the transient planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (n_t, ..., 3) numpy.array of float
+            Current density at all frequencies for the gridded
+            locations provided.
+
+        Examples
+        --------
+        Here, we define a transient planewave in the x-direction in a wholespace.
+
+        >>> from geoana.em.tdem import TransientPlaneWave
+        >>> import numpy as np
+        >>> from geoana.utils import ndgrid
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the transient planewave in the x-direction.
+
+        >>> time = 1.0
+        >>> orientation = 'X'
+        >>> sigma = 1.0
+        >>> simulation = TransientPlaneWave(
+        >>>     time=time, orientation=orientation, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the electric field.
+
+        >>> x = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
+        >>> xyz = ndgrid(x, np.array([0]), z)
+        >>> j_vec = simulation.current_density(xyz)
+        >>> jx = j_vec[..., 0]
+
+        Finally, we plot the x-oriented current density.
+
+        >>> plt.pcolor(x, z, jx.reshape(20, 20), shading='auto')
+        >>> cb = plt.colorbar()
+        >>> cb.set_label(label= 'Current Density ($A/m^2$)')
+        >>> plt.ylabel('Z coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Current Density of a Transient Planewave in the x-direction in a Wholespace')
+        >>> plt.show()
+        """
+        return self.sigma * self.electric_field(xyz)
+
+    def magnetic_field(self, xyz):
+        r"""Magnetic field for the harmonic planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (...,, 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (n_t, ..., 3) numpy.array of float
+            Magnetic field at all frequencies for the gridded
+            locations provided.
+
+        Examples
+        --------
+        Here, we define a transient planewave in the x-direction in a wholespace.
+
+        >>> from geoana.em.tdem import TransientPlaneWave
+        >>> import numpy as np
+        >>> from geoana.utils import ndgrid
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the transient planewave in the x-direction.
+
+        >>> time = 1.0
+        >>> orientation = 'X'
+        >>> sigma = 1.0
+        >>> simulation = TransientPlaneWave(
+        >>>     time=time, orientation=orientation, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the electric field.
+
+        >>> x = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
+        >>> xyz = ndgrid(x, np.array([0]), z)
+        >>> h_vec = simulation.magnetic_field(xyz)
+        >>> hy = h_vec[..., 1]
+
+        Finally, we plot the x-oriented magnetic field.
+
+        >>> plt.pcolor(x, z, hy.reshape(20, 20), shading='auto')
+        >>> cb = plt.colorbar()
+        >>> cb.set_label(label= 'Magnetic Field ($A/m$)')
+        >>> plt.ylabel('Z coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Magnetic Field of a Transient Planewave in the x-direction in a Wholespace')
+        >>> plt.show()
+        """
+        return self.magnetic_flux_density(xyz) / self.mu
+
+    def magnetic_flux_density(self, xyz):
+        r"""Magnetic flux density for the transient planewave at a set of gridded locations.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Gridded xyz locations
+
+        Returns
+        -------
+        (n_t, ..., 3) numpy.array of float
+            Magnetic flux density at all frequencies for the gridded
+            locations provided.
+
+        Examples
+        --------
+        Here, we define a transient planewave in the x-direction in a wholespace.
+
+        >>> from geoana.em.tdem import TransientPlaneWave
+        >>> import numpy as np
+        >>> from geoana.utils import ndgrid
+        >>> from mpl_toolkits.axes_grid1 import make_axes_locatable
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the transient planewave in the x-direction.
+
+        >>> time = 1.0
+        >>> orientation = 'X'
+        >>> sigma = 1.0
+        >>> simulation = TransientPlaneWave(
+        >>>     time=time, orientation=orientation, sigma=sigma
+        >>> )
+
+        Now we create a set of gridded locations and compute the magnetic flux density.
+
+        >>> x = np.linspace(-1, 1, 20)
+        >>> z = np.linspace(-1000, 0, 20)
+        >>> xyz = ndgrid(x, np.array([0]), z)
+        >>> b_vec = simulation.magnetic_flux_density(xyz)
+        >>> by = b_vec[..., 1]
+
+        Finally, we plot the x-oriented magnetic flux density.
+
+        >>> plt.pcolor(x, z, by.reshape(20, 20), shading='auto')
+        >>> cb = plt.colorbar()
+        >>> cb.set_label(label= 'Magnetic Flux Density (T)')
+        >>> plt.ylabel('Z coordinate ($m$)')
+        >>> plt.xlabel('X coordinate ($m$)')
+        >>> plt.title('Magnetic Flux Density of a Transient Planewave in the x-direction in a Wholespace')
+        >>> plt.show()
+        """
+        xyz = check_xyz_dim(xyz)
+
+        e0 = self.amplitude
+
+        z = xyz[..., 2]
+        t = self.time
+        for i in range(z.ndim):
+            t = t[..., None]
+        mu = self.mu
+        sigma = self.sigma
+
+        # Curl E = -dB/dt
+        b_amp = - e0 * np.sqrt(sigma * mu / (np.pi * t)) * np.exp((-mu * sigma * z ** 2)/(4 * t))
+
+        # account for the orientation in the cross product
+        # take cross product with the propagation direction
+        b_dir = np.cross(self.orientation, [0, 0, -1])
+
+        return b_dir * b_amp[..., None]

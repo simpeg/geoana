@@ -34,7 +34,6 @@ class BaseEM:
         self.epsilon = epsilon
         super().__init__(**kwargs)
 
-
     @property
     def sigma(self):
         """Electrical conductivity in S/m
@@ -107,6 +106,7 @@ class BaseEM:
 
         self._epsilon = value
 
+
 class BaseDipole:
     """Base class for dipoles; namely the location and orientation.
     This class is inherited by both electric current and magnetic dipoles.
@@ -126,7 +126,6 @@ class BaseDipole:
         self.location = location
         self.orientation = orientation
         super().__init__(**kwargs)
-
 
     @property
     def location(self):
@@ -468,7 +467,6 @@ class BaseLineCurrent:
 
         """
         return self.nodes.shape[0] - 1
-
 
     @property
     def current(self):

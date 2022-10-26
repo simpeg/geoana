@@ -17,6 +17,7 @@ commonly used within the code base.
 """
 import numpy as np
 
+
 def mkvc(x, n_dims=1):
     """Creates a vector with specified dimensionality.
 

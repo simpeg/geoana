@@ -17,6 +17,7 @@ Simulation Classes
   MagneticDipoleWholeSpace
   MagneticDipoleHalfSpace
   MagneticDipoleLayeredHalfSpace
+  HarmonicPlaneWave
 
 Utility Functions
 =================
@@ -36,7 +37,7 @@ from geoana.em.fdem.base import (
 )
 
 from geoana.em.fdem.wholespace import (
-    ElectricDipoleWholeSpace, MagneticDipoleWholeSpace
+    ElectricDipoleWholeSpace, MagneticDipoleWholeSpace, HarmonicPlaneWave
 )
 
 from geoana.em.fdem.halfspace import MagneticDipoleHalfSpace
