@@ -101,7 +101,7 @@ class BaseEM:
         except:
             raise TypeError(f"epsilon must be a number, got {type(value)}")
 
-        if value <= 0.0:
+        if value < 0.0:
             raise ValueError("epsilon must be greater than 0")
 
         self._epsilon = value
