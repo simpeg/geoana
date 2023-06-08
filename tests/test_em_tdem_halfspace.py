@@ -10,7 +10,7 @@ def H_from_Vertical(
     XYZ, loc, time, sigma, mu, moment
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec[:, :2], axis=-1)
@@ -39,7 +39,7 @@ def dH_from_Vertical(
     XYZ, loc, time, sigma, mu, moment
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec[:, :2], axis=-1)
