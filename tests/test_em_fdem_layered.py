@@ -13,7 +13,7 @@ import discretize
 from scipy.special import iv, kv
 from geoana.em.fdem.base import sigma_hat
 
-from discretize.Tests import checkDerivative as check_derivative
+from discretize.tests import check_derivative
 
 
 class TestHalfSpace:
