@@ -33,7 +33,7 @@ class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
         is assigned with a (n_layer, n_frequency) np.ndarray.
     epsilon : (n_layer) np.ndarray or (n_layer, n_frequency) np.ndarray
         Dielectric permittivity for all layers (and at all frequencies). Only applicable when
-        *quasistatic* == ``True``. For non-dispersive permittivity or for an instance of
+        *quasistatic* == ``False``. For non-dispersive permittivity or for an instance of
         **MagneticDipoleLayeredHalfSpace** at a single frequency, *epsilon* is assigned with
         a (n_layer) np.ndarray. For dispersive permittivity and multiple frequencies,
         *epsilon* is assigned with a (n_layer, n_frequency) np.ndarray.
