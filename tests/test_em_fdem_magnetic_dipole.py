@@ -26,7 +26,7 @@ def H_from_MagneticDipoleWholeSpace(
 
     omega = lambda f: 2*np.pi*f
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
     # Check
 
     dx = XYZ[:, 0]-srcLoc[0]
@@ -88,7 +88,7 @@ def E_from_MagneticDipoleWholeSpace(
 
     omega = lambda f: 2 * np.pi * f
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     dx = XYZ[:, 0]-srcLoc[0]
     dy = XYZ[:, 1]-srcLoc[1]

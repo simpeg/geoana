@@ -445,7 +445,7 @@ def Vt_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
     r_vec = XYZ - loc
@@ -462,7 +462,7 @@ def Vt_from_ESphere(
 def Vp_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     x = r_vec[:, 0]
@@ -483,7 +483,7 @@ def Et_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
     r_vec = XYZ - loc
@@ -505,7 +505,7 @@ def Et_from_ESphere(
 def Ep_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -527,7 +527,7 @@ def Jt_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -557,7 +557,7 @@ def Js_from_ESphere(
 def rho_from_ESphere(
     XYZ, dr, loc, sig_s, sig_b, radius, amp
 ):
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
     r_vec = XYZ - loc
@@ -768,7 +768,7 @@ def Vt_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
     r_vec = XYZ - loc
@@ -785,7 +785,7 @@ def Vt_from_Sphere(
 def Vp_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     x = r_vec[:, 0]
@@ -806,7 +806,7 @@ def Ht_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
     r_vec = XYZ - loc
@@ -828,7 +828,7 @@ def Ht_from_Sphere(
 def Hp_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     x = r_vec[:, 0]
@@ -850,7 +850,7 @@ def Bt_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -1046,7 +1046,7 @@ def V_from_PointCurrentW(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -1067,7 +1067,7 @@ def E_from_PointCurrentW(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -1178,7 +1178,7 @@ def V_from_PointCurrentH(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -1191,7 +1191,7 @@ def E_from_PointCurrentH(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -1356,7 +1356,7 @@ class TestPointCurrentHalfSpace:
 def V_from_Dipole1(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = discretize.utils.asArray_N_x_Dim(XYZ_M, 3)
+    XYZ_M = discretize.utils.as_array_n_by_dim(XYZ_M, 3)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1370,8 +1370,8 @@ def V_from_Dipole1(
 def V_from_Dipole2(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = discretize.utils.asArray_N_x_Dim(XYZ_M, 3)
-    XYZ_N = discretize.utils.asArray_N_x_Dim(XYZ_N, 3)
+    XYZ_M = discretize.utils.as_array_n_by_dim(XYZ_M, 3)
+    XYZ_N = discretize.utils.as_array_n_by_dim(XYZ_N, 3)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1392,7 +1392,7 @@ def V_from_Dipole2(
 def E_from_Dipole1(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = discretize.utils.asArray_N_x_Dim(XYZ_M, 3)
+    XYZ_M = discretize.utils.as_array_n_by_dim(XYZ_M, 3)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1406,8 +1406,8 @@ def E_from_Dipole1(
 def E_from_Dipole2(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = discretize.utils.asArray_N_x_Dim(XYZ_M, 3)
-    XYZ_N = discretize.utils.asArray_N_x_Dim(XYZ_N, 3)
+    XYZ_M = discretize.utils.as_array_n_by_dim(XYZ_M, 3)
+    XYZ_N = discretize.utils.as_array_n_by_dim(XYZ_N, 3)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b

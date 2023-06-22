@@ -10,7 +10,7 @@ def U_from_PointMass(
     XYZ, loc, m
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -23,7 +23,7 @@ def g_from_PointMass(
         XYZ, loc, m
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -36,7 +36,7 @@ def gtens_from_PointMass(
         XYZ, loc, m
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -132,7 +132,7 @@ def U_from_Sphere(
     XYZ, loc, m, rho, radius
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -148,7 +148,7 @@ def g_from_Sphere(
         XYZ, loc, m, rho, radius
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -164,7 +164,7 @@ def gtens_from_Sphere(
         XYZ, loc, m, rho, radius
 ):
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)

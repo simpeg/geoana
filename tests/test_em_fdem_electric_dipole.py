@@ -31,7 +31,7 @@ def E_from_EDWS(
     epsilon = epsilon_0*epsr
     sig_hat = sig + 1j*fdem.omega(f)*epsilon
 
-    XYZ = discretize.utils.asArray_N_x_Dim(XYZ, 3)
+    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
 
     dx = XYZ[:, 0] - srcLoc[0]
     dy = XYZ[:, 1] - srcLoc[1]
