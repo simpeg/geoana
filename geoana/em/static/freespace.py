@@ -328,7 +328,7 @@ class MagneticPrism(BasePrism):
             np.all(xyz >= self.min_location, axis=-1)
             & np.all(xyz <= self.max_location, axis=-1)
         )
-        H[is_inside] = H[is_inside] - self.magnetization
+        H[is_inside] = H[is_inside] + self.magnetization
 
         return mu_0 * H
 
