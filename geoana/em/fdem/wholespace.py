@@ -543,31 +543,15 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
         >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
-        # r = self.distance(xyz)
-        # f = (
-        #     (1j * self.omega * self.mu * self.moment) / (4 * np.pi * r) *
-        #     np.exp(-1j * self.wavenumber * r)
-        # )
-        # f = np.kron(np.ones(1, 3), np.atleast_2d(f).T)
-        # return self.dot_orientation(f)
-
-        n_freq = len(self.frequency)
-        n_loc = np.shape(xyz)[0]
-
-        r = self.distance(xyz)
+        xyz = check_xyz_dim(xyz)
+        r = np.linalg.norm(xyz, axis=-1)
         k = self.wavenumber
-
-        tile_r = np.tile(r.reshape((1, n_loc)), (n_freq, 1))
-        tile_w = np.tile(self.omega.reshape((n_freq, 1)), (1, n_loc))
-
-        a = (1j * tile_w * self.mu * self.moment) * (
-            1 / (4*np.pi*tile_r) * np.exp(-1j*np.outer(k, r))
-        )
-
-        v = self.orientation.reshape(1, 1, 3)
-        a = a.reshape((n_freq, n_loc, 1))
-
-        return np.kron(v, a).squeeze()
+        omega = self.omega
+        for i in range(r.ndim):
+            k = k[..., None]
+            omega = omega[..., None]
+        f = 1j * omega * self.mu * self.moment / (4 * np.pi * r) * np.exp(-1j * k * r)
+        return (f[..., None] * self.orientation).squeeze()
 
     def electric_field(self, xyz):
         r"""Electric field for the harmonic magnetic dipole at a set of gridded locations.
@@ -650,42 +634,22 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
         >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
-        # dxyz = self.vector_distance(xyz)
-        # r = repeat_scalar(self.distance(xyz))
-        # kr = self.wavenumber*r
-        # ikr = 1j * kr
-
-        # front_term = (
-        #     (1j * self.omega * self.mu * self.moment) / (4. * np.pi * r**2) *
-        #     (ikr + 1) * np.exp(-ikr)
-        # )
-        # return front_term * self.cross_orientation(dxyz) / r
-
-        n_freq = len(self.frequency)
-        n_loc = np.shape(xyz)[0]
-
+        xyz = check_xyz_dim(xyz)
+        dxyz = xyz - self.location
+        r = np.linalg.norm(dxyz, axis=-1)
         k = self.wavenumber
-        r = self.distance(xyz)
-
-        # (n_freq, n_loc)
-        tile_r = np.tile(r.reshape((1, n_loc)), (n_freq, 1))
-        tile_w = np.tile(self.omega.reshape((n_freq, 1)), (1, n_loc))
-        kr = np.outer(k, r)
+        omega = self.omega
+        for i in range(r.ndim):
+            k = k[..., None]
+            omega = omega[..., None]
+        kr = k * r
         ikr = 1j * kr
 
-        first_term = (
-            (1j * tile_w * self.mu * self.moment) *
-            (1 / (4 * np.pi * tile_r**2) * (ikr + 1) * np.exp(-ikr))
-        ).reshape((n_freq, n_loc, 1))
-        first_term = np.tile(first_term, (1, 1, 3))
-
-        r = repeat_scalar(r)
-        dxyz = self.vector_distance(xyz)
-
-        second_term = (self.cross_orientation(dxyz) / r).reshape((1, n_loc, 3))
-        second_term = np.tile(second_term, (n_freq, 1, 1))
-
-        return (first_term * second_term).squeeze()
+        front_term = (
+             (1j * omega * self.mu * self.moment) / (4. * np.pi * r**2) *
+             (ikr + 1) * np.exp(-ikr)
+        ) / r
+        return (front_term[..., None] * np.cross(dxyz, self.orientation)).squeeze()
 
     def current_density(self, xyz):
         r"""Current density for the harmonic magnetic dipole at a set of gridded locations.
@@ -852,53 +816,22 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
         >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
-        # dxyz = self.vector_distance(xyz)
-        # r = repeat_scalar(self.distance(xyz))
-        # kr = self.wavenumber*r
-        # ikr = 1j*kr
-
-        # front_term = self.moment / (4. * np.pi * r**3) * np.exp(-ikr)
-        # symmetric_term = (
-        #     repeat_scalar(self.dot_orientation(dxyz)) * dxyz *
-        #     (-kr**2 + 3*ikr + 3) / r**2
-        # )
-        # oriented_term = (
-        #     (kr**2 - ikr - 1) *
-        #     np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
-        # )
-
-        # return front_term * (symmetric_term + oriented_term)
-
-        n_freq = len(self.frequency)
-        n_loc = np.shape(xyz)[0]
-
+        xyz = check_xyz_dim(xyz)
+        dxyz = xyz - self.location
+        r = np.linalg.norm(dxyz, axis=-1)
         k = self.wavenumber
-        r = self.distance(xyz)
-        dxyz = self.vector_distance(xyz)
-
-        # (n_freq, n_loc)
-        kr = np.outer(k, r)
+        for i in range(r.ndim):
+            k = k[..., None]
+        kr = k * r
         ikr = 1j * kr
-        tile_r = np.outer(np.ones(n_freq), r)
 
-        front_term = self.moment * (
-            1 / (4 * np.pi * tile_r**3) * np.exp(-ikr)
-        ).reshape((n_freq, n_loc, 1))
-        front_term = np.tile(front_term, (1, 1, 3))
+        front_term = self.moment / (4. * np.pi * r**3) * np.exp(-ikr)
 
-        temp_1 = repeat_scalar(self.dot_orientation(dxyz)) * dxyz
-        temp_1 = np.tile(temp_1.reshape((1, n_loc, 3)), (n_freq, 1, 1))
-        temp_2 = (-kr**2 + 3*ikr + 3) / tile_r**2
-        temp_2 = np.tile(temp_2.reshape((n_freq, n_loc, 1)), (1, 1, 3))
-        symmetric_term = temp_1 * temp_2
+        symmetric_term = (dxyz @ self.orientation)[None, ...]*((-kr**2 + 3*ikr + 3) / r**2)
 
-        temp_1 = (kr**2 - ikr - 1)
-        temp_1 = np.tile(temp_1.reshape((n_freq, n_loc, 1)), (1, 1, 3))
-        temp_2 = np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
-        temp_2 = np.tile(temp_2.reshape((1, n_loc, 3)), (n_freq, 1, 1))
-        oriented_term = temp_1 * temp_2
+        oriented_term = (kr**2 - ikr - 1)[..., None] * self.orientation
 
-        return (front_term * (symmetric_term + oriented_term)).squeeze()
+        return (front_term[..., None] * (symmetric_term[..., None] * dxyz + oriented_term)).squeeze()
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the harmonic magnetic dipole at a set of gridded locations.

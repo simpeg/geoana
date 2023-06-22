@@ -322,7 +322,15 @@ class MagneticPrism(BasePrism):
         (..., 3) numpy.ndarray
             Magnetic flux density or prism at location xyz in units :math:`T`.
         """
-        return mu_0 * self.magnetic_field(xyz)
+        xyz = check_xyz_dim(xyz)
+        H = self.magnetic_field(xyz)
+        is_inside = (
+            np.all(xyz >= self.min_location, axis=-1)
+            & np.all(xyz <= self.max_location, axis=-1)
+        )
+        H[is_inside] = H[is_inside] - self.magnetization
+
+        return mu_0 * H
 
     def magnetic_field_gradient(self, xyz):
         """
