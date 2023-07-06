@@ -55,7 +55,7 @@ metadata = dict(
         'scipy>=0.13',
         'matplotlib',
         'utm',
-        'empymod'
+        'empymod>=2.0'
     ],
     author = 'SimPEG developers',
     author_email = 'lindseyheagy@gmail.com',
