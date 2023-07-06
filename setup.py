@@ -84,10 +84,6 @@ if len(sys.argv) >= 2 and (
     install_requires = setup_requires + install_requires[1:]
     metadata['install_requires'] = install_requires
 else:
-    if (len(sys.argv) >= 2 and sys.argv[1] in ("bdist_wheel", "bdist_egg")) or (
-        "develop" in sys.argv
-    ):
-
     from numpy.distutils.core import setup
 
     # Add the configuration to the setup dict when building
