@@ -37,7 +37,7 @@ jobs:
         conda list
         conda config --show
         conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
-        conda install --quiet --yes discretize libdlf utm pytest pytest-cov graphviz
+        conda install --quiet --yes discretize libdlf setuptools_scm utm pytest pytest-cov graphviz
         pip install -r requirements_dev.txt
     - name: Install Our Package
       run: |
@@ -75,7 +75,7 @@ jobs:
         conda list
         conda config --show
         conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
-        conda install --quiet --yes discretize libdlf utm pytest pytest-cov graphviz
+        conda install --quiet --yes discretize libdlf setuptools_scm utm pytest pytest-cov graphviz
         pip install -r requirements_dev.txt
     - name: Prepare source distribution
       run: |
