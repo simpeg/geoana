@@ -53,9 +53,8 @@ metadata = dict(
     install_requires = [
         'numpy>=1.8',
         'scipy>=0.13',
-        'matplotlib',
+        'libdlf'
         'utm',
-        'empymod>=2.0'
     ],
     author = 'SimPEG developers',
     author_email = 'lindseyheagy@gmail.com',

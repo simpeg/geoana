@@ -2,9 +2,8 @@ import numpy as np
 from geoana.em.base import BaseMagneticDipole
 from geoana.em.fdem.base import BaseFDEM, sigma_hat
 from scipy.constants import mu_0, epsilon_0
-from empymod.utils import check_hankel
-from empymod.transform import get_dlf_points
 from geoana.kernels.tranverse_electric_reflections import rTE_forward
+import libdlf
 
 
 class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
@@ -401,16 +400,12 @@ class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
         dxyz = xyz - self.location
         offsets = np.linalg.norm(dxyz[:, :-1], axis=-1)
 
-        # Comput transform operations
-        # -1 gives lagged convolution in dlf
-        ht, htarg = check_hankel('dlf', {'dlf': 'key_101_2009', 'pts_per_dec': 0}, 1)
-        fhtfilt = htarg['dlf']
-        pts_per_dec = htarg['pts_per_dec']
+        # Compute transform operations
+        filt_base, filt_j0, filt_j1 = libdlf.hankel.key_101_2009()
+        lambd = filt_base/offsets[:, None]
 
         f = self.frequency
         n_frequency = len(f)
-
-        lambd, int_points = get_dlf_points(fhtfilt, offsets, pts_per_dec)
 
         thick = self.thickness
         n_layer = len(thick) + 1
@@ -464,9 +459,9 @@ class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
             # C1z += 0.0
 
         # Do the hankel transform on each component
-        em_x = ((C0x*rTE)@fhtfilt.j0 + (C1x*rTE)@fhtfilt.j1)/offsets
-        em_y = ((C0y*rTE)@fhtfilt.j0 + (C1y*rTE)@fhtfilt.j1)/offsets
-        em_z = ((C0z*rTE)@fhtfilt.j0 + (C1z*rTE)@fhtfilt.j1)/offsets
+        em_x = ((C0x*rTE)@filt_j0 + (C1x*rTE)@filt_j1)/offsets
+        em_y = ((C0y*rTE)@filt_j0 + (C1y*rTE)@filt_j1)/offsets
+        em_z = ((C0z*rTE)@filt_j0 + (C1z*rTE)@filt_j1)/offsets
 
         if field == "total":
             # add in the primary field

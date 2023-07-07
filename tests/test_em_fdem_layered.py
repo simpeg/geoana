@@ -3,8 +3,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 from scipy.constants import mu_0, epsilon_0
-from empymod.utils import check_hankel
-from empymod.transform import get_dlf_points
+import libdlf
 from geoana.em.fdem import MagneticDipoleHalfSpace, MagneticDipoleLayeredHalfSpace
 from geoana.kernels.tranverse_electric_reflections import (
     rTE_forward, rTE_gradient, _rTE_forward, _rTE_gradient
@@ -204,14 +203,11 @@ class TestLayeredHalfspace(unittest.TestCase):
         h = mag_layer.location[2]
         dxyz = xyz - mag_layer.location
         offsets = np.linalg.norm(dxyz[:, :-1], axis=-1)
-        ht, htarg = check_hankel('dlf', {'dlf': 'key_101_2009', 'pts_per_dec': 0}, 1)
-        fhtfilt = htarg['dlf']
-        pts_per_dec = htarg['pts_per_dec']
+        filt_base, filt_j0, filt_j1 = libdlf.hankel.key_101_2009()
+        lambd = filt_base/offsets[:, None]
 
         f = frequencies
         n_frequency = len(f)
-
-        lambd, int_points = get_dlf_points(fhtfilt, offsets, pts_per_dec)
 
         thick = mag_layer.thickness
         n_layer = len(thick) + 1
@@ -231,9 +227,9 @@ class TestLayeredHalfspace(unittest.TestCase):
         C0y += src_x * (dxyz[:, 0] * dxyz[:, 1] / offsets ** 2)[:, None] * lambd ** 2
         C1y -= src_x * (2 * dxyz[:, 0] * dxyz[:, 1] / offsets ** 3)[:, None] * lambd
         C1z -= (src_x * dxyz[:, 0] / offsets)[:, None] * lambd ** 2
-        em_x = ((C0x * rTE) @ fhtfilt.j0 + (C1x * rTE) @ fhtfilt.j1) / offsets
-        em_y = ((C0y * rTE) @ fhtfilt.j0 + (C1y * rTE) @ fhtfilt.j1) / offsets
-        em_z = ((C0z * rTE) @ fhtfilt.j0 + (C1z * rTE) @ fhtfilt.j1) / offsets
+        em_x = ((C0x * rTE) @ filt_j0 + (C1x * rTE) @ filt_j1) / offsets
+        em_y = ((C0y * rTE) @ filt_j0 + (C1y * rTE) @ filt_j1) / offsets
+        em_z = ((C0z * rTE) @ filt_j0 + (C1z * rTE) @ filt_j1) / offsets
 
         e = mag_layer.moment / (4 * np.pi) * np.stack((em_x, em_y, em_z), axis=-1).squeeze()
         e_test = mag_layer.magnetic_field(xyz, field='secondary')
