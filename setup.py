@@ -45,16 +45,15 @@ with open('README.rst') as f:
 metadata = dict(
     name = 'geoana',
     version = '0.4.1',
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     setup_requires=[
         "numpy>=1.8",
-        "cython>=0.2",
+        "cython>=0.29",
     ],
     install_requires = [
-        'numpy>=1.8',
-        'scipy>=0.13',
+        "numpy>=1.20",
+        "scipy>=1.8",
         'libdlf',
-        'utm',
     ],
     author = 'SimPEG developers',
     author_email = 'lindseyheagy@gmail.com',
