@@ -5,8 +5,8 @@ geoana
 Interactive geoscience (mostly) analytic functions.
 """
 
-from distutils.core import setup
 import sys
+from setuptools import setup
 
 CLASSIFIERS = [
     'Development Status :: 4 - Beta',
@@ -55,7 +55,7 @@ metadata = dict(
         'scipy>=0.13',
         'matplotlib',
         'utm',
-        'empymod'
+        'empymod>=2.0'
     ],
     author = 'SimPEG developers',
     author_email = 'lindseyheagy@gmail.com',
@@ -71,24 +71,19 @@ metadata = dict(
 
 if len(sys.argv) >= 2 and (
     "--help" in sys.argv[1:]
-    or sys.argv[1] in ("--help-commands", "egg_info", "--version", "clean")
+    or sys.argv[1] in ("--help-commands", "egg_info", "install_egg_info", "--version", "clean")
 ):
     # For these actions, NumPy is not required.
     #
     # They are required to succeed without Numpy, for example when
-    # pip is used to install discretize when Numpy is not yet present in
+    # pip is used to install geoana when Numpy is not yet present in
     # the system.
-    try:
-        from setuptools import setup
-    except ImportError:
-        from distutils.core import setup
-else:
-    if (len(sys.argv) >= 2 and sys.argv[1] in ("bdist_wheel", "bdist_egg")) or (
-        "develop" in sys.argv
-    ):
-        # bdist_wheel/bdist_egg needs setuptools
-        import setuptools
 
+    setup_requires = metadata['setup_requires']
+    install_requires = metadata['install_requires']
+    install_requires = setup_requires + install_requires[1:]
+    metadata['install_requires'] = install_requires
+else:
     from numpy.distutils.core import setup
 
     # Add the configuration to the setup dict when building

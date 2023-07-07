@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        python-version: [3.8, 3.9, "3.10", "3.11"]
 
     steps:
     - uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
         conda list
         conda config --show
         conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
-        conda install --quiet --yes discretize utm empymod pytest pytest-cov graphviz
+        conda install --quiet --yes discretize utm "empymod>=2.0" pytest pytest-cov graphviz
         pip install -r requirements_dev.txt
     - name: Install Our Package
       run: |
@@ -48,7 +48,7 @@ jobs:
       run: |
         pytest --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning
     - name: "Upload coverage to Codecov"
-      if: ${{ matrix.python-version }} == '3.8'
+      if: ${{ matrix.python-version }} == '3.10'
       uses: codecov/codecov-action@v1
       with:
         fail_ci_if_error: true
@@ -68,7 +68,7 @@ jobs:
         auto-update-conda: true
         activate-environment: geoana-test
         channels: conda-forge
-        python-version: '3.8'
+        python-version: '3.10'
     - name: Install Env
       run: |
         conda info
