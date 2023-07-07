@@ -47,7 +47,7 @@ metadata = dict(
     version = '0.4.1',
     python_requires=">=3.8",
     setup_requires=[
-        "numpy>=1.8",
+        "numpy>=1.20",
         "cython>=0.29",
     ],
     install_requires = [
