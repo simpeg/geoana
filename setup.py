@@ -43,12 +43,12 @@ with open('README.rst') as f:
     LONG_DESCRIPTION = ''.join(f.readlines())
 
 metadata = dict(
-    name = 'geoana',
-    version = '0.4.1',
+    name='geoana',
     python_requires=">=3.8",
     setup_requires=[
         "numpy>=1.20",
         "cython>=0.29",
+        "setuptools_scm",
     ],
     install_requires = [
         "numpy>=1.20",
@@ -64,7 +64,10 @@ metadata = dict(
     download_url = 'https://github.com/simpeg/geoana',
     classifiers=CLASSIFIERS,
     platforms = ['Windows', 'Linux', 'Solaris', 'Mac OS-X', 'Unix'],
-    license='MIT License'
+    license='MIT License',
+    use_scm_version={
+        "write_to": os.path.join("geoana", "version.py"),
+    },
 )
 
 if len(sys.argv) >= 2 and (

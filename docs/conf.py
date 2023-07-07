@@ -16,6 +16,7 @@ import sys
 import os
 from sphinx_gallery.sorting import FileNameSortKey
 import shutil
+from importlib.metadata import version
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -80,17 +81,17 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'geoana'
-copyright = u'2017-2018, SimPEG Team'
+copyright = u'2017, SimPEG Team'
 author = u'SimPEG Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-# The short X.Y version.
-version = u'0.4.1'
 # The full version, including alpha/beta/rc tags.
-release = u'0.4.1'
+release = version('geoana')
+# The short X.Y version.
+version = '.'.join(release.split('.')[:2])
 
 linkcheck_retries = 3
 linkcheck_timeout = 500

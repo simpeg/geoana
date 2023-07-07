@@ -99,3 +99,6 @@ docs/api/generated/*
 # Jupyter
 *.ipynb
 geoana/kernels/_extensions/rTE.cpp
+
+# setuptools_scm
+geoana/version.py
