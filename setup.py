@@ -6,6 +6,7 @@ Interactive geoscience (mostly) analytic functions.
 """
 
 import sys
+import os
 from setuptools import setup
 
 CLASSIFIERS = [
