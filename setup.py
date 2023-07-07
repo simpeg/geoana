@@ -53,7 +53,7 @@ metadata = dict(
     install_requires = [
         'numpy>=1.8',
         'scipy>=0.13',
-        'libdlf'
+        'libdlf',
         'utm',
     ],
     author = 'SimPEG developers',
