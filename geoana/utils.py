@@ -180,3 +180,45 @@ def check_xyz_dim(xyz, dim=3, dtype=float):
             f"Unexpected dimensionality of array, expected {dim}, saw {xyz.shape[-1]}"
         )
     return xyz
+
+
+def requires(modules):
+    """Decorate a function with soft dependencies.
+
+    This function was inspired by the `requires` function of pysal,
+    which is released under the 'BSD 3-Clause "New" or "Revised" License'.
+
+    https://github.com/pysal/pysal/blob/master/pysal/lib/common.py
+
+    Parameters
+    ----------
+    modules : dict
+        Dictionary containing soft dependencies, e.g.,
+        {'matplotlib': matplotlib}.
+
+    Returns
+    -------
+    decorated_function : function
+        Original function if all soft dependencies are met, otherwise
+        it returns an empty function which prints why it is not running.
+
+    """
+    # Check the required modules, add missing ones in the list `missing`.
+    missing = []
+    for key, item in modules.items():
+        if item is False:
+            missing.append(key)
+
+    def decorated_function(function):
+        """Wrap function."""
+        if not missing:
+            return function
+        else:
+
+            def passer(*args, **kwargs):
+                print(("Missing dependencies: {d}.".format(d=missing)))
+                print(("Not running `{}`.".format(function.__name__)))
+
+            return passer
+
+    return decorated_function

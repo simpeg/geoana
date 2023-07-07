@@ -16,11 +16,16 @@ data computed with geoana.
 
 import numpy as np
 from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
-import matplotlib.pyplot as plt
-from matplotlib import colors
-import warnings
+from .utils import requires
+try:
+    import matplotlib.pyplot as plt
+    from matplotlib import colors
+    matplotlib = True
+except ImportError:
+    matplotlib = False
 
 
+@requires({"matplotlib": matplotlib})
 def plot2Ddata(
     xyz,
     data,

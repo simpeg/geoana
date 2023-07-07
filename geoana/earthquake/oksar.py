@@ -15,9 +15,17 @@ Heritage:
 """
 
 import numpy as np
-import utm
-import matplotlib.pyplot as plt
+try:
+    import utm
+except ImportError:
+    utm = False
+try:
+    import matplotlib.pyplot as plt
+    matplotlib = True
+except ImportError:
+    matplotlib = False
 from datetime import datetime
+from geoana.utils import requires
 
 def _date_time_from_json(value):
     if len(value) == 10:
@@ -671,6 +679,7 @@ class EarthquakeInterferogram:
 
         return vectorNx, vectorNy, data
 
+    @requires({"matplotlib": matplotlib})
     def plot_interferogram(self, wrap=True, ax=None):
         """Plot interferogram
 
@@ -724,6 +733,7 @@ class EarthquakeInterferogram:
 
         return out
 
+    @requires({"matplotlib": matplotlib})
     def plot_mask(self, ax=None, opacity=0.2):
         """Plot masked interferogram
 
@@ -766,6 +776,7 @@ class EarthquakeInterferogram:
 
         return out
 
+    @requires({"utm":utm})
     def get_LOS_vector(self, locations):
         """calculate beta - the angle at earth center between reference point
         and satellite nadir
@@ -1514,6 +1525,7 @@ class Oksar:
                     u = - du + u
         return u
 
+    @requires({"matplotlib": matplotlib})
     def plot_displacement(self, eq=None, ax=None, wrap=True, mask_opacity=0.2):
         """Plot displacement/
 
