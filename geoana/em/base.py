@@ -104,7 +104,7 @@ class BaseEM:
         if value < 0.0:
             raise ValueError(
                 f"Invalid epsilon '{value}': "
-                "epsilon must be greater or equal than than zero."
+                "epsilon must be greater or equal than zero."
             )
 
         self._epsilon = value
