@@ -55,7 +55,6 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinx.ext.graphviz",
     "matplotlib.sphinxext.plot_directive",
-    "nbsphinx",
     "sphinx_gallery.gen_gallery",
 ]
 
