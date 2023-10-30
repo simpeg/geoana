@@ -43,7 +43,6 @@ jobs:
           matplotlib
           jupyter
           utm
-          numba
           pytest
           pytest-cov
           sphinx
@@ -53,6 +52,11 @@ jobs:
           graphviz
           pillow
         cache-environment: true
+    - name: Install numba
+      if: ${{ matrix.python-version }} != '3.12'
+      # Numba doesn't work on python 3.12 just yet, so conditionally install it into the environment:
+      run: |
+        mamba install numba
     - name: Install Our Package
       run: |
         pip install --no-build-isolation --editable .
