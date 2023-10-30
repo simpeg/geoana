@@ -98,7 +98,11 @@ docs/api/generated/*
 
 # Jupyter
 *.ipynb
+
+#Cython generated files
 geoana/kernels/_extensions/rTE.cpp
+geoana/kernels/_extensions/potential_field_prism.c
+geoana/kernels/_extensions/potential_field_prism_api.h
 
 # setuptools_scm
 geoana/version.py
