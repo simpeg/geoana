@@ -36,7 +36,7 @@ jobs:
           cython
           setuptools_scm
           discretize
-          `matplotlib>=3.5.0`
+          matplotlib
           ipython
           utm
           pytest
