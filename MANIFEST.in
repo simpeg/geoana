@@ -1,6 +1,0 @@
-prune .github
-prune docs
-prune examples
-prune tests
-exclude .coveragerc .gitignore MANIFEST.in setup.cfg
-exclude requirements_dev.txt requirements.txt
