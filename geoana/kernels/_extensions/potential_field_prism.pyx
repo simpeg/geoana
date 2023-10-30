@@ -165,7 +165,7 @@ cdef api double prism_fzy(double x, double y, double z) nogil:
         double v = 0.0
         double r, temp
     r = sqrt(x * x + y * y + z * z)
-    v = y + r
+    v = x + r
     if v == 0.0:
         if x < 0:
             v = log(-2 * x)
