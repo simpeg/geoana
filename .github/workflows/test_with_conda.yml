@@ -24,21 +24,33 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v2
+    - name: Setup environment
+      uses: mamba-org/setup-micromamba@v1
       with:
-        auto-update-conda: true
-        activate-environment: geoana-test
-        channels: conda-forge
-        python-version: ${{ matrix.python-version }}
-    - name: Install Env
-      run: |
-        conda info
-        conda list
-        conda config --show
-        conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
-        conda install --quiet --yes discretize libdlf setuptools_scm utm pytest pytest-cov graphviz
-        pip install -r requirements_dev.txt
+        environment-name: geoana-test
+        create-args: >-
+          python=${{ matrix.python-version }}
+          # runtime requirements
+          numpy
+          scipy
+          libdlf
+          # build requirements
+          cython
+          setuptools_scm
+          # testing requirements
+          discretize
+          `matplotlib>=3.5.0`
+          ipython
+          utm
+          pytest
+          pytest-cov
+          # documentation requirements
+          sphinx
+          sphinx-gallery
+          pydata-sphinx-theme
+          numpydoc
+          nbsphinx
+          sphinx-toolbox
     - name: Install Our Package
       run: |
         export BUILD_GEOANA_EXT=1
