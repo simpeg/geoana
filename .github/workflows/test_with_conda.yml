@@ -30,21 +30,17 @@ jobs:
         environment-name: geoana-test
         create-args: >-
           python=${{ matrix.python-version }}
-          # runtime requirements
           numpy
           scipy
           libdlf
-          # build requirements
           cython
           setuptools_scm
-          # testing requirements
           discretize
           `matplotlib>=3.5.0`
           ipython
           utm
           pytest
           pytest-cov
-          # documentation requirements
           sphinx
           sphinx-gallery
           pydata-sphinx-theme
