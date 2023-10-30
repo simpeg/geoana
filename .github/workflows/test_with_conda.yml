@@ -47,6 +47,7 @@ jobs:
           numpydoc>=1.5
           graphviz
           pillow
+        cache-environment: true
     - name: Install Our Package
       run: |
         export BUILD_GEOANA_EXT=1
@@ -70,21 +71,30 @@ jobs:
         shell: bash -l {0}
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v2
+    - name: Setup environment
+      uses: mamba-org/setup-micromamba@v1
       with:
-        auto-update-conda: true
-        activate-environment: geoana-test
-        channels: conda-forge
-        python-version: '3.10'
-    - name: Install Env
-      run: |
-        conda info
-        conda list
-        conda config --show
-        conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
-        conda install --quiet --yes discretize libdlf setuptools_scm utm pytest pytest-cov graphviz
-        pip install -r requirements_dev.txt
+        environment-name: geoana-test
+        create-args: >-
+          python=3.10
+          numpy>=1.20
+          scipy>=1.8
+          libdlf
+          cython
+          setuptools_scm
+          discretize
+          matplotlib
+          jupyter
+          utm
+          pytest
+          pytest-cov
+          sphinx
+          sphinx-gallery>=0.1.13
+          pydata-sphinx-theme=0.13.3
+          numpydoc>=1.5
+          graphviz
+          pillow
+        cache-environment: true
     - name: Prepare source distribution
       run: |
         export BUILD_GEOANA_EXT=1
