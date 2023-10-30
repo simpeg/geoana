@@ -53,10 +53,10 @@ jobs:
           pillow
         cache-environment: true
     - name: Install numba
-      if: ${{ matrix.python-version }} != '3.12'
+      if: matrix.python-version != '3.12'
       # Numba doesn't work on python 3.12 just yet, so conditionally install it into the environment:
       run: |
-        mamba install numba
+        micromamba install numba
     - name: Install Our Package
       run: |
         pip install --no-build-isolation --editable .
@@ -65,7 +65,7 @@ jobs:
       run: |
         pytest --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning
     - name: "Upload coverage to Codecov"
-      if: ${{ matrix.python-version }} == '3.11'
+      if: matrix.python-version == '3.11'
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
