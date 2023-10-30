@@ -45,6 +45,8 @@ jobs:
           sphinx-gallery>=0.1.13
           pydata-sphinx-theme=0.13.3
           numpydoc>=1.5
+          graphviz
+          pillow
     - name: Install Our Package
       run: |
         export BUILD_GEOANA_EXT=1
