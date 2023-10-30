@@ -13,6 +13,8 @@ def configuration(parent_package="", top_path=None):
         from Cython.Build import cythonize
 
         cythonize(os.path.join(base_path, "rTE.pyx"))
+
+        cythonize(os.path.join(base_path, "potential_field_prism.pyx"))
     except ImportError:
         pass
 
@@ -22,6 +24,8 @@ def configuration(parent_package="", top_path=None):
     )
 
     config.add_extension(
-        'potential_field_prism', sources=['potential_field_prism.c']
+        'potential_field_prism',
+        sources=['potential_field_prism.c'],
+        include_dirs=[get_numpy_include_dirs()]
     )
     return config
