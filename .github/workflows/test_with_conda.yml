@@ -46,7 +46,6 @@ jobs:
           pydata-sphinx-theme
           numpydoc
           nbsphinx
-          sphinx-toolbox
     - name: Install Our Package
       run: |
         export BUILD_GEOANA_EXT=1
