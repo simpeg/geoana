@@ -59,7 +59,7 @@ jobs:
         micromamba install numba
     - name: Install Our Package
       run: |
-        pip install --no-build-isolation --editable .
+        pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
         conda list
     - name: Run Tests
       run: |
@@ -111,7 +111,7 @@ jobs:
         cache-environment: true
     - name: Prepare source distribution
       run: |
-        python -m build --no-isolation --skip-dependency-check --sdist .
+        python -m build --no-isolation --skip-dependency-check --sdist . --config-settings=setup-args="-Dwith_extensions=true"
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
@@ -120,7 +120,7 @@ jobs:
         skip_existing: true
     - name: Install package
       run: |
-        pip install --no-build-isolation --editable .
+        pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
     - name: Build documentation
       run: |
         cd docs

@@ -10,7 +10,7 @@ py.install_sources(
   subdir: 'geoana/kernels'
 )
 
-pure_python = get_option('pure_python')
-if not pure_python
+with_extensions = get_option('with_extensions')
+if with_extensions
     subdir('_extensions')
 endif
