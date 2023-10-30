@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        python-version: [3.8, 3.9, "3.10", "3.11"]
+        python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v2
@@ -35,6 +35,10 @@ jobs:
           libdlf
           cython
           setuptools_scm
+          meson-python>=0.14.0
+          meson
+          ninja
+          build
           discretize
           matplotlib
           jupyter
@@ -51,14 +55,13 @@ jobs:
         cache-environment: true
     - name: Install Our Package
       run: |
-        export BUILD_GEOANA_EXT=1
-        pip install -e .
+        pip install --no-build-isolation --editable .
         conda list
     - name: Run Tests
       run: |
         pytest --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning
     - name: "Upload coverage to Codecov"
-      if: ${{ matrix.python-version }} == '3.10'
+      if: ${{ matrix.python-version }} == '3.11'
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
@@ -84,6 +87,10 @@ jobs:
           libdlf
           cython
           setuptools_scm
+          meson-python>=0.14.0
+          meson
+          ninja
+          build
           discretize
           matplotlib
           jupyter
@@ -100,8 +107,7 @@ jobs:
         cache-environment: true
     - name: Prepare source distribution
       run: |
-        export BUILD_GEOANA_EXT=1
-        python setup.py sdist
+        python -m build --no-isolation --skip-dependency-check --sdist .
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
@@ -110,8 +116,7 @@ jobs:
         skip_existing: true
     - name: Install package
       run: |
-        export BUILD_GEOANA_EXT=1
-        pip install -e .
+        pip install --no-build-isolation --editable .
     - name: Build documentation
       run: |
         cd docs
