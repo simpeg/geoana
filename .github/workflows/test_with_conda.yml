@@ -38,7 +38,8 @@ jobs:
         conda config --show
         conda install --quiet --yes pip numpy scipy "matplotlib>=3.5.0" ipython cython;
         conda install --quiet --yes discretize libdlf setuptools_scm utm pytest pytest-cov graphviz
-        pip install -r requirements_dev.txt
+        conda install --quiet --yes sphinx sphinx-gallery pydata-sphinx-theme numpydoc nbsphinx
+        conda install --quiet --yes pytest pytest-cov
     - name: Install Our Package
       run: |
         export BUILD_GEOANA_EXT=1
