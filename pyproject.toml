@@ -102,4 +102,4 @@ build-verbosity = "3"
 test-command = 'python -c "import geoana; geoana.show_config()"'
 
 [tool.cibuildwheel.config-settings]
---build-option = 'setup-args="-Dwith_extensions=true"'
+setup-args = '-Dwith_extensions=true'
