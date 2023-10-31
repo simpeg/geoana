@@ -64,7 +64,7 @@ py.extension_module(
 )
 
 py.extension_module(
-    'simplex_helpers',
+    'rTE',
     ['rTE.pyx', '_rTE.cpp'],
     include_directories: incdir_numpy,
     cpp_args: cython_cpp_args,
