@@ -33,3 +33,23 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
+
+  pure_python:
+    name: Build Pure Python wheels
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: Build pure python wheel and install
+        run: |
+          python -m pip install --user --upgrade build
+          python -m build
+          find ./dist/*.whl | xargs pip install
+          python -c "import geoana; geoana.show_config()"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./dist/geoana*.whl
