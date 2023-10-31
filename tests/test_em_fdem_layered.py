@@ -358,6 +358,9 @@ class TestCompiledVsNumpy(unittest.TestCase):
         self.rTE1_dsigma, self.rTE1_dh, self.rTE1_dmu = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
         self.rTE2_dsigma, self.rTE2_dh, self.rTE2_dmu = _rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
 
+    def test_assert_using_compiled(self):
+        assert rTE_forward is not _rTE_forward
+
     def test_rTE(self):
         assert_allclose(self.rTE1, self.rTE2, atol=1E-15)
 

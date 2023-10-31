@@ -6,7 +6,10 @@ import pytest
 import geoana.kernels.potential_field_prism as pf
 import geoana.gravity as grav
 from geoana.em.static import MagneticPrism, MagneticDipoleWholeSpace
-from numba import njit
+try:
+    from numba import njit
+except ImportError:
+    njit = None
 
 
 class TestCompiledVsNumpy():
@@ -285,33 +288,34 @@ def test_grav_init_and_errors():
         prism.rho = 'abc'
 
 
-@pytest.mark.parametrize('function', [
-    pf.prism_f,
-    pf.prism_fz,
-    pf.prism_fzx,
-    pf.prism_fzy,
-    pf.prism_fzz,
-    pf.prism_fzzz,
-    pf.prism_fxxy,
-    pf.prism_fxxz,
-    pf.prism_fxyz
-])
-def test_numba_jitting_nopython(function):
+if njit is not None:
+    @pytest.mark.parametrize('function', [
+        pf.prism_f,
+        pf.prism_fz,
+        pf.prism_fzx,
+        pf.prism_fzy,
+        pf.prism_fzz,
+        pf.prism_fzzz,
+        pf.prism_fxxy,
+        pf.prism_fxxz,
+        pf.prism_fxyz
+    ])
+    def test_numba_jitting_nopython(function):
 
-    # create a vectorized jit function of it:
+        # create a vectorized jit function of it:
 
-    x = np.random.rand(10)
-    y = np.random.rand(10)
-    z = np.random.rand(10)
-    @njit
-    def jitted_func(x, y, z):
-        n = len(x)
-        out = np.empty_like(x)
-        for i in range(n):
-            out[i] = function(x[i], y[i], z[i])
-        return out
+        x = np.random.rand(10)
+        y = np.random.rand(10)
+        z = np.random.rand(10)
+        @njit
+        def jitted_func(x, y, z):
+            n = len(x)
+            out = np.empty_like(x)
+            for i in range(n):
+                out[i] = function(x[i], y[i], z[i])
+            return out
 
-    v1 = jitted_func(x, y, z)
-    v2 = function(x, y, z)
+        v1 = jitted_func(x, y, z)
+        v2 = function(x, y, z)
 
-    np.allclose(v1, v2)
+        assert_allclose(v1, v2)
