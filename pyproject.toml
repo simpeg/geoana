@@ -106,5 +106,7 @@ setup-args = '-Dwith_extensions=true'
 
 # use the visual studio compilers
 [tool.cibuildwheel.windows.config-settings]
-setup-args = '-Dwith_extensions=true'
-setup-args = '--vsenv'
+setup-args = [
+    '-Dwith_extensions=true',
+    '--vsenv'
+]
