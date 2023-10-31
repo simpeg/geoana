@@ -21,3 +21,18 @@ except PackageNotFoundError:
     from datetime import datetime
 
     __version__ = "unknown-" + datetime.today().strftime("%Y%m%d")
+
+
+try:
+    import geoana.kernels._extensions.rTE
+    import geoana.kernels._extensions.potential_field_prism
+    compiled = True
+except ImportError:
+    compiled = False
+def show_config():
+    info_dict = {
+        'version': __version__,
+        'compiled': compiled,
+    }
+    print(info_dict)
+    return info_dict
