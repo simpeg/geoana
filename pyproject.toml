@@ -105,5 +105,5 @@ test-command = 'python -c "import geoana; geoana.show_config()"'
 setup-args = '-Dwith_extensions=true'
 
 # use the visual studio compilers
-[tool.cibuildwheel.config-settings-windows]
+[tool.cibuildwheel.windows.config-settings]
 setup-args = '-Dwith_extensions=true --vsenv'
