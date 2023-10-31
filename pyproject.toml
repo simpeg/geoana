@@ -103,3 +103,7 @@ test-command = 'python -c "import geoana; geoana.show_config()"'
 
 [tool.cibuildwheel.config-settings]
 setup-args = '-Dwith_extensions=true'
+
+# use the visual studio compilers
+[tool.cibuildwheel.config-settings-windows]
+setup-args = '-Dwith_extensions=true --vsenv'
