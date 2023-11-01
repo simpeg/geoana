@@ -11,7 +11,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.2
         env:
-          CIBW_BUILD: *manylinux_x86_64
+          CIBW_BUILD: "*manylinux_x86_64"
           CIBW_ARCHS_LINUX: x86_64
       - uses: actions/upload-artifact@v3
         with:
@@ -30,7 +30,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_ARCHS_LINUX: aarch64
-          CIBW_BUILD: *manylinux_aarch64
+          CIBW_BUILD: "*manylinux_aarch64"
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
@@ -43,7 +43,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.2
         env:
-          CIBW_BUILD: *musllinux_x86_64
+          CIBW_BUILD: "*musllinux_x86_64"
           CIBW_ARCHS_LINUX: x86_64
       - uses: actions/upload-artifact@v3
         with:
