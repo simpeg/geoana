@@ -1,6 +1,9 @@
-name: Build Distributions
-
-on: [push, pull_request]
+name: Release
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   build_manylinux_x86_64_wheels:
@@ -16,6 +19,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
 
   build_manylinux_aarch64_wheels:
     name: Build manylinux_aarch64
@@ -34,6 +44,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
 
   build_musllinux_x86_64_wheels:
     name: Build musllinux_x86_64 wheels
@@ -48,6 +65,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
 
   build_mac_wheels:
     name: Build macos wheels
@@ -61,6 +85,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
 
   build_windows_wheels:
     name: Build Windows wheels
@@ -74,11 +105,18 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
 
-  # Don't upload this one to pypi, otherwise it will be prefered over every compiled one
+  # Don't upload this one to pypi, otherwise it will be preferred over every compiled one
   # We can host it here on github though for those that need it (re: jupyter-light).
   pure_python:
-    name: Build Pure Python wheels
+    name: Create pure-python wheel
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
@@ -151,34 +189,35 @@ jobs:
         make html
         cd ..
     - name: GitHub Pages
-      # You may pin to the exact commit or the version.
       uses: crazy-max/ghaction-github-pages@v2.5.0
       with:
-        # Git domain (default github.com)
-        # domain: # optional, default is github.com
-        # GitHub repository where assets will be deployed (default $GITHUB_REPOSITORY)
-        # repo: # optional
-        # Git branch where assets will be deployed
-        # target_branch: # optional, default is gh-pages
-        # Create incremental commit instead of doing push force
-        # keep_history: # optional, default is false
-        # Allow an empty commit to be created
-        # allow_empty_commit: # optional, default is true
-        # Build directory to deploy
         build_dir: docs/_build/html
-        # The committer name and email address
-        # committer: # optional
-        # The author name and email address
-        # author: # optional
-        # Commit message
-        # commit_message: # optional
-        # Write the given domain name to the CNAME file
         fqdn: geoana.simpeg.xyz
-        # Allow Jekyll to build your site
-        jekyll: false # optional, default is true
-        # If enabled, nothing will be pushed
-        # dry_run: true # optional, default is false
-        # Enable verbose output
-        # verbose: true # optional, default is false
+        jekyll: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+  release:
+    name: Create Release
+    needs: [
+      build_manylinux_x86_64_wheels,
+      build_manylinux_aarch64_wheels,
+      build_musllinux_x86_64_wheels,
+      build_mac_wheels,
+      build_windows_wheels,
+      pure_python
+    ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v3
+      name: Retrieve assets
+      with:
+        name: artifact
+        path: dist
+    - name: Release to github
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/*
+        generate_release_notes: true
+        prerelease: false

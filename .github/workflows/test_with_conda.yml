@@ -1,11 +1,9 @@
-name: TestingWithConda
+name: Testing With Conda
 
 on:
   push:
     branches:
       - '*'
-    tags:
-      - 'v*'
   pull_request:
     branches:
       - '*'
