@@ -3,33 +3,74 @@ name: Build Distributions
 on: [push, pull_request]
 
 jobs:
-  build_wheels:
-    name: Build compiled wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04, windows-2019, macos-11]
-
+  build_manylinux_x86_64_wheels:
+    name: Build manylinux_x86_64
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_BUILD: *manylinux_x86_64
+          CIBW_ARCHS_LINUX: x86_64
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
 
+  build_manylinux_aarch64_wheels:
+    name: Build manylinux_aarch64
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
       - name: Set up QEMU
-        if: runner.os == 'Linux'
         uses: docker/setup-qemu-action@v3
         with:
           platforms: all
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_ARCHS_LINUX: aarch64
+          CIBW_BUILD: *manylinux_aarch64
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
 
+  build_musllinux_x86_64_wheels:
+    name: Build musllinux_x86_64 wheels
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_BUILD: *musllinux_x86_64
+          CIBW_ARCHS_LINUX: x86_64
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+
+  build_mac_wheels:
+    name: Build macos wheels
+    runs-on: macos-11
+    steps:
+      - uses: actions/checkout@v4
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_ARCHS_MACOS: x86_64 arm64
-          CIBW_ARCHS_WINDOWS: AMD64
-          CIBW_ARCHS_LINUX: x86_64 aarch64
-        # with:
-        #   package-dir: .
-        #   output-dir: wheelhouse
-        #   config-file: "{package}/pyproject.toml"
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
 
+  build_windows_wheels:
+    name: Build Windows wheels
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_ARCHS_WINDOWS: amd64
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
