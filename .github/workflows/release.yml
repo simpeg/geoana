@@ -1,0 +1,223 @@
+name: Release
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  build_manylinux_x86_64_wheels:
+    name: Build manylinux_x86_64
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_BUILD: "*manylinux_x86_64"
+          CIBW_ARCHS_LINUX: x86_64
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
+
+  build_manylinux_aarch64_wheels:
+    name: Build manylinux_aarch64
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_ARCHS_LINUX: aarch64
+          CIBW_BUILD: "*manylinux_aarch64"
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
+
+  build_musllinux_x86_64_wheels:
+    name: Build musllinux_x86_64 wheels
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_BUILD: "*musllinux_x86_64"
+          CIBW_ARCHS_LINUX: x86_64
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
+
+  build_mac_wheels:
+    name: Build macos wheels
+    runs-on: macos-11
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_ARCHS_MACOS: x86_64 arm64
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
+
+  build_windows_wheels:
+    name: Build Windows wheels
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_ARCHS_WINDOWS: AMD64
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+      - name: Upload wheels to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          packages-dir: ./wheelhouse/
+
+  # Don't upload this one to pypi, otherwise it will be preferred over every compiled one
+  # We can host it here on github though for those that need it (re: jupyter-light).
+  pure_python:
+    name: Create pure-python wheel
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: Build pure python wheel and install
+        run: |
+          python -m pip install --user --upgrade build
+          python -m build
+          find ./dist/*.whl | xargs pip install
+          python -c "import geoana; geoana.show_config()"
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./dist/geoana*.whl
+
+  distribute:
+    name: distribute source and documentation
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup environment
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-name: geoana-test
+        create-args: >-
+          python=3.11
+          numpy>=1.20
+          scipy>=1.8
+          libdlf
+          cython
+          setuptools_scm
+          meson-python>=0.14.0
+          meson
+          ninja
+          build
+          discretize
+          numba
+          matplotlib
+          jupyter
+          utm
+          pytest
+          pytest-cov
+          sphinx
+          sphinx-gallery>=0.1.13
+          pydata-sphinx-theme=0.13.3
+          numpydoc>=1.5
+          graphviz
+          pillow
+        cache-environment: true
+    - name: Prepare source distribution
+      run: |
+        python -m build --no-isolation --skip-dependency-check --sdist .
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        skip_existing: true
+    - name: Install Our Package
+      run: |
+        pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
+    - name: Build documentation
+      run: |
+        cd docs
+        make html
+        cd ..
+    - name: GitHub Pages
+      uses: crazy-max/ghaction-github-pages@v2.5.0
+      with:
+        build_dir: docs/_build/html
+        fqdn: geoana.simpeg.xyz
+        jekyll: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+  release:
+    name: Create Release
+    needs: [
+      build_manylinux_x86_64_wheels,
+      build_manylinux_aarch64_wheels,
+      build_musllinux_x86_64_wheels,
+      build_mac_wheels,
+      build_windows_wheels,
+      pure_python
+    ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v3
+      name: Retrieve assets
+      with:
+        name: artifact
+        path: dist
+    - name: Release to github
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/*
+        generate_release_notes: true
+        prerelease: false

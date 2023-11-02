@@ -95,8 +95,18 @@ Repository = 'https://github.com/simpeg/geoana.git'
 # skip building wheels for python 3.6, 3.7, all pypy versions, and specialty linux
 # processors (still does arm builds though).
 # skip windows 32bit
-skip = "cp36-* cp37-* pp* *_ppc64le *_i686 *_s390x *-win32 cp38-musllinux_x86_64"
+skip = "cp36-* cp37-* pp* *_ppc64le *_i686 *_s390x *-win32 cp38-musllinux_* *-musllinux_aarch64"
 build-verbosity = "3"
 
-# test importing discretize to make sure externals are loadable.
-test-command = 'python -c "import geoana; print(geoana.__version__)"'
+# test importing geoana to make sure externals are loadable.
+test-command = 'python -c "import geoana; geoana.show_config()"'
+
+[tool.cibuildwheel.config-settings]
+setup-args = '-Dwith_extensions=true'
+
+# use the visual studio compilers
+[tool.cibuildwheel.windows.config-settings]
+setup-args = [
+    '-Dwith_extensions=true',
+    '--vsenv'
+]
