@@ -19,13 +19,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
-      - name: Upload wheels to pypi
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          skip_existing: true
-          packages-dir: ./wheelhouse/
 
   build_manylinux_aarch64_wheels:
     name: Build manylinux_aarch64
@@ -44,13 +37,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
-      - name: Upload wheels to pypi
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          skip_existing: true
-          packages-dir: ./wheelhouse/
 
   build_musllinux_x86_64_wheels:
     name: Build musllinux_x86_64 wheels
@@ -65,13 +51,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
-      - name: Upload wheels to pypi
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          skip_existing: true
-          packages-dir: ./wheelhouse/
 
   build_mac_wheels:
     name: Build macos wheels
@@ -85,13 +64,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
-      - name: Upload wheels to pypi
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          skip_existing: true
-          packages-dir: ./wheelhouse/
 
   build_windows_wheels:
     name: Build Windows wheels
@@ -105,13 +77,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
-      - name: Upload wheels to pypi
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          skip_existing: true
-          packages-dir: ./wheelhouse/
 
   # Don't upload this one to pypi, otherwise it will be preferred over every compiled one
   # We can host it here on github though for those that need it (re: jupyter-light).
@@ -209,6 +174,9 @@ jobs:
       pure_python
     ]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
     - uses: actions/download-artifact@v3
       name: Retrieve assets
@@ -221,3 +189,12 @@ jobs:
         files: dist/*
         generate_release_notes: true
         prerelease: false
+    - name: Remove anywheel before pypi upload
+      run: rm -f dist/geoana*none-any.whl
+    - name: Upload wheels to pypi
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        skip-existing: true
+        packages-dir: ./dist/
