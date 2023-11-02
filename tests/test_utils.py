@@ -1,6 +1,12 @@
 import numpy as np
+import geoana
 from geoana.utils import check_xyz_dim, mkvc, ndgrid
 import pytest
+
+
+def test_config_info():
+    info = geoana.show_config()
+    assert info['version'] == geoana.__version__
 
 
 def test_mkvc():
