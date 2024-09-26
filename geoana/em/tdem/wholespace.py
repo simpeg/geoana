@@ -412,7 +412,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         term_1 = (
             self.current * self.length / (4 * np.pi * tile_r**2) * (
-                2 / np.sqrt(np.pi) * theta_r * np.exp(-theta_r**2) + erf(theta_r)
+              -  2 / np.sqrt(np.pi) * theta_r * np.exp(-theta_r**2) + erf(theta_r)
             )
         ).reshape((n_time, n_loc, 1))
 
@@ -510,12 +510,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         n_loc = len(r)
         n_time = len(self.time)
 
+        theta_r = np.outer(self.theta, r)
         theta3_r = np.outer(self.theta**3, r)
         tile_t = np.outer(self.time, np.ones(n_loc))
 
         term_1 = (
             self.current * self.length * theta3_r /
-            (2 * np.sqrt(np.pi)**3 * tile_t)
+            (2 * np.sqrt(np.pi)**3 * tile_t)  * 
+            np.exp(-theta_r**2)
         ).reshape((n_time, n_loc, 1))
 
         r = repeat_scalar(r)
