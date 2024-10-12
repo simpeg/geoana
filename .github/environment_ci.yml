@@ -9,7 +9,6 @@ dependencies:
   # optionals
   - matplotlib
   - utm
-  - numba
 
   # documentation
   - sphinx
