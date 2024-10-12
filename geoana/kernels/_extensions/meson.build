@@ -24,7 +24,6 @@ module_path = 'geoana/kernels/_extensions'
 py.extension_module(
     'potential_field_prism',
     'potential_field_prism.pyx',
-    include_directories: incdir_numpy,
     c_args: cython_c_args,
     install: true,
     subdir: module_path,
@@ -34,7 +33,6 @@ py.extension_module(
 py.extension_module(
     'rTE',
     ['rTE.pyx', '_rTE.cpp'],
-    include_directories: incdir_numpy,
     cpp_args: cython_cpp_args,
     install: true,
     subdir: module_path,
