@@ -32,4 +32,4 @@ dependencies:
   - ninja
   - cython>=3.0.8
   - setuptools_scm
-  - build
+  - python-build
