@@ -30,10 +30,15 @@ jobs:
         channels: conda-forge
         python-version: ${{ matrix.python-version }}
 
+    - name: Conda information
+      run: |
+        conda info
+        conda list
+        conda config --show
+
     - name: Install Our Package
       run: |
         pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
-        conda list
 
     - name: Run Tests
       run: |
