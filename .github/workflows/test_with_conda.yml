@@ -28,14 +28,12 @@ jobs:
         environment-name: geoana-test
         create-args: >-
           python=${{ matrix.python-version }}
-          numpy>=1.20
+          numpy>=2.0.0rc1
           scipy>=1.8
           libdlf
-          cython
+          cython>=3.0.8
           setuptools_scm
-          meson-python>=0.14.0
-          meson
-          ninja
+          meson-python>=0.15.0
           build
           discretize
           matplotlib

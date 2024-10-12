@@ -106,3 +106,5 @@ geoana/kernels/_extensions/potential_field_prism_api.h
 
 # setuptools_scm
 geoana/version.py
+
+.idea/
