@@ -1,0 +1,35 @@
+name: geoana-test
+channels:
+  - conda-forge
+dependencies:
+  - numpy>=2.0.0rc1
+  - scipy>=1.8
+  - libdlf
+
+  # optionals
+  - matplotlib
+  - utm
+  - numba
+
+  # documentation
+  - sphinx
+  - pydata-sphinx-theme==0.15.4
+  - sphinx-gallery>=0.1.13
+  - numpydoc>=1.5
+  - discretize
+  - jupyter
+  - graphviz
+  - pillow
+
+  # testing
+  - pytest
+  - pytest-cov
+
+  # Building
+  - pip
+  - meson-python>=0.15.0
+  - meson
+  - ninja
+  - cython>=3.0.8
+  - setuptools_scm
+  - build

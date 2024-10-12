@@ -56,8 +56,8 @@ jittable = ["numba"]
 all = ["geoana[plot,extras,jittable]"]
 doc = [
     "sphinx!=4.1.0",
-    "pydata-sphinx-theme==0.9.0",
-    "sphinx-gallery==0.1.13",
+    "pydata-sphinx-theme==0.15.4",
+    "sphinx-gallery>=0.1.13",
     "numpydoc>=1.5",
     "discretize",
     "jupyter",
