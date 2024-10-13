@@ -45,7 +45,7 @@ jobs:
 
     - name: Install Our Package
       run: |
-        pip install . --config-settings=setup-args="-Dwith_extensions=true"
+        pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
 
     - name: Run Tests
       run: |
