@@ -1,6 +1,5 @@
 import numpy as np
 from numpy.testing import assert_allclose
-from discretize.tests import check_derivative
 import pytest
 
 import geoana.kernels.potential_field_prism as pf
@@ -10,6 +9,11 @@ try:
     from numba import njit
 except ImportError:
     njit = None
+
+try:
+    from discretize.tests import check_derivative
+except ImportError:
+    check_derivative = None
 
 
 class TestCompiledVsNumpy():
@@ -73,6 +77,7 @@ class TestCompiledVsNumpy():
         assert_allclose(v0, v1)
 
 
+@pytest.mark.skipif(check_derivative is None, reason="discretize not installed.")
 class TestGravityPrismDerivatives():
     xyz = np.mgrid[-100:100:26j, -100:100:26j, -100:100:26j]
     x = xyz[0].ravel()
@@ -144,6 +149,7 @@ class TestGravityPrismDerivatives():
         assert check_derivative(grav_field, self.z, num=3, plotIt=False)
 
 
+@pytest.mark.skipif(check_derivative is None, reason="discretize not installed.")
 class TestMagPrismDerivatives():
     xyz = np.mgrid[-100:100:26j, -100:100:26j, -100:100:26j]
     x = xyz[0].ravel()
@@ -288,34 +294,34 @@ def test_grav_init_and_errors():
         prism.rho = 'abc'
 
 
-if njit is not None:
-    @pytest.mark.parametrize('function', [
-        pf.prism_f,
-        pf.prism_fz,
-        pf.prism_fzx,
-        pf.prism_fzy,
-        pf.prism_fzz,
-        pf.prism_fzzz,
-        pf.prism_fxxy,
-        pf.prism_fxxz,
-        pf.prism_fxyz
-    ])
-    def test_numba_jitting_nopython(function):
+@pytest.mark.skipif(njit is None, reason="numba is not installed.")
+@pytest.mark.parametrize('function', [
+    pf.prism_f,
+    pf.prism_fz,
+    pf.prism_fzx,
+    pf.prism_fzy,
+    pf.prism_fzz,
+    pf.prism_fzzz,
+    pf.prism_fxxy,
+    pf.prism_fxxz,
+    pf.prism_fxyz
+])
+def test_numba_jitting_nopython(function):
 
-        # create a vectorized jit function of it:
+    # create a vectorized jit function of it:
 
-        x = np.random.rand(10)
-        y = np.random.rand(10)
-        z = np.random.rand(10)
-        @njit
-        def jitted_func(x, y, z):
-            n = len(x)
-            out = np.empty_like(x)
-            for i in range(n):
-                out[i] = function(x[i], y[i], z[i])
-            return out
+    x = np.random.rand(10)
+    y = np.random.rand(10)
+    z = np.random.rand(10)
+    @njit
+    def jitted_func(x, y, z):
+        n = len(x)
+        out = np.empty_like(x)
+        for i in range(n):
+            out[i] = function(x[i], y[i], z[i])
+        return out
 
-        v1 = jitted_func(x, y, z)
-        v2 = function(x, y, z)
+    v1 = jitted_func(x, y, z)
+    v2 = function(x, y, z)
 
-        assert_allclose(v1, v2)
+    assert_allclose(v1, v2)

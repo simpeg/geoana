@@ -1,7 +1,6 @@
 import numpy as np
 
 from geoana.em.tdem import VerticalMagneticDipoleHalfSpace
-import discretize
 from geoana.em.tdem.base import theta
 from scipy.special import erf, ive
 
@@ -10,7 +9,7 @@ def H_from_Vertical(
     XYZ, loc, time, sigma, mu, moment
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec[:, :2], axis=-1)
@@ -38,8 +37,7 @@ def H_from_Vertical(
 def dH_from_Vertical(
     XYZ, loc, time, sigma, mu, moment
 ):
-
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec[:, :2], axis=-1)
@@ -85,7 +83,7 @@ class TestVerticalMagneticDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         htest = H_from_Vertical(
             xyz, vmdhs.location, vmdhs.time, vmdhs.sigma, vmdhs.mu, vmdhs.moment
@@ -103,7 +101,7 @@ class TestVerticalMagneticDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         btest = B_from_Vertical(
             xyz, vmdhs.location, vmdhs.time, vmdhs.sigma, vmdhs.mu, vmdhs.moment
@@ -121,7 +119,7 @@ class TestVerticalMagneticDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         dh_test = dH_from_Vertical(
             xyz, vmdhs.location, vmdhs.time, vmdhs.sigma, vmdhs.mu, vmdhs.moment
@@ -139,7 +137,7 @@ class TestVerticalMagneticDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         db_test = dB_from_Vertical(
             xyz, vmdhs.location, vmdhs.time, vmdhs.sigma, vmdhs.mu, vmdhs.moment

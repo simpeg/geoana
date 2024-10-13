@@ -1,5 +1,4 @@
 import pytest
-import discretize
 import numpy as np
 from scipy.constants import G
 
@@ -10,7 +9,7 @@ def U_from_PointMass(
     XYZ, loc, m
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -23,7 +22,7 @@ def g_from_PointMass(
         XYZ, loc, m
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -36,7 +35,7 @@ def gtens_from_PointMass(
         XYZ, loc, m
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -72,7 +71,7 @@ class TestPointMass:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         utest = U_from_PointMass(
             xyz, pm.location, pm.mass
@@ -93,7 +92,7 @@ class TestPointMass:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         gtest = g_from_PointMass(
             xyz, pm.location, pm.mass
@@ -114,7 +113,7 @@ class TestPointMass:
         x = np.linspace(-20., 20., 5)
         y = np.linspace(-30., 30., 5)
         z = np.linspace(-40., 40., 5)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         g_tenstest = gtens_from_PointMass(
             xyz, pm.location, pm.mass
@@ -132,7 +131,7 @@ def U_from_Sphere(
     XYZ, loc, m, rho, radius
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -148,7 +147,7 @@ def g_from_Sphere(
         XYZ, loc, m, rho, radius
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -164,7 +163,7 @@ def gtens_from_Sphere(
         XYZ, loc, m, rho, radius
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -215,7 +214,7 @@ class TestSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         utest = U_from_Sphere(
             xyz, s.location, s.mass, s.rho, s.radius
@@ -239,7 +238,7 @@ class TestSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         gtest = g_from_Sphere(
             xyz, s.location, s.mass, s.rho, s.radius
@@ -263,7 +262,7 @@ class TestSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         g_tens_test = gtens_from_Sphere(
             xyz, s.location, s.mass, s.rho, s.radius
