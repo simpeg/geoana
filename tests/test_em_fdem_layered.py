@@ -1,4 +1,6 @@
 import unittest
+from tabnanny import check
+
 import pytest
 import numpy as np
 from numpy.testing import assert_allclose
@@ -8,11 +10,13 @@ from geoana.em.fdem import MagneticDipoleHalfSpace, MagneticDipoleLayeredHalfSpa
 from geoana.kernels.tranverse_electric_reflections import (
     rTE_forward, rTE_gradient, _rTE_forward, _rTE_gradient
 )
-import discretize
 from scipy.special import iv, kv
 from geoana.em.fdem.base import sigma_hat
 
-from discretize.tests import check_derivative
+try:
+    from discretize.tests import check_derivative
+except ImportError:
+    check_derivative = None
 
 
 class TestHalfSpace:
@@ -180,7 +184,7 @@ class TestLayeredHalfspace(unittest.TestCase):
             x = np.linspace(-20., 20., 50)
             y = np.linspace(-30., 30., 50)
             z = np.linspace(-40., 40., 50)
-            xyz = discretize.utils.ndgrid([x, y, z])
+            xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
             mag_layer.magnetic_field(xyz)
 
     def test_magnetic_field(self):
@@ -279,64 +283,65 @@ class TestLayeredHalfspace(unittest.TestCase):
             assert_allclose(em_layer_sec, em_half_sec, rtol=1e-05, atol=1e-08)
 
 
-class TestrTEGradient(unittest.TestCase):
-    def test_rTE_jacobian(self):
-        """Test to make sure numpy and compiled give same results"""
-        n_layer = 11
-        n_frequency = 5
-        n_lambda = 8
-        frequencies = np.logspace(1, 4, 5)
-        thicknesses = np.ones(n_layer-1)
-        lamb = np.logspace(0, 3, n_lambda)
-        np.random.seed(0)
-        sigma = 1E-1*(1 + 0.1 * np.random.rand(n_layer, n_frequency))
-        mu = mu_0 * (1 + 0.1 * np.random.rand(n_layer, n_frequency))
-        dmu = mu_0 * 0.1 * np.random.rand(n_layer, n_frequency)
+if check_derivative is not None:
+    class TestrTEGradient(unittest.TestCase):
+        def test_rTE_jacobian(self):
+            """Test to make sure numpy and compiled give same results"""
+            n_layer = 11
+            n_frequency = 5
+            n_lambda = 8
+            frequencies = np.logspace(1, 4, 5)
+            thicknesses = np.ones(n_layer-1)
+            lamb = np.logspace(0, 3, n_lambda)
+            np.random.seed(0)
+            sigma = 1E-1*(1 + 0.1 * np.random.rand(n_layer, n_frequency))
+            mu = mu_0 * (1 + 0.1 * np.random.rand(n_layer, n_frequency))
+            dmu = mu_0 * 0.1 * np.random.rand(n_layer, n_frequency)
 
-        def rte_sigma(x):
-            sigma = x.reshape(n_layer, n_frequency)
-            rTE = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
+            def rte_sigma(x):
+                sigma = x.reshape(n_layer, n_frequency)
+                rTE = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
 
-            J_sigma, _, _ = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
+                J_sigma, _, _ = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
 
-            def J(y):
-                y = y.reshape(n_layer, n_frequency)
-                # do summation over layers, broadcast over frequencies only
-                # equivalent to:
-                # out = np.empty_like(rTE)
-                # for i in range(n_frequency):
-                #     out[i] = J_sigma[:, i, :]).T@y[:, i]
-                return np.einsum('i...k,i...', J_sigma, y)
-            return rTE, J
+                def J(y):
+                    y = y.reshape(n_layer, n_frequency)
+                    # do summation over layers, broadcast over frequencies only
+                    # equivalent to:
+                    # out = np.empty_like(rTE)
+                    # for i in range(n_frequency):
+                    #     out[i] = J_sigma[:, i, :]).T@y[:, i]
+                    return np.einsum('i...k,i...', J_sigma, y)
+                return rTE, J
 
-        def rte_h(x):
-            thicknesses = x
-            rTE = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
-            _, J_h, _ = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
+            def rte_h(x):
+                thicknesses = x
+                rTE = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
+                _, J_h, _ = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
 
-            def J(y):
-                #(J_h.T@y).T
-                out = np.einsum('i...,i', J_h, y)
-                # do sum over n_layer, broadcast over all others
-                return out
+                def J(y):
+                    #(J_h.T@y).T
+                    out = np.einsum('i...,i', J_h, y)
+                    # do sum over n_layer, broadcast over all others
+                    return out
 
-            return rTE, J
+                return rTE, J
 
-        def rte_mu(x):
-            mu = x.reshape(n_layer, n_frequency)
-            rTE = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
+            def rte_mu(x):
+                mu = x.reshape(n_layer, n_frequency)
+                rTE = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
 
-            _, _, J_mu = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
+                _, _, J_mu = rTE_gradient(frequencies, lamb, sigma, mu, thicknesses)
 
-            def J(y):
-                y = y.reshape(n_layer, n_frequency)
-                # do summation over layers, broadcast over frequencies only
-                return np.einsum('i...k,i...', J_mu, y)
-            return rTE, J
+                def J(y):
+                    y = y.reshape(n_layer, n_frequency)
+                    # do summation over layers, broadcast over frequencies only
+                    return np.einsum('i...k,i...', J_mu, y)
+                return rTE, J
 
-        self.assertTrue(check_derivative(rte_sigma, sigma.reshape(-1), num=4, plotIt=False))
-        self.assertTrue(check_derivative(rte_h, thicknesses, num=4, plotIt=False))
-        self.assertTrue(check_derivative(rte_mu, mu.reshape(-1), dx=dmu.reshape(-1), num=4, plotIt=False))
+            self.assertTrue(check_derivative(rte_sigma, sigma.reshape(-1), num=4, plotIt=False))
+            self.assertTrue(check_derivative(rte_h, thicknesses, num=4, plotIt=False))
+            self.assertTrue(check_derivative(rte_mu, mu.reshape(-1), dx=dmu.reshape(-1), num=4, plotIt=False))
 
 
 class TestCompiledVsNumpy(unittest.TestCase):

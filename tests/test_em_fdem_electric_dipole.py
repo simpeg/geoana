@@ -4,7 +4,6 @@ import numpy as np
 
 from scipy.constants import mu_0, epsilon_0
 from geoana.em import fdem
-import discretize
 
 # from SimPEG.EM import FDEM
 # from SimPEG import Maps
@@ -31,7 +30,7 @@ def E_from_EDWS(
     epsilon = epsilon_0*epsr
     sig_hat = sig + 1j*fdem.omega(f)*epsilon
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     dx = XYZ[:, 0] - srcLoc[0]
     dy = XYZ[:, 1] - srcLoc[1]
@@ -133,7 +132,7 @@ class TestFDEMdipole(unittest.TestCase):
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         extest, eytest, eztest = E_from_EDWS(
             xyz, edws.location, edws.sigma, edws.frequency,
@@ -170,7 +169,7 @@ class TestFDEMdipole(unittest.TestCase):
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
 
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         extest0, eytest0, eztest0 = E_from_EDWS(
             xyz, edws.location, edws.sigma, edws.frequency,

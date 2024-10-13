@@ -2,7 +2,10 @@ import pytest
 import unittest
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
-import discretize
+try:
+    import discretize
+except ImportError:
+    discretize = None
 from scipy.special import ellipk, ellipe
 
 from geoana.em import static, fdem
@@ -72,7 +75,7 @@ class TestEM_Static(unittest.TestCase):
             x = np.linspace(-20., 20., 50)
             y = np.linspace(-30., 30., 50)
             z = np.linspace(-40., 40., 50)
-            xyz = discretize.utils.ndgrid([x, y, z])
+            xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
             self.clws.magnetic_flux_density(xyz, coordinates='square')
         with pytest.raises(ValueError):
             self.lcfs.nodes = [0, 1, 2, 3, 4, 5]
@@ -85,26 +88,21 @@ class TestEM_Static(unittest.TestCase):
 
     def test_vector_potential(self):
         n = 50
-        mesh = discretize.TensorMesh(
-            [np.ones(n), np.ones(n), np.ones(n)], x0="CCC"
-        )
-
-        # radius = 1.0
-        # self.clws.radius = radius
-        # self.clws.current = 1./(np.pi * radius**2)
+        x = y = z = np.linspace(-25, 25, n)
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         for orientation in ["x", "y", "z"]:
             self.clws.orientation = orientation
             self.mdws.orientation = orientation
 
             inds = (
-                (np.absolute(mesh.cell_centers[:, 0]) > 5) &
-                (np.absolute(mesh.cell_centers[:, 1]) > 5) &
-                (np.absolute(mesh.cell_centers[:, 2]) > 5)
+                (np.absolute(xyz[:, 0]) > 5) &
+                (np.absolute(xyz[:, 1]) > 5) &
+                (np.absolute(xyz[:, 2]) > 5)
             )
 
-            a_clws = self.clws.vector_potential(mesh.cell_centers)[inds]
-            a_mdws = self.mdws.vector_potential(mesh.cell_centers)[inds]
+            a_clws = self.clws.vector_potential(xyz)[inds]
+            a_mdws = self.mdws.vector_potential(xyz)[inds]
 
             self.assertTrue(isinstance(a_clws, np.ndarray))
             self.assertTrue(isinstance(a_mdws, np.ndarray))
@@ -114,128 +112,130 @@ class TestEM_Static(unittest.TestCase):
                 0.5 * TOL * (np.linalg.norm(a_clws) + np.linalg.norm(a_mdws))
             )
 
-    def test_magnetic_field_tensor(self):
-        print("\n === Testing Tensor Mesh === \n")
-        n = 30
-        h = 2.
-        mesh = discretize.TensorMesh(
-            [h*np.ones(n), h*np.ones(n), h*np.ones(n)], x0="CCC"
-        )
+    if discretize is not None:
+        def test_magnetic_field_tensor(self):
+            print("\n === Testing Tensor Mesh === \n")
+            n = 30
+            h = 2.
+            mesh = discretize.TensorMesh(
+                [np.full(n, h), np.full(n, h), np.full(n, h)],
+                origin='CCC'
+            )
 
-        for radius in [0.5, 1, 1.5]:
-            self.clws.radius = radius
-            self.clws.current = 1./(np.pi * radius**2)
+            for radius in [0.5, 1, 1.5]:
+                self.clws.radius = radius
+                self.clws.current = 1./(np.pi * radius**2)
 
-            fdem_dipole = fdem.MagneticDipoleWholeSpace(frequency=0)
+                fdem_dipole = fdem.MagneticDipoleWholeSpace(frequency=0)
 
-            for location in [
-                np.r_[0, 0, 0], np.r_[10, 0, 0], np.r_[0, -10, 0],
-                np.r_[0, 0, 10], np.r_[10, 10, 10]
-            ]:
-                self.clws.location = location
-                self.mdws.location = location
-                fdem_dipole.location = location
+                for location in [
+                    np.r_[0, 0, 0], np.r_[10, 0, 0], np.r_[0, -10, 0],
+                    np.r_[0, 0, 10], np.r_[10, 10, 10]
+                ]:
+                    self.clws.location = location
+                    self.mdws.location = location
+                    fdem_dipole.location = location
 
-                for orientation in ["x", "y", "z"]:
-                    self.clws.orientation = orientation
-                    self.mdws.orientation = orientation
-                    fdem_dipole.orientation = orientation
+                    for orientation in ["x", "y", "z"]:
+                        self.clws.orientation = orientation
+                        self.mdws.orientation = orientation
+                        fdem_dipole.orientation = orientation
 
-                    a_clws = np.hstack([
-                        self.clws.vector_potential(mesh.gridEx)[:, 0],
-                        self.clws.vector_potential(mesh.gridEy)[:, 1],
-                        self.clws.vector_potential(mesh.gridEz)[:, 2]
-                    ])
+                        a_clws = np.hstack([
+                            self.clws.vector_potential(mesh.gridEx)[:, 0],
+                            self.clws.vector_potential(mesh.gridEy)[:, 1],
+                            self.clws.vector_potential(mesh.gridEz)[:, 2]
+                        ])
 
-                    a_mdws = np.hstack([
-                        self.mdws.vector_potential(mesh.gridEx)[:, 0],
-                        self.mdws.vector_potential(mesh.gridEy)[:, 1],
-                        self.mdws.vector_potential(mesh.gridEz)[:, 2]
-                    ])
+                        a_mdws = np.hstack([
+                            self.mdws.vector_potential(mesh.gridEx)[:, 0],
+                            self.mdws.vector_potential(mesh.gridEy)[:, 1],
+                            self.mdws.vector_potential(mesh.gridEz)[:, 2]
+                        ])
 
-                    b_clws = mesh.edge_curl * a_clws
-                    b_mdws = mesh.edge_curl * a_mdws
+                        b_clws = mesh.edge_curl * a_clws
+                        b_mdws = mesh.edge_curl * a_mdws
 
-                    b_clws_true = np.hstack([
-                        self.clws.magnetic_flux_density(mesh.gridFx)[:, 0],
-                        self.clws.magnetic_flux_density(mesh.gridFy)[:, 1],
-                        self.clws.magnetic_flux_density(mesh.gridFz)[:, 2]
-                    ])
-                    b_mdws_true = np.hstack([
-                        self.mdws.magnetic_flux_density(mesh.gridFx)[:, 0],
-                        self.mdws.magnetic_flux_density(mesh.gridFy)[:, 1],
-                        self.mdws.magnetic_flux_density(mesh.gridFz)[:, 2]
-                    ])
-                    b_fdem = np.hstack([
-                        fdem_dipole.magnetic_flux_density(mesh.gridFx)[:, 0],
-                        fdem_dipole.magnetic_flux_density(mesh.gridFy)[:, 1],
-                        fdem_dipole.magnetic_flux_density(mesh.gridFz)[:, 2]
-                    ])
+                        b_clws_true = np.hstack([
+                            self.clws.magnetic_flux_density(mesh.gridFx)[:, 0],
+                            self.clws.magnetic_flux_density(mesh.gridFy)[:, 1],
+                            self.clws.magnetic_flux_density(mesh.gridFz)[:, 2]
+                        ])
+                        b_mdws_true = np.hstack([
+                            self.mdws.magnetic_flux_density(mesh.gridFx)[:, 0],
+                            self.mdws.magnetic_flux_density(mesh.gridFy)[:, 1],
+                            self.mdws.magnetic_flux_density(mesh.gridFz)[:, 2]
+                        ])
+                        b_fdem = np.hstack([
+                            fdem_dipole.magnetic_flux_density(mesh.gridFx)[:, 0],
+                            fdem_dipole.magnetic_flux_density(mesh.gridFy)[:, 1],
+                            fdem_dipole.magnetic_flux_density(mesh.gridFz)[:, 2]
+                        ])
 
-                    self.assertTrue(isinstance(b_fdem, np.ndarray))
+                        self.assertTrue(isinstance(b_fdem, np.ndarray))
 
-                    inds = (np.hstack([
-                        (np.absolute(mesh.gridFx[:, 0]) > h*2 + location[0]) &
-                        (np.absolute(mesh.gridFx[:, 1]) > h*2 + location[1]) &
-                        (np.absolute(mesh.gridFx[:, 2]) > h*2 + location[2]),
-                        (np.absolute(mesh.gridFy[:, 0]) > h*2 + location[0]) &
-                        (np.absolute(mesh.gridFy[:, 1]) > h*2 + location[1]) &
-                        (np.absolute(mesh.gridFy[:, 2]) > h*2 + location[2]),
-                        (np.absolute(mesh.gridFz[:, 0]) > h*2 + location[0]) &
-                        (np.absolute(mesh.gridFz[:, 1]) > h*2 + location[1]) &
-                        (np.absolute(mesh.gridFz[:, 2]) > h*2 + location[2])
-                    ]))
+                        inds = (np.hstack([
+                            (np.absolute(mesh.gridFx[:, 0]) > h*2 + location[0]) &
+                            (np.absolute(mesh.gridFx[:, 1]) > h*2 + location[1]) &
+                            (np.absolute(mesh.gridFx[:, 2]) > h*2 + location[2]),
+                            (np.absolute(mesh.gridFy[:, 0]) > h*2 + location[0]) &
+                            (np.absolute(mesh.gridFy[:, 1]) > h*2 + location[1]) &
+                            (np.absolute(mesh.gridFy[:, 2]) > h*2 + location[2]),
+                            (np.absolute(mesh.gridFz[:, 0]) > h*2 + location[0]) &
+                            (np.absolute(mesh.gridFz[:, 1]) > h*2 + location[1]) &
+                            (np.absolute(mesh.gridFz[:, 2]) > h*2 + location[2])
+                        ]))
 
-                    loop_passed_1 = (
-                        np.linalg.norm(b_fdem[inds] - b_clws[inds]) <
-                        0.5 * TOL * (
-                            np.linalg.norm(b_fdem[inds]) +
-                            np.linalg.norm(b_clws[inds])
+                        loop_passed_1 = (
+                            np.linalg.norm(b_fdem[inds] - b_clws[inds]) <
+                            0.5 * TOL * (
+                                np.linalg.norm(b_fdem[inds]) +
+                                np.linalg.norm(b_clws[inds])
+                            )
                         )
-                    )
 
-                    loop_passed_2 = (
-                        np.linalg.norm(b_fdem[inds] - b_clws_true[inds]) <
-                        0.5 * TOL * (
-                            np.linalg.norm(b_fdem[inds]) +
-                            np.linalg.norm(b_clws_true[inds])
+                        loop_passed_2 = (
+                            np.linalg.norm(b_fdem[inds] - b_clws_true[inds]) <
+                            0.5 * TOL * (
+                                np.linalg.norm(b_fdem[inds]) +
+                                np.linalg.norm(b_clws_true[inds])
+                            )
                         )
-                    )
 
-                    dipole_passed = (
-                        np.linalg.norm(b_fdem[inds] - b_mdws[inds]) <
-                        0.5 * TOL * (
-                            np.linalg.norm(b_fdem[inds]) +
-                            np.linalg.norm(b_mdws[inds])
+                        dipole_passed = (
+                            np.linalg.norm(b_fdem[inds] - b_mdws[inds]) <
+                            0.5 * TOL * (
+                                np.linalg.norm(b_fdem[inds]) +
+                                np.linalg.norm(b_mdws[inds])
+                            )
                         )
-                    )
 
-                    print(
-                        "Testing r = {}, loc = {}, orientation = {}".format(
-                            radius, location, orientation
+                        print(
+                            "Testing r = {}, loc = {}, orientation = {}".format(
+                                radius, location, orientation
+                            )
                         )
-                    )
-                    print(
-                        "  fdem: {:1.4e}, loop: {:1.4e}, dipole: {:1.4e}"
-                        " Passed? loop: {}, dipole: {} \n".format(
-                            np.linalg.norm(b_fdem[inds]),
-                            np.linalg.norm(b_clws[inds]),
-                            np.linalg.norm(b_mdws[inds]),
-                            loop_passed_1,
-                            loop_passed_2,
-                            dipole_passed
+                        print(
+                            "  fdem: {:1.4e}, loop: {:1.4e}, dipole: {:1.4e}"
+                            " Passed? loop: {}, dipole: {} \n".format(
+                                np.linalg.norm(b_fdem[inds]),
+                                np.linalg.norm(b_clws[inds]),
+                                np.linalg.norm(b_mdws[inds]),
+                                loop_passed_1,
+                                loop_passed_2,
+                                dipole_passed
+                            )
                         )
-                    )
-                    self.assertTrue(loop_passed_1)
-                    self.assertTrue(loop_passed_2)
-                    self.assertTrue(dipole_passed)
+                        self.assertTrue(loop_passed_1)
+                        self.assertTrue(loop_passed_2)
+                        self.assertTrue(dipole_passed)
 
     def test_dipole_magnetic_flux_density(self):
         mdws = static.MagneticDipoleWholeSpace()
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
         n_obs = xyz.shape[0]
 
         xyz_ = spatial.cylindrical_2_cartesian(xyz)
@@ -256,7 +256,7 @@ class TestEM_Static(unittest.TestCase):
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         xyz_ = spatial.cylindrical_2_cartesian(xyz)
         r = mpws.vector_distance(xyz_)
@@ -273,7 +273,7 @@ class TestEM_Static(unittest.TestCase):
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         xyz_ = spatial.cylindrical_2_cartesian(xyz)
         r = mpws.vector_distance(xyz_)
@@ -291,7 +291,7 @@ class TestEM_Static(unittest.TestCase):
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         xyz_ = np.atleast_2d(xyz)
         xyz_ = spatial.cylindrical_2_cartesian(xyz_)
@@ -320,132 +320,133 @@ class TestEM_Static(unittest.TestCase):
         b_test = clws.magnetic_flux_density(xyz, coordinates='cylindrical')
         np.testing.assert_equal(b_test, b)
 
-    def test_magnetic_field_3Dcyl(self):
-        print("\n === Testing 3D Cyl Mesh === \n")
-        n = 50
-        ny = 10
-        h = 2.
-        mesh = discretize.CylindricalMesh(
-            [h*np.ones(n), np.ones(ny) * 2 * np.pi / ny, h*np.ones(n)], x0="00C"
-        )
+    if discretize is not None:
+        def test_magnetic_field_3Dcyl(self):
+            print("\n === Testing 3D Cyl Mesh === \n")
+            n = 50
+            ny = 10
+            h = 2.
+            mesh = discretize.CylindricalMesh(
+                [h*np.ones(n), np.ones(ny) * 2 * np.pi / ny, h*np.ones(n)], x0="00C"
+            )
 
-        for radius in [0.5, 1, 1.5]:
-            self.clws.radius = radius
-            self.clws.current = 1./(np.pi * radius**2)  # So that all have moment of 1.0
+            for radius in [0.5, 1, 1.5]:
+                self.clws.radius = radius
+                self.clws.current = 1./(np.pi * radius**2)  # So that all have moment of 1.0
 
-            fdem_dipole = fdem.MagneticDipoleWholeSpace(frequency=0, quasistatic=True)
+                fdem_dipole = fdem.MagneticDipoleWholeSpace(frequency=0, quasistatic=True)
 
-            for location in [
-                np.r_[0, 0, 0], np.r_[0, 4, 0], np.r_[4, 4., 0],
-                np.r_[4, 4, 4], np.r_[4, 0, -4]
-            ]:
-                self.clws.location = location
-                self.mdws.location = location
-                fdem_dipole.location = location
+                for location in [
+                    np.r_[0, 0, 0], np.r_[0, 4, 0], np.r_[4, 4., 0],
+                    np.r_[4, 4, 4], np.r_[4, 0, -4]
+                ]:
+                    self.clws.location = location
+                    self.mdws.location = location
+                    fdem_dipole.location = location
 
-                for orientation in ["z"]:
-                    self.clws.orientation = orientation
-                    self.mdws.orientation = orientation
-                    fdem_dipole.orientation = orientation
+                    for orientation in ["z"]:
+                        self.clws.orientation = orientation
+                        self.mdws.orientation = orientation
+                        fdem_dipole.orientation = orientation
 
-                    a_clws = np.hstack([
-                        self.clws.vector_potential(
-                            mesh.gridEx, coordinates="cylindrical"
-                        )[:, 0],
-                        self.clws.vector_potential(
-                            mesh.gridEy, coordinates="cylindrical"
-                        )[:, 1],
-                        self.clws.vector_potential(
-                            mesh.gridEz, coordinates="cylindrical"
-                        )[:, 2]
-                    ])
+                        a_clws = np.hstack([
+                            self.clws.vector_potential(
+                                mesh.gridEx, coordinates="cylindrical"
+                            )[:, 0],
+                            self.clws.vector_potential(
+                                mesh.gridEy, coordinates="cylindrical"
+                            )[:, 1],
+                            self.clws.vector_potential(
+                                mesh.gridEz, coordinates="cylindrical"
+                            )[:, 2]
+                        ])
 
-                    a_mdws = np.hstack([
-                        self.mdws.vector_potential(
-                            mesh.gridEx, coordinates="cylindrical"
-                        )[:, 0],
-                        self.mdws.vector_potential(
-                            mesh.gridEy, coordinates="cylindrical"
-                        )[:, 1],
-                        self.mdws.vector_potential(
-                            mesh.gridEz, coordinates="cylindrical"
-                        )[:, 2]
-                    ])
+                        a_mdws = np.hstack([
+                            self.mdws.vector_potential(
+                                mesh.gridEx, coordinates="cylindrical"
+                            )[:, 0],
+                            self.mdws.vector_potential(
+                                mesh.gridEy, coordinates="cylindrical"
+                            )[:, 1],
+                            self.mdws.vector_potential(
+                                mesh.gridEz, coordinates="cylindrical"
+                            )[:, 2]
+                        ])
 
-                    b_clws = mesh.edge_curl * a_clws
-                    b_mdws = mesh.edge_curl * a_mdws
+                        b_clws = mesh.edge_curl * a_clws
+                        b_mdws = mesh.edge_curl * a_mdws
 
-                    b_fdem = np.hstack([
-                        spatial.cartesian_2_cylindrical(
-                            spatial.cylindrical_2_cartesian(mesh.gridFx),
-                            fdem_dipole.magnetic_flux_density(
-                                spatial.cylindrical_2_cartesian(mesh.gridFx)
+                        b_fdem = np.hstack([
+                            spatial.cartesian_2_cylindrical(
+                                spatial.cylindrical_2_cartesian(mesh.gridFx),
+                                fdem_dipole.magnetic_flux_density(
+                                    spatial.cylindrical_2_cartesian(mesh.gridFx)
+                                )
+                            )[:, 0],
+                            spatial.cartesian_2_cylindrical(
+                                spatial.cylindrical_2_cartesian(mesh.gridFy),
+                                fdem_dipole.magnetic_flux_density(
+                                    spatial.cylindrical_2_cartesian(mesh.gridFy)
+                                )
+                            )[:, 1],
+                            spatial.cartesian_2_cylindrical(
+                                spatial.cylindrical_2_cartesian(mesh.gridFz),
+                                fdem_dipole.magnetic_flux_density(
+                                    spatial.cylindrical_2_cartesian(mesh.gridFz)
+                                )
+                            )[:, 2]
+                        ])
+
+
+                        inds = (np.hstack([
+                            (np.absolute(mesh.gridFx[:, 0]) > h*4 + location[0]) &
+                            (np.absolute(mesh.gridFx[:, 2]) > h*4 + location[2]),
+                            (np.absolute(mesh.gridFy[:, 0]) > h*4 + location[0]) &
+                            (np.absolute(mesh.gridFy[:, 2]) > h*4 + location[2]),
+                            (np.absolute(mesh.gridFz[:, 0]) > h*4 + location[0]) &
+                            (np.absolute(mesh.gridFz[:, 2]) > h*4 + location[2])
+                        ]))
+
+                        loop_passed = (
+                            np.linalg.norm(b_fdem[inds] - b_clws[inds]) <
+                            0.5 * TOL * (
+                                np.linalg.norm(b_fdem[inds]) +
+                                np.linalg.norm(b_clws[inds])
                             )
-                        )[:, 0],
-                        spatial.cartesian_2_cylindrical(
-                            spatial.cylindrical_2_cartesian(mesh.gridFy),
-                            fdem_dipole.magnetic_flux_density(
-                                spatial.cylindrical_2_cartesian(mesh.gridFy)
+                        )
+
+                        dipole_passed = (
+                            np.linalg.norm(b_fdem[inds] - b_mdws[inds]) <
+                            0.5 * TOL * (
+                                np.linalg.norm(b_fdem[inds]) +
+                                np.linalg.norm(b_mdws[inds])
                             )
-                        )[:, 1],
-                        spatial.cartesian_2_cylindrical(
-                            spatial.cylindrical_2_cartesian(mesh.gridFz),
-                            fdem_dipole.magnetic_flux_density(
-                                spatial.cylindrical_2_cartesian(mesh.gridFz)
+                        )
+
+                        print(
+                            "Testing r = {}, loc = {}, orientation = {}".format(
+                                radius, location, orientation
                             )
-                        )[:, 2]
-                    ])
-
-
-                    inds = (np.hstack([
-                        (np.absolute(mesh.gridFx[:, 0]) > h*4 + location[0]) &
-                        (np.absolute(mesh.gridFx[:, 2]) > h*4 + location[2]),
-                        (np.absolute(mesh.gridFy[:, 0]) > h*4 + location[0]) &
-                        (np.absolute(mesh.gridFy[:, 2]) > h*4 + location[2]),
-                        (np.absolute(mesh.gridFz[:, 0]) > h*4 + location[0]) &
-                        (np.absolute(mesh.gridFz[:, 2]) > h*4 + location[2])
-                    ]))
-
-                    loop_passed = (
-                        np.linalg.norm(b_fdem[inds] - b_clws[inds]) <
-                        0.5 * TOL * (
-                            np.linalg.norm(b_fdem[inds]) +
-                            np.linalg.norm(b_clws[inds])
                         )
-                    )
-
-                    dipole_passed = (
-                        np.linalg.norm(b_fdem[inds] - b_mdws[inds]) <
-                        0.5 * TOL * (
-                            np.linalg.norm(b_fdem[inds]) +
-                            np.linalg.norm(b_mdws[inds])
+                        print(
+                            "  fdem: {:1.4e}, loop: {:1.4e}, dipole: {:1.4e}"
+                            " Passed? loop: {}, dipole: {} \n".format(
+                                np.linalg.norm(b_fdem[inds]),
+                                np.linalg.norm(b_clws[inds]),
+                                np.linalg.norm(b_mdws[inds]),
+                                loop_passed,
+                                dipole_passed
+                            )
                         )
-                    )
-
-                    print(
-                        "Testing r = {}, loc = {}, orientation = {}".format(
-                            radius, location, orientation
-                        )
-                    )
-                    print(
-                        "  fdem: {:1.4e}, loop: {:1.4e}, dipole: {:1.4e}"
-                        " Passed? loop: {}, dipole: {} \n".format(
-                            np.linalg.norm(b_fdem[inds]),
-                            np.linalg.norm(b_clws[inds]),
-                            np.linalg.norm(b_mdws[inds]),
-                            loop_passed,
-                            dipole_passed
-                        )
-                    )
-                    self.assertTrue(loop_passed)
-                    self.assertTrue(dipole_passed)
+                        self.assertTrue(loop_passed)
+                        self.assertTrue(dipole_passed)
 
 
 def Vt_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
     r_vec = XYZ - loc
@@ -462,7 +463,7 @@ def Vt_from_ESphere(
 def Vp_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     x = r_vec[:, 0]
@@ -483,7 +484,7 @@ def Et_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
     r_vec = XYZ - loc
@@ -505,7 +506,7 @@ def Et_from_ESphere(
 def Ep_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -527,7 +528,7 @@ def Jt_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -557,7 +558,7 @@ def Js_from_ESphere(
 def rho_from_ESphere(
     XYZ, dr, loc, sig_s, sig_b, radius, amp
 ):
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     sig_cur = (sig_s - sig_b) / (sig_s + 2 * sig_b)
     r_vec = XYZ - loc
@@ -625,7 +626,7 @@ class TestElectroStaticSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         vttest = Vt_from_ESphere(
             xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
@@ -668,7 +669,7 @@ class TestElectroStaticSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         ettest = Et_from_ESphere(
             xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
@@ -711,7 +712,7 @@ class TestElectroStaticSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         jttest = Jt_from_ESphere(
             xyz, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
@@ -754,7 +755,7 @@ class TestElectroStaticSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         rho_test = rho_from_ESphere(
             xyz, None, ess.location, ess.sigma_sphere, ess.sigma_background, ess.radius, ess.primary_field
@@ -768,7 +769,7 @@ def Vt_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
     r_vec = XYZ - loc
@@ -785,7 +786,7 @@ def Vt_from_Sphere(
 def Vp_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     x = r_vec[:, 0]
@@ -806,7 +807,7 @@ def Ht_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     mu_cur = (mu_s - mu_b) / (mu_s + 2 * mu_b)
     r_vec = XYZ - loc
@@ -828,7 +829,7 @@ def Ht_from_Sphere(
 def Hp_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     x = r_vec[:, 0]
@@ -850,7 +851,7 @@ def Bt_from_Sphere(
     XYZ, loc, mu_s, mu_b, radius, amp
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -928,7 +929,7 @@ class TestMagnetoStaticSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         vttest = Vt_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
@@ -971,7 +972,7 @@ class TestMagnetoStaticSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         httest = Ht_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
@@ -1014,7 +1015,7 @@ class TestMagnetoStaticSphere:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         btest = Bt_from_Sphere(
             xyz, mss.location, mss.mu_sphere, mss.mu_background, mss.radius, mss.primary_field
@@ -1046,7 +1047,7 @@ def V_from_PointCurrentW(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -1067,7 +1068,7 @@ def E_from_PointCurrentW(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -1113,7 +1114,7 @@ class TestPointCurrentWholeSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         vtest = V_from_PointCurrentW(
             xyz, pcws.location, pcws.rho, pcws.current
@@ -1137,7 +1138,7 @@ class TestPointCurrentWholeSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         jtest = J_from_PointCurrentW(
             xyz, pcws.location, pcws.rho, pcws.current
@@ -1161,7 +1162,7 @@ class TestPointCurrentWholeSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         etest = E_from_PointCurrentW(
             xyz, pcws.location, pcws.rho, pcws.current
@@ -1178,7 +1179,7 @@ def V_from_PointCurrentH(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -1191,7 +1192,7 @@ def E_from_PointCurrentH(
     XYZ, loc, rho, cur
 ):
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     r_vec = XYZ - loc
     r = np.linalg.norm(r_vec, axis=-1)
@@ -1268,7 +1269,7 @@ class TestPointCurrentHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 0., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         vtest = V_from_PointCurrentH(
             xyz, pchs.location, pchs.rho, pchs.current
@@ -1283,7 +1284,7 @@ class TestPointCurrentHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         with pytest.raises(ValueError):
             pchs.potential(xyz)
@@ -1300,7 +1301,7 @@ class TestPointCurrentHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 0., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         etest = E_from_PointCurrentH(
             xyz, pchs.location, pchs.rho, pchs.current
@@ -1315,7 +1316,7 @@ class TestPointCurrentHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         with pytest.raises(ValueError):
             pchs.electric_field(xyz)
@@ -1332,7 +1333,7 @@ class TestPointCurrentHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 0., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         jtest = J_from_PointCurrentH(
             xyz, pchs.location, pchs.rho, pchs.current
@@ -1347,7 +1348,7 @@ class TestPointCurrentHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         with pytest.raises(ValueError):
             pchs.current_density(xyz)
@@ -1356,7 +1357,7 @@ class TestPointCurrentHalfSpace:
 def V_from_Dipole1(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = discretize.utils.as_array_n_by_dim(XYZ_M, 3)
+    XYZ_M = np.atleast_2d(XYZ_M)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1370,8 +1371,8 @@ def V_from_Dipole1(
 def V_from_Dipole2(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = discretize.utils.as_array_n_by_dim(XYZ_M, 3)
-    XYZ_N = discretize.utils.as_array_n_by_dim(XYZ_N, 3)
+    XYZ_M = np.atleast_2d(XYZ_M)
+    XYZ_N = np.atleast_2d(XYZ_N)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1392,7 +1393,7 @@ def V_from_Dipole2(
 def E_from_Dipole1(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = discretize.utils.as_array_n_by_dim(XYZ_M, 3)
+    XYZ_M = np.atleast_2d(XYZ_M)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1406,8 +1407,8 @@ def E_from_Dipole1(
 def E_from_Dipole2(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = discretize.utils.as_array_n_by_dim(XYZ_M, 3)
-    XYZ_N = discretize.utils.as_array_n_by_dim(XYZ_N, 3)
+    XYZ_M = np.atleast_2d(XYZ_M)
+    XYZ_N = np.atleast_2d(XYZ_N)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1498,12 +1499,12 @@ class TestDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 0., 50)
-        xyz1 = discretize.utils.ndgrid([x, y, z])
+        xyz1 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         x = np.linspace(-30., 20., 50)
         y = np.linspace(-20., 30., 50)
         z = np.linspace(-30., 0., 50)
-        xyz2 = discretize.utils.ndgrid([x, y, z])
+        xyz2 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         vtest1 = V_from_Dipole1(
             xyz1, None, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
@@ -1525,8 +1526,8 @@ class TestDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz3 = discretize.utils.ndgrid([x, y, z])
-        xyz4 = discretize.utils.ndgrid([x, y, z])
+        xyz3 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
+        xyz4 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         with pytest.raises(ValueError):
             dhs.potential(xyz3)
@@ -1538,12 +1539,12 @@ class TestDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 0., 50)
-        xyz1 = discretize.utils.ndgrid([x, y, z])
+        xyz1 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         x = np.linspace(-30., 20., 50)
         y = np.linspace(-20., 30., 50)
         z = np.linspace(-30., 0., 50)
-        xyz2 = discretize.utils.ndgrid([x, y, z])
+        xyz2 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         etest1 = E_from_Dipole1(
             xyz1, None, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
@@ -1565,8 +1566,8 @@ class TestDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz3 = discretize.utils.ndgrid([x, y, z])
-        xyz4 = discretize.utils.ndgrid([x, y, z])
+        xyz3 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
+        xyz4 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         with pytest.raises(ValueError):
             dhs.electric_field(xyz3)
@@ -1578,12 +1579,12 @@ class TestDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 0., 50)
-        xyz1 = discretize.utils.ndgrid([x, y, z])
+        xyz1 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         x = np.linspace(-30., 20., 50)
         y = np.linspace(-20., 30., 50)
         z = np.linspace(-30., 0., 50)
-        xyz2 = discretize.utils.ndgrid([x, y, z])
+        xyz2 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         jtest1 = J_from_Dipole1(
             xyz1, None, dhs.rho, dhs.current, dhs.location_a, dhs.location_b
@@ -1605,8 +1606,8 @@ class TestDipoleHalfSpace:
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz3 = discretize.utils.ndgrid([x, y, z])
-        xyz4 = discretize.utils.ndgrid([x, y, z])
+        xyz3 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
+        xyz4 = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         with pytest.raises(ValueError):
             dhs.current_density(xyz3)

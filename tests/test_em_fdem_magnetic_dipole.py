@@ -1,7 +1,5 @@
 import unittest
 import numpy as np
-import discretize
-
 from scipy.constants import mu_0, epsilon_0
 from geoana.em import fdem
 
@@ -26,7 +24,7 @@ def H_from_MagneticDipoleWholeSpace(
 
     omega = lambda f: 2*np.pi*f
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
     # Check
 
     dx = XYZ[:, 0]-srcLoc[0]
@@ -88,7 +86,7 @@ def E_from_MagneticDipoleWholeSpace(
 
     omega = lambda f: 2 * np.pi * f
 
-    XYZ = discretize.utils.as_array_n_by_dim(XYZ, 3)
+    XYZ = np.atleast_2d(XYZ)
 
     dx = XYZ[:, 0]-srcLoc[0]
     dy = XYZ[:, 1]-srcLoc[1]
@@ -188,7 +186,7 @@ class TestFDEMdipole(unittest.TestCase):
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         # srcLoc, obsLoc, component, orientation='Z', moment=1., mu=mu_0
 
@@ -221,7 +219,7 @@ class TestFDEMdipole(unittest.TestCase):
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         extest, eytest, eztest = E_from_MagneticDipoleWholeSpace(
             xyz, mdws.location, mdws.sigma, mdws.frequency,
@@ -258,7 +256,7 @@ class TestFDEMdipole(unittest.TestCase):
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
 
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         bxtest0, bytest0, bztest0 = B_from_MagneticDipoleWholeSpace(
             xyz, mdws.location, mdws.sigma, mdws.frequency,
@@ -312,7 +310,7 @@ class TestFDEMdipole(unittest.TestCase):
         y = np.linspace(-30., 30., 10)
         z = np.linspace(-40., 40., 10)
 
-        xyz = discretize.utils.ndgrid([x, y, z])
+        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         extest0, eytest0, eztest0 = E_from_MagneticDipoleWholeSpace(
             xyz, mdws.location, mdws.sigma, mdws.frequency,

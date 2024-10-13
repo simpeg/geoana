@@ -18,10 +18,12 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Setup Conda
       uses: conda-incubator/setup-miniconda@v3
@@ -31,6 +33,25 @@ jobs:
         activate-environment: geoana-test
         python-version: ${{ matrix.python-version }}
 
+    - name: Install numba
+      if: matrix.python-version != '3.13'
+      # Numba doesn't work on python 3.13 just yet:
+      run: |
+        conda install --yes -c conda-forge numba
+
+      # Install discretize from it's repo until wheels/conda-forge built against numpy2.0 available:
+    - name: Pull Discretize
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        repository: 'simpeg/discretize'
+        ref: 'main'
+        path: 'discretize'
+
+    - name: Install discretize
+      run: |
+        pip install ./discretize
+
     - name: Conda information
       run: |
         conda info
@@ -39,11 +60,11 @@ jobs:
 
     - name: Install Our Package
       run: |
-        pip install . --config-settings=setup-args="-Dwith_extensions=true"
+        pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
 
     - name: Run Tests
       run: |
-        pytest --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning
+        pytest tests --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning
 
     - name: "Upload coverage to Codecov"
       if: matrix.python-version == '3.11'

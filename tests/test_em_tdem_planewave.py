@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-import discretize
 from geoana.em import tdem
 from scipy.constants import mu_0, epsilon_0
 
@@ -40,7 +39,7 @@ def test_electric_field():
     x = np.linspace(-20., 20., 50)
     y = np.linspace(-30., 30., 50)
     z = np.linspace(-40., 40., 50)
-    xyz = discretize.utils.ndgrid([x, y, z])
+    xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
     z = xyz[:, 2]
 
     bunja = -mu_0 ** 0.5 * z * np.exp(-(mu_0 * z ** 2) / 4)
@@ -77,7 +76,7 @@ def test_current_density():
     x = np.linspace(-20., 20., 50)
     y = np.linspace(-30., 30., 50)
     z = np.linspace(-40., 40., 50)
-    xyz = discretize.utils.ndgrid([x, y, z])
+    xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
     z = xyz[:, 2]
 
     bunja = -mu_0 ** 0.5 * z * np.exp(-(mu_0 * z ** 2) / 4)
@@ -115,7 +114,7 @@ def test_magnetic_field():
     x = np.linspace(-20., 20., 50)
     y = np.linspace(-30., 30., 50)
     z = np.linspace(-40., 40., 50)
-    xyz = discretize.utils.ndgrid([x, y, z])
+    xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
     z = xyz[:, 2]
 
     hy = -(np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
@@ -150,7 +149,7 @@ def test_magnetic_flux_density():
     x = np.linspace(-20., 20., 50)
     y = np.linspace(-30., 30., 50)
     z = np.linspace(-40., 40., 50)
-    xyz = discretize.utils.ndgrid([x, y, z])
+    xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
     z = xyz[:, 2]
 
     by = -mu_0 * (np.sqrt(1 / (np.pi * mu_0)) * np.exp(-(mu_0 * z ** 2) / 4))
