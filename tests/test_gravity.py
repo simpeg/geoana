@@ -174,7 +174,7 @@ def gtens_from_Sphere(
     g_tens[ind0] = -G * m * (np.eye(3) / r[ind0, None, None] ** 3 -
                              3 * r_vec[ind0, None] * r_vec[ind0, None, :] / r[ind0, None, None] ** 5)
     g_tens[~ind0] = -G * 4 / 3 * np.pi * rho * np.eye(3)
-    g_tens[ind1] = np.NaN
+    g_tens[ind1] = np.nan
     return g_tens
 
 

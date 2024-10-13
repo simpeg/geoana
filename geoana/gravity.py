@@ -555,7 +555,7 @@ class Sphere(PointMass):
         ind1 = r == self.radius
         g_tens[ind0] = super().gravitational_gradient(xyz[ind0])
         g_tens[~ind0] = -G * 4 / 3 * np.pi * self.rho * np.eye(3)
-        g_tens[ind1] = np.NaN
+        g_tens[ind1] = np.nan
         return g_tens
 
 
