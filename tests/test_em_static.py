@@ -1357,7 +1357,7 @@ class TestPointCurrentHalfSpace:
 def V_from_Dipole1(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = np.atleast_2d(XYZ)
+    XYZ_M = np.atleast_2d(XYZ_M)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1371,8 +1371,8 @@ def V_from_Dipole1(
 def V_from_Dipole2(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = np.atleast_2d(XYZ)
-    XYZ_N = np.atleast_2d(XYZ_N, 3)
+    XYZ_M = np.atleast_2d(XYZ_M)
+    XYZ_N = np.atleast_2d(XYZ_N)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1393,7 +1393,7 @@ def V_from_Dipole2(
 def E_from_Dipole1(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = np.atleast_2d(XYZ)
+    XYZ_M = np.atleast_2d(XYZ_M)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
@@ -1407,8 +1407,8 @@ def E_from_Dipole1(
 def E_from_Dipole2(
         XYZ_M, XYZ_N, rho, cur, loc_a, loc_b
 ):
-    XYZ_M = np.atleast_2d(XYZ)
-    XYZ_N = np.atleast_2d(XYZ_N, 3)
+    XYZ_M = np.atleast_2d(XYZ_M)
+    XYZ_N = np.atleast_2d(XYZ_N)
 
     r_vec1 = XYZ_M - loc_a
     r_vec2 = XYZ_M - loc_b
