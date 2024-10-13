@@ -15,7 +15,6 @@ dependencies:
   - pydata-sphinx-theme==0.15.4
   - sphinx-gallery>=0.1.13
   - numpydoc>=1.5
-  - discretize
   - jupyter
   - graphviz
   - pillow
