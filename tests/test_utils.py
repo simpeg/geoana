@@ -3,6 +3,11 @@ import geoana
 from geoana.utils import check_xyz_dim, mkvc, ndgrid
 import pytest
 
+try:
+    from numpy.exceptions import ComplexWarning
+except ImportError:
+    from numpy import ComplexWarning
+
 
 def test_config_info():
     info = geoana.show_config()
@@ -95,7 +100,7 @@ def test_dtype_cast_good():
 
 def test_bad_dtype_cast():
     xyz = np.random.rand(10, 3) + 1j* np.random.rand(10, 3)
-    with pytest.warns(np.ComplexWarning):
+    with pytest.warns(ComplexWarning):
         xyz2 = check_xyz_dim(xyz)
     xyz = [['0', 'O', 'o']]
     with pytest.raises(ValueError):
