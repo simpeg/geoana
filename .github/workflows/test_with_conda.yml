@@ -22,6 +22,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Setup Conda
       uses: conda-incubator/setup-miniconda@v3
@@ -36,6 +38,19 @@ jobs:
       # Numba doesn't work on python 3.13 just yet:
       run: |
         conda install --yes -c conda-forge numba
+
+      # Install discretize from it's repo until wheels/conda-forge built against numpy2.0 available:
+    - name: Pull Discretize
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        repository: 'simpeg/discretize'
+        ref: 'main'
+        path: 'discretize'
+
+    - name: Install discretize
+      run: |
+        pip install ./discretize
 
     - name: Conda information
       run: |
