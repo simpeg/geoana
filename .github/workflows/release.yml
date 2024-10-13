@@ -6,76 +6,25 @@ on:
     - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  build_manylinux_x86_64_wheels:
-    name: Build manylinux_x86_64
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
-        env:
-          CIBW_BUILD: "*manylinux_x86_64"
-          CIBW_ARCHS_LINUX: x86_64
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./wheelhouse/*.whl
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # macos-13 is an intel runner, macos-14 is apple silicon
+        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
 
-  build_manylinux_aarch64_wheels:
-    name: Build manylinux_aarch64
-    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
         with:
-          platforms: all
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
-        env:
-          CIBW_ARCHS_LINUX: aarch64
-          CIBW_BUILD: "*manylinux_aarch64"
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./wheelhouse/*.whl
+          fetch-depth: 0
 
-  build_musllinux_x86_64_wheels:
-    name: Build musllinux_x86_64 wheels
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v4
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
-        env:
-          CIBW_BUILD: "*musllinux_x86_64"
-          CIBW_ARCHS_LINUX: x86_64
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./wheelhouse/*.whl
+        uses: pypa/cibuildwheel@v2.21.3
 
-  build_mac_wheels:
-    name: Build macos wheels
-    runs-on: macos-11
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
-        env:
-          CIBW_ARCHS_MACOS: x86_64 arm64
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          path: ./wheelhouse/*.whl
-
-  build_windows_wheels:
-    name: Build Windows wheels
-    runs-on: windows-2019
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
-        env:
-          CIBW_ARCHS_WINDOWS: AMD64
-      - uses: actions/upload-artifact@v3
-        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
   # Don't upload this one to pypi, otherwise it will be preferred over every compiled one
@@ -85,6 +34,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -95,7 +46,7 @@ jobs:
           python -m build
           find ./dist/*.whl | xargs pip install
           python -c "import geoana; geoana.show_config()"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: ./dist/geoana*.whl
 
@@ -106,36 +57,16 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup environment
-      uses: mamba-org/setup-micromamba@v1
+    - uses: actions/checkout@v4
       with:
-        environment-name: geoana-test
-        create-args: >-
-          python=3.11
-          numpy>=1.20
-          scipy>=1.8
-          libdlf
-          cython
-          setuptools_scm
-          meson-python>=0.14.0
-          meson
-          ninja
-          build
-          discretize
-          numba
-          matplotlib
-          jupyter
-          utm
-          pytest
-          pytest-cov
-          sphinx
-          sphinx-gallery>=0.1.13
-          pydata-sphinx-theme=0.13.3
-          numpydoc>=1.5
-          graphviz
-          pillow
-        cache-environment: true
+        fetch-depth: 0
+    - name: Setup Conda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        environment-file: .github/environment_ci.yml
+        activate-environment: geoana-test
+        python-version: "3.11"
     - name: Prepare source distribution
       run: |
         python -m build --no-isolation --skip-dependency-check --sdist .
@@ -166,11 +97,7 @@ jobs:
   release:
     name: Create Release
     needs: [
-      build_manylinux_x86_64_wheels,
-      build_manylinux_aarch64_wheels,
-      build_musllinux_x86_64_wheels,
-      build_mac_wheels,
-      build_windows_wheels,
+      build_wheels,
       pure_python
     ]
     runs-on: ubuntu-latest
@@ -178,7 +105,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       name: Retrieve assets
       with:
         name: artifact
