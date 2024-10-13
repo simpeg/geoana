@@ -18,50 +18,33 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup environment
-      uses: mamba-org/setup-micromamba@v1
+    - uses: actions/checkout@v4
+
+    - name: Setup Conda
+      uses: conda-incubator/setup-miniconda@v3
       with:
-        environment-name: geoana-test
-        create-args: >-
-          python=${{ matrix.python-version }}
-          numpy>=1.20
-          scipy>=1.8
-          libdlf
-          cython
-          setuptools_scm
-          meson-python>=0.14.0
-          meson
-          ninja
-          build
-          discretize
-          matplotlib
-          jupyter
-          utm
-          pytest
-          pytest-cov
-          sphinx
-          sphinx-gallery>=0.1.13
-          pydata-sphinx-theme=0.13.3
-          numpydoc>=1.5
-          graphviz
-          pillow
-        cache-environment: true
-    - name: Install numba
-      if: matrix.python-version != '3.12'
-      # Numba doesn't work on python 3.12 just yet, so conditionally install it into the environment:
+        auto-update-conda: true
+        environment-file: .github/environment_ci.yml
+        activate-environment: geoana-test
+        python-version: ${{ matrix.python-version }}
+
+    - name: Conda information
       run: |
-        micromamba install numba
+        conda info
+        conda list
+        conda config --show
+
     - name: Install Our Package
       run: |
-        pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
-        conda list
+        pip install . --config-settings=setup-args="-Dwith_extensions=true"
+
     - name: Run Tests
       run: |
         pytest --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning
+
     - name: "Upload coverage to Codecov"
       if: matrix.python-version == '3.11'
       uses: codecov/codecov-action@v3
