@@ -16,7 +16,10 @@ commonly used within the code base.
 
 """
 import numpy as np
-
+try:
+    import sympy
+except ImportError:
+    sympy = False
 
 def mkvc(x, n_dims=1):
     """Creates a vector with specified dimensionality.
@@ -182,6 +185,13 @@ def check_xyz_dim(xyz, dim=3, dtype=float):
     return xyz
 
 
+def append_atleast_ndim(arr, ndim):
+    arr = np.asarray(arr)
+    while arr.ndim < ndim:
+        arr = arr[..., None]
+    return arr
+
+
 def requires(modules):
     """Decorate a function with soft dependencies.
 
@@ -222,3 +232,32 @@ def requires(modules):
             return passer
 
     return decorated_function
+
+
+@requires({'sympy':sympy})
+def vector_lambdify(vec_func, coord_sys, *args):
+    """Lambdify a sympy vector function.
+
+    Parameters
+    ----------
+    vec_func : sympy.vector.Vector
+        A sympy vector function to lambdify.
+    coord_sys : sympy.vector.CoordSys3D
+        The coordinate system for the vector function.
+    *args
+        Any other sympy symbols to include in the lambdified vector function.
+
+    Returns
+    -------
+    callable
+    """
+
+    vec_func = vec_func.to_matrix(coord_sys)
+    lambs = [sympy.lambdify((*args, *coord_sys.base_scalars()), f) for f in vec_func]
+
+    def out(*inner_args):
+        out_shape = np.broadcast(*inner_args).shape
+        expansion = np.ones(out_shape)
+        outs = [lamb(*inner_args) * expansion for lamb in lambs]
+        return np.stack(outs, axis=-1)
+    return out
