@@ -48,7 +48,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, n_loc, 3) numpy.ndarray of float
             Vector potential at all times for the gridded
             locations provided. Output array is squeezed when n_time and/or
             n_loc = 1.
@@ -130,7 +130,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, n_loc, 3) numpy.ndarray of float
             Electric field at all times for the gridded
             locations provided. Output array is squeezed when n_time and/or
             n_loc = 1.
@@ -225,7 +225,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, n_loc, 3) numpy.ndarray of float
             Current density at all times for the gridded
             locations provided. Output array is squeezed when n_time and/or
             n_loc = 1.
@@ -299,7 +299,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, n_loc, 3) numpy.ndarray of float
             Transient magnetic field at all times for the gridded
             locations provided. Output array is squeezed when n_time and/or
             n_loc = 1.
@@ -387,7 +387,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, n_loc, 3) numpy.ndarray of float
             Time-derivative of the transient magnetic field at all times for the gridded
             locations provided. Output array is squeezed when n_time and/or
             n_loc = 1.
@@ -476,7 +476,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, n_loc, 3) numpy.ndarray of float
             Transient magnetic field at all times for the gridded
             locations provided. Output array is squeezed when n_time and/or
             n_loc = 1.
@@ -551,7 +551,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, n_loc, 3) numpy.ndarray of float
             Time-derivative of the transient magnetic flux density at all times for the gridded
             locations provided. Output array is squeezed when n_time and/or
             n_loc = 1.
@@ -690,7 +690,7 @@ class TransientPlaneWave(BaseTDEM):
 
         Returns
         -------
-        (n_t, ..., 3) numpy.array of float
+        (n_t, ..., 3) numpy.ndarray of float
             Electric field at all frequencies for the gridded
             locations provided.
 
@@ -756,7 +756,7 @@ class TransientPlaneWave(BaseTDEM):
 
         Returns
         -------
-        (n_t, ..., 3) numpy.array of float
+        (n_t, ..., 3) numpy.ndarray of float
             Current density at all frequencies for the gridded
             locations provided.
 
@@ -809,7 +809,7 @@ class TransientPlaneWave(BaseTDEM):
 
         Returns
         -------
-        (n_t, ..., 3) numpy.array of float
+        (n_t, ..., 3) numpy.ndarray of float
             Magnetic field at all frequencies for the gridded
             locations provided.
 
@@ -862,7 +862,7 @@ class TransientPlaneWave(BaseTDEM):
 
         Returns
         -------
-        (n_t, ..., 3) numpy.array of float
+        (n_t, ..., 3) numpy.ndarray of float
             Magnetic flux density at all frequencies for the gridded
             locations provided.
 

@@ -497,7 +497,7 @@ def vector_dot(xyz, vector):
     ----------
     xyz : (n, 3) numpy.ndarray
         A set of 3D vectors
-    vector : (3) numpy.array_like
+    vector : (3) numpy.ndarray_like
         A single 3D vector
 
     Returns

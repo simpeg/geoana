@@ -177,6 +177,8 @@ class BaseDipole:
                 var = np.r_[0., 1., 0.]
             elif var.upper() == 'Z':
                 var = np.r_[0., 0., 1.]
+            else:
+                raise ValueError("Orientation must be one of {'X','Y','Z'}")
         else:
             try:
                 var = np.asarray(var, dtype=float)
@@ -187,7 +189,7 @@ class BaseDipole:
             var = np.squeeze(var)
             if var.shape != (3, ):
                 raise ValueError(
-                    f"orientation must be array_like with shape (3,), got {len(var)}"
+                    f"orientation must be array_like with shape (3,), got {var.shape}"
                 )
 
             # Normalize the orientation
