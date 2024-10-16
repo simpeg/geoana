@@ -1,6 +1,6 @@
 import numpy as np
 from geoana.em.fdem.base import BaseFDEM
-from geoana.utils import check_xyz_dim, append_atleast_ndim
+from geoana.utils import check_xyz_dim, append_ndim
 from geoana.em.base import BaseElectricDipole, BaseMagneticDipole
 
 
@@ -95,7 +95,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
 
-        k = append_atleast_ndim(self.wavenumber, r.ndim+1)
+        k = append_ndim(self.wavenumber, r.ndim)
 
         a = self.current * self.length / (4*np.pi*r) * np.exp(-1j*k * r)
         return a * self.orientation
@@ -187,7 +187,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
         r_hat = r_vec / r
-        k = append_atleast_ndim(self.wavenumber, r.ndim+1)
+        k = append_ndim(self.wavenumber, r.ndim)
 
         kr = k * r
         ikr = 1j * kr
@@ -371,7 +371,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
         r_hat = r_vec/r
 
-        k = append_atleast_ndim(self.wavenumber, r.ndim + 1)
+        k = append_ndim(self.wavenumber, r.ndim)
         kr = k * r
         ikr = 1j*kr
 
@@ -547,8 +547,8 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
 
-        k = append_atleast_ndim(self.wavenumber, r.ndim+1)
-        omega = append_atleast_ndim(self.omega, r.ndim+1)
+        k = append_ndim(self.wavenumber, r.ndim)
+        omega = append_ndim(self.omega, r.ndim)
 
         f = 1j * omega * self.mu * self.moment / (4 * np.pi * r) * np.exp(-1j * k * r)
         return f * self.orientation
@@ -637,8 +637,8 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
         r_hat = r_vec / r
-        k = append_atleast_ndim(self.wavenumber, r.ndim+1)
-        omega = append_atleast_ndim(self.omega, r.ndim+1)
+        k = append_ndim(self.wavenumber, r.ndim)
+        omega = append_ndim(self.omega, r.ndim)
 
         kr = k * r
         ikr = 1j * kr
@@ -818,7 +818,7 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
         r_hat = r_vec / r
-        k = append_atleast_ndim(self.wavenumber, r.ndim+1)
+        k = append_ndim(self.wavenumber, r.ndim)
 
         kr = k * r
         ikr = 1j * kr

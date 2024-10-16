@@ -46,27 +46,32 @@ def xyz():
     return xyz
 
 @pytest.mark.parametrize('method', METHODS)
-def test_broadcasting(e_dipole, xyz, method):
-    e_dipole_func = getattr(e_dipole, method)
-    nf = len(e_dipole.frequency)
+@pytest.mark.parametrize('nf', [0, 1, 5])
+def test_broadcasting(e_dipole, xyz, method, nf):
+    if nf == 0:
+        e_dipole.frequency = e_dipole.frequency[0]
+    else:
+        e_dipole.frequency = e_dipole.frequency[:nf]
+    dipole_func = getattr(e_dipole, method)
+    freq_shape = e_dipole.frequency.shape
 
-    out = e_dipole_func(xyz)
-    assert out.shape == (nf, *xyz[0].shape, 3)
+    out = dipole_func(xyz)
+    assert out.shape == (*freq_shape, *xyz[0].shape, 3)
 
     xyz = np.stack(xyz, axis=-1)
-    out = e_dipole_func(xyz)
-    assert out.shape == (nf, *xyz.shape[:-1], 3)
+    out = dipole_func(xyz)
+    assert out.shape == (*freq_shape, *xyz.shape[:-1], 3)
 
     xyz = xyz.reshape((-1, 3))
-    out = e_dipole_func(xyz)
-    assert out.shape == (nf, xyz.shape[0], 3)
+    out = dipole_func(xyz)
+    assert out.shape == (*freq_shape, xyz.shape[0], 3)
 
     xyz = xyz.reshape((-1, 3))
-    out = e_dipole_func(xyz)
-    assert out.shape == (nf, xyz.shape[0], 3)
+    out = dipole_func(xyz)
+    assert out.shape == (*freq_shape, xyz.shape[0], 3)
 
-    out = e_dipole_func(xyz[0])
-    assert out.shape == (nf, 3)
+    out = dipole_func(xyz[0])
+    assert out.shape == (*freq_shape, 3)
 
 
 @pytest.mark.parametrize('method', METHODS)

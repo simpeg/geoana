@@ -3,7 +3,7 @@ import numpy as np
 
 from geoana.em.tdem.base import BaseTDEM
 from geoana.spatial import repeat_scalar
-from geoana.utils import check_xyz_dim, append_atleast_ndim
+from geoana.utils import check_xyz_dim, append_ndim
 from geoana.em.base import BaseElectricDipole
 
 ###############################################################################
@@ -43,15 +43,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.ndarray of float
+        (n_time, ..., 3) numpy.ndarray of float
             Vector potential at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -95,7 +94,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
-        theta = append_atleast_ndim(self.theta, r.ndim + 1)
+        theta = append_ndim(self.theta, r.ndim)
 
         theta_r = theta * r
 
@@ -125,15 +124,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.ndarray of float
+        (n_time, ..., 3) numpy.ndarray of float
             Electric field at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -179,7 +177,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
         r_hat = r_vec / r
-        theta = append_atleast_ndim(self.theta, r.ndim + 1)
+        theta = append_ndim(self.theta, r.ndim)
         theta_r = theta * r
 
         root_pi = np.sqrt(np.pi)
@@ -220,15 +218,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.ndarray of float
+        (n_time, ..., 3) numpy.ndarray of float
             Current density at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -294,15 +291,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.ndarray of float
+        (n_time, ..., 3) numpy.ndarray of float
             Transient magnetic field at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -348,7 +344,7 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
         r_hat = r_vec / r
-        theta = append_atleast_ndim(self.theta, r.ndim + 1)
+        theta = append_ndim(self.theta, r.ndim)
 
         theta_r = theta * r
 
@@ -382,15 +378,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.ndarray of float
+        (n_time, ..., 3) numpy.ndarray of float
             Time-derivative of the transient magnetic field at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -436,8 +431,8 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
         r_hat = r_vec / r
-        theta = append_atleast_ndim(self.theta, r.ndim + 1)
-        time = append_atleast_ndim(self.time, r.ndim + 1)
+        theta = append_ndim(self.theta, r.ndim)
+        time = append_ndim(self.time, r.ndim)
 
         theta_r = theta * r
 
@@ -471,15 +466,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.ndarray of float
+        (n_time, ..., 3) numpy.ndarray of float
             Transient magnetic field at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -546,15 +540,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.ndarray of float
+        (n_time, ..., 3) numpy.ndarray of float
             Time-derivative of the transient magnetic flux density at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------

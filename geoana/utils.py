@@ -181,9 +181,9 @@ def check_xyz_dim(xyz, dim=3, dtype=float):
     return xyz
 
 
-def append_atleast_ndim(arr, ndim):
+def append_ndim(arr, ndim):
     arr = np.asarray(arr)
-    while arr.ndim < ndim:
+    for _ in range(ndim):
         arr = arr[..., None]
     return arr
 

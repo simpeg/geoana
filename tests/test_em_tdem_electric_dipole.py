@@ -39,27 +39,32 @@ def xyz():
     return xyz
 
 @pytest.mark.parametrize('method', METHODS)
-def test_broadcasting(e_dipole, xyz, method):
-    e_dipole_func = getattr(e_dipole, method)
-    nt = len(e_dipole.time)
+@pytest.mark.parametrize('nt', [0, 1, 5])
+def test_broadcasting(e_dipole, xyz, method, nt):
+    if nt == 0:
+        e_dipole.time = e_dipole.time[0]
+    else:
+        e_dipole.time = e_dipole.time[:nt]
+    dipole_func = getattr(e_dipole, method)
+    t_shape = e_dipole.time.shape
 
-    out = e_dipole_func(xyz)
-    assert out.shape == (nt, *xyz[0].shape, 3)
+    out = dipole_func(xyz)
+    assert out.shape == (*t_shape, *xyz[0].shape, 3)
 
     xyz = np.stack(xyz, axis=-1)
-    out = e_dipole_func(xyz)
-    assert out.shape == (nt, *xyz.shape[:-1], 3)
+    out = dipole_func(xyz)
+    assert out.shape == (*t_shape, *xyz.shape[:-1], 3)
 
     xyz = xyz.reshape((-1, 3))
-    out = e_dipole_func(xyz)
-    assert out.shape == (nt, xyz.shape[0], 3)
+    out = dipole_func(xyz)
+    assert out.shape == (*t_shape, xyz.shape[0], 3)
 
     xyz = xyz.reshape((-1, 3))
-    out = e_dipole_func(xyz)
-    assert out.shape == (nt, xyz.shape[0], 3)
+    out = dipole_func(xyz)
+    assert out.shape == (*t_shape, xyz.shape[0], 3)
 
-    out = e_dipole_func(xyz[0])
-    assert out.shape == (nt, 3)
+    out = dipole_func(xyz[0])
+    assert out.shape == (*t_shape, 3)
 
 
 @pytest.mark.parametrize('method', METHODS)

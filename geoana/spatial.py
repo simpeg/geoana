@@ -394,18 +394,15 @@ def vector_magnitude(v):
 
     Parameters
     ----------
-    (n, dim) numpy.ndarray
+    (..., dim) numpy.ndarray
         A set of input vectors (2D or 3D)
 
     Returns
     -------
-    (n) numpy.ndarray
+    (...) numpy.ndarray
         Magnitudes of the vectors
     """
-
-    v = np.atleast_2d(v)
-
-    return np.sqrt((v**2).sum(axis=1))
+    return np.linalg.norm(v, axis=-1)
 
 
 def vector_distance(xyz, origin=np.r_[0., 0., 0.]):
