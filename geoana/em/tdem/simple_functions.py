@@ -63,11 +63,9 @@ def vertical_magnetic_field_horizontal_loop(
     >>> plt.show()
 
     """
-    theta = np.sqrt((sigma * mu_0) / (4 * t))
-    ta = theta * radius
-    eta = erf(ta)
+    ta = theta(t, sigma, mu) * radius
     t1 = (3 / (np.sqrt(np.pi) * ta)) * np.exp(-(ta ** 2))
-    t2 = (1 - (3 / (2 * ta ** 2))) * eta
+    t2 = (1 - (3 / (2 * ta ** 2))) * erf(ta)
     hz = (t1 + t2) / (2 * radius)
     return turns * current * hz
 
@@ -167,11 +165,10 @@ def vertical_magnetic_field_time_deriv_horizontal_loop(
     >>> plt.ylabel(r'$\\frac{\\partial h_z}{ \\partial t}$ (A/(m s)')
     >>> plt.show()
     """
-    a = radius
-    the = theta(t, sigma, mu)
-    return -turns * current / (mu * sigma * a**3) * (
-        3*erf(the * a) - 2/np.sqrt(np.pi) * the * a * (3 + 2 * the**2 * a**2) * np.exp(-the**2 * a**2)
+    dbz_dt = vertical_magnetic_flux_time_deriv_horizontal_loop(
+        t, sigma=sigma, mu=mu, radius=radius, current=current, turns=turns
     )
+    return dbz_dt / mu
 
 
 def vertical_magnetic_flux_time_deriv_horizontal_loop(
@@ -229,10 +226,9 @@ def vertical_magnetic_flux_time_deriv_horizontal_loop(
     >>> plt.show()
     """
     a = radius
-    the = theta(t, sigma, mu)
-    return -turns * current / (sigma * a**3) * (
-        3*erf(the * a) - 2/np.sqrt(np.pi) * the * a * (3 + 2 * the**2 * a**2) * np.exp(-the**2 * a**2)
-    )
+    ta = theta(t, sigma, mu) * a
+    term = 3 * erf(ta) - 2 * ta / np.sqrt(np.pi) * (3 + 2 * ta**2) * np.exp(-ta**2)
+    return -turns * current / (sigma * a**3) * term
 
 
 def magnetic_field_vertical_magnetic_dipole(
