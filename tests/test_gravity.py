@@ -1,49 +1,13 @@
 import pytest
 import numpy as np
-from scipy.constants import G
 
 from geoana import gravity
 
-
-def U_from_PointMass(
-    XYZ, loc, m
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    u_g = (G * m) / r
-    return u_g
-
-
-def g_from_PointMass(
-        XYZ, loc, m
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    g_vec = -G * m * r_vec / r[..., None] ** 3
-    return g_vec
-
-
-def gtens_from_PointMass(
-        XYZ, loc, m
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    g_tens = -G * m * (np.eye(3) / r[..., None, None] ** 3 -
-                       3 * r_vec[..., None] * r_vec[..., None, :] / r[..., None, None] ** 5)
-    return g_tens
-
+METHODS = [
+    "gravitational_potential",
+    "gravitational_field",
+    "gravitational_gradient",
+]
 
 class TestPointMass:
 
@@ -63,119 +27,24 @@ class TestPointMass:
         with pytest.raises(TypeError):
             pm.location = ["string"]
 
-    def test_gravitational_potential(self):
-        mass = 1.0
-        pm = gravity.PointMass(
+    @pytest.mark.parametrize("method", METHODS)
+    def test_correct(self, method, sympy_grav_point, grav_point_params):
+        mass = grav_point_params["mass"]
+        grav_obj = gravity.PointMass(
             mass=mass
         )
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
         z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
+        xyz = np.meshgrid(x, y, z)
 
-        utest = U_from_PointMass(
-            xyz, pm.location, pm.mass
-        )
+        func = getattr(grav_obj, method)
 
-        u = pm.gravitational_potential(xyz)
-        print(
-            "\n\nTesting Gravitational Potential U for Point Mass\n"
-        )
+        out = func(xyz)
 
-        np.testing.assert_equal(utest, u)
+        verify = sympy_grav_point[method](*xyz)
 
-    def test_gravitational_field(self):
-        mass = 1.0
-        pm = gravity.PointMass(
-            mass=mass
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        gtest = g_from_PointMass(
-            xyz, pm.location, pm.mass
-        )
-
-        g = pm.gravitational_field(xyz)
-        print(
-            "\n\nTesting Gravitational Field g for Point Mass\n"
-        )
-
-        np.testing.assert_equal(gtest, g)
-
-    def test_gravitational_gradient(self):
-        mass = 1.0
-        pm = gravity.PointMass(
-            mass=mass
-        )
-        x = np.linspace(-20., 20., 5)
-        y = np.linspace(-30., 30., 5)
-        z = np.linspace(-40., 40., 5)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        g_tenstest = gtens_from_PointMass(
-            xyz, pm.location, pm.mass
-        )
-
-        g_tens = pm.gravitational_gradient(xyz)
-        print(
-            "\n\nTesting Gravitational Gradient g_tens for Point Mass\n"
-        )
-
-        np.testing.assert_equal(g_tenstest, g_tens)
-
-
-def U_from_Sphere(
-    XYZ, loc, m, rho, radius
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    u_g = np.zeros_like(r)
-    ind0 = r > radius
-    u_g[ind0] = (G * m) / r[ind0]
-    u_g[~ind0] = G * 2 / 3 * np.pi * rho * (3 * radius ** 2 - r[~ind0] ** 2)
-    return u_g
-
-
-def g_from_Sphere(
-        XYZ, loc, m, rho, radius
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    g_vec = np.zeros((*r.shape, 3))
-    ind0 = r > radius
-    g_vec[ind0] = -G * m * r_vec[ind0] / r[ind0, None] ** 3
-    g_vec[~ind0] = -G * 4 / 3 * np.pi * rho * r_vec[~ind0]
-    return g_vec
-
-
-def gtens_from_Sphere(
-        XYZ, loc, m, rho, radius
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    g_tens = np.zeros((*r.shape, 3, 3))
-    ind0 = r > radius
-    ind1 = r == radius
-    g_tens[ind0] = -G * m * (np.eye(3) / r[ind0, None, None] ** 3 -
-                             3 * r_vec[ind0, None] * r_vec[ind0, None, :] / r[ind0, None, None] ** 5)
-    g_tens[~ind0] = -G * 4 / 3 * np.pi * rho * np.eye(3)
-    g_tens[ind1] = np.nan
-    return g_tens
+        np.testing.assert_allclose(out, verify)
 
 
 class TestSphere:
@@ -202,75 +71,26 @@ class TestSphere:
         with pytest.raises(TypeError):
             s.location = ["string"]
 
-    def test_gravitational_potential(self):
-        radius = 1.0
-        rho = 1.0
-        location = [0., 0., 0.]
-        s = gravity.Sphere(
+    @pytest.mark.parametrize("method", METHODS)
+    def test_correct(self, method, sympy_grav_sphere, grav_point_params):
+        mass = grav_point_params["mass"]
+        radius = grav_point_params["radius"]
+        vol = 4/3 * np.pi * radius**3
+        rho = mass / vol
+
+        grav_obj = gravity.Sphere(
             radius=radius,
             rho=rho,
-            location=location
         )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
+        x = np.linspace(-2., 2., 50)
+        y = np.linspace(-3., 3., 50)
+        z = np.linspace(-4., 4., 50)
+        xyz = np.meshgrid(x, y, z)
 
-        utest = U_from_Sphere(
-            xyz, s.location, s.mass, s.rho, s.radius
-        )
-        print(
-            "\n\nTesting Gravitational Potential U for Sphere\n"
-        )
+        func = getattr(grav_obj, method)
 
-        u = s.gravitational_potential(xyz)
-        np.testing.assert_equal(utest, u)
+        out = func(xyz)
 
-    def test_gravitational_field(self):
-        radius = 1.0
-        rho = 1.0
-        location = [0., 0., 0.]
-        s = gravity.Sphere(
-            radius=radius,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
+        verify = sympy_grav_sphere[method](*xyz)
 
-        gtest = g_from_Sphere(
-            xyz, s.location, s.mass, s.rho, s.radius
-        )
-        print(
-            "\n\nTesting Gravitational Field g for Sphere\n"
-        )
-
-        g = s.gravitational_field(xyz)
-        np.testing.assert_equal(gtest, g)
-
-    def test_gravitational_gradient(self):
-        radius = 1.0
-        rho = 1.0
-        location = [0., 0., 0.]
-        s = gravity.Sphere(
-            radius=radius,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        g_tens_test = gtens_from_Sphere(
-            xyz, s.location, s.mass, s.rho, s.radius
-        )
-        print(
-            "\n\nTesting Gravitational Gradient g_tens for Sphere\n"
-        )
-
-        g_tens = s.gravitational_gradient(xyz)
-        np.testing.assert_allclose(g_tens_test, g_tens, atol=1E-9)
-
+        np.testing.assert_allclose(out, verify)

@@ -3,6 +3,7 @@ import numpy as np
 
 from sympy.vector import CoordSys3D, Del
 import sympy
+from scipy.constants import gravitational_constant as gamma
 
 c = 299792458 # m/s
 mu_0 = (4 * sympy.pi * sympy.sympify(10)**-7)
@@ -20,6 +21,22 @@ def vector_lambdify(vec_func, coord_sys, *args):
         return np.stack(outs, axis=-1)
     return out
 
+def tensor_lambdify(row_vec_funcs, coord_sys, *args):
+    lambs = []
+    for vec_func in row_vec_funcs:
+        vec_func = vec_func.to_matrix(coord_sys)
+        lambs.append([sympy.lambdify((*args, *coord_sys.base_scalars()), f) for f in vec_func])
+
+    def out(*inner_args):
+        out_shape = np.broadcast(*inner_args).shape
+        expansion = np.ones(out_shape)
+        outs = []
+        for row in lambs:
+            out_row = [lamb(*inner_args) * expansion for lamb in row]
+            outs.append(np.stack(out_row, axis=-1))
+        return np.stack(outs, axis=-1)
+    return out
+
 @pytest.fixture(scope='session')
 def em_dipole_params():
     param_dict = {
@@ -29,6 +46,15 @@ def em_dipole_params():
         "sigma" : sympy.sympify(10)**-3,
         "epsilon" : 4 * epsilon_0,
         "moment" : sympy.sympify(1)/2
+    }
+    return param_dict
+
+
+@pytest.fixture(scope='session')
+def grav_point_params():
+    param_dict = {
+        "mass" : sympy.sympify(10)**5,
+        "radius" : sympy.sympify(10),
     }
     return param_dict
 
@@ -151,5 +177,54 @@ def sympy_static_hx_dipole(em_dipole_params):
         'magnetic_field' : vector_lambdify(H, R),
         'magnetic_flux_density' : vector_lambdify(B, R),
     }
+    return lamb_funcs
+
+
+@pytest.fixture(scope='session')
+def sympy_grav_point(grav_point_params):
+    R = CoordSys3D('R')
+    delop = Del()
+    mass = grav_point_params['mass']
+
+    r = sympy.sqrt(R.x ** 2 + R.y ** 2 + R.z ** 2)
+    grav_potential = gamma * mass / r
+
+    grav_vector = delop.gradient(grav_potential).doit()
+
+    grav_grads = [delop.gradient(grav_vector.components[comp]).doit() for comp in R.base_vectors()]
+
+    lamb_funcs = {
+        'gravitational_potential': sympy.lambdify((R.x, R.y, R.z), grav_potential),
+        'gravitational_field': vector_lambdify(grav_vector, R),
+        'gravitational_gradient': tensor_lambdify(grav_grads, R),
+    }
+
+    return lamb_funcs
+
+@pytest.fixture(scope='session')
+def sympy_grav_sphere(grav_point_params):
+    R = CoordSys3D('R')
+    delop = Del()
+    mass = grav_point_params['mass']
+    radius = grav_point_params['radius']
+    volume = 4 * sympy.pi * radius**3 / 3
+    density = mass/volume
+
+    r = sympy.sqrt(R.x ** 2 + R.y ** 2 + R.z ** 2)
+    grav_potential = sympy.Piecewise(
+        (gamma * 2 * sympy.pi * density * (radius**2 - r**2/3), r < radius),
+        (gamma * mass / r, True),
+    )
+
+    grav_vector = delop.gradient(grav_potential).doit()
+
+    grav_grads = [delop.gradient(grav_vector.components[comp]).doit() for comp in R.base_vectors()]
+
+    lamb_funcs = {
+        'gravitational_potential': sympy.lambdify((R.x, R.y, R.z), grav_potential),
+        'gravitational_field': vector_lambdify(grav_vector, R),
+        'gravitational_gradient': tensor_lambdify(grav_grads, R),
+    }
+
     return lamb_funcs
 
