@@ -129,3 +129,27 @@ def sympy_fdem_hx_dipole(em_dipole_params):
         'current_density' : vector_lambdify(J, R, f),
     }
     return lamb_funcs
+
+
+@pytest.fixture(scope='session')
+def sympy_static_hx_dipole(em_dipole_params):
+    R = CoordSys3D('R')
+    delop = Del()
+
+    moment = em_dipole_params['moment'] * R.i
+    mu = em_dipole_params['mu']
+
+    r_vec = R.x * R.i + R.y * R.j + R.z * R.k
+    r = sympy.sqrt(R.x**2 + R.y**2 + R.z**2)
+
+    A = (mu / (4 * sympy.pi * r**3) * moment.cross(r_vec)).doit()
+    B = delop.cross(A).doit().simplify()
+    H = B / mu
+
+    lamb_funcs = {
+        'vector_potential' : vector_lambdify(A, R),
+        'magnetic_field' : vector_lambdify(H, R),
+        'magnetic_flux_density' : vector_lambdify(B, R),
+    }
+    return lamb_funcs
+
