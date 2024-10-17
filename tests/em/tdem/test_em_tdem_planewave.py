@@ -49,7 +49,7 @@ def test_electric_field():
     ey = np.zeros_like(ex)
     ez = np.zeros_like(ex)
 
-    e_vec = tpw.electric_field(xyz)[0]
+    e_vec = tpw.electric_field(xyz)
 
     np.testing.assert_equal(ex, e_vec[:, 0])
     np.testing.assert_equal(ey, e_vec[:, 1])
@@ -62,7 +62,7 @@ def test_electric_field():
     ex = np.zeros_like(ey)
     ez = np.zeros_like(ey)
 
-    e_vec = tpw.electric_field(xyz)[0]
+    e_vec = tpw.electric_field(xyz)
 
     np.testing.assert_equal(ex, e_vec[:, 0])
     np.testing.assert_equal(ey, e_vec[:, 1])
@@ -86,7 +86,7 @@ def test_current_density():
     jy = np.zeros_like(jx)
     jz = np.zeros_like(jx)
 
-    j_vec = tpw.current_density(xyz)[0]
+    j_vec = tpw.current_density(xyz)
 
     np.testing.assert_equal(jx, j_vec[:, 0])
     np.testing.assert_equal(jy, j_vec[:, 1])
@@ -99,7 +99,7 @@ def test_current_density():
     jx = np.zeros_like(jy)
     jz = np.zeros_like(jy)
 
-    j_vec = tpw.current_density(xyz)[0]
+    j_vec = tpw.current_density(xyz)
 
     np.testing.assert_equal(jx, j_vec[:, 0])
     np.testing.assert_equal(jy, j_vec[:, 1])
@@ -121,7 +121,7 @@ def test_magnetic_field():
     hx = np.zeros_like(hy)
     hz = np.zeros_like(hy)
 
-    h_vec = tpw.magnetic_field(xyz)[0]
+    h_vec = tpw.magnetic_field(xyz)
 
     np.testing.assert_equal(hx, h_vec[..., 0])
     np.testing.assert_allclose(hy, h_vec[..., 1], rtol=1E-15)
@@ -134,7 +134,7 @@ def test_magnetic_field():
     hy = np.zeros_like(hx)
     hz = np.zeros_like(hx)
 
-    h_vec = tpw.magnetic_field(xyz)[0]
+    h_vec = tpw.magnetic_field(xyz)
 
     np.testing.assert_allclose(hx, h_vec[..., 0], rtol=1E-15)
     np.testing.assert_equal(hy, h_vec[..., 1])
@@ -156,7 +156,7 @@ def test_magnetic_flux_density():
     bx = np.zeros_like(by)
     bz = np.zeros_like(by)
 
-    b_vec = tpw.magnetic_flux_density(xyz)[0]
+    b_vec = tpw.magnetic_flux_density(xyz)
 
     np.testing.assert_equal(bx, b_vec[..., 0])
     np.testing.assert_allclose(by, b_vec[..., 1], rtol=1E-15)
@@ -169,7 +169,7 @@ def test_magnetic_flux_density():
     by = np.zeros_like(bx)
     bz = np.zeros_like(bx)
 
-    b_vec = tpw.magnetic_flux_density(xyz)[0]
+    b_vec = tpw.magnetic_flux_density(xyz)
 
     np.testing.assert_allclose(bx, b_vec[..., 0], rtol=1E-15)
     np.testing.assert_equal(by, b_vec[..., 1])

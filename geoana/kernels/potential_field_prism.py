@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.special import xlogy
 
 
 def _prism_f(x, y, z):

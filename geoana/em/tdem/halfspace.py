@@ -23,7 +23,7 @@ class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xy : (n_locations, 2) numpy.ndarray
+        xy : (n_t, ..., 2) numpy.ndarray
             receiver locations
 
         Returns
@@ -33,9 +33,9 @@ class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
         """
         dxy = xy - self.location
         h = magnetic_field_vertical_magnetic_dipole(
-            np.r_[self.time], dxy[:, :2], self.sigma, self.mu, self.moment
+            self.time, dxy, self.sigma, self.mu, self.moment
         )
-        return h[0]  # because time was a 1 element array
+        return h
 
     def magnetic_flux_density(self, xy):
         """Magnetic flux due to a step off magnetic dipole over a half space
@@ -63,7 +63,7 @@ class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xy : (n_locations, 2) numpy.ndarray
+        xy : (n_t, ..., 2) numpy.ndarray
             receiver locations
 
         Returns
@@ -74,9 +74,9 @@ class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
 
         dxy = xy - self.location
         dh_dt = magnetic_field_time_deriv_magnetic_dipole(
-            np.r_[self.time], dxy[:, :2], self.sigma, self.mu, self.moment
+            self.time, dxy, self.sigma, self.mu, self.moment
         )
-        return dh_dt[0]
+        return dh_dt
 
     def magnetic_flux_time_derivative(self, xy):
         """Magnetic flux due to a step off magnetic dipole over a half space

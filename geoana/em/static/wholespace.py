@@ -43,7 +43,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray xyz
+        xyz : (..., 3) numpy.ndarray xyz
             gridded locations at which we are calculating the vector potential
         coordinates: str {'cartesian', 'cylindrical'}
             coordinate system that the location (xyz) are provided.
@@ -52,7 +52,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Returns
         -------
-        (n, 3) numpy.ndarray
+        (..., 3) numpy.ndarray
             The magnetic vector potential at each observation location in the
             coordinate system specified in units *Tm*.
 
@@ -101,18 +101,15 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
         )
         xyz = check_xyz_dim(xyz)
 
-        n_obs = xyz.shape[0]
-
         # orientation of the dipole
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
-        dxyz = self.vector_distance(xyz)
-        r = spatial.repeat_scalar(self.distance(xyz))
-        m = self.moment * np.atleast_2d(self.orientation).repeat(n_obs, axis=0)
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
 
-        m_cross_r = np.cross(m, dxyz)
-        a = (self.mu / (4 * np.pi)) * m_cross_r / (r**3)
+        a = self.moment * self.mu / (4 * np.pi * r**2) * np.cross(self.orientation, r_hat)
 
         if coordinates.lower() == "cylindrical":
             a = spatial.cartesian_2_cylindrical(xyz, a)
@@ -143,7 +140,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             gridded locations at which we calculate the magnetic flux density
         coordinates: str {'cartesian', 'cylindrical'}
             coordinate system that the location (xyz) are provided.
@@ -152,7 +149,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Returns
         -------
-        (n, 3) numpy.ndarray
+        (..., 3) numpy.ndarray
             The magnetic flux density at each observation location in the
             coordinate system specified in Teslas.
 
@@ -206,14 +203,11 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
         r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)[..., None]
-        m_vec = self.moment * self.orientation
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
 
-        m_dot_r = np.einsum('...i,i->...', r_vec, m_vec)[..., None]
-
-        b = (self.mu / (4 * np.pi)) * (
-            (3.0 * r_vec * m_dot_r / (r ** 5)) -
-            m_vec / (r ** 3)
+        b = self.moment * self.mu / (4 * np.pi * r**3) * (
+            3 * r_hat.dot(self.orientation)[..., None] * r_hat - self.orientation
         )
 
         if coordinates.lower() == "cylindrical":
@@ -244,7 +238,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray xyz
+        xyz : (..., 3) numpy.ndarray xyz
             gridded locations at which we calculate the magnetic field
         coordinates: str {'cartesian', 'cylindrical'}
             coordinate system that the location (xyz) are provided.
@@ -253,7 +247,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Returns
         -------
-        (n, 3) numpy.ndarray
+        (..., 3) numpy.ndarray
             The magnetic field at each observation location in the
             coordinate system specified in units A/m.
 

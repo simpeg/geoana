@@ -1,8 +1,9 @@
 from scipy.special import erf
 import numpy as np
+
 from geoana.em.tdem.base import BaseTDEM
 from geoana.spatial import repeat_scalar
-from geoana.utils import check_xyz_dim
+from geoana.utils import check_xyz_dim, append_ndim
 from geoana.em.base import BaseElectricDipole
 
 ###############################################################################
@@ -42,15 +43,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, ..., 3) numpy.ndarray of float
             Vector potential at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -90,23 +90,15 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         >>> ax.set_ylabel('Z')
         >>> ax.set_title('Vector potential at {} s'.format(time[t_ind]))
         """
+        xyz = check_xyz_dim(xyz)
 
-        r = self.distance(xyz)
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        theta = append_ndim(self.theta, r.ndim)
 
-        n_loc = len(r)
-        n_time = len(self.time)
+        theta_r = theta * r
 
-        theta_r = np.outer(self.theta, r)
-        tile_r = np.outer(np.ones(n_time), r)
-
-        term_1 = (
-            (self.current * self.length) * erf(theta_r) / (4 * np.pi * tile_r**3)
-        ).reshape((n_time, n_loc, 1))
-        term_1 = np.tile(term_1, (1, 1, 3))
-
-        term_2 = np.tile(np.reshape(self.orientation, (1, 1, 3)), (n_time, n_loc, 1))
-
-        return (term_1 * term_2).squeeze()
+        return self.current * self.length / (4 * np.pi * r) * erf(theta_r) * self.orientation
 
     def electric_field(self, xyz):
         r"""Electric field for the transient current dipole at a set of gridded locations.
@@ -132,15 +124,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, ..., 3) numpy.ndarray of float
             Electric field at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -181,65 +172,27 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         >>> ax.set_title('Electric field at {} s'.format(time[t_ind]))
 
         """
-        # dxyz = self.vector_distance(xyz)
-        # r = self.distance(xyz)
-        # r = repeat_scalar(r)
-        # theta_r = self.theta * r
-        # root_pi = np.sqrt(np.pi)
+        xyz = check_xyz_dim(xyz)
 
-        # front = (
-        #     (self.current * self.length) / (4 * np.pi * self.sigma * r**3)
-        # )
-
-        # symmetric_term = (
-        #     (
-        #         - (
-        #             4/root_pi * theta_r ** 3 + 6/root_pi * theta_r
-        #         ) * np.exp(-theta_r**2) +
-        #         3 * erf(theta_r)
-        #     ) * (
-        #         repeat_scalar(self.dot_orientation(dxyz)) * dxyz / r**2
-        #     )
-        # )
-
-        # oriented_term = (
-        #     (
-        #         4./root_pi * theta_r**3 + 2./root_pi * theta_r
-        #     ) * np.exp(-theta_r**2) -
-        #     erf(theta_r)
-        # ) * np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
-
-        # return front * (symmetric_term + oriented_term)
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
+        theta = append_ndim(self.theta, r.ndim)
+        theta_r = theta * r
 
         root_pi = np.sqrt(np.pi)
-        dxyz = self.vector_distance(xyz)
-        r = self.distance(xyz)
 
-        n_loc = len(r)
-        n_time = len(self.time)
+        front = self.current * self.length / (4 * np.pi * self.sigma * r**3)
 
-        theta_r = np.outer(self.theta, r)
-        tile_r = np.outer(np.ones(n_time), r)
-        r = repeat_scalar(r)
+        common_part = theta_r / root_pi * np.exp(-theta_r**2)
 
-        front = (
-            (self.current * self.length) / (4 * np.pi * self.sigma * tile_r**3)
-        ).reshape((n_time, n_loc, 1))
-        front = np.tile(front, (1, 1, 3))
+        sym_term = 3 * erf(theta_r) - (4 * theta_r**2 + 6) * common_part
+        sym_direction = r_hat.dot(self.orientation)[..., None] * r_hat
 
-        term_1 = 3 * erf(theta_r) - (4/root_pi * theta_r ** 3 + 6/root_pi * theta_r) * np.exp(-theta_r**2)
-        term_1 = np.tile(term_1.reshape((n_time, n_loc, 1)), (1, 1, 3))
-        term_2 = repeat_scalar(self.dot_orientation(dxyz)) * dxyz / r**2
-        term_2 = np.tile(term_2.reshape((1, n_loc, 3)), (n_time, 1, 1))
-        symmetric_term = term_1 * term_2
+        orient_term = erf(theta_r) - (4 * theta_r**2 + 2) * common_part
+        orient_dir = self.orientation
 
-        term_1 = (4./root_pi * theta_r**3 + 2./root_pi * theta_r) * np.exp(-theta_r**2) - erf(theta_r)
-        term_1 = np.tile(term_1.reshape((n_time, n_loc, 1)), (1, 1, 3))
-        term_2 = np.kron(self.orientation, np.ones((dxyz.shape[0], 1)))
-        term_2 = np.tile(term_2.reshape((1, n_loc, 3)), (n_time, 1, 1))
-        oriented_term = term_1 * term_2
-
-        return (front * (symmetric_term + oriented_term)).squeeze()
+        return front * (sym_term * sym_direction - orient_term * orient_dir)
 
     def current_density(self, xyz):
         r"""Current density for the transient current dipole at a set of gridded locations.
@@ -265,15 +218,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, ..., 3) numpy.ndarray of float
             Current density at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -339,15 +291,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, ..., 3) numpy.ndarray of float
             Transient magnetic field at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -388,38 +339,21 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         >>> ax.set_title('Magnetic field at {} s'.format(time[t_ind]))
 
         """
-        # dxyz = self.vector_distance(xyz)
-        # r = self.distance(dxyz)
-        # r = repeat_scalar(r)
-        # thetar = self.theta * r
+        xyz = check_xyz_dim(xyz)
 
-        # front = (
-        #     self.current * self.length / (4 * np.pi * r**2) * (
-        #         2 / np.sqrt(np.pi) * thetar * np.exp(-thetar**2) + erf(thetar)
-        #     )
-        # )
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
+        theta = append_ndim(self.theta, r.ndim)
 
-        # return - front * self.cross_orientation(xyz) / r
+        theta_r = theta * r
 
-        dxyz = self.vector_distance(xyz)
-        r = self.distance(dxyz)
+        term1 = (self.current * self.length) / (4 * np.pi * r**2)
+        term2 = erf(theta_r) - 2 / np.sqrt(np.pi) * theta_r * np.exp(-theta_r**2)
 
-        n_loc = len(r)
-        n_time = len(self.time)
+        direction = np.cross(self.orientation, r_hat)
 
-        theta_r = np.outer(self.theta, r)
-        tile_r = np.outer(np.ones(n_time), r)
-
-        term_1 = (
-            self.current * self.length / (4 * np.pi * tile_r**2) * (
-              -  2 / np.sqrt(np.pi) * theta_r * np.exp(-theta_r**2) + erf(theta_r)
-            )
-        ).reshape((n_time, n_loc, 1))
-
-        r = repeat_scalar(r)
-        term_2 = (self.cross_orientation(xyz) / r).reshape((1, n_loc, 3))
-
-        return - (np.tile(term_1, (1, 1, 3)) * np.tile(term_2, (n_time, 1, 1))).squeeze()
+        return term1 * term2 * direction
 
     def magnetic_field_time_deriv(self, xyz):
         r"""Time-derivative of the magnetic field for the transient current dipole at a set of gridded locations.
@@ -444,15 +378,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, ..., 3) numpy.ndarray of float
             Time-derivative of the transient magnetic field at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -493,37 +426,22 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
         >>> ax.set_title('dH/dt at {} s'.format(time[t_ind]))
 
         """
-        # dxyz = self.vector_distance(xyz)
-        # r = self.distance(dxyz)
-        # r = repeat_scalar(r)
+        xyz = check_xyz_dim(xyz)
 
-        # front = (
-        #     self.current * self.length * self.theta**3 * r /
-        #     (2 * np.sqrt(np.pi)**3 * self.time)
-        # )
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
+        theta = append_ndim(self.theta, r.ndim)
+        time = append_ndim(self.time, r.ndim)
 
-        # return - front * self.cross_orientation(xyz) / r
+        theta_r = theta * r
 
-        dxyz = self.vector_distance(xyz)
-        r = self.distance(dxyz)
+        term1 = (self.current * self.length) / (4 * np.pi * r**2)
+        term2_dt = -2 * theta_r**3 / (np.sqrt(np.pi) * time) * np.exp(-theta_r**2)
 
-        n_loc = len(r)
-        n_time = len(self.time)
+        direction = np.cross(self.orientation, r_hat)
 
-        theta_r = np.outer(self.theta, r)
-        theta3_r = np.outer(self.theta**3, r)
-        tile_t = np.outer(self.time, np.ones(n_loc))
-
-        term_1 = (
-            self.current * self.length * theta3_r /
-            (2 * np.sqrt(np.pi)**3 * tile_t)  * 
-            np.exp(-theta_r**2)
-        ).reshape((n_time, n_loc, 1))
-
-        r = repeat_scalar(r)
-        term_2 = (self.cross_orientation(xyz) / r).reshape((1, n_loc, 3))
-
-        return - (np.tile(term_1, (1, 1, 3)) * np.tile(term_2, (n_time, 1, 1))).squeeze()
+        return term1 * term2_dt * direction
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the transient current dipole at a set of gridded locations.
@@ -548,15 +466,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, ..., 3) numpy.ndarray of float
             Transient magnetic field at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -623,15 +540,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_time, n_loc, 3) numpy.array of float
+        (n_time, ..., 3) numpy.ndarray of float
             Time-derivative of the transient magnetic flux density at all times for the gridded
-            locations provided. Output array is squeezed when n_time and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -679,13 +595,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 class TransientPlaneWave(BaseTDEM):
     """
     Class for simulating the fields for a transient planewave in a wholespace.
-    The wave is assumed to be propogating vertically downward.
+    The wave is assumed to be propogating vertically downward, starting at time=0
+    and z = 0
 
     Parameters
     ----------
     amplitude : float
         amplitude of primary electric field.  Default is 1
-    orientation : (3) array_like or {'X','Y'}
+    orientation : (3,) array_like or {'X','Y'}
         Orientation of the planewave. Can be defined using as an ``array_like`` of length 3,
         or by using one of {'X','Y'} to define a planewave along the x or y direction.
         Default is 'X'.
@@ -767,8 +684,8 @@ class TransientPlaneWave(BaseTDEM):
 
         Returns
         -------
-        (n_t, ..., 3) numpy.array of float
-            Electric field at all frequencies for the gridded
+        (n_t, ..., 3) numpy.ndarray of float
+            Electric field at all times for the gridded
             locations provided.
 
         Examples
@@ -811,17 +728,16 @@ class TransientPlaneWave(BaseTDEM):
         xyz = check_xyz_dim(xyz)
         e0 = self.amplitude
 
-        z = xyz[..., 2]
-        t = self.time
-        for i in range(z.ndim):
-            t = t[..., None]
+        z = xyz[..., [2]]
+        t = append_ndim(self.time, xyz.ndim)
+
         mu = self.mu
         sigma = self.sigma
 
         bunja = -e0 * (mu * sigma) ** 0.5 * z * np.exp(-(mu * sigma * z ** 2) / (4 * t))
         bunmo = 2 * np.pi ** 0.5 * t ** 1.5
 
-        return self.orientation * (bunja / bunmo)[..., None]
+        return self.orientation * (bunja / bunmo)
 
     def current_density(self, xyz):
         r"""Current density for the transient planewave at a set of gridded locations.
@@ -833,7 +749,7 @@ class TransientPlaneWave(BaseTDEM):
 
         Returns
         -------
-        (n_t, ..., 3) numpy.array of float
+        (n_t, ..., 3) numpy.ndarray of float
             Current density at all frequencies for the gridded
             locations provided.
 
@@ -886,7 +802,7 @@ class TransientPlaneWave(BaseTDEM):
 
         Returns
         -------
-        (n_t, ..., 3) numpy.array of float
+        (n_t, ..., 3) numpy.ndarray of float
             Magnetic field at all frequencies for the gridded
             locations provided.
 
@@ -939,7 +855,7 @@ class TransientPlaneWave(BaseTDEM):
 
         Returns
         -------
-        (n_t, ..., 3) numpy.array of float
+        (n_t, ..., 3) numpy.ndarray of float
             Magnetic flux density at all frequencies for the gridded
             locations provided.
 
@@ -984,12 +900,11 @@ class TransientPlaneWave(BaseTDEM):
 
         e0 = self.amplitude
 
-        z = xyz[..., 2]
-        t = self.time
-        for i in range(z.ndim):
-            t = t[..., None]
-        mu = self.mu
+        z = xyz[..., [2]]
+        t = append_ndim(self.time, xyz.ndim)
+
         sigma = self.sigma
+        mu = self.mu
 
         # Curl E = -dB/dt
         b_amp = - e0 * np.sqrt(sigma * mu / (np.pi * t)) * np.exp((-mu * sigma * z ** 2)/(4 * t))
@@ -998,4 +913,4 @@ class TransientPlaneWave(BaseTDEM):
         # take cross product with the propagation direction
         b_dir = np.cross(self.orientation, [0, 0, -1])
 
-        return b_dir * b_amp[..., None]
+        return b_dir * b_amp

@@ -20,12 +20,6 @@ def test_mkvc():
     x_new = mkvc(x)
     np.testing.assert_equal(x_test, x_new)
 
-    y = np.matrix('1 2; 3 4')
-    y_test = np.array([[1, 2], [3, 4]])
-    y_test = np.concatenate((y_test[:, 0], y_test[:, 1]), axis=None)
-    y_new = mkvc(y)
-    np.testing.assert_equal(y_test, y_new)
-
 
 def test_nd_grid():
     x = np.array([1])

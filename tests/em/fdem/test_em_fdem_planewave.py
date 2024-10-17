@@ -140,7 +140,7 @@ def test_magnetic_field():
     hy = -1 / Z * np.exp(ikz)
     hz = np.zeros_like(z)
 
-    h_vec = hpw.magnetic_field(xyz)[0]
+    h_vec = hpw.magnetic_field(xyz)
 
     np.testing.assert_equal(hx, h_vec[:, 0])
     np.testing.assert_allclose(hy, h_vec[:, 1], rtol=1E-15)
@@ -153,7 +153,7 @@ def test_magnetic_field():
     hy = np.zeros_like(z)
     hz = np.zeros_like(z)
 
-    h_vec = hpw.magnetic_field(xyz)[0]
+    h_vec = hpw.magnetic_field(xyz)
 
     np.testing.assert_allclose(hx, h_vec[:, 0], rtol=1E-15)
     np.testing.assert_equal(hy, h_vec[:, 1])
@@ -171,7 +171,7 @@ def test_magnetic_flux_density():
     y = np.linspace(-30., 30., 50)
     z = np.linspace(-40., 40., 50)
     xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-    z = xyz[:, 2]
+    z = xyz[..., 2]
 
     kz = z * k
     ikz = 1j * kz
@@ -181,7 +181,7 @@ def test_magnetic_flux_density():
     by = -1 / Z * np.exp(ikz)
     bz = np.zeros_like(z)
 
-    b_vec = hpw.magnetic_flux_density(xyz)[0]
+    b_vec = hpw.magnetic_flux_density(xyz)
 
     np.testing.assert_equal(bx, b_vec[:, 0])
     np.testing.assert_allclose(by, b_vec[:, 1], rtol=1E-15)
@@ -194,7 +194,7 @@ def test_magnetic_flux_density():
     by = np.zeros_like(z)
     bz = np.zeros_like(z)
 
-    b_vec = hpw.magnetic_flux_density(xyz)[0]
+    b_vec = hpw.magnetic_flux_density(xyz)
 
     np.testing.assert_allclose(bx, b_vec[:, 0], rtol=1E-15)
     np.testing.assert_equal(by, b_vec[:, 1])
