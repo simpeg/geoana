@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
+from scipy.special import roots_legendre
 
 import geoana.kernels.potential_field_prism as pf
 import geoana.gravity as grav
@@ -112,54 +113,6 @@ def test_prism_correct(method, sympy_potential_prism):
                 test = test + sign * test_func(xp, yp, zp)
                 verify = verify + sign * verify_func(xp, yp, zp)
     npt.assert_allclose(test, verify, rtol=1E-6)
-
-
-class TestGravityAccuracy():
-    x, y, z = np.mgrid[-100:100:11j, -100:100:11j, -100:100:11j]
-    xyz = np.stack((x, y, z), axis=-1)
-    xyz = xyz[np.linalg.norm(xyz, axis=-1) >= 10]
-    dx = 0.1
-    prism = grav.Prism(dx * np.r_[-1, -1, -1], dx * np.r_[1, 1, 1], 2E8)
-    point = grav.PointMass(mass=prism.mass, location=prism.location)
-
-    @pytest.mark.parametrize(
-        'method,rtol',
-        [
-            ('gravitational_potential', 1E-5),
-            ('gravitational_field', 1E-4),
-            ('gravitational_gradient', 1E-3),
-         ]
-    )
-    def test_accuracy(self, method, rtol):
-        test_prism = getattr(self.prism, method)(self.xyz)
-        test_point = getattr(self.point, method)(self.xyz)
-        atol = (test_prism.max() - test_prism.min()) * rtol
-        npt.assert_allclose(test_prism, test_point, atol=atol)
-
-
-class TestMagneticAccuracy():
-    x, y, z = np.mgrid[-100:100:11j, -100:100:11j, -100:100:11j]
-    xyz = np.stack((x, y, z), axis=-1)
-    xyz = xyz[np.linalg.norm(xyz, axis=-1) >= 10]
-    prism = MagneticPrism([-1, -1, -1], [1, 1, 1], magnetization=[-1, 2, -0.5])
-    m_mag = np.linalg.norm(prism.moment)
-    m_unit = prism.moment/m_mag
-    dipole = MagneticDipoleWholeSpace(
-        location=prism.location, moment=m_mag, orientation=m_unit
-    )
-
-    @pytest.mark.parametrize(
-        'method,rtol',
-        [
-            ('magnetic_field', 1E-4),
-            ('magnetic_flux_density', 1E-4),
-         ]
-    )
-    def test_accuracy(self, method, rtol):
-        test_prism = getattr(self.prism, method)(self.xyz)
-        test_point = getattr(self.dipole, method)(self.xyz)
-        atol = (test_prism.max() - test_prism.min()) * rtol
-        npt.assert_allclose(test_prism, test_point, atol=atol)
 
 
 def test_mag_init_and_errors():

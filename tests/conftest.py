@@ -58,16 +58,6 @@ def grav_point_params():
     }
     return param_dict
 
-def prism_params():
-    param_dict = {
-        'x0' : -4,
-        'x1' : 4,
-        'y0' : -3,
-        'y1' : 3,
-        'z0' : -2,
-        'z1' : 2,
-    }
-    return param_dict
 
 @pytest.fixture(scope='session')
 def sympy_tdem_ex_dipole(em_dipole_params):
