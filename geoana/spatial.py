@@ -34,16 +34,16 @@ def cylindrical_to_cartesian(grid, vec=None):
 
     Parameters
     ----------
-    grid : (n, 3) array_like
+    grid : (..., 3) array_like
         Location points defined in cylindrical coordinates :math:`(r, \\phi, z)`.
-    vec : (n, 3) array_like, optional
+    vec : (..., 3) array_like, optional
         Vectors defined in cylindrical coordinates :math:`(v_r, v_\\phi, v_z)` at the
         gridded locations. Will also except a flattend array in column major order
         with the same number of elements.
 
     Returns
     -------
-    (n, 3) numpy.ndarray
+    (..., 3) numpy.ndarray
         If `vec` is ``None``, this returns the transformed `grid` array, otherwise
         this is the transformed `vec` array.
 
@@ -86,27 +86,25 @@ def cylindrical_to_cartesian(grid, vec=None):
            [ 7.07106781e-01, -7.07106781e-01,  3.00000000e+00],
            [ 1.00000000e+00, -2.44929360e-16,  4.00000000e+00]])
     """
-    grid = np.atleast_2d(grid)
+    grid = np.asarray(grid)
 
     if vec is None:
-        return np.hstack([
-            mkvc(grid[:, 0]*np.cos(grid[:, 1]), 2),
-            mkvc(grid[:, 0]*np.sin(grid[:, 1]), 2),
-            mkvc(grid[:, 2], 2)
-        ])
+        out = [
+            grid[..., 0]*np.cos(grid[..., 1]),
+            grid[..., 0]*np.sin(grid[..., 1]),
+        ]
+        if grid.shape[-1] == 3:
+            out.append(grid[..., 2])
+    else:
+        vec = np.asarray(vec)
 
-    if len(vec.shape) == 1 or vec.shape[1] == 1:
-        vec = vec.reshape(grid.shape, order='F')
-
-    x = vec[:, 0] * np.cos(grid[:, 1]) - vec[:, 1] * np.sin(grid[:, 1])
-    y = vec[:, 0] * np.sin(grid[:, 1]) + vec[:, 1] * np.cos(grid[:, 1])
-
-    newvec = [x, y]
-    if grid.shape[1] == 3:
-        z = vec[:, 2]
-        newvec += [z]
-
-    return np.vstack(newvec).T
+        out = [
+            vec[..., 0] * np.cos(grid[..., 1]) - vec[..., 1] * np.sin(grid[..., 1]),
+            vec[..., 0] * np.sin(grid[..., 1]) + vec[..., 1] * np.cos(grid[..., 1])
+        ]
+        if grid.shape[-1] == 3:
+            out.append(vec[..., 2])
+    return np.stack(out, axis=-1)
 
 
 def cartesian_to_cylindrical(grid, vec=None):
@@ -118,16 +116,16 @@ def cartesian_to_cylindrical(grid, vec=None):
 
     Parameters
     ----------
-    grid : (n, 3) array_like
+    grid : (..., 3) array_like
         Gridded locations defined in Cartesian coordinates :math:`(x, y z)`.
-    vec : (n, 3) array_like, optional
+    vec : (..., 3) array_like, optional
         Vectors defined in Cartesian coordinates :math:`(v_x, v_y, v_z)` at the
         gridded locations. Also accepts a flattened array with the same total
         elements in column major order.
 
     Returns
     -------
-    (n, 3) numpy.ndarray
+    (..., 3) numpy.ndarray
         If `vec` is ``None``, this returns the transformed `grid` array, otherwise
         this is the transformed `vec` array.
 
@@ -172,26 +170,28 @@ def cartesian_to_cylindrical(grid, vec=None):
            [ 1.00000000e+00, -7.85398163e-01,  3.00000000e+00],
            [ 1.00000000e+00, -2.44929360e-16,  4.00000000e+00]])
     """
-
-    grid = np.atleast_2d(grid)
+    grid = np.asarray(grid)
 
     if vec is None:
-        return np.hstack([
-            mkvc(np.sqrt(grid[:, 0]**2 + grid[:, 1]**2), 2),
-            mkvc(np.arctan2(grid[:, 1], grid[:, 0]), 2),
-            mkvc(grid[:, 2], 2)
-        ])
+        out = [
+            np.sqrt(grid[..., 0]**2 + grid[..., 1]**2),
+            np.arctan2(grid[..., 1], grid[..., 0]),
+        ]
+        if grid.shape[-1] == 3:
+            out.append(
+                grid[..., 2]
+            )
+    else:
+        vec = np.asarray(vec)
 
-    if len(vec.shape) == 1 or vec.shape[1] == 1:
-        vec = vec.reshape(grid.shape, order='F')
-
-    theta = np.arctan2(grid[:, 1], grid[:, 0])
-
-    return np.hstack([
-        mkvc(np.cos(theta)*vec[:, 0] + np.sin(theta)*vec[:, 1], 2),
-        mkvc(-np.sin(theta)*vec[:, 0] + np.cos(theta)*vec[:, 1], 2),
-        mkvc(vec[:, 2], 2)
-    ])
+    theta = np.arctan2(grid[..., 1], grid[..., 0])
+    out = [
+        np.cos(theta)*vec[..., 0] + np.sin(theta)*vec[..., 1],
+        -np.sin(theta) * vec[..., 0] + np.cos(theta) * vec[..., 1]
+    ]
+    if grid.shape[-1] == 3:
+        out.append(vec[..., 2])
+    return np.stack(out, axis=-1)
 
 
 def spherical_to_cartesian(grid, vec=None):
