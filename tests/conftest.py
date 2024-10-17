@@ -58,6 +58,16 @@ def grav_point_params():
     }
     return param_dict
 
+def prism_params():
+    param_dict = {
+        'x0' : -4,
+        'x1' : 4,
+        'y0' : -3,
+        'y1' : 3,
+        'z0' : -2,
+        'z1' : 2,
+    }
+    return param_dict
 
 @pytest.fixture(scope='session')
 def sympy_tdem_ex_dipole(em_dipole_params):
@@ -228,3 +238,40 @@ def sympy_grav_sphere(grav_point_params):
 
     return lamb_funcs
 
+@pytest.fixture(scope='session')
+def sympy_potential_prism():
+    x, y, z = sympy.symbols('x y z')
+    r = sympy.sqrt(x ** 2 + y ** 2 + z ** 2)
+    f = (
+            - x * y * sympy.log(z + r)
+            - y * z * sympy.log(x + r)
+            - z * x * sympy.log(y + r)
+            + x ** 2 * sympy.atan(y * z / (x * r)) / 2
+            + y ** 2 * sympy.atan(x * z / (y * r)) / 2
+            + z ** 2 * sympy.atan(x * y / (z * r)) / 2
+    )
+
+    fz = -sympy.diff(f, z)
+
+    fzx = sympy.diff(f, z, x)
+    fzy = sympy.diff(f, z, y)
+    fzz = sympy.diff(f, z, z)
+
+    fzzz = -sympy.diff(f, z, z, z)
+    fxxy = -sympy.diff(f, x, x, y)
+    fxxz = -sympy.diff(f, x, x, z)
+    fxyz = -sympy.diff(f, x, y, z)
+
+    lamb_funcs = {
+        'prism_f': sympy.lambdify((x, y, z), f),
+        'prism_fz': sympy.lambdify((x, y, z), fz),
+        'prism_fzx': sympy.lambdify((x, y, z), fzx),
+        'prism_fzy': sympy.lambdify((x, y, z), fzy),
+        'prism_fzz': sympy.lambdify((x, y, z), fzz),
+        'prism_fzzz': sympy.lambdify((x, y, z), fzzz),
+        'prism_fxxy': sympy.lambdify((x, y, z), fxxy),
+        'prism_fxxz': sympy.lambdify((x, y, z), fxxz),
+        'prism_fxyz': sympy.lambdify((x, y, z), fxyz),
+    }
+
+    return lamb_funcs
