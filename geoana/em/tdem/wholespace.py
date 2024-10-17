@@ -595,13 +595,14 @@ class ElectricDipoleWholeSpace(BaseTDEM, BaseElectricDipole):
 class TransientPlaneWave(BaseTDEM):
     """
     Class for simulating the fields for a transient planewave in a wholespace.
-    The wave is assumed to be propogating vertically downward.
+    The wave is assumed to be propogating vertically downward, starting at time=0
+    and z = 0
 
     Parameters
     ----------
     amplitude : float
         amplitude of primary electric field.  Default is 1
-    orientation : (3) array_like or {'X','Y'}
+    orientation : (3,) array_like or {'X','Y'}
         Orientation of the planewave. Can be defined using as an ``array_like`` of length 3,
         or by using one of {'X','Y'} to define a planewave along the x or y direction.
         Default is 'X'.
@@ -684,7 +685,7 @@ class TransientPlaneWave(BaseTDEM):
         Returns
         -------
         (n_t, ..., 3) numpy.ndarray of float
-            Electric field at all frequencies for the gridded
+            Electric field at all times for the gridded
             locations provided.
 
         Examples
@@ -727,17 +728,16 @@ class TransientPlaneWave(BaseTDEM):
         xyz = check_xyz_dim(xyz)
         e0 = self.amplitude
 
-        z = xyz[..., 2]
-        t = self.time
-        for i in range(z.ndim):
-            t = t[..., None]
+        z = xyz[..., [2]]
+        t = append_ndim(self.time, xyz.ndim)
+
         mu = self.mu
         sigma = self.sigma
 
         bunja = -e0 * (mu * sigma) ** 0.5 * z * np.exp(-(mu * sigma * z ** 2) / (4 * t))
         bunmo = 2 * np.pi ** 0.5 * t ** 1.5
 
-        return self.orientation * (bunja / bunmo)[..., None]
+        return self.orientation * (bunja / bunmo)
 
     def current_density(self, xyz):
         r"""Current density for the transient planewave at a set of gridded locations.
@@ -900,12 +900,11 @@ class TransientPlaneWave(BaseTDEM):
 
         e0 = self.amplitude
 
-        z = xyz[..., 2]
-        t = self.time
-        for i in range(z.ndim):
-            t = t[..., None]
-        mu = self.mu
+        z = xyz[..., [2]]
+        t = append_ndim(self.time, xyz.ndim)
+
         sigma = self.sigma
+        mu = self.mu
 
         # Curl E = -dB/dt
         b_amp = - e0 * np.sqrt(sigma * mu / (np.pi * t)) * np.exp((-mu * sigma * z ** 2)/(4 * t))
@@ -914,4 +913,4 @@ class TransientPlaneWave(BaseTDEM):
         # take cross product with the propagation direction
         b_dir = np.cross(self.orientation, [0, 0, -1])
 
-        return b_dir * b_amp[..., None]
+        return b_dir * b_amp
