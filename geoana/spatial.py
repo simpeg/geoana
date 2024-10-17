@@ -184,13 +184,13 @@ def cartesian_to_cylindrical(grid, vec=None):
     else:
         vec = np.asarray(vec)
 
-    theta = np.arctan2(grid[..., 1], grid[..., 0])
-    out = [
-        np.cos(theta)*vec[..., 0] + np.sin(theta)*vec[..., 1],
-        -np.sin(theta) * vec[..., 0] + np.cos(theta) * vec[..., 1]
-    ]
-    if grid.shape[-1] == 3:
-        out.append(vec[..., 2])
+        theta = np.arctan2(grid[..., 1], grid[..., 0])
+        out = [
+            np.cos(theta)*vec[..., 0] + np.sin(theta)*vec[..., 1],
+            -np.sin(theta) * vec[..., 0] + np.cos(theta) * vec[..., 1]
+        ]
+        if grid.shape[-1] == 3:
+            out.append(vec[..., 2])
     return np.stack(out, axis=-1)
 
 
