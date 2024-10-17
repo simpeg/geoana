@@ -31,7 +31,7 @@ def test_base_fdem():
         fdem.BaseFDEM("string")
     with pytest.raises(ValueError, match="All frequencies must be greater than 0"):
         fdem.BaseFDEM(-1)
-    with pytest.raises(TypeError, match="frequencies must be ('*') array"):
+    with pytest.raises(TypeError, match="frequencies must have at most 1 dimension."):
         fdem.BaseFDEM(np.array([[1, 2], [3, 4]]))
 
     fd = fdem.BaseFDEM(frequency=np.logspace(1, 4, 3), sigma=1, quasistatic=True)

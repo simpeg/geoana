@@ -1065,17 +1065,13 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.show()
         """
         xyz = check_xyz_dim(xyz)
+        z = xyz[..., [2]]
 
-        k = self.wavenumber
+        k = append_ndim(self.wavenumber, xyz.ndim)
         e0 = self.amplitude
+        ikz = 1j * k * z
 
-        z = xyz[..., 2]
-        for i in range(z.ndim):
-            k = k[..., None]
-        kz = k * z
-        ikz = 1j * kz
-
-        return e0 * self.orientation * np.exp(ikz)[..., None]
+        return e0 * self.orientation * np.exp(ikz)
 
     def current_density(self, xyz):
         r"""Current density for the harmonic planewave at a set of gridded locations.
@@ -1267,15 +1263,11 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.show()
         """
         xyz = check_xyz_dim(xyz)
+        z = xyz[..., [2]]
 
-        k = self.wavenumber
-        omega = self.omega
+        k = append_ndim(self.wavenumber, xyz.ndim)
+        omega = append_ndim(self.omega, xyz.ndim)
         e0 = self.amplitude
-
-        z = xyz[..., 2]
-        for i in range(z.ndim):
-            k = k[..., None]
-            omega = omega[..., None]
         kz = k * z
         ikz = 1j * kz
 
@@ -1287,4 +1279,4 @@ class HarmonicPlaneWave(BaseFDEM):
         # account for the orientation in the cross product
         # take cross product with the propagation direction
         b_dir = np.cross(self.orientation, [0, 0, -1])
-        return b_dir * b[..., None]
+        return b_dir * b

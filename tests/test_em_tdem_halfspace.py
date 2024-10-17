@@ -1,37 +1,24 @@
 import numpy as np
 
 from geoana.em.tdem import VerticalMagneticDipoleHalfSpace
-from geoana.em.tdem.base import theta
+from geoana.em.tdem.base import theta as theta_func
 from scipy.special import erf, ive
+
+from geoana.em.tdem.reference import hp_from_vert_4_72, hz_from_vert_4_69a
+from geoana.spatial import cylindrical_to_cartesian, cartesian_to_cylindrical
 
 
 def H_from_Vertical(
     XYZ, loc, time, sigma, mu, moment
 ):
-
-    XYZ = np.atleast_2d(XYZ)
-
+    theta = theta_func(time, sigma, mu)
     r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec[:, :2], axis=-1)
-    x = r_vec[:, 0]
-    y = r_vec[:, 1]
-    thr = theta(time, sigma, mu=mu)[:, None] * r
-
-    h_z = 1.0 / r ** 3 * (
-            (9 / (2 * thr ** 2) - 1) * erf(thr)
-            - (9 / thr + 4 * thr) / np.sqrt(np.pi) * np.exp(-thr ** 2)
-    )
-
-    h_r = 2 * thr ** 2 / r ** 3 * (
-            ive(1, thr ** 2 / 2) - ive(2, thr ** 2 / 2)
-    )
-
-    angle = np.arctan2(y, x)
-    h_x = np.cos(angle) * h_r
-    h_y = np.sin(angle) * h_r
-
-    h = moment / (4 * np.pi) * np.stack((h_x, h_y, h_z), axis=-1)
-    return h[0]
+    cyl_locs = cylindrical_to_cartesian(r_vec)
+    hp = hp_from_vert_4_72(moment, theta, cyl_locs[..., 0])
+    hz = hz_from_vert_4_69a(moment, theta, cyl_locs[..., 0])
+    h_cyl = np.stack([hp, np.zeros_like(hp), hz], axis=-1)
+    print(h_cyl.shape, r_vec.shape, hp.shape)
+    return cartesian_to_cylindrical(cyl_locs, h_cyl)
 
 
 def dH_from_Vertical(
@@ -43,9 +30,9 @@ def dH_from_Vertical(
     r = np.linalg.norm(r_vec[:, :2], axis=-1)
     x = r_vec[:, 0]
     y = r_vec[:, 1]
-    tr = theta(time, sigma, mu)[:, None] * r
+    tr = theta_func(time, sigma, mu) * r
 
-    dhz_dt = 1 / (r ** 3 * time[:, None]) * (
+    dhz_dt = 1 / (r ** 3 * time) * (
             9 / (2 * tr ** 2) * erf(tr)
             - (4 * tr ** 3 + 6 * tr + 9 / tr) / np.sqrt(np.pi) * np.exp(-tr ** 2)
     )
@@ -100,7 +87,7 @@ class TestVerticalMagneticDipoleHalfSpace:
         vmdhs = VerticalMagneticDipoleHalfSpace(time=time)
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
+        z = np.linspace(-30, 0, 0)
         xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
 
         btest = B_from_Vertical(
