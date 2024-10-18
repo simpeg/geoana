@@ -1657,7 +1657,7 @@ def example():
     #     data=data
     # )
 
-    data = np.fromstring(dinar_file.content, np.float32)
+    data = np.frombuffer(dinar_file.content, np.float32)
     title = 'Dinar, Turkey'
     location = [706216.0606, 4269238.9999]
     location_UTM_zone = 35

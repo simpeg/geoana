@@ -22,8 +22,8 @@ def test_errors():
 class TestCoordinates(unittest.TestCase):
 
     def test_rotate_vec_cyl2cart(self):
-        vec = np.r_[1., 0, 0].reshape(1, 3)
-        grid = np.r_[1., np.pi/4, 0].reshape(1, 3)
+        vec = np.r_[1., 0, 0]
+        grid = np.r_[1., np.pi/4, 0]
         self.assertTrue(np.allclose(
             spatial.cylindrical_to_cartesian(grid, vec),
             np.sqrt(2)/2 * np.r_[1, 1, 0]
@@ -71,12 +71,12 @@ class TestCoordinates(unittest.TestCase):
     def test_cartesian_to_cylindrical(self):
         vec = np.r_[1., 0, 0]
         grid = np.r_[1., np.pi / 4, 0]
-        grid_ = np.atleast_2d(grid)
-        vec_ = vec.reshape(grid_.shape, order='F')
-        theta = np.arctan2(grid_[:, 1], grid_[:, 0])
-        c2c_test = np.hstack([utils.mkvc(np.cos(theta) * vec_[:, 0] + np.sin(theta) * vec_[:, 1], 2),
-                              utils.mkvc(-np.sin(theta) * vec_[:, 0] + np.cos(theta) * vec_[:, 1], 2),
-                              utils.mkvc(vec_[:, 2], 2)])
+        theta = np.arctan2(grid[1], grid[0])
+        c2c_test = np.hstack([
+            np.cos(theta) * vec[0] + np.sin(theta) * vec[1],
+            -np.sin(theta) * vec[0] + np.cos(theta) * vec[1],
+            vec[2]
+        ])
         c2c = spatial.cartesian_to_cylindrical(grid, vec)
         np.testing.assert_equal(c2c_test, c2c)
 

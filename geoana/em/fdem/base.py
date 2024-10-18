@@ -203,13 +203,11 @@ class BaseFDEM(BaseEM):
             value = np.asarray(value, dtype=float)
         except:
             raise TypeError(f"frequencies are not a valid type")
-        value = np.atleast_1d(value)
-
         # Enforce positivity and dimensions
         if (value < 0.).any():
             raise ValueError("All frequencies must be greater than 0")
         if value.ndim > 1:
-            raise TypeError(f"frequencies must be ('*') array")
+            raise TypeError(f"frequencies must have at most 1 dimension.")
 
         self._frequency = value
 

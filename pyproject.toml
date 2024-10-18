@@ -105,3 +105,14 @@ setup-args = [
     '-Dwith_extensions=true',
     '--vsenv'
 ]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    'ignore:divide by zero encountered in divide:RuntimeWarning',
+    'ignore:invalid value encountered in divide:RuntimeWarning',
+    'ignore:invalid value encountered in multiply:RuntimeWarning',
+    'ignore:invalid value encountered in sqrt:RuntimeWarning',
+    'ignore::numpy.exceptions.ComplexWarning'
+]
+
+
