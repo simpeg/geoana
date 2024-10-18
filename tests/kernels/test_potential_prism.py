@@ -1,20 +1,14 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
-from scipy.special import roots_legendre
 
 import geoana.kernels.potential_field_prism as pf
 import geoana.gravity as grav
-from geoana.em.static import MagneticPrism, MagneticDipoleWholeSpace
+from geoana.em.static import MagneticPrism
 try:
     from numba import njit
 except ImportError:
     njit = None
-
-try:
-    from discretize.tests import check_derivative
-except ImportError:
-    check_derivative = None
 
 
 class TestCompiledVsNumpy():

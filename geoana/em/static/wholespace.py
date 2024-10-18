@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.special import ellipk, ellipe
+from scipy.spatial.transform import Rotation
 
-from ..base import BaseDipole, BaseMagneticDipole, BaseEM
+from ..base import BaseDipole, BaseMagneticDipole, BaseEM, BaseLineCurrent
 from ... import spatial
 from geoana.utils import check_xyz_dim
 
@@ -9,6 +10,9 @@ __all__ = [
     "MagneticDipoleWholeSpace", "CircularLoopWholeSpace",
     "MagneticPoleWholeSpace", "PointCurrentWholeSpace"
 ]
+
+from ...kernels import prism_fzx, prism_fzy
+from ...spatial import cartesian_2_cylindrical, cylindrical_2_cartesian
 
 
 class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
@@ -319,7 +323,7 @@ class MagneticPoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray xyz
+        xyz : (..., 3) numpy.ndarray xyz
             gridded xyz locations at which we calculate the magnetic flux density
         coordinates: str {'cartesian', 'cylindrical'}
             coordinate system that the location (xyz) are provided.
@@ -328,7 +332,7 @@ class MagneticPoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Returns
         -------
-        (n, 3) numpy.ndarray
+        (..., 3) numpy.ndarray
             The magnetic flux density at each observation location in the
             coordinate system specified in units T.
 
@@ -346,10 +350,11 @@ class MagneticPoleWholeSpace(BaseEM, BaseMagneticDipole):
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
-        r = self.vector_distance(xyz)
-        dxyz = spatial.repeat_scalar(self.distance(xyz))
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
 
-        b = self.moment * self.mu / (4 * np.pi * (dxyz ** 3)) * r
+        b = self.moment * self.mu / (4 * np.pi * r ** 2) * r_hat
 
         if coordinates.lower() == "cylindrical":
             b = spatial.cartesian_2_cylindrical(xyz, b)
@@ -378,7 +383,7 @@ class MagneticPoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray xyz
+        xyz : (..., 3) numpy.ndarray xyz
             gridded locations at which we calculate the magnetic field
         coordinates: str {'cartesian', 'cylindrical'}
             coordinate system that the location (xyz) are provided.
@@ -387,7 +392,7 @@ class MagneticPoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         Returns
         -------
-        (n, 3) numpy.ndarray
+        (..., 3) numpy.ndarray
             The magnetic field at each observation location in the
             coordinate system specified in units A/m.
 
@@ -416,6 +421,9 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         self.current = current
         self.radius = radius
         super().__init__(**kwargs)
+
+        # define a rotation matrix that rotates my orientation to z:
+        self._rot, _ = Rotation.align_vectors(np.array([0, 0, 1]), self.orientation)
 
 
     @property
@@ -504,7 +512,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray xyz
+        xyz : (..., 3) numpy.ndarray xyz
             gridded locations at which we calculate the vector potential
         coordinates: str {'cartesian', 'cylindrical'}
             coordinate system that the location (xyz) are provided.
@@ -513,7 +521,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         Returns
         -------
-        (n, 3) numpy.ndarray
+        (..., 3) numpy.ndarray
             The magnetic vector potential at each observation location in the
             coordinate system specified in units *Tm*.
 
@@ -568,18 +576,14 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
-        xyz = spatial.rotate_points_from_normals(
-            xyz, np.array(self.orientation),  # work around for a properties issue
-            np.r_[0., 0., 1.], x0=np.array(self.location)
-        )
+        # rotate the points
+        r_vec = self._rot.apply(xyz.reshape(-1, 3) - self.location).reshape(xyz.shape)
+        r = np.linalg.norm(r_vec, axis=-1)
 
-        n_obs = xyz.shape[0]
-        dxyz = self.vector_distance(xyz)
-        r = self.distance(xyz)
+        rho = np.linalg.norm(r_vec[..., :2], axis=-1)
+        z = r_vec[..., 2]
 
-        rho = np.sqrt((dxyz[:, :2]**2).sum(1))
-
-        k2 = (4 * self.radius * rho) / ((self.radius + rho)**2 +dxyz[:, 2]**2)
+        k2 = (4 * self.radius * rho) / ((self.radius + rho)**2 + z**2)
         k2[k2 > 1.] = 1.  # if there are any rounding errors
 
         E = ellipe(k2)
@@ -597,14 +601,12 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         # assume that the z-axis aligns with the polar axis
         A = np.zeros_like(xyz)
-        A[ind, 0] = Atheta[ind] * (-dxyz[ind, 1] / rho[ind])
-        A[ind, 1] = Atheta[ind] * (dxyz[ind, 0] / rho[ind])
+        theta_dir = np.arctan2()
+        A[ind, 0] = Atheta[ind] * (-r_vec[ind, 1] / rho[ind])
+        A[ind, 1] = Atheta[ind] * (r_vec[ind, 0] / rho[ind])
 
-        # rotate the points to aligned with the normal to the source
-        A = spatial.rotate_points_from_normals(
-            A, np.r_[0., 0., 1.], np.array(self.orientation),
-            x0=np.array(self.location)
-        )
+        # un-do the rotation on the vector components.
+        A = self._rot.apply(A.reshape(-1, 3), inverse=True).reshape(xyz.shape)
 
         if coordinates.lower() == "cylindrical":
             A = spatial.cartesian_2_cylindrical(xyz, A)
@@ -676,6 +678,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         """
         xyz = check_xyz_dim(xyz)
+
         # convert coordinates if not cartesian
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
@@ -685,16 +688,11 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
                 f"system you provided, {coordinates}, is not yet supported."
             )
 
-        xyz = spatial.rotate_points_from_normals(
-            xyz, np.array(self.orientation),  # work around for a properties issue
-            np.r_[0., 0., 1.], x0=np.array(self.location)
-        )
-        # rotate all the points such that the orientation is directly vertical
+        # rotate the points
+        r_vec = self._rot.apply(xyz.reshape(-1, 3) - self.location).reshape(xyz.shape)
+        r = np.linalg.norm(r_vec, axis=-1)
 
-        dxyz = self.vector_distance(xyz)
-        r = self.distance(xyz)
-
-        rho = np.linalg.norm(dxyz[:, :2], axis=-1)
+        rho = np.linalg.norm(r_vec[:, :2], axis=-1)
 
         B = np.zeros((len(rho), 3))
 
@@ -702,13 +700,13 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         inds_axial = rho==0.0
 
         B[inds_axial, -1] = self.mu * self.current * self.radius**2 / (
-            2 * (self.radius**2 + dxyz[inds_axial, 2]**2)**(1.5)
+            2 * (self.radius**2 + r_vec[inds_axial, 2]**2)**(1.5)
         )
 
         # Off axis
         alpha = rho[~inds_axial]/self.radius
-        beta = dxyz[~inds_axial, 2]/self.radius
-        gamma = dxyz[~inds_axial, 2]/rho[~inds_axial]
+        beta = r_vec[~inds_axial, 2]/self.radius
+        gamma = r_vec[~inds_axial, 2]/rho[~inds_axial]
 
         Q = ((1+alpha)**2 + beta**2)
         k2 =  4 * alpha/Q
@@ -724,13 +722,10 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         )
 
         # convert radial component to x and y..
-        B[~inds_axial, 0] = B_rad * (dxyz[~inds_axial, 0]/rho[~inds_axial])
-        B[~inds_axial, 1] = B_rad * (dxyz[~inds_axial, 1]/rho[~inds_axial])
+        B[~inds_axial, 0] = B_rad * (r_vec[~inds_axial, 0]/rho[~inds_axial])
+        B[~inds_axial, 1] = B_rad * (r_vec[~inds_axial, 1]/rho[~inds_axial])
 
-        # rotate the vectors to be aligned with the normal to the source
-        B = spatial.rotate_points_from_normals(
-           B, np.r_[0., 0., 1.], np.array(self.orientation),
-        )
+        self._rot.apply(B.reshape(-1, 3), inverse=True).reshape(xyz.shape)
 
         if coordinates.lower() == "cylindrical":
             B = spatial.cartesian_2_cylindrical(xyz, B)
@@ -804,7 +799,121 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         return self.magnetic_flux_density(xyz, coordinates=coordinates) / self.mu
 
 
-class PointCurrentWholeSpace:
+class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
+
+    def scalar_potential(self, xyz):
+        xyz = check_xyz_dim(xyz)
+        # If i had a single point, treat it as a source
+        if self.n_segments == 0:
+            r = np.linalg.norm(xyz - self.nodes[0], axis=-1)
+            return self.current/(4 * np.pi * self.sigma * r)
+        # if I was a closed loop, return 0
+        if np.all(self.nodes[-1] == self.nodes[0]):
+            return np.zeros_like(xyz[..., 0])
+
+        r_A = np.linalg.norm(xyz - self.nodes[-1], axis=-1)
+        r_B = np.linalg.norm(xyz - self.nodes[0], axis=-1)
+
+        return self.current/(4 * np.pi * self.sigma) * (1/r_A - 1/r_B)
+
+    def vector_potential(self, xyz):
+
+        xyz = check_xyz_dim(xyz)
+
+        out = np.zeros_like(xyz)
+        temp_storage = np.zeros_like(xyz)
+        for p0, p1 in zip(self.nodes[:-1], self.nodes[1:]):
+            l_vec = p1 - p0
+            l = np.linalg.norm(l_vec)
+            l_hat = l_vec / l
+
+            # find the rotation from the line segments orientation
+            # to the x_hat direction.
+            rot, _ = Rotation.align_vectors([1, 0, 0], l_hat.reshape(-1, 3))
+
+            # shift and rotate the grid points
+            r0_vec = rot.apply(xyz.reshape(-1, 3) - p0).reshape(xyz.shape)
+
+            #p1 would've been shifted and rotated to [l, 0, 0]
+            r1_vec = r0_vec - np.array([l, 0, 0])
+
+            # hey these are just the 1/r kernel evaluations!
+            v0_x = -prism_fzy(r0_vec[..., 0], r0_vec[..., 1], r0_vec[..., 2])
+            v1_x = -prism_fzy(r1_vec[..., 0], r1_vec[..., 1], r1_vec[..., 2])
+
+            temp_storage[..., 0] = v1_x - v0_x
+            # the undo the local rotation...
+            out += rot.apply(temp_storage.reshape(-1, 3), inverse=True).reshape(xyz.shape)
+
+        out *= self.mu * self.current / (4 * np.pi)
+
+        # note because this is a whole space, we do not have to deal with the
+        # magnetic fields due to the current flowing out of the ends of a grounded
+        # wire.
+        return out
+
+    def magnetic_field(self, xyz):
+        return self.magnetic_flux_density(xyz) / self.mu
+
+    def magnetic_flux_density(self, xyz):
+
+        xyz = check_xyz_dim(xyz)
+
+        out = np.zeros_like(xyz)
+        temp_storage = np.zeros_like(xyz)
+        for p0, p1 in zip(self.nodes[:-1], self.nodes[1:]):
+            l_vec = p1 - p0
+            l = np.linalg.norm(l_vec)
+            l_hat = l_vec / l
+
+            # find the rotation from the line segments orientation
+            # to the z_hat direction.
+            rot, _ = Rotation.align_vectors([1, 0, 0], l_hat)
+
+            # shift and rotate the grid points
+            r0_vec = rot.apply(xyz.reshape(-1, 3) - p0).reshape(xyz.shape)
+            #p1 would've been shifted and rotated to [l, 0, 0]
+            r1_vec = r0_vec - np.array([l, 0, 0])
+
+            r0 = np.linalg.norm(r0_vec, axis=-1, keepdims=True)
+            r1 = np.linalg.norm(r1_vec, axis=-1, keepdims=True)
+            r0_hat = r0_vec / r0
+            r1_hat = r1_vec / r1
+
+            cyl_points = cartesian_2_cylindrical(r0_vec[..., 1:])
+
+            temp_storage[..., 1] = (r1_hat[..., 0] - r0_hat[..., 0])/cyl_points[..., 0]
+            temp_storage[..., 1:] = cylindrical_2_cartesian(cyl_points, temp_storage)
+
+            # the undo the local rotation...
+            out += rot.apply(temp_storage.reshape(-1, 3), inverse=True).reshape(xyz.shape)
+
+        out *= self.mu * self.current / (4 * np.pi)
+        return out
+
+    def electric_field(self, xyz):
+        xyz = check_xyz_dim(xyz)
+        # If I had a single point, treat it as a source
+        if self.n_segments == 0:
+            r_vec = xyz - self.nodes[0]
+            r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+            return self.current / (4 * np.pi * self.sigma * r**3) * r_vec
+        # if I was a closed loop, return 0
+        if np.all(self.nodes[-1] == self.nodes[0]):
+            return np.zeros_like(xyz)
+        # otherwise, current leaks out at the ends!
+        r_vec_A = xyz - self.nodes[-1]
+        r_vec_B = xyz - self.nodes[0]
+        r_A = np.linalg.norm(r_vec_A, axis=-1, keepdims=True)
+        r_B = np.linalg.norm(r_vec_B, axis=-1, keepdims=True)
+
+        return self.current/(4 * np.pi * self.sigma) * (r_vec_A/r_A**3 - r_vec_B/r_B**3)
+
+    def current_density(self, xyz):
+        return self.sigma * self.electric_field(xyz)
+
+
+class PointCurrentWholeSpace(LineCurrentWholeSpace):
     """Class for a point current in a wholespace.
 
     The ``PointCurrentWholeSpace`` class is used to analytically compute the
@@ -812,66 +921,18 @@ class PointCurrentWholeSpace:
 
     Parameters
     ----------
-    current : float
-        Electrical current in the point current (A). Default is 1A.
     rho : float
         Resistivity in the point current (:math:`\\Omega \\cdot m`).
+    current : float
+        Electrical current in the point current (A). Default is 1A.
     location : array_like, optional
         Location at which we are observing in 3D space (m). Default is (0, 0, 0).
     """
 
     def __init__(self, rho, current=1.0, location=None):
-
-        self.current = current
-        self.rho = rho
         if location is None:
             location = np.r_[0, 0, 0]
-        self.location = location
-
-    @property
-    def current(self):
-        """Current in the point current in Amps.
-
-        Returns
-        -------
-        float
-            Current in the point current in Amps.
-        """
-        return self._current
-
-    @current.setter
-    def current(self, value):
-
-        try:
-            value = float(value)
-        except:
-            raise TypeError(f"current must be a number, got {type(value)}")
-
-        self._current = value
-
-    @property
-    def rho(self):
-        """Resistivity in the point current in :math:`\\Omega \\cdot m`
-
-        Returns
-        -------
-        float
-            Resistivity in the point current in :math:`\\Omega \\cdot m`
-        """
-        return self._rho
-
-    @rho.setter
-    def rho(self, value):
-
-        try:
-            value = float(value)
-        except:
-            raise TypeError(f"current must be a number, got {type(value)}")
-
-        if value <= 0.0:
-            raise ValueError("current must be greater than 0")
-
-        self._rho = value
+        super().__init__(sigma=1/rho, nodes=location, current=current)
 
     @property
     def location(self):
@@ -882,7 +943,7 @@ class PointCurrentWholeSpace:
         (3) numpy.ndarray of float
             Location of observer in 3D space. Default = np.r_[0,0,0].
         """
-        return self._location
+        return self.nodes[0]
 
     @location.setter
     def location(self, vec):
@@ -896,8 +957,7 @@ class PointCurrentWholeSpace:
             raise ValueError(
                 f"location must be array_like with shape (3,), got {len(vec)}"
             )
-
-        self._location = vec
+        self.nodes[0] = vec
 
     def potential(self, xyz):
         """Electric potential for a point current in a wholespace.
@@ -956,13 +1016,7 @@ class PointCurrentWholeSpace:
         >>> plt.title('Electric Potential from Point Current in a Wholespace')
         >>> plt.show()
         """
-
-        xyz = check_xyz_dim(xyz)
-        r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)
-
-        v = self.rho * self.current / (4 * np.pi * r)
-        return v
+        return super().scalar_potential(xyz)
 
     def electric_field(self, xyz):
         """Electric field for a point current in a wholespace.
@@ -1022,13 +1076,7 @@ class PointCurrentWholeSpace:
         >>> plt.title('Electric Field Lines for a Point Current in a Wholespace')
         >>> plt.show()
         """
-
-        xyz = check_xyz_dim(xyz)
-        r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)
-
-        e = self.rho * self.current * r_vec / (4 * np.pi * r[..., None] ** 3)
-        return e
+        return super().electric_field(xyz)
 
     def current_density(self, xyz):
         """Current density for a point current in a wholespace.
@@ -1087,6 +1135,4 @@ class PointCurrentWholeSpace:
         >>> plt.title('Current Density for a Point Current in a Wholespace')
         >>> plt.show()
         """
-
-        j = self.electric_field(xyz) / self.rho
-        return j
+        return super().current_density(xyz)

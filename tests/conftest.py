@@ -179,6 +179,27 @@ def sympy_static_hx_dipole(em_dipole_params):
     }
     return lamb_funcs
 
+@pytest.fixture(scope='session')
+def sympy_static_h_pole(em_dipole_params):
+    R = CoordSys3D('R')
+    delop = Del()
+
+    moment = em_dipole_params['moment']
+    mu = em_dipole_params['mu']
+
+    r = sympy.sqrt(R.x ** 2 + R.y ** 2 + R.z ** 2)
+    mag_potential = moment / (4 * sympy.pi * r)
+
+    H = -delop.gradient(mag_potential).doit()
+    B = mu * H
+
+    lamb_funcs = {
+        'potential' : sympy.lambdify((R.x, R.y, R.z), mag_potential),
+        'magnetic_field' : vector_lambdify(H, R),
+        'magnetic_flux_density' : vector_lambdify(B, R),
+    }
+    return lamb_funcs
+
 
 @pytest.fixture(scope='session')
 def sympy_grav_point(grav_point_params):
@@ -265,3 +286,42 @@ def sympy_potential_prism():
     }
 
     return lamb_funcs
+
+@pytest.fixture(scope='session')
+def sympy_linex_segment(em_dipole_params):
+    R = CoordSys3D('R')
+    delop = Del()
+
+    l = em_dipole_params['length']
+    mu = em_dipole_params['mu']
+    I = em_dipole_params['current']
+    sigma = em_dipole_params['sigma']
+
+    x, y, z = R.base_scalars()
+    r0 = sympy.sqrt(x ** 2 + y ** 2 + z ** 2)
+    x1 = x - l
+    r1 = sympy.sqrt(x1 ** 2 + y ** 2 + z ** 2)
+
+    A = mu * I / (4 * sympy.pi) * (
+        sympy.log(x1 + r1) - sympy.log(x + r0)
+    ) * R.i
+
+    B = delop.cross(A).doit()
+    H = B / mu
+
+    phi = I / (4 * sympy.pi * sigma ) * (1/r1 - 1/r0)
+    E = -delop.gradient(phi).doit()
+    J = sigma * E
+
+    lamb_funcs = {
+        'scalar_potential': sympy.lambdify(R.base_scalars(), phi),
+        'vector_potential' : vector_lambdify(A, R),
+        'magnetic_field' : vector_lambdify(H, R),
+        'magnetic_flux_density' : vector_lambdify(B, R),
+        'electric_field' : vector_lambdify(E, R),
+        'current_density' : vector_lambdify(J, R),
+
+    }
+    return lamb_funcs
+
+

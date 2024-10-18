@@ -14,6 +14,7 @@ Simulation Classes
   :toctree: generated/
 
   LineCurrentFreeSpace
+  LineCurrentWholeSpace
   MagneticDipoleWholeSpace
   MagneticPoleWholeSpace
   CircularLoopWholeSpace
@@ -32,7 +33,8 @@ from geoana.em.static.wholespace import (
     MagneticDipoleWholeSpace,
     MagneticPoleWholeSpace,
     CircularLoopWholeSpace,
-    PointCurrentWholeSpace
+    PointCurrentWholeSpace,
+    LineCurrentWholeSpace
 )
 
 from geoana.em.static.halfspace import (

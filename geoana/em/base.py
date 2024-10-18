@@ -59,6 +59,26 @@ class BaseEM:
         self._sigma = value
 
     @property
+    def rho(self):
+        """Electrical resistivity in Ohm m
+
+        Returns
+        -------
+        float
+            Electrical resistivity in Ohm m
+        """
+        return 1/self.sigma
+
+    @rho.setter
+    def rho(self, value):
+        try:
+            value = float(value)
+        except:
+            raise TypeError(f"resistivity must be a number, got {type(value)}")
+
+        self.sigma = 1/value
+
+    @property
     def mu(self):
         """Magnetic permeability in H/m
 
