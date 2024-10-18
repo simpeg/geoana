@@ -1,8 +1,10 @@
+from tabnanny import check
+
 import numpy as np
 from scipy.special import erf, ive
 from scipy.constants import mu_0
 from geoana.em.tdem.base import theta
-from geoana.utils import append_ndim
+from geoana.utils import append_ndim, check_xyz_dim
 
 
 def vertical_magnetic_field_horizontal_loop(
@@ -175,7 +177,7 @@ def vertical_magnetic_field_time_deriv_horizontal_loop(
 def vertical_magnetic_flux_time_deriv_horizontal_loop(
     t, sigma=1.0, mu=mu_0, radius=1.0, current=1.0, turns=1
 ):
-    """Time-derivative of the vertical transient magnetic flux density at the center of a horizontal loop over a halfspace.
+    r"""Time-derivative of the vertical transient magnetic flux density at the center of a horizontal loop over a halfspace.
 
     Compute the time-derivative of the vertical component of the transient
     magnetic flux density at the center of a circular loop on the surface
@@ -223,7 +225,7 @@ def vertical_magnetic_flux_time_deriv_horizontal_loop(
 
     >>> plt.loglog(times*1E3, -dbz_dt, '--')
     >>> plt.xlabel('time (ms)')
-    >>> plt.ylabel(r'$\\frac{\\partial b_z}{ \\partial t}$ (T/s)')
+    >>> plt.ylabel(r'$\frac{\partial b_z}{ \partial t}$ (T/s)')
     >>> plt.show()
     """
     a = radius
@@ -313,14 +315,9 @@ def magnetic_field_vertical_magnetic_dipole(
     )
     # positive here because z+ up
 
-    # iv(1, arg) - iv(2, arg)
-    # ive(1, arg) * np.exp(abs(arg)) - ive(2, arg) * np.exp(abs(arg))
-    # (ive(1, arg) - ive(2, arg))*np.exp(abs(arg))
     h_r = 2 * thr**2 / r**3 * (
         ive(1, thr**2 / 2) - ive(2, thr**2 / 2)
     )
-    # thetar is always positive so this above simplifies (more numerically stable)
-
     angle = np.arctan2(y, x)
     h_x = np.cos(angle) * h_r
     h_y = np.sin(angle) * h_r
@@ -399,7 +396,11 @@ def magnetic_field_time_deriv_magnetic_dipole(
     >>> plt.legend()
     >>> plt.show()
     """
-    r = np.linalg.norm(xy[..., :2], axis=-1)
+    try:
+        xy = check_xyz_dim(xy, 3)[..., :2]
+    except ValueError:
+        xy = check_xyz_dim(xy, 2)
+    r = np.linalg.norm(xy, axis=-1)
     x = xy[..., 0]
     y = xy[..., 1]
     t = append_ndim(t, r.ndim)
@@ -411,7 +412,7 @@ def magnetic_field_time_deriv_magnetic_dipole(
     )
 
     # iv(k, v) = ive(k, v) * exp(abs(arg))
-    dhr_dt = - 2 * tr**2 / (r**3 * t) * (
+    dhr_dt = -2 * tr**2 / (r**3 * t) * (
         (1 + tr**2) * ive(0, tr**2 / 2) -
         (2 + tr**2 + 4 / tr**2) * ive(1, tr**2 / 2)
     )
