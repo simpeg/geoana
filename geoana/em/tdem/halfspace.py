@@ -24,12 +24,12 @@ class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xy : (n_t, ..., 2) numpy.ndarray
+        xy : (..., 2) numpy.ndarray
             receiver locations
 
         Returns
         -------
-        numpy.ndarray
+        (n_t, ..., 3) numpy.ndarray
             magnetic field for each xy location
         """
         try:
@@ -50,12 +50,12 @@ class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xy : (n_locations, 2) numpy.ndarray
+        xy : (..., 2) numpy.ndarray
             receiver locations
 
         Returns
         -------
-        numpy.ndarray
+        (n_t, ..., 3) numpy.ndarray
             magnetic flux for each xy location
         """
         return self.mu * self.magnetic_field(xy)
@@ -68,12 +68,12 @@ class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xy : (n_t, ..., 2) numpy.ndarray
+        xy : (..., 2) numpy.ndarray
             receiver locations
 
         Returns
         -------
-        numpy.ndarray
+        (n_t, ..., 3) numpy.ndarray
             Magnetic flux time derivative for each xy location
         """
         try:
@@ -94,12 +94,12 @@ class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xy : (n_locations, 2) numpy.ndarray
+        xy : (..., 2) numpy.ndarray
             receiver locations
 
         Returns
         -------
-        numpy.ndarray
+        (n_t, ..., 3) numpy.ndarray
             magnetic flux for each xy location
         """
         return self.mu * self.magnetic_field_time_derivative(xy)

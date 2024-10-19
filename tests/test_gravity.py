@@ -4,6 +4,7 @@ import numpy.testing as npt
 from scipy.special import roots_legendre
 
 from geoana import gravity
+from geoana.utils import append_ndim
 
 METHODS = [
     "gravitational_potential",
@@ -128,9 +129,9 @@ class TestGravityAccuracy():
     def test_accuracy(self, method, rtol):
         test_prism = getattr(self.prism, method)(self.xyz)
 
-        wx = self.quad_wx[..., *((None, )*test_prism.ndim)]
-        wy = self.quad_wy[..., *((None, )*test_prism.ndim)]
-        wz = self.quad_wz[..., *((None, )*test_prism.ndim)]
+        wx = append_ndim(self.quad_wx, test_prism.ndim)
+        wy = append_ndim(self.quad_wy, test_prism.ndim)
+        wz = append_ndim(self.quad_wz, test_prism.ndim)
 
         test_quad = getattr(self.pm, method)(self.quad_xyzs)
         test_quad *= wx

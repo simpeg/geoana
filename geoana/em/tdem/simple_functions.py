@@ -302,6 +302,11 @@ def magnetic_field_vertical_magnetic_dipole(
     >>> plt.legend()
     >>> plt.show()
     """
+    try:
+        xy = check_xyz_dim(xy, 3)[..., :2]
+    except ValueError:
+        xy = check_xyz_dim(xy, 2)
+
     r = np.linalg.norm(xy[..., :2], axis=-1)
     x = xy[..., 0]
     y = xy[..., 1]
