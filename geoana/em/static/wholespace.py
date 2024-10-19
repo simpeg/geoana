@@ -422,9 +422,6 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         self.radius = radius
         super().__init__(**kwargs)
 
-        # define a rotation matrix that rotates my orientation to z:
-        self._rot, _ = Rotation.align_vectors(np.array([0, 0, 1]), self.orientation)
-
 
     @property
     def current(self):
@@ -576,8 +573,11 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         if coordinates.lower() == "cylindrical":
             xyz = spatial.cylindrical_2_cartesian(xyz)
 
+        # define a rotation matrix that rotates my orientation to z:
+        rot, _ = Rotation.align_vectors(np.array([0, 0, 1]), self.orientation)
+
         # rotate the points
-        r_vec = self._rot.apply(xyz.reshape(-1, 3) - self.location).reshape(xyz.shape)
+        r_vec = rot.apply(xyz.reshape(-1, 3) - self.location)
 
         r_cyl = cartesian_2_cylindrical(r_vec)
 
@@ -593,7 +593,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         # singular if rho = 0, k2 = 1
         ind = (rho > eps) & (k2 < 1)
 
-        Atheta = np.zeros_like(xyz)
+        Atheta = np.zeros_like(r_vec)
         Atheta[ind, 1] = (
             (self.mu * self.current) / (np.pi * np.sqrt(k2[ind])) *
             np.sqrt(self.radius / rho[ind]) *
@@ -603,7 +603,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         A = cylindrical_to_cartesian(r_cyl, Atheta)
 
         # un-do the rotation on the vector components.
-        A = self._rot.apply(A.reshape(-1, 3), inverse=True).reshape(xyz.shape)
+        A = rot.apply(A, inverse=True).reshape(xyz.shape)
 
         if coordinates.lower() == "cylindrical":
             A = spatial.cartesian_2_cylindrical(xyz, A)
@@ -685,18 +685,23 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
                 f"system you provided, {coordinates}, is not yet supported."
             )
 
+        # define a rotation matrix that rotates my orientation to z:
+        rot, _ = Rotation.align_vectors(np.array([0, 0, 1]), self.orientation)
+
         # rotate the points
-        r_vec = self._rot.apply(xyz.reshape(-1, 3) - self.location).reshape(xyz.shape)
-        r = np.linalg.norm(r_vec, axis=-1)
+        r_vec = rot.apply(xyz.reshape(-1, 3) - self.location)
 
-        rho = np.linalg.norm(r_vec[:, :2], axis=-1)
+        r_cyl = cartesian_2_cylindrical(r_vec)
 
-        B = np.zeros((len(rho), 3))
+        rho = r_cyl[..., 0]
+
+
+        B = np.zeros_like(r_vec)
 
         # for On axis points
         inds_axial = rho==0.0
 
-        B[inds_axial, -1] = self.mu * self.current * self.radius**2 / (
+        B[inds_axial, 2] = self.mu * self.current * self.radius**2 / (
             2 * (self.radius**2 + r_vec[inds_axial, 2]**2)**(1.5)
         )
 
@@ -709,23 +714,21 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         k2 =  4 * alpha/Q
 
         # axial part:
-        B[~inds_axial, -1] = self.mu * self.current / (2 * self.radius * np.pi * np.sqrt(Q)) * (
+        B[~inds_axial, 2] = self.mu * self.current / (2 * self.radius * np.pi * np.sqrt(Q)) * (
             ellipe(k2)*(1 - alpha**2 - beta**2)/(Q  - 4 * alpha) + ellipk(k2)
         )
 
         # radial part:
-        B_rad = self.mu * self.current * gamma / (2 * self.radius * np.pi * np.sqrt(Q)) * (
+        B[~inds_axial, 0] = self.mu * self.current * gamma / (2 * self.radius * np.pi * np.sqrt(Q)) * (
             ellipe(k2)*(1 + alpha**2 + beta**2)/(Q  - 4 * alpha) - ellipk(k2)
         )
 
-        # convert radial component to x and y..
-        B[~inds_axial, 0] = B_rad * (r_vec[~inds_axial, 0]/rho[~inds_axial])
-        B[~inds_axial, 1] = B_rad * (r_vec[~inds_axial, 1]/rho[~inds_axial])
+        B = cylindrical_to_cartesian(r_cyl, B)
 
-        self._rot.apply(B.reshape(-1, 3), inverse=True).reshape(xyz.shape)
+        B = rot.apply(B, inverse=True).reshape(xyz.shape)
 
         if coordinates.lower() == "cylindrical":
-            B = spatial.cartesian_2_cylindrical(xyz, B)
+            B = cartesian_2_cylindrical(xyz, B)
 
         return B
 
