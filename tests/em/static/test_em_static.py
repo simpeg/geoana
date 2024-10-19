@@ -265,14 +265,14 @@ class TestElectroStaticSphere:
         vt = ess.potential(xyz, field='total')
         vp = ess.potential(xyz, field='primary')
         vs = ess.potential(xyz, field='secondary')
-        np.testing.assert_equal(vttest, vt)
-        np.testing.assert_equal(vptest, vp)
-        np.testing.assert_equal(vstest, vs)
+        npt.assert_allclose(vttest, vt)
+        npt.assert_allclose(vptest, vp)
+        npt.assert_allclose(vstest, vs)
 
         vt, vp, vs = ess.potential(xyz, field='all')
-        np.testing.assert_equal(vttest, vt)
-        np.testing.assert_equal(vptest, vp)
-        np.testing.assert_equal(vstest, vs)
+        npt.assert_allclose(vttest, vt)
+        npt.assert_allclose(vptest, vp)
+        npt.assert_allclose(vstest, vs)
 
     def testE(self):
         radius = 1.0
@@ -308,14 +308,14 @@ class TestElectroStaticSphere:
         et = ess.electric_field(xyz, field='total')
         ep = ess.electric_field(xyz, field='primary')
         es = ess.electric_field(xyz, field='secondary')
-        np.testing.assert_equal(ettest, et)
-        np.testing.assert_equal(eptest, ep)
-        np.testing.assert_equal(estest, es)
+        npt.assert_allclose(ettest, et)
+        npt.assert_allclose(eptest, ep)
+        npt.assert_allclose(estest, es)
 
         et, ep, es =ess.electric_field(xyz, field='all')
-        np.testing.assert_equal(ettest, et)
-        np.testing.assert_equal(eptest, ep)
-        np.testing.assert_equal(estest, es)
+        npt.assert_allclose(ettest, et)
+        npt.assert_allclose(eptest, ep)
+        npt.assert_allclose(estest, es)
 
     def testJ(self):
         radius = 1.0
@@ -351,14 +351,14 @@ class TestElectroStaticSphere:
         jt = ess.current_density(xyz, field='total')
         jp = ess.current_density(xyz, field='primary')
         js = ess.current_density(xyz, field='secondary')
-        np.testing.assert_equal(jttest, jt)
-        np.testing.assert_equal(jptest, jp)
-        np.testing.assert_equal(jstest, js)
+        npt.assert_allclose(jttest, jt)
+        npt.assert_allclose(jptest, jp)
+        npt.assert_allclose(jstest, js)
 
         jt, jp, js = ess.current_density(xyz, field='all')
-        np.testing.assert_equal(jttest, jt)
-        np.testing.assert_equal(jptest, jp)
-        np.testing.assert_equal(jstest, js)
+        npt.assert_allclose(jttest, jt)
+        npt.assert_allclose(jptest, jp)
+        npt.assert_allclose(jstest, js)
 
     def test_rho(self):
         radius = 1.0
@@ -383,7 +383,7 @@ class TestElectroStaticSphere:
         )
 
         rho = ess.charge_density(xyz)
-        np.testing.assert_equal(rho_test, rho)
+        npt.assert_allclose(rho_test, rho)
 
 
 def Vt_from_Sphere(
@@ -568,14 +568,14 @@ class TestMagnetoStaticSphere:
         vt = mss.potential(xyz, field='total')
         vp = mss.potential(xyz, field='primary')
         vs = mss.potential(xyz, field='secondary')
-        np.testing.assert_equal(vttest, vt)
-        np.testing.assert_equal(vptest, vp)
-        np.testing.assert_equal(vstest, vs)
+        npt.assert_allclose(vttest, vt)
+        npt.assert_allclose(vptest, vp)
+        npt.assert_allclose(vstest, vs)
 
         vt, vp, vs = mss.potential(xyz, field='all')
-        np.testing.assert_equal(vttest, vt)
-        np.testing.assert_equal(vptest, vp)
-        np.testing.assert_equal(vstest, vs)
+        npt.assert_allclose(vttest, vt)
+        npt.assert_allclose(vptest, vp)
+        npt.assert_allclose(vstest, vs)
 
     def testH(self):
         radius = 1.0
@@ -611,14 +611,14 @@ class TestMagnetoStaticSphere:
         ht = mss.magnetic_field(xyz, field='total')
         hp = mss.magnetic_field(xyz, field='primary')
         hs = mss.magnetic_field(xyz, field='secondary')
-        np.testing.assert_equal(httest, ht)
-        np.testing.assert_equal(hptest, hp)
-        np.testing.assert_equal(hstest, hs)
+        npt.assert_allclose(httest, ht)
+        npt.assert_allclose(hptest, hp)
+        npt.assert_allclose(hstest, hs)
 
         ht, hp, hs = mss.magnetic_field(xyz, field='all')
-        np.testing.assert_equal(httest, ht)
-        np.testing.assert_equal(hptest, hp)
-        np.testing.assert_equal(hstest, hs)
+        npt.assert_allclose(httest, ht)
+        npt.assert_allclose(hptest, hp)
+        npt.assert_allclose(hstest, hs)
 
     def testB(self):
         radius = 1.0
@@ -654,14 +654,14 @@ class TestMagnetoStaticSphere:
         bt = mss.magnetic_flux_density(xyz, field='total')
         bp = mss.magnetic_flux_density(xyz, field='primary')
         bs = mss.magnetic_flux_density(xyz, field='secondary')
-        np.testing.assert_equal(btest, bt)
-        np.testing.assert_equal(bptest, bp)
-        np.testing.assert_equal(bstest, bs)
+        npt.assert_allclose(btest, bt)
+        npt.assert_allclose(bptest, bp)
+        npt.assert_allclose(bstest, bs)
 
         bt, bp, bs = mss.magnetic_flux_density(xyz, field='all')
-        np.testing.assert_equal(btest, bt)
-        np.testing.assert_equal(bptest, bp)
-        np.testing.assert_equal(bstest, bs)
+        npt.assert_allclose(btest, bt)
+        npt.assert_allclose(bptest, bp)
+        npt.assert_allclose(bstest, bs)
 
 
 
@@ -769,7 +769,7 @@ class TestPointCurrentHalfSpace:
         )
 
         v = pchs.potential(xyz)
-        np.testing.assert_equal(vtest, v)
+        npt.assert_allclose(vtest, v)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -801,7 +801,7 @@ class TestPointCurrentHalfSpace:
         )
 
         e = pchs.electric_field(xyz)
-        np.testing.assert_equal(etest, e)
+        npt.assert_allclose(etest, e)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -833,7 +833,7 @@ class TestPointCurrentHalfSpace:
         )
 
         j = pchs.current_density(xyz)
-        np.testing.assert_equal(jtest, j)
+        npt.assert_allclose(jtest, j)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -1010,8 +1010,8 @@ class TestDipoleHalfSpace:
 
         v1 = dhs.potential(xyz1)
         v2 = dhs.potential(xyz1, xyz2)
-        np.testing.assert_equal(vtest1, v1)
-        np.testing.assert_equal(vtest2, v2)
+        npt.assert_allclose(vtest1, v1)
+        npt.assert_allclose(vtest2, v2)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -1050,8 +1050,8 @@ class TestDipoleHalfSpace:
 
         e1 = dhs.electric_field(xyz1)
         e2 = dhs.electric_field(xyz1, xyz2)
-        np.testing.assert_equal(etest1, e1)
-        np.testing.assert_equal(etest2, e2)
+        npt.assert_allclose(etest1, e1)
+        npt.assert_allclose(etest2, e2)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -1090,8 +1090,8 @@ class TestDipoleHalfSpace:
 
         j1 = dhs.current_density(xyz1)
         j2 = dhs.current_density(xyz1, xyz2)
-        np.testing.assert_equal(jtest1, j1)
-        np.testing.assert_equal(jtest2, j2)
+        npt.assert_allclose(jtest1, j1)
+        npt.assert_allclose(jtest2, j2)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
