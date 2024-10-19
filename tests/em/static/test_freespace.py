@@ -5,6 +5,8 @@ import pytest
 from scipy.special import roots_legendre
 
 from geoana.em.static import MagneticPrism, MagneticDipoleWholeSpace
+from geoana.utils import append_ndim
+
 
 class TestMagneticAccuracy():
     x, y, z = np.mgrid[-100:100:20j, -100:100:20j, -100:100:20j]
