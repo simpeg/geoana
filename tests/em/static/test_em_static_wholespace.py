@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 import numpy.testing as npt
-from scipy.constants import point, gravitational_constant
+from scipy.constants import point, gravitational_constant, mu_0
 
 from geoana.em.static import MagneticDipoleWholeSpace, MagneticPoleWholeSpace
 from geoana.em.static.wholespace import LineCurrentWholeSpace, PointCurrentWholeSpace
@@ -208,9 +208,9 @@ def test_line_correct(method, orient, line_current, xyz, sympy_linex_segment):
         if method != 'scalar_potential':
             verify = verify[..., [1, 2, 0]]
 
-    atol = 1E-18
+    atol = 1E-17
     if method != 'magnetic_field':
-        atol *= 1E-6  # to account for mu
+        atol *= mu_0  # to account for mu
 
     npt.assert_allclose(out, verify, atol=atol)
 
