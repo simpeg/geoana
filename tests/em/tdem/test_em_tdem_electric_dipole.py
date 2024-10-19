@@ -68,15 +68,23 @@ def test_broadcasting(e_dipole, xyz, method, nt):
 
 
 @pytest.mark.parametrize('method', METHODS)
-def test_correct(method, e_dipole, xyz, sympy_tdem_ex_dipole):
+@pytest.mark.parametrize('orient', ['x', 'y', 'z'])
+def test_correct(method, orient, e_dipole, xyz, sympy_tdem_ex_dipole):
     x, y, z = xyz
+    e_dipole.orientation = orient
     out = getattr(e_dipole, method)(xyz)
 
     sympy_func = sympy_tdem_ex_dipole[method]
 
-    verify = sympy_func(
-        e_dipole.time[:, None, None, None], x, y, z
-    )
+    # cycle the input and output if not x
+    if orient == 'x':
+        verify = sympy_func(e_dipole.time[:, None, None, None], x, y, z)
+    if orient == 'y':
+        verify = sympy_func(e_dipole.time[:, None, None, None], y, z, x)
+        verify = verify[..., [2, 0, 1]]
+    elif orient == 'z':
+        verify = sympy_func(e_dipole.time[:, None, None, None], z, x, y)
+        verify = verify[..., [1, 2, 0]]
 
     # find smallest value that's not zero...
     npt.assert_allclose(verify, out, rtol=1E-5)

@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 from ...kernels import prism_fzx, prism_fzy
-from ...spatial import cartesian_2_cylindrical, cylindrical_2_cartesian
+from ...spatial import cartesian_2_cylindrical, cylindrical_2_cartesian, cylindrical_to_cartesian
 
 
 class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
@@ -580,8 +580,10 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         r_vec = self._rot.apply(xyz.reshape(-1, 3) - self.location).reshape(xyz.shape)
         r = np.linalg.norm(r_vec, axis=-1)
 
-        rho = np.linalg.norm(r_vec[..., :2], axis=-1)
-        z = r_vec[..., 2]
+        r_cyl = cartesian_2_cylindrical(r_vec)
+
+        rho = r_cyl[..., 0]
+        z = r_cyl[..., 2]
 
         k2 = (4 * self.radius * rho) / ((self.radius + rho)**2 + z**2)
         k2[k2 > 1.] = 1.  # if there are any rounding errors
@@ -592,18 +594,14 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         # singular if rho = 0, k2 = 1
         ind = (rho > eps) & (k2 < 1)
 
-        Atheta = np.zeros_like(r)
-        Atheta[ind] = (
+        Atheta = np.zeros_like(xyz)
+        Atheta[ind, 2] = (
             (self.mu * self.current) / (np.pi * np.sqrt(k2[ind])) *
             np.sqrt(self.radius / rho[ind]) *
             ((1. - k2[ind] / 2.)*K[ind] - E[ind])
         )
 
-        # assume that the z-axis aligns with the polar axis
-        A = np.zeros_like(xyz)
-        theta_dir = np.arctan2()
-        A[ind, 0] = Atheta[ind] * (-r_vec[ind, 1] / rho[ind])
-        A[ind, 1] = Atheta[ind] * (r_vec[ind, 0] / rho[ind])
+        A = cylindrical_to_cartesian(r_cyl, Atheta)
 
         # un-do the rotation on the vector components.
         A = self._rot.apply(A.reshape(-1, 3), inverse=True).reshape(xyz.shape)
@@ -897,7 +895,7 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
         if self.n_segments == 0:
             r_vec = xyz - self.nodes[0]
             r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
-            return self.current / (4 * np.pi * self.sigma * r**3) * r_vec
+            return self.current / (4 * np.pi * self.sigma) * (r_vec/r**3)
         # if I was a closed loop, return 0
         if np.all(self.nodes[-1] == self.nodes[0]):
             return np.zeros_like(xyz)

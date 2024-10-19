@@ -1,9 +1,10 @@
 import numpy as np
 import pytest
 import numpy.testing as npt
+from scipy.constants import point, gravitational_constant
 
 from geoana.em.static import MagneticDipoleWholeSpace, MagneticPoleWholeSpace
-from geoana.em.static.wholespace import LineCurrentWholeSpace
+from geoana.em.static.wholespace import LineCurrentWholeSpace, PointCurrentWholeSpace
 
 METHODS = [
     'vector_potential',
@@ -54,6 +55,17 @@ def line_current(em_dipole_params):
 
     line = LineCurrentWholeSpace(nodes, current, mu=mu, sigma=sigma)
     return line
+
+
+@pytest.fixture()
+def point_current(em_dipole_params):
+    current = float(em_dipole_params['current'])
+    sigma = float(em_dipole_params['sigma'])
+
+    location = [0, 0, 0]
+
+    point = PointCurrentWholeSpace(1/sigma, current, location)
+    return point
 
 
 @pytest.fixture()
@@ -201,3 +213,57 @@ def test_line_correct(method, orient, line_current, xyz, sympy_linex_segment):
         atol *= 1E-6  # to account for mu
 
     npt.assert_allclose(out, verify, atol=atol)
+
+
+@pytest.mark.parametrize('method', ['potential', 'electric_field', 'current_density'])
+def test_point_current_broadcast(point_current, xyz, method):
+    func = getattr(point_current, method)
+
+    if method == 'potential':
+        out_shape = tuple()
+    else:
+        out_shape = (3,)
+
+    out = func(xyz)
+    assert out.shape == (*xyz[0].shape, *out_shape)
+
+    xyz = np.stack(xyz, axis=-1)
+    out = func(xyz)
+    assert out.shape == (*xyz.shape[:-1], *out_shape)
+
+    xyz = xyz.reshape((-1, 3))
+    out = func(xyz)
+    assert out.shape == (xyz.shape[0], *out_shape)
+
+    xyz = xyz.reshape((-1, 3))
+    out = func(xyz)
+    assert out.shape == (xyz.shape[0], *out_shape)
+
+    out = func(xyz[0])
+    assert out.shape == out_shape
+
+
+@pytest.mark.parametrize('method', ['potential', 'electric_field', 'current_density'])
+def test_point_current_correct(method, xyz, point_current, sympy_grav_point):
+
+    # scale from gravity to electric...
+    scale = -point_current.current/(4 * np.pi * point_current.sigma * gravitational_constant * 10**5)
+    if method == 'potential':
+        scale *= -1
+    elif method == 'current_density':
+        scale *= point_current.sigma
+
+    x, y, z = xyz
+
+    grav_method = {
+        'potential' : 'gravitational_potential',
+        'electric_field' : 'gravitational_field',
+        'current_density' : 'gravitational_field',
+    }[method]
+
+    out = getattr(point_current, method)(xyz)
+
+    verify = scale * sympy_grav_point[grav_method](x, y, z)
+
+    npt.assert_allclose(out, verify)
+

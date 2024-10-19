@@ -7,6 +7,7 @@ try:
 except ImportError:
     discretize = None
 from scipy.special import ellipk, ellipe
+import numpy.testing as npt
 
 from geoana.em import static, fdem
 from geoana import spatial
@@ -817,137 +818,6 @@ class TestMagnetoStaticSphere:
         np.testing.assert_equal(bptest, bp)
         np.testing.assert_equal(bstest, bs)
 
-
-def V_from_PointCurrentW(
-    XYZ, loc, rho, cur
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    v = rho * cur / (4 * np.pi * r)
-    return v
-
-
-def J_from_PointCurrentW(
-    XYZ, loc, rho, cur
-):
-
-    j = E_from_PointCurrentW(XYZ, loc, rho, cur) / rho
-    return j
-
-
-def E_from_PointCurrentW(
-    XYZ, loc, rho, cur
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    e = rho * cur * r_vec / (4 * np.pi * r[..., None] ** 3)
-    return e
-
-
-class TestPointCurrentWholeSpace:
-
-    def test_defaults(self):
-        rho = 1.0
-        pcws = static.PointCurrentWholeSpace(rho)
-        assert pcws.rho == 1.0
-        assert pcws.current == 1.0
-        assert np.all(pcws.location == np.r_[0., 0., 0.])
-
-    def test_error(self):
-        pcws = static.PointCurrentWholeSpace(rho=1.0, current=1.0, location=None)
-
-        with pytest.raises(TypeError):
-            pcws.rho = "string"
-        with pytest.raises(ValueError):
-            pcws.rho = -1
-        with pytest.raises(TypeError):
-            pcws.current = "string"
-        with pytest.raises(ValueError):
-            pcws.location = [0, 1, 2, 3]
-        with pytest.raises(ValueError):
-            pcws.location = [[0, 0], [0, 1]]
-        with pytest.raises(TypeError):
-            pcws.location = ["string"]
-
-    def test_potential(self):
-        rho = 1.0
-        current = 1.0
-        location = None
-        pcws = static.PointCurrentWholeSpace(
-            current=current,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        vtest = V_from_PointCurrentW(
-            xyz, pcws.location, pcws.rho, pcws.current
-        )
-        print(
-            "\n\nTesting Electric Potential V for Point Current\n"
-        )
-
-        v = pcws.potential(xyz)
-        np.testing.assert_equal(vtest, v)
-
-    def test_current_density(self):
-        rho = 1.0
-        current = 1.0
-        location = None
-        pcws = static.PointCurrentWholeSpace(
-            current=current,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        jtest = J_from_PointCurrentW(
-            xyz, pcws.location, pcws.rho, pcws.current
-        )
-        print(
-            "\n\nTesting Current Density J for Point Current\n"
-        )
-
-        j = pcws.current_density(xyz)
-        np.testing.assert_equal(jtest, j)
-
-    def test_electric_field(self):
-        rho = 1.0
-        current = 1.0
-        location = None
-        pcws = static.PointCurrentWholeSpace(
-            current=current,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        etest = E_from_PointCurrentW(
-            xyz, pcws.location, pcws.rho, pcws.current
-        )
-        print(
-            "\n\nTesting Electric Field E for Point Current\n"
-        )
-
-        e = pcws.electric_field(xyz)
-        np.testing.assert_equal(etest, e)
 
 
 def V_from_PointCurrentH(

@@ -75,13 +75,22 @@ def test_broadcasting(h_dipole, xyz, method, nf):
 
 
 @pytest.mark.parametrize('method', METHODS)
-def test_correct(method, h_dipole, xyz, sympy_fdem_hx_dipole):
+@pytest.mark.parametrize('orient', ['x', 'y', 'z'])
+def test_correct(method, orient, h_dipole, xyz, sympy_fdem_hx_dipole):
     x, y, z = xyz
+    h_dipole.orientation = orient
     out = getattr(h_dipole, method)(xyz)
 
     sympy_func = sympy_fdem_hx_dipole[method]
 
-    verify = sympy_func(
-        h_dipole.frequency[:, None, None, None], x, y, z
-    )
+    # cycle the input and output if not x
+    if orient == 'x':
+        verify = sympy_func(h_dipole.frequency[:, None, None, None], x, y, z)
+    if orient == 'y':
+        verify = sympy_func(h_dipole.frequency[:, None, None, None], y, z, x)
+        verify = verify[..., [2, 0, 1]]
+    elif orient == 'z':
+        verify = sympy_func(h_dipole.frequency[:, None, None, None], z, x, y)
+        verify = verify[..., [1, 2, 0]]
+
     npt.assert_allclose(verify, out)
