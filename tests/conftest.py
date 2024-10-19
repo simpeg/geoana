@@ -302,7 +302,7 @@ def sympy_linex_segment(em_dipole_params):
     x1 = x - l
     r1 = sympy.sqrt(x1 ** 2 + y ** 2 + z ** 2)
 
-    A = mu * I / (4 * sympy.pi) * (
+    A = -mu * I / (4 * sympy.pi) * (
         sympy.log(x1 + r1) - sympy.log(x + r0)
     ) * R.i
 

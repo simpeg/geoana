@@ -495,7 +495,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         .. math::
 
             a_\theta (\rho, z) = \frac{\mu_0 I}{\pi k}
-            \sqrt{ \frac{R}{\rho^2}} \bigg [ (1 - k^2/2) \, K(k^2) - K(k^2) \bigg ]
+            \sqrt{ \frac{R}{\rho^2}} \bigg [ (1 - k^2/2) \, K(k^2) - E(k^2) \bigg ]
 
         where
 
@@ -578,7 +578,6 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         # rotate the points
         r_vec = self._rot.apply(xyz.reshape(-1, 3) - self.location).reshape(xyz.shape)
-        r = np.linalg.norm(r_vec, axis=-1)
 
         r_cyl = cartesian_2_cylindrical(r_vec)
 
@@ -595,7 +594,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         ind = (rho > eps) & (k2 < 1)
 
         Atheta = np.zeros_like(xyz)
-        Atheta[ind, 2] = (
+        Atheta[ind, 1] = (
             (self.mu * self.current) / (np.pi * np.sqrt(k2[ind])) *
             np.sqrt(self.radius / rho[ind]) *
             ((1. - k2[ind] / 2.)*K[ind] - E[ind])
@@ -843,7 +842,7 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
             # the undo the local rotation...
             out += rot.apply(temp_storage.reshape(-1, 3), inverse=True).reshape(xyz.shape)
 
-        out *= self.mu * self.current / (4 * np.pi)
+        out *= -self.mu * self.current / (4 * np.pi)
 
         # note because this is a whole space, we do not have to deal with the
         # magnetic fields due to the current flowing out of the ends of a grounded
@@ -865,7 +864,7 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
             l_hat = l_vec / l
 
             # find the rotation from the line segments orientation
-            # to the z_hat direction.
+            # to the x_hat direction.
             rot, _ = Rotation.align_vectors([1, 0, 0], l_hat)
 
             # shift and rotate the grid points
@@ -886,7 +885,7 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
             # the undo the local rotation...
             out += rot.apply(temp_storage.reshape(-1, 3), inverse=True).reshape(xyz.shape)
 
-        out *= self.mu * self.current / (4 * np.pi)
+        out *= -self.mu * self.current / (4 * np.pi)
         return out
 
     def electric_field(self, xyz):
