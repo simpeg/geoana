@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.special import ellipk, ellipe
 from scipy.spatial.transform import Rotation
-from sympy import elliptic_k
 
 from ..base import BaseDipole, BaseMagneticDipole, BaseEM, BaseLineCurrent
 from ... import spatial
@@ -586,23 +585,45 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         rho = r_cyl[..., 0]
         z = r_cyl[..., 2]
 
-        k2 = (4 * self.radius * rho) / ((self.radius + rho)**2 + z**2)
-        k2[k2 > 1.] = 1.  # if there are any rounding errors
+        a = self.radius
+        C = self.mu * self.current / np.pi
 
-        E = ellipe(k2)
-        K = ellipk(k2)
+        alpha_sq = (a - rho)**2 + z**2
+        beta_sq = (a + rho)**2 + z**2
+        beta = np.sqrt(beta_sq)
 
-        # singular if rho = 0, k2 = 1
-        ind = (rho > eps) & (k2 < 1)
+        k2 = 1 - alpha_sq/beta_sq
 
-        Atheta = np.zeros_like(r_vec)
-        Atheta[ind, 1] = (
-            (self.mu * self.current) / (np.pi * np.sqrt(k2[ind])) *
-            np.sqrt(self.radius / rho[ind]) *
-            ((1. - k2[ind] / 2.)*K[ind] - E[ind])
+        ek = ellipe(k2)
+        kk = ellipk(k2)
+
+        A_cyl = np.zeros_like(r_vec)
+
+        # small rho first order taylor series
+        small_rho = rho < 1E-3 * self.radius
+        temp = np.sqrt(a**2 + z[small_rho]**2)
+        A_cyl[small_rho, 1] = np.pi * C * (
+                # A(rho=0) = 0
+                rho[small_rho] * a**2 / (4 * temp**3) +  # rho * A'(rho=0)
+                # A''(rho=0) = 0
+                rho[small_rho]**3 * 3 * a**2 / ( a ** 2 - 4 * z[small_rho]**2) / (
+                    32 * np.sqrt(a**2 + z[small_rho]**2)**7
+                )
+        )
+        z = z[~small_rho]
+        beta = beta[~small_rho]
+        beta_sq = beta_sq[~small_rho]
+        rho = rho[~small_rho]
+        ek = ek[~small_rho]
+        kk = kk[~small_rho]
+
+        # singular if alpha = 0
+        # (a.k.a. the point was numerically on the loop)
+        A_cyl[~small_rho, 1] = C / (2 * rho * beta) * (
+            (a**2 + rho**2 + z**2) * kk - beta_sq * ek
         )
 
-        A = cylindrical_to_cartesian(r_cyl, Atheta)
+        A = cylindrical_to_cartesian(r_cyl, A_cyl)
 
         # un-do the rotation on the vector components.
         A = rot.apply(A, inverse=True).reshape(xyz.shape)
@@ -693,38 +714,50 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         # rotate the points
         r_vec = rot.apply(xyz.reshape(-1, 3) - self.location)
 
-        r_sph = cartesian_to_spherical(r_vec)
-        r = r_sph[:, 0]
-        theta = r_sph[:, 2]
+        r_cyl = cartesian_to_cylindrical(r_vec)
+        rho = r_cyl[:, 0]
+        z = r_cyl[:, 2]
         a = self.radius
-
-        alpha2 = a**2 + r**2 - 2 * a * r  * np.sin(theta)
-        beta2 = a**2 + r**2 + 2 * a * r * np.sin(theta)
-        k2 = 1 - alpha2/beta2
-
-        beta = np.sqrt(beta2)
         C = self.mu * self.current / np.pi
 
-        ek = ellipe(k2)
-        kk = ellipk(k2)
+        alpha_sq = (a - rho)**2 + z**2
+        beta_sq = (a + rho)**2 + z**2
+        beta = np.sqrt(beta_sq)
+        k_sq = 1 - alpha_sq / beta_sq
 
-        B = np.zeros_like(r_sph)
-        B[:, 0] = C * a**2 * np.cos(theta) * ek / (alpha2 * beta)
+        ek = ellipe(k_sq)
+        kk = ellipk(k_sq)
 
-        axial = np.abs(np.sin(theta)) < 1E-12
+        B_cyl = np.zeros_like(r_cyl)
 
-        alpha2 = alpha2[~axial]
-        beta = beta[~axial]
-        theta = theta[~axial]
-        ek = ek[~axial]
-        kk = kk[~axial]
-        r = r[~axial]
+        # when rho is small relative to the radius, this is unstable
+        # so use a small argument approximation.
+        small_rho = rho < 1E-3 * self.radius
 
-        B[~axial, 2] = C/(2 * alpha2 * beta * np.sin(theta)) * (
-            (r**2 + a**2 * np.cos(2* theta)) * ek - alpha2 * kk
+        temp = np.sqrt(a**2 + z[small_rho]**2)
+        B_cyl[small_rho, 0] = 3 * C * np.pi * a**2 * z[small_rho] * (
+            rho[small_rho] /(4 * temp ** 5)
+            + rho[small_rho]**3 * (15 * a**2 - 20 * z[small_rho]**2)/(32 * temp**9)
         )
 
-        B = spherical_to_cartesian(r_sph, B)
+        # this expectedly blows up when rho = radius and z = 0
+        # Meaning it is literally on the loop...
+        B_cyl[:, 2] = C / (2 * alpha_sq * beta) * (
+            (a**2 - rho**2 - z**2) * ek + alpha_sq * kk
+        )
+
+        z = z[~small_rho]
+        alpha_sq = alpha_sq[~small_rho]
+        beta = beta[~small_rho]
+        rho = rho[~small_rho]
+        ek = ek[~small_rho]
+        kk = kk[~small_rho]
+
+        B_cyl[~small_rho, 0] = C * z / (2 * alpha_sq * beta * rho) * (
+                (a**2 + rho**2 + z**2) * ek - alpha_sq * kk
+        )
+
+        B = cylindrical_to_cartesian(r_cyl, B_cyl)
 
         B = rot.apply(B, inverse=True).reshape(xyz.shape)
 
