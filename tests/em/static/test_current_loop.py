@@ -62,7 +62,7 @@ def test_circular_loop(circle_loop, orient, method, xyz):
     circle_loop.orientation = orient
 
     # line segment approx.
-    n_segments = 128
+    n_segments = 256
     rs = np.full(n_segments + 1, circle_loop.radius)
     thetas = np.linspace(0, 2 * np.pi, n_segments + 1)
 
