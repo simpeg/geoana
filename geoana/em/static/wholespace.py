@@ -592,15 +592,18 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         beta_sq = (a + rho)**2 + z**2
         beta = np.sqrt(beta_sq)
 
-        k2 = 1 - alpha_sq/beta_sq
+        k_sq = 1 - alpha_sq/beta_sq
 
-        ek = ellipe(k2)
-        kk = ellipk(k2)
+        ek = ellipe(k_sq)
+        kk = ellipk(k_sq)
 
         A_cyl = np.zeros_like(r_vec)
 
-        # small rho first order taylor series
-        small_rho = rho < 1E-3 * self.radius
+        # when rho is small relative to the radius and z, k_sq -> 0
+        # this is unstable so use a small argument approximation.
+        # check k_sq for the relative sizes
+        small_rho = k_sq < 1E-3
+
         temp = np.sqrt(a**2 + z[small_rho]**2)
         A_cyl[small_rho, 1] = np.pi * C * (
                 # A(rho=0) = 0
@@ -730,9 +733,10 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         B_cyl = np.zeros_like(r_cyl)
 
-        # when rho is small relative to the radius, this is unstable
-        # so use a small argument approximation.
-        small_rho = rho < 1E-3 * self.radius
+        # when rho is small relative to the radius and z, k_sq -> 0
+        # this is unstable so use a small argument approximation.
+        # check k_sq for the relative sizes
+        small_rho = k_sq < 1E-3
 
         temp = np.sqrt(a**2 + z[small_rho]**2)
         B_cyl[small_rho, 0] = 3 * C * np.pi * a**2 * z[small_rho] * (
