@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.special import ellipk, ellipe
 from scipy.spatial.transform import Rotation
+from sympy import elliptic_k
 
 from ..base import BaseDipole, BaseMagneticDipole, BaseEM, BaseLineCurrent
 from ... import spatial
@@ -12,7 +13,8 @@ __all__ = [
 ]
 
 from ...kernels import prism_fzx, prism_fzy
-from ...spatial import cartesian_2_cylindrical, cylindrical_2_cartesian, cylindrical_to_cartesian
+from ...spatial import cartesian_2_cylindrical, cylindrical_2_cartesian, cylindrical_to_cartesian, \
+    cartesian_2_spherical, spherical_to_cartesian, cartesian_to_spherical, cartesian_to_cylindrical
 
 
 class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
@@ -691,44 +693,43 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         # rotate the points
         r_vec = rot.apply(xyz.reshape(-1, 3) - self.location)
 
-        r_cyl = cartesian_2_cylindrical(r_vec)
+        r_sph = cartesian_to_spherical(r_vec)
+        r = r_sph[:, 0]
+        theta = r_sph[:, 2]
+        a = self.radius
 
-        rho = r_cyl[..., 0]
+        alpha2 = a**2 + r**2 - 2 * a * r  * np.sin(theta)
+        beta2 = a**2 + r**2 + 2 * a * r * np.sin(theta)
+        k2 = 1 - alpha2/beta2
 
+        beta = np.sqrt(beta2)
+        C = self.mu * self.current / np.pi
 
-        B = np.zeros_like(r_vec)
+        ek = ellipe(k2)
+        kk = ellipk(k2)
 
-        # for On axis points
-        inds_axial = rho==0.0
+        B = np.zeros_like(r_sph)
+        B[:, 0] = C * a**2 * np.cos(theta) * ek / (alpha2 * beta)
 
-        B[inds_axial, 2] = self.mu * self.current * self.radius**2 / (
-            2 * (self.radius**2 + r_vec[inds_axial, 2]**2)**(1.5)
+        axial = np.abs(np.sin(theta)) < 1E-12
+
+        alpha2 = alpha2[~axial]
+        beta = beta[~axial]
+        theta = theta[~axial]
+        ek = ek[~axial]
+        kk = kk[~axial]
+        r = r[~axial]
+
+        B[~axial, 2] = C/(2 * alpha2 * beta * np.sin(theta)) * (
+            (r**2 + a**2 * np.cos(2* theta)) * ek - alpha2 * kk
         )
 
-        # Off axis
-        alpha = rho[~inds_axial]/self.radius
-        beta = r_vec[~inds_axial, 2]/self.radius
-        gamma = r_vec[~inds_axial, 2]/rho[~inds_axial]
-
-        Q = ((1+alpha)**2 + beta**2)
-        k2 =  4 * alpha/Q
-
-        # axial part:
-        B[~inds_axial, 2] = self.mu * self.current / (2 * self.radius * np.pi * np.sqrt(Q)) * (
-            ellipe(k2)*(1 - alpha**2 - beta**2)/(Q  - 4 * alpha) + ellipk(k2)
-        )
-
-        # radial part:
-        B[~inds_axial, 0] = self.mu * self.current * gamma / (2 * self.radius * np.pi * np.sqrt(Q)) * (
-            ellipe(k2)*(1 + alpha**2 + beta**2)/(Q  - 4 * alpha) - ellipk(k2)
-        )
-
-        B = cylindrical_to_cartesian(r_cyl, B)
+        B = spherical_to_cartesian(r_sph, B)
 
         B = rot.apply(B, inverse=True).reshape(xyz.shape)
 
         if coordinates.lower() == "cylindrical":
-            B = cartesian_2_cylindrical(xyz, B)
+            B = cartesian_to_cylindrical(xyz, B)
 
         return B
 
