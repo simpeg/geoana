@@ -23,6 +23,8 @@ functions for converting between Cartesian, cylindrical and spherical coordinate
 
 """
 import numpy as np
+from scipy.spatial.transform import Rotation
+
 from .utils import mkvc
 
 
@@ -531,19 +533,16 @@ def repeat_scalar(scalar, dim=3):
 
     return np.kron(np.ones((1, dim)), np.atleast_2d(scalar).T)
 
-def rotation_matrix_from_normals(v0, v1, tol=1e-20):
+
+def rotation_matrix_from_normals(v0, v1, tol=1e-20, as_matrix=True):
     """
     Generate a 3x3 rotation matrix defining the rotation from vector v0 to v1.
 
-    This function uses Rodrigues' rotation formula to generate the rotation
-    matrix :math:`\\mathbf{A}` going from vector :math:`\\mathbf{v_0}` to
-    vector :math:`\\mathbf{v_1}`. Thus:
+    This function builds a quaternion representing the rotation, then constructs
+    the rotation matrix.
 
     .. math::
         \\mathbf{Av_0} = \\mathbf{v_1}
-
-    For detailed desciption of the algorithm, see
-    https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 
     Parameters
     ----------
@@ -554,46 +553,61 @@ def rotation_matrix_from_normals(v0, v1, tol=1e-20):
     tol : float, optional
         Numerical tolerance. If the length of the rotation axis is below this value,
         it is assumed to be no rotation, and an identity matrix is returned.
+    as_matrix : bool, optional
+        If ``True``, a ``(3,3) numpy.ndarray`` is returned.
+        If ``False``, the respective ``scipy.spatial.transform.Rotation`` object is returned.
 
     Returns
     -------
-    (3, 3) numpy.ndarray
-        The rotation matrix from v0 to v1.
+    (3, 3) numpy.ndarray or scipy.spatial.transform.Rotation
+        The rotation matrix from v0 to v1, whose type depends on the `as_matrix` parameter.
     """
 
-    v0 = mkvc(v0)
-    v1 = mkvc(v1)
+    v0 = np.asarray(v0, dtype=float, copy=True).squeeze()
+    v1 = np.asarray(v1, dtype=float, copy=True).squeeze()
 
-    # ensure both n0, n1 are vectors of length 1
-    assert len(v0) == 3, "Length of n0 should be 3"
-    assert len(v1) == 3, "Length of n1 should be 3"
+    if v0.shape != (3, ):
+        raise ValueError(f"v0 shape should be (3,), got {v0.shape}")
+
+    if v1.shape != (3, ):
+        raise ValueError(f"v1 shape should be (3,), got {v1.shape}")
 
     # ensure both are true normals
-    n0 = v0*1./np.linalg.norm(v0)
-    n1 = v1*1./np.linalg.norm(v1)
+    v0 /= np.linalg.norm(v0)
+    v1 /= np.linalg.norm(v1)
 
-    n0dotn1 = n0.dot(n1)
+    v0dotv1 = v0.dot(v1)
 
     # define the rotation axis, which is the cross product of the two vectors
-    rotAx = np.cross(n0, n1)
+    rotation_axis = np.cross(v0, v1)
 
-    if np.linalg.norm(rotAx) < tol:
-        return np.eye(3, dtype=float)
+    if np.linalg.norm(rotation_axis) < tol:
+        # check if vectors were anti-parallel.
+        if v0dotv1 < 0:
+            # find another vector that is perpendicular to v1,
+            # by crossing with z_hat or y_hat (One of them must
+            # work because it can't be parallel to both of them)
+            trial = np.cross(v0, np.array([0., 0., 1.]))
+            if np.linalg.norm(trial) > tol:
+                rotation_axis = trial
+            else:
+                rotation_axis = np.cross(v0, np.array([0., 1., 0.]))
+        else:
+            mat = np.eye(3, dtype=float)
+            if as_matrix:
+                return mat
+            else:
+                return Rotation.from_matrix(mat)
 
-    rotAx *= 1./np.linalg.norm(rotAx)
 
-    cosT = n0dotn1/(np.linalg.norm(n0)*np.linalg.norm(n1))
-    sinT = np.sqrt(1.-n0dotn1**2)
+    w = 1 + v0dotv1
+    rot = Rotation.from_quat(np.r_[rotation_axis, w])
 
-    ux = np.array(
-        [
-            [0., -rotAx[2], rotAx[1]],
-            [rotAx[2], 0., -rotAx[0]],
-            [-rotAx[1], rotAx[0], 0.]
-        ], dtype=float
-    )
+    if as_matrix:
+        return rot.as_matrix()
+    else:
+        return rot
 
-    return np.eye(3, dtype=float) + sinT*ux + (1.-cosT)*(ux.dot(ux))
 
 
 def rotate_points_from_normals(xyz, n0, n1, x0=np.r_[0., 0., 0.]):
