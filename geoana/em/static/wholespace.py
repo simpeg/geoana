@@ -573,7 +573,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
             xyz = spatial.cylindrical_to_cartesian(xyz)
 
         # define a rotation matrix that rotates my orientation to z:
-        rot = rotation_matrix_from_normals([0, 0, 1], self.orientation, as_matrix=False)
+        rot = rotation_matrix_from_normals(self.orientation, [0, 0, 1], as_matrix=False)
 
         # rotate the points
         r_vec = rot.apply(xyz.reshape(-1, 3) - self.location)
@@ -710,7 +710,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
             )
 
         # define a rotation matrix that rotates my orientation to z:
-        rot = rotation_matrix_from_normals([0, 0, 1], self.orientation, as_matrix=False)
+        rot = rotation_matrix_from_normals(self.orientation, [0, 0, 1], as_matrix=False)
 
         # rotate the points
         r_vec = rot.apply(xyz.reshape(-1, 3) - self.location)
@@ -871,7 +871,7 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
 
             # find the rotation from the line segments orientation
             # to the x_hat direction.
-            rot = rotation_matrix_from_normals([1, 0, 0], l_hat, as_matrix=False)
+            rot = rotation_matrix_from_normals(l_hat, [1, 0, 0], as_matrix=False)
 
             # shift and rotate the grid points
             r0_vec = rot.apply(xyz.reshape(-1, 3) - p0).reshape(xyz.shape)
@@ -1004,7 +1004,7 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
 
             # find the rotation from the line segments orientation
             # to the x_hat direction.
-            rot = rotation_matrix_from_normals([1, 0, 0], l_hat, as_matrix=False)
+            rot = rotation_matrix_from_normals(l_hat, [1, 0, 0], as_matrix=False)
 
             # shift and rotate the grid points
             r0_vec = rot.apply(xyz.reshape(-1, 3) - p0).reshape(xyz.shape)
