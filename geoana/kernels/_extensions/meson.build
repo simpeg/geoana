@@ -45,6 +45,11 @@ endif
 
 c_undefined_ok = ['-Wno-maybe-uninitialized']
 
+cython_args = []
+if cy.version().version_compare('>=3.1.0')
+  cython_args += ['-Xfreethreading_compatible=True']
+endif
+
 cython_c_args = [numpy_nodepr_api, use_math_defines]
 
 cython_cpp_args = cython_c_args
@@ -54,6 +59,7 @@ module_path = 'geoana/kernels/_extensions'
 py.extension_module(
     'potential_field_prism',
     'potential_field_prism.pyx',
+    cython_args: cython_args,
     c_args: cython_c_args,
     install: true,
     subdir: module_path,
@@ -63,6 +69,7 @@ py.extension_module(
 py.extension_module(
     'rTE',
     ['rTE.pyx', '_rTE.cpp'],
+    cython_args: cython_args,
     cpp_args: cython_cpp_args,
     install: true,
     subdir: module_path,
