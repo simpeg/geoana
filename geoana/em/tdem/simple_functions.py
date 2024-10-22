@@ -1,7 +1,10 @@
+from tabnanny import check
+
 import numpy as np
 from scipy.special import erf, ive
 from scipy.constants import mu_0
 from geoana.em.tdem.base import theta
+from geoana.utils import append_ndim, check_xyz_dim
 
 
 def vertical_magnetic_field_horizontal_loop(
@@ -63,11 +66,9 @@ def vertical_magnetic_field_horizontal_loop(
     >>> plt.show()
 
     """
-    theta = np.sqrt((sigma * mu_0) / (4 * t))
-    ta = theta * radius
-    eta = erf(ta)
+    ta = theta(t, sigma, mu) * radius
     t1 = (3 / (np.sqrt(np.pi) * ta)) * np.exp(-(ta ** 2))
-    t2 = (1 - (3 / (2 * ta ** 2))) * eta
+    t2 = (1 - (3 / (2 * ta ** 2))) * erf(ta)
     hz = (t1 + t2) / (2 * radius)
     return turns * current * hz
 
@@ -167,17 +168,16 @@ def vertical_magnetic_field_time_deriv_horizontal_loop(
     >>> plt.ylabel(r'$\\frac{\\partial h_z}{ \\partial t}$ (A/(m s)')
     >>> plt.show()
     """
-    a = radius
-    the = theta(t, sigma, mu)
-    return -turns * current / (mu * sigma * a**3) * (
-        3*erf(the * a) - 2/np.sqrt(np.pi) * the * a * (3 + 2 * the**2 * a**2) * np.exp(-the**2 * a**2)
+    dbz_dt = vertical_magnetic_flux_time_deriv_horizontal_loop(
+        t, sigma=sigma, mu=mu, radius=radius, current=current, turns=turns
     )
+    return dbz_dt / mu
 
 
 def vertical_magnetic_flux_time_deriv_horizontal_loop(
     t, sigma=1.0, mu=mu_0, radius=1.0, current=1.0, turns=1
 ):
-    """Time-derivative of the vertical transient magnetic flux density at the center of a horizontal loop over a halfspace.
+    r"""Time-derivative of the vertical transient magnetic flux density at the center of a horizontal loop over a halfspace.
 
     Compute the time-derivative of the vertical component of the transient
     magnetic flux density at the center of a circular loop on the surface
@@ -225,14 +225,13 @@ def vertical_magnetic_flux_time_deriv_horizontal_loop(
 
     >>> plt.loglog(times*1E3, -dbz_dt, '--')
     >>> plt.xlabel('time (ms)')
-    >>> plt.ylabel(r'$\\frac{\\partial b_z}{ \\partial t}$ (T/s)')
+    >>> plt.ylabel(r'$\frac{\partial b_z}{ \partial t}$ (T/s)')
     >>> plt.show()
     """
     a = radius
-    the = theta(t, sigma, mu)
-    return -turns * current / (sigma * a**3) * (
-        3*erf(the * a) - 2/np.sqrt(np.pi) * the * a * (3 + 2 * the**2 * a**2) * np.exp(-the**2 * a**2)
-    )
+    ta = theta(t, sigma, mu) * a
+    term = 3 * erf(ta) - 2 * ta / np.sqrt(np.pi) * (3 + 2 * ta**2) * np.exp(-ta**2)
+    return -turns * current / (sigma * a**3) * term
 
 
 def magnetic_field_vertical_magnetic_dipole(
@@ -244,7 +243,7 @@ def magnetic_field_vertical_magnetic_dipole(
     ----------
     t : (n_t) numpy.ndarray
         times (s)
-    xy : (n_locs, 2) numpy.ndarray
+    xy : (..., 2) numpy.ndarray
         surface field locations (m)
     sigma : float, optional
         conductivity
@@ -255,7 +254,7 @@ def magnetic_field_vertical_magnetic_dipole(
 
     Returns
     -------
-    h : (n_t, n_locs, 3) numpy.ndarray
+    h : (n_t, ..., 3) numpy.ndarray
         The magnetic field at the observation locations and times.
 
     Notes
@@ -303,10 +302,17 @@ def magnetic_field_vertical_magnetic_dipole(
     >>> plt.legend()
     >>> plt.show()
     """
-    r = np.linalg.norm(xy[:, :2], axis=-1)
-    x = xy[:, 0]
-    y = xy[:, 1]
-    thr = theta(t, sigma, mu=mu)[:, None] * r #will be positive...
+    try:
+        xy = check_xyz_dim(xy, 3)[..., :2]
+    except ValueError:
+        xy = check_xyz_dim(xy, 2)
+
+    r = np.linalg.norm(xy[..., :2], axis=-1)
+    x = xy[..., 0]
+    y = xy[..., 1]
+    t = append_ndim(t, r.ndim)
+
+    thr = theta(t, sigma, mu=mu) * r #will be positive...
 
     h_z = 1.0 / r**3 * (
         (9 / (2 * thr**2) - 1) * erf(thr)
@@ -314,14 +320,9 @@ def magnetic_field_vertical_magnetic_dipole(
     )
     # positive here because z+ up
 
-    # iv(1, arg) - iv(2, arg)
-    # ive(1, arg) * np.exp(abs(arg)) - ive(2, arg) * np.exp(abs(arg))
-    # (ive(1, arg) - ive(2, arg))*np.exp(abs(arg))
     h_r = 2 * thr**2 / r**3 * (
         ive(1, thr**2 / 2) - ive(2, thr**2 / 2)
     )
-    # thetar is always positive so this above simplifies (more numerically stable)
-
     angle = np.arctan2(y, x)
     h_x = np.cos(angle) * h_r
     h_y = np.sin(angle) * h_r
@@ -338,7 +339,7 @@ def magnetic_field_time_deriv_magnetic_dipole(
     ----------
     t : (n_t) numpy.ndarray
         times (s)
-    xy : (n_locs, 2) numpy.ndarray
+    xy : (..., 2) numpy.ndarray
         surface field locations (m)
     sigma : float, optional
         conductivity
@@ -349,7 +350,7 @@ def magnetic_field_time_deriv_magnetic_dipole(
 
     Returns
     -------
-    dh_dt : (n_t, n_locs, 3) numpy.ndarray
+    dh_dt : (n_t, ..., 3) numpy.ndarray
         The magnetic field at the observation locations and times.
 
     Notes
@@ -400,18 +401,23 @@ def magnetic_field_time_deriv_magnetic_dipole(
     >>> plt.legend()
     >>> plt.show()
     """
-    r = np.linalg.norm(xy[:, :2], axis=-1)
-    x = xy[:, 0]
-    y = xy[:, 1]
-    tr = theta(t, sigma, mu)[:, None] * r
+    try:
+        xy = check_xyz_dim(xy, 3)[..., :2]
+    except ValueError:
+        xy = check_xyz_dim(xy, 2)
+    r = np.linalg.norm(xy, axis=-1)
+    x = xy[..., 0]
+    y = xy[..., 1]
+    t = append_ndim(t, r.ndim)
+    tr = theta(t, sigma, mu) * r
 
-    dhz_dt = 1 / (r**3 * t[:, None]) * (
+    dhz_dt = 1 / (r**3 * t) * (
         9 / (2 * tr**2) * erf(tr)
         - (4 * tr**3 + 6 * tr + 9/tr)/np.sqrt(np.pi)*np.exp(-tr**2)
     )
 
     # iv(k, v) = ive(k, v) * exp(abs(arg))
-    dhr_dt = - 2 * tr**2 / (r**3 * t[:, None]) * (
+    dhr_dt = -2 * tr**2 / (r**3 * t) * (
         (1 + tr**2) * ive(0, tr**2 / 2) -
         (2 + tr**2 + 4 / tr**2) * ive(1, tr**2 / 2)
     )
@@ -431,7 +437,7 @@ def magnetic_flux_vertical_magnetic_dipole(
     ----------
     t : (n_t) numpy.ndarray
         times (s)
-    xy : (n_locs, 2) numpy.ndarray
+    xy : (..., 2) numpy.ndarray
         surface field locations (m)
     sigma : float, optional
         conductivity
@@ -442,7 +448,7 @@ def magnetic_flux_vertical_magnetic_dipole(
 
     Returns
     -------
-    b : (n_t, n_locs, 3) numpy.ndarray
+    b : (n_t, ..., 3) numpy.ndarray
         The magnetic flux at the observation locations and times.
 
     See Also
@@ -464,7 +470,7 @@ def magnetic_flux_time_deriv_magnetic_dipole(
     ----------
     t : (n_t) numpy.ndarray
         times (s)
-    xy : (n_locs, 2) numpy.ndarray
+    xy : (..., 2) numpy.ndarray
         surface field locations (m)
     sigma : float, optional
         conductivity
@@ -475,7 +481,7 @@ def magnetic_flux_time_deriv_magnetic_dipole(
 
     Returns
     -------
-    db_dt : (n_t, n_locs, 3) numpy.ndarray
+    db_dt : (n_t, ..., 3) numpy.ndarray
         The magnetic flux at the observation locations and times.
 
     See Also

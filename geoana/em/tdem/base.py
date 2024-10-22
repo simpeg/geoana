@@ -159,7 +159,7 @@ class BaseTDEM(BaseEM):
 
         # Ensure float or numpy array of float
         try:
-            value = np.atleast_1d(value).astype(float)
+            value = np.asarray(value, dtype=float)
         except:
             raise TypeError(f"times are not a valid type")
 
@@ -167,7 +167,7 @@ class BaseTDEM(BaseEM):
         if (value < 0.).any():
             raise ValueError("All times must be greater than 0")
         if value.ndim > 1:
-            raise TypeError(f"times must be ('*') array")
+            raise TypeError(f"times must have at most 1 dimension.")
 
         self._time = value
 

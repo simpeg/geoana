@@ -205,8 +205,9 @@ class PointMass:
         """
         xyz = check_xyz_dim(xyz)
         r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)
-        g_vec = -G * self.mass * r_vec / r[..., None] ** 3
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
+        g_vec = -G * self.mass * r_hat / r ** 2
         return g_vec
 
     def gravitational_gradient(self, xyz):
@@ -266,9 +267,11 @@ class PointMass:
         """
         xyz = check_xyz_dim(xyz)
         r_vec = xyz - self.location
-        r = np.linalg.norm(r_vec, axis=-1)
-        g_tens = -G * self.mass * (np.eye(3) / r[..., None, None] ** 3 -
-                                   3 * r_vec[..., None] * r_vec[..., None, :] / r[..., None, None] ** 5)
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
+        g_tens = -G * self.mass * (
+                np.eye(3) - 3 * r_hat[..., None] * r_hat[..., None, :]
+        ) / r[..., None]**3
         return g_tens
 
 

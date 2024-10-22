@@ -59,6 +59,26 @@ class BaseEM:
         self._sigma = value
 
     @property
+    def rho(self):
+        """Electrical resistivity in Ohm m
+
+        Returns
+        -------
+        float
+            Electrical resistivity in Ohm m
+        """
+        return 1/self.sigma
+
+    @rho.setter
+    def rho(self, value):
+        try:
+            value = float(value)
+        except:
+            raise TypeError(f"resistivity must be a number, got {type(value)}")
+
+        self.sigma = 1/value
+
+    @property
     def mu(self):
         """Magnetic permeability in H/m
 
@@ -177,6 +197,8 @@ class BaseDipole:
                 var = np.r_[0., 1., 0.]
             elif var.upper() == 'Z':
                 var = np.r_[0., 0., 1.]
+            else:
+                raise ValueError("Orientation must be one of {'X','Y','Z'}")
         else:
             try:
                 var = np.asarray(var, dtype=float)
@@ -187,7 +209,7 @@ class BaseDipole:
             var = np.squeeze(var)
             if var.shape != (3, ):
                 raise ValueError(
-                    f"orientation must be array_like with shape (3,), got {len(var)}"
+                    f"orientation must be array_like with shape (3,), got {var.shape}"
                 )
 
             # Normalize the orientation

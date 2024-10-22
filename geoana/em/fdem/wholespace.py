@@ -1,7 +1,6 @@
 import numpy as np
 from geoana.em.fdem.base import BaseFDEM
-from geoana.spatial import repeat_scalar
-from geoana.utils import check_xyz_dim
+from geoana.utils import check_xyz_dim, append_ndim
 from geoana.em.base import BaseElectricDipole, BaseMagneticDipole
 
 
@@ -39,7 +38,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_freq, ..., 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Magnetic vector potential at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
@@ -91,13 +90,15 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         >>> ax2.autoscale(tight=True)
 
         """
-        r = np.linalg.norm(xyz - self.location, axis=-1)
-        k = self.wavenumber
-        for dim in range(r.ndim):
-            k = k[:, None]
+        xyz = check_xyz_dim(xyz)
+
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+
+        k = append_ndim(self.wavenumber, r.ndim)
 
         a = self.current * self.length / (4*np.pi*r) * np.exp(-1j*k * r)
-        return (a[..., None] * self.orientation).squeeze()
+        return a * self.orientation
 
     def electric_field(self, xyz):
         r"""Electric field for the harmonic current dipole at a set of gridded locations.
@@ -126,7 +127,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_freq, ..., 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Electric field at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
@@ -181,11 +182,12 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
-        dxyz = xyz - self.location
-        r = np.linalg.norm(dxyz, axis=-1)
-        k = self.wavenumber
-        for dim in range(r.ndim):
-            k = k[:, None]
+        xyz = check_xyz_dim(xyz)
+
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
+        k = append_ndim(self.wavenumber, r.ndim)
 
         kr = k * r
         ikr = 1j * kr
@@ -194,12 +196,10 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
             (self.current * self.length) / (4 * np.pi * self.sigma * r**3) *
             np.exp(-ikr)
         )
-        symmetric_term = (
-            ((dxyz @ self.orientation) * (-kr**2 + 3*ikr + 3) / r**2)[..., None] * dxyz
-        )
-        oriented_term = (kr**2 - ikr - 1)[..., None] * self.orientation
+        symmetric_term = (r_hat @ self.orientation)[..., None] * (-kr**2 + 3*ikr + 3) * r_hat
+        oriented_term = (kr**2 - ikr - 1) * self.orientation
 
-        return (front_term[..., None] * (symmetric_term + oriented_term)).squeeze()
+        return front_term * (symmetric_term + oriented_term)
 
     def current_density(self, xyz):
         r"""Current density for the harmonic current dipole at a set of gridded locations.
@@ -223,12 +223,12 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_freq, n_loc, 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Current density at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
@@ -311,10 +311,9 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_freq, ..., 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Magnetic field at all frequencies for the gridded
-            locations provided. Output array is squeezed when n_freq and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -366,11 +365,13 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
         >>> ax2.set_title('Imag component {} Hz'.format(frequency[f_ind]))
 
         """
-        dxyz = xyz - self.location
-        r = np.linalg.norm(dxyz, axis=-1)
-        k = self.wavenumber
-        for dim in range(r.ndim):
-            k = k[:, None]
+        xyz = check_xyz_dim(xyz)
+
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec/r
+
+        k = append_ndim(self.wavenumber, r.ndim)
         kr = k * r
         ikr = 1j*kr
 
@@ -378,7 +379,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
             self.current * self.length / (4 * np.pi * r**2) * (ikr + 1) *
             np.exp(-ikr)
         )
-        return (-front_term[..., None] * np.cross(dxyz, self.orientation) / r[..., None]).squeeze()
+        return front_term * np.cross(self.orientation, r_hat)
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density produced by the harmonic electric current dipole at a set of gridded locations.
@@ -406,7 +407,7 @@ class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
 
         Returns
         -------
-        (n_freq, ..., 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Magnetic flux at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
@@ -473,11 +474,11 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
         r"""Vector potential for the harmonic magnetic dipole at a set of gridded locations.
 
         For a harmonic magnetic dipole oriented in the :math:`\hat{u}` direction with
-        moment amplitude :math:`m`, the magnetic vector potential at frequency :math:`f`
+        moment amplitude :math:`m`, the electric vector potential at frequency :math:`f`
         at vector distance :math:`\mathbf{r}` from the dipole is given by:
 
         .. math::
-            \mathbf{a}(\mathbf{r}) = \frac{i \omega \mu m}{4 \pi r} e^{-ikr}
+            \mathbf{F}(\mathbf{r}) = \frac{i \omega \mu m}{4 \pi r} e^{-ikr}
             \mathbf{\hat{u}}
 
         where
@@ -487,15 +488,14 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_freq, n_loc, 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Magnetic vector potential at all frequencies for the gridded
-            locations provided. Output array is squeezed when n_freq and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -544,14 +544,14 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         """
         xyz = check_xyz_dim(xyz)
-        r = np.linalg.norm(xyz, axis=-1)
-        k = self.wavenumber
-        omega = self.omega
-        for i in range(r.ndim):
-            k = k[..., None]
-            omega = omega[..., None]
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+
+        k = append_ndim(self.wavenumber, r.ndim)
+        omega = append_ndim(self.omega, r.ndim)
+
         f = 1j * omega * self.mu * self.moment / (4 * np.pi * r) * np.exp(-1j * k * r)
-        return (f[..., None] * self.orientation).squeeze()
+        return f * self.orientation
 
     def electric_field(self, xyz):
         r"""Electric field for the harmonic magnetic dipole at a set of gridded locations.
@@ -574,15 +574,14 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_freq, n_loc, 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Electric field at all frequencies for the gridded
-            locations provided. Output array is squeezed when n_freq and/or
-            n_loc = 1.
+            locations provided.
 
         Examples
         --------
@@ -635,21 +634,20 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         """
         xyz = check_xyz_dim(xyz)
-        dxyz = xyz - self.location
-        r = np.linalg.norm(dxyz, axis=-1)
-        k = self.wavenumber
-        omega = self.omega
-        for i in range(r.ndim):
-            k = k[..., None]
-            omega = omega[..., None]
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
+        k = append_ndim(self.wavenumber, r.ndim)
+        omega = append_ndim(self.omega, r.ndim)
+
         kr = k * r
         ikr = 1j * kr
 
         front_term = (
              (1j * omega * self.mu * self.moment) / (4. * np.pi * r**2) *
              (ikr + 1) * np.exp(-ikr)
-        ) / r
-        return (front_term[..., None] * np.cross(dxyz, self.orientation)).squeeze()
+        )
+        return front_term * np.cross(r_hat, self.orientation)
 
     def current_density(self, xyz):
         r"""Current density for the harmonic magnetic dipole at a set of gridded locations.
@@ -672,12 +670,12 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_freq, n_loc, 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Current density at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
@@ -756,12 +754,12 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_freq, n_loc, 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Magnetic field at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
@@ -817,21 +815,21 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         """
         xyz = check_xyz_dim(xyz)
-        dxyz = xyz - self.location
-        r = np.linalg.norm(dxyz, axis=-1)
-        k = self.wavenumber
-        for i in range(r.ndim):
-            k = k[..., None]
+        r_vec = xyz - self.location
+        r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
+        r_hat = r_vec / r
+        k = append_ndim(self.wavenumber, r.ndim)
+
         kr = k * r
         ikr = 1j * kr
 
         front_term = self.moment / (4. * np.pi * r**3) * np.exp(-ikr)
 
-        symmetric_term = (dxyz @ self.orientation)[None, ...]*((-kr**2 + 3*ikr + 3) / r**2)
+        symmetric_term = (r_hat @ self.orientation)[..., None]*(-kr**2 + 3*ikr + 3) * r_hat
 
-        oriented_term = (kr**2 - ikr - 1)[..., None] * self.orientation
+        oriented_term = (kr**2 - ikr - 1) * self.orientation
 
-        return (front_term[..., None] * (symmetric_term[..., None] * dxyz + oriented_term)).squeeze()
+        return front_term * (symmetric_term + oriented_term)
 
     def magnetic_flux_density(self, xyz):
         r"""Magnetic flux density for the harmonic magnetic dipole at a set of gridded locations.
@@ -855,12 +853,12 @@ class MagneticDipoleWholeSpace(BaseFDEM, BaseMagneticDipole):
 
         Parameters
         ----------
-        xyz : (n, 3) numpy.ndarray
+        xyz : (..., 3) numpy.ndarray
             Gridded xyz locations
 
         Returns
         -------
-        (n_freq, n_loc, 3) numpy.array of complex
+        (n_freq, ..., 3) numpy.ndarray of complex
             Magnetic flux density at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.
@@ -1017,7 +1015,7 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Returns
         -------
-        (n_f, ..., 3) numpy.array of complex
+        (n_f, ..., 3) numpy.ndarray of complex
             Electric field at all frequencies for the gridded
             locations provided.
 
@@ -1067,17 +1065,13 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.show()
         """
         xyz = check_xyz_dim(xyz)
+        z = xyz[..., [2]]
 
-        k = self.wavenumber
+        k = append_ndim(self.wavenumber, xyz.ndim)
         e0 = self.amplitude
+        ikz = 1j * k * z
 
-        z = xyz[..., 2]
-        for i in range(z.ndim):
-            k = k[..., None]
-        kz = k * z
-        ikz = 1j * kz
-
-        return e0 * self.orientation * np.exp(ikz)[..., None]
+        return e0 * self.orientation * np.exp(ikz)
 
     def current_density(self, xyz):
         r"""Current density for the harmonic planewave at a set of gridded locations.
@@ -1089,7 +1083,7 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Returns
         -------
-        (n_f, ..., 3) numpy.array of complex
+        (n_f, ..., 3) numpy.ndarray of complex
             Current density at all frequencies for the gridded
             locations provided.
 
@@ -1158,7 +1152,7 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Returns
         -------
-        (n_f, ..., 3) numpy.array of complex
+        (n_f, ..., 3) numpy.ndarray of complex
             Magnetic field at all frequencies for the gridded
             locations provided.
 
@@ -1219,7 +1213,7 @@ class HarmonicPlaneWave(BaseFDEM):
 
         Returns
         -------
-        (n_f, ..., 3) numpy.array of complex
+        (n_f, ..., 3) numpy.ndarray of complex
             Magnetic flux density at all frequencies for the gridded
             locations provided.
 
@@ -1269,15 +1263,11 @@ class HarmonicPlaneWave(BaseFDEM):
         >>> plt.show()
         """
         xyz = check_xyz_dim(xyz)
+        z = xyz[..., [2]]
 
-        k = self.wavenumber
-        omega = self.omega
+        k = append_ndim(self.wavenumber, xyz.ndim)
+        omega = append_ndim(self.omega, xyz.ndim)
         e0 = self.amplitude
-
-        z = xyz[..., 2]
-        for i in range(z.ndim):
-            k = k[..., None]
-            omega = omega[..., None]
         kz = k * z
         ikz = 1j * kz
 
@@ -1289,4 +1279,4 @@ class HarmonicPlaneWave(BaseFDEM):
         # account for the orientation in the cross product
         # take cross product with the propagation direction
         b_dir = np.cross(self.orientation, [0, 0, -1])
-        return b_dir * b[..., None]
+        return b_dir * b

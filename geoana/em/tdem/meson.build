@@ -5,6 +5,7 @@ python_sources = [
   'halfspace.py',
   'simple_functions.py',
   'wholespace.py',
+  'reference.py',
 ]
 
 py.install_sources(

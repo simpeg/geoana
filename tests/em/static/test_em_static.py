@@ -2,14 +2,9 @@ import pytest
 import unittest
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
-try:
-    import discretize
-except ImportError:
-    discretize = None
-from scipy.special import ellipk, ellipe
+import numpy.testing as npt
 
-from geoana.em import static, fdem
-from geoana import spatial
+from geoana.em import static
 
 TOL = 0.1
 
@@ -17,48 +12,30 @@ TOL = 0.1
 class TestEM_Static(unittest.TestCase):
 
     def setUp(self):
-        self.mdws = static.MagneticDipoleWholeSpace()
         self.mpws = static.MagneticPoleWholeSpace()
         self.clws = static.CircularLoopWholeSpace()
         self.lcfs = static.LineCurrentFreeSpace(nodes=np.c_[1., 1., 1.])
 
     def test_defaults(self):
-        self.assertTrue(self.mdws.sigma == 1.0)
         self.assertTrue(self.mpws.sigma == 1.0)
         self.assertTrue(self.clws.sigma == 1.0)
 
-        self.assertTrue(self.mdws.mu == mu_0)
         self.assertTrue(self.mpws.mu == mu_0)
         self.assertTrue(self.clws.mu == mu_0)
 
-        self.assertTrue(self.mdws.epsilon == epsilon_0)
         self.assertTrue(self.mpws.epsilon == epsilon_0)
         self.assertTrue(self.clws.epsilon == epsilon_0)
 
-        self.assertTrue(np.all(self.mdws.orientation == np.r_[1., 0., 0.]))
         self.assertTrue(np.all(self.mpws.orientation == np.r_[1., 0., 0.]))
         self.assertTrue(np.all(self.clws.orientation == np.r_[1., 0., 0.]))
 
         self.assertTrue(np.all(self.lcfs.nodes == np.c_[1., 1., 1.]))
 
-        self.assertTrue(self.mdws.moment == 1.0)
         self.assertTrue(self.mpws.moment == 1.0)
         self.assertTrue(self.clws.current == 1.0)
         self.assertTrue(self.clws.radius == np.sqrt(1/np.pi))
 
     def test_errors(self):
-        with pytest.raises(TypeError):
-            self.mdws.mu = "box"
-        with pytest.raises(ValueError):
-            self.mdws.mu = -2
-        with pytest.raises(TypeError):
-            self.mdws.moment = "box"
-        with pytest.raises(ValueError):
-            self.mdws.orientation = [0, 1, 2, 3, 4]
-        with pytest.raises(ValueError):
-            self.mdws.orientation = [[0, 0], [0, 1]]
-        with pytest.raises(TypeError):
-            self.mdws.orientation = ["string"]
         with pytest.raises(ValueError):
             self.clws.location = [0, 1, 2, 3]
         with pytest.raises(ValueError):
@@ -85,362 +62,6 @@ class TestEM_Static(unittest.TestCase):
             self.lcfs.nodes = ["string"]
         with pytest.raises(TypeError):
             self.lcfs.current = "box"
-
-    def test_vector_potential(self):
-        n = 50
-        x = y = z = np.linspace(-25, 25, n)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        for orientation in ["x", "y", "z"]:
-            self.clws.orientation = orientation
-            self.mdws.orientation = orientation
-
-            inds = (
-                (np.absolute(xyz[:, 0]) > 5) &
-                (np.absolute(xyz[:, 1]) > 5) &
-                (np.absolute(xyz[:, 2]) > 5)
-            )
-
-            a_clws = self.clws.vector_potential(xyz)[inds]
-            a_mdws = self.mdws.vector_potential(xyz)[inds]
-
-            self.assertTrue(isinstance(a_clws, np.ndarray))
-            self.assertTrue(isinstance(a_mdws, np.ndarray))
-
-            self.assertTrue(
-                np.linalg.norm(a_clws - a_mdws) <
-                0.5 * TOL * (np.linalg.norm(a_clws) + np.linalg.norm(a_mdws))
-            )
-
-    if discretize is not None:
-        def test_magnetic_field_tensor(self):
-            print("\n === Testing Tensor Mesh === \n")
-            n = 30
-            h = 2.
-            mesh = discretize.TensorMesh(
-                [np.full(n, h), np.full(n, h), np.full(n, h)],
-                origin='CCC'
-            )
-
-            for radius in [0.5, 1, 1.5]:
-                self.clws.radius = radius
-                self.clws.current = 1./(np.pi * radius**2)
-
-                fdem_dipole = fdem.MagneticDipoleWholeSpace(frequency=0)
-
-                for location in [
-                    np.r_[0, 0, 0], np.r_[10, 0, 0], np.r_[0, -10, 0],
-                    np.r_[0, 0, 10], np.r_[10, 10, 10]
-                ]:
-                    self.clws.location = location
-                    self.mdws.location = location
-                    fdem_dipole.location = location
-
-                    for orientation in ["x", "y", "z"]:
-                        self.clws.orientation = orientation
-                        self.mdws.orientation = orientation
-                        fdem_dipole.orientation = orientation
-
-                        a_clws = np.hstack([
-                            self.clws.vector_potential(mesh.gridEx)[:, 0],
-                            self.clws.vector_potential(mesh.gridEy)[:, 1],
-                            self.clws.vector_potential(mesh.gridEz)[:, 2]
-                        ])
-
-                        a_mdws = np.hstack([
-                            self.mdws.vector_potential(mesh.gridEx)[:, 0],
-                            self.mdws.vector_potential(mesh.gridEy)[:, 1],
-                            self.mdws.vector_potential(mesh.gridEz)[:, 2]
-                        ])
-
-                        b_clws = mesh.edge_curl * a_clws
-                        b_mdws = mesh.edge_curl * a_mdws
-
-                        b_clws_true = np.hstack([
-                            self.clws.magnetic_flux_density(mesh.gridFx)[:, 0],
-                            self.clws.magnetic_flux_density(mesh.gridFy)[:, 1],
-                            self.clws.magnetic_flux_density(mesh.gridFz)[:, 2]
-                        ])
-                        b_mdws_true = np.hstack([
-                            self.mdws.magnetic_flux_density(mesh.gridFx)[:, 0],
-                            self.mdws.magnetic_flux_density(mesh.gridFy)[:, 1],
-                            self.mdws.magnetic_flux_density(mesh.gridFz)[:, 2]
-                        ])
-                        b_fdem = np.hstack([
-                            fdem_dipole.magnetic_flux_density(mesh.gridFx)[:, 0],
-                            fdem_dipole.magnetic_flux_density(mesh.gridFy)[:, 1],
-                            fdem_dipole.magnetic_flux_density(mesh.gridFz)[:, 2]
-                        ])
-
-                        self.assertTrue(isinstance(b_fdem, np.ndarray))
-
-                        inds = (np.hstack([
-                            (np.absolute(mesh.gridFx[:, 0]) > h*2 + location[0]) &
-                            (np.absolute(mesh.gridFx[:, 1]) > h*2 + location[1]) &
-                            (np.absolute(mesh.gridFx[:, 2]) > h*2 + location[2]),
-                            (np.absolute(mesh.gridFy[:, 0]) > h*2 + location[0]) &
-                            (np.absolute(mesh.gridFy[:, 1]) > h*2 + location[1]) &
-                            (np.absolute(mesh.gridFy[:, 2]) > h*2 + location[2]),
-                            (np.absolute(mesh.gridFz[:, 0]) > h*2 + location[0]) &
-                            (np.absolute(mesh.gridFz[:, 1]) > h*2 + location[1]) &
-                            (np.absolute(mesh.gridFz[:, 2]) > h*2 + location[2])
-                        ]))
-
-                        loop_passed_1 = (
-                            np.linalg.norm(b_fdem[inds] - b_clws[inds]) <
-                            0.5 * TOL * (
-                                np.linalg.norm(b_fdem[inds]) +
-                                np.linalg.norm(b_clws[inds])
-                            )
-                        )
-
-                        loop_passed_2 = (
-                            np.linalg.norm(b_fdem[inds] - b_clws_true[inds]) <
-                            0.5 * TOL * (
-                                np.linalg.norm(b_fdem[inds]) +
-                                np.linalg.norm(b_clws_true[inds])
-                            )
-                        )
-
-                        dipole_passed = (
-                            np.linalg.norm(b_fdem[inds] - b_mdws[inds]) <
-                            0.5 * TOL * (
-                                np.linalg.norm(b_fdem[inds]) +
-                                np.linalg.norm(b_mdws[inds])
-                            )
-                        )
-
-                        print(
-                            "Testing r = {}, loc = {}, orientation = {}".format(
-                                radius, location, orientation
-                            )
-                        )
-                        print(
-                            "  fdem: {:1.4e}, loop: {:1.4e}, dipole: {:1.4e}"
-                            " Passed? loop: {}, dipole: {} \n".format(
-                                np.linalg.norm(b_fdem[inds]),
-                                np.linalg.norm(b_clws[inds]),
-                                np.linalg.norm(b_mdws[inds]),
-                                loop_passed_1,
-                                loop_passed_2,
-                                dipole_passed
-                            )
-                        )
-                        self.assertTrue(loop_passed_1)
-                        self.assertTrue(loop_passed_2)
-                        self.assertTrue(dipole_passed)
-
-    def test_dipole_magnetic_flux_density(self):
-        mdws = static.MagneticDipoleWholeSpace()
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-        n_obs = xyz.shape[0]
-
-        xyz_ = spatial.cylindrical_2_cartesian(xyz)
-        r = mdws.vector_distance(xyz_)
-        dxyz = spatial.repeat_scalar(mdws.distance(xyz_))
-        m_vec = mdws.moment * np.atleast_2d(mdws.orientation).repeat(n_obs, axis=0)
-        m_dot_r = (m_vec * r).sum(axis=1)
-        m_dot_r = np.atleast_2d(m_dot_r).T.repeat(3, axis=1)
-
-        b_test = (mu_0 / (4 * np.pi)) * ((3 * r * m_dot_r / (dxyz ** 5)) - m_vec / (dxyz ** 3))
-        b_test = spatial.cartesian_2_cylindrical(xyz_, b_test)
-
-        b = mdws.magnetic_flux_density(xyz, coordinates='cylindrical')
-        np.testing.assert_equal(b_test, b)
-
-    def test_pole_magnetic_flux_density(self):
-        mpws = static.MagneticPoleWholeSpace()
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        xyz_ = spatial.cylindrical_2_cartesian(xyz)
-        r = mpws.vector_distance(xyz_)
-        dxyz = spatial.repeat_scalar(mpws.distance(xyz_))
-
-        b_test = mpws.moment * mu_0 / (4 * np.pi * (dxyz ** 3)) * r
-        b_test = spatial.cartesian_2_cylindrical(xyz_, b_test)
-
-        b = mpws.magnetic_flux_density(xyz, coordinates='cylindrical')
-        np.testing.assert_equal(b_test, b)
-
-    def test_pole_magnetic_field(self):
-        mpws = static.MagneticPoleWholeSpace()
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        xyz_ = spatial.cylindrical_2_cartesian(xyz)
-        r = mpws.vector_distance(xyz_)
-        dxyz = spatial.repeat_scalar(mpws.distance(xyz_))
-
-        h_test = mpws.moment * mu_0 / (4 * np.pi * (dxyz ** 3)) * r
-        h_test = spatial.cartesian_2_cylindrical(xyz_, h_test)
-        h_test = h_test / mu_0
-
-        h = mpws.magnetic_field(xyz, coordinates='cylindrical')
-        np.testing.assert_equal(h_test, h)
-
-    def test_loop_magnetic_flux_density(self):
-        clws = static.CircularLoopWholeSpace()
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        xyz_ = np.atleast_2d(xyz)
-        xyz_ = spatial.cylindrical_2_cartesian(xyz_)
-        xyz_ = spatial.rotate_points_from_normals(xyz_, np.array(clws.orientation), np.r_[0, 0, 1],
-                                                  x0=np.array(clws.location))
-        dxyz = clws.vector_distance(xyz_)
-        rho = np.linalg.norm(dxyz[:, :2], axis=-1)
-        b = np.zeros((len(rho), 3))
-        ind_axial = rho == 0
-        b[ind_axial, -1] = mu_0 * clws.current * clws.radius ** 2 / (2 * (clws.radius ** 2 +
-                                                                          dxyz[ind_axial, 2] ** 2) ** (1.5))
-        alpha = rho[~ind_axial] / clws.radius
-        beta = dxyz[~ind_axial, 2] / clws.radius
-        gamma = dxyz[~ind_axial, 2] / rho[~ind_axial]
-        q = ((1 + alpha) ** 2 + beta ** 2)
-        k2 = 4 * alpha / q
-        b[~ind_axial, -1] = mu_0 * clws.current / (2 * clws.radius * np.pi * np.sqrt(q)) * \
-            (ellipe(k2) * (1 - alpha ** 2 - beta ** 2) / (q - 4 * alpha) + ellipk(k2))
-        b_rad = mu_0 * clws.current * gamma / (2 * clws.radius * np.pi * np.sqrt(q)) * \
-            (ellipe(k2) * (1 + alpha ** 2 + beta ** 2) / (q - 4 * alpha) - ellipk(k2))
-        b[~ind_axial, 0] = b_rad * (dxyz[~ind_axial, 0] / rho[~ind_axial])
-        b[~ind_axial, 1] = b_rad * (dxyz[~ind_axial, 1] / rho[~ind_axial])
-        b = spatial.rotate_points_from_normals(b, np.r_[0, 0, 1], np.array(clws.orientation),)
-        b = spatial.cartesian_2_cylindrical(xyz_, b)
-
-        b_test = clws.magnetic_flux_density(xyz, coordinates='cylindrical')
-        np.testing.assert_equal(b_test, b)
-
-    if discretize is not None:
-        def test_magnetic_field_3Dcyl(self):
-            print("\n === Testing 3D Cyl Mesh === \n")
-            n = 50
-            ny = 10
-            h = 2.
-            mesh = discretize.CylindricalMesh(
-                [h*np.ones(n), np.ones(ny) * 2 * np.pi / ny, h*np.ones(n)], x0="00C"
-            )
-
-            for radius in [0.5, 1, 1.5]:
-                self.clws.radius = radius
-                self.clws.current = 1./(np.pi * radius**2)  # So that all have moment of 1.0
-
-                fdem_dipole = fdem.MagneticDipoleWholeSpace(frequency=0, quasistatic=True)
-
-                for location in [
-                    np.r_[0, 0, 0], np.r_[0, 4, 0], np.r_[4, 4., 0],
-                    np.r_[4, 4, 4], np.r_[4, 0, -4]
-                ]:
-                    self.clws.location = location
-                    self.mdws.location = location
-                    fdem_dipole.location = location
-
-                    for orientation in ["z"]:
-                        self.clws.orientation = orientation
-                        self.mdws.orientation = orientation
-                        fdem_dipole.orientation = orientation
-
-                        a_clws = np.hstack([
-                            self.clws.vector_potential(
-                                mesh.gridEx, coordinates="cylindrical"
-                            )[:, 0],
-                            self.clws.vector_potential(
-                                mesh.gridEy, coordinates="cylindrical"
-                            )[:, 1],
-                            self.clws.vector_potential(
-                                mesh.gridEz, coordinates="cylindrical"
-                            )[:, 2]
-                        ])
-
-                        a_mdws = np.hstack([
-                            self.mdws.vector_potential(
-                                mesh.gridEx, coordinates="cylindrical"
-                            )[:, 0],
-                            self.mdws.vector_potential(
-                                mesh.gridEy, coordinates="cylindrical"
-                            )[:, 1],
-                            self.mdws.vector_potential(
-                                mesh.gridEz, coordinates="cylindrical"
-                            )[:, 2]
-                        ])
-
-                        b_clws = mesh.edge_curl * a_clws
-                        b_mdws = mesh.edge_curl * a_mdws
-
-                        b_fdem = np.hstack([
-                            spatial.cartesian_2_cylindrical(
-                                spatial.cylindrical_2_cartesian(mesh.gridFx),
-                                fdem_dipole.magnetic_flux_density(
-                                    spatial.cylindrical_2_cartesian(mesh.gridFx)
-                                )
-                            )[:, 0],
-                            spatial.cartesian_2_cylindrical(
-                                spatial.cylindrical_2_cartesian(mesh.gridFy),
-                                fdem_dipole.magnetic_flux_density(
-                                    spatial.cylindrical_2_cartesian(mesh.gridFy)
-                                )
-                            )[:, 1],
-                            spatial.cartesian_2_cylindrical(
-                                spatial.cylindrical_2_cartesian(mesh.gridFz),
-                                fdem_dipole.magnetic_flux_density(
-                                    spatial.cylindrical_2_cartesian(mesh.gridFz)
-                                )
-                            )[:, 2]
-                        ])
-
-
-                        inds = (np.hstack([
-                            (np.absolute(mesh.gridFx[:, 0]) > h*4 + location[0]) &
-                            (np.absolute(mesh.gridFx[:, 2]) > h*4 + location[2]),
-                            (np.absolute(mesh.gridFy[:, 0]) > h*4 + location[0]) &
-                            (np.absolute(mesh.gridFy[:, 2]) > h*4 + location[2]),
-                            (np.absolute(mesh.gridFz[:, 0]) > h*4 + location[0]) &
-                            (np.absolute(mesh.gridFz[:, 2]) > h*4 + location[2])
-                        ]))
-
-                        loop_passed = (
-                            np.linalg.norm(b_fdem[inds] - b_clws[inds]) <
-                            0.5 * TOL * (
-                                np.linalg.norm(b_fdem[inds]) +
-                                np.linalg.norm(b_clws[inds])
-                            )
-                        )
-
-                        dipole_passed = (
-                            np.linalg.norm(b_fdem[inds] - b_mdws[inds]) <
-                            0.5 * TOL * (
-                                np.linalg.norm(b_fdem[inds]) +
-                                np.linalg.norm(b_mdws[inds])
-                            )
-                        )
-
-                        print(
-                            "Testing r = {}, loc = {}, orientation = {}".format(
-                                radius, location, orientation
-                            )
-                        )
-                        print(
-                            "  fdem: {:1.4e}, loop: {:1.4e}, dipole: {:1.4e}"
-                            " Passed? loop: {}, dipole: {} \n".format(
-                                np.linalg.norm(b_fdem[inds]),
-                                np.linalg.norm(b_clws[inds]),
-                                np.linalg.norm(b_mdws[inds]),
-                                loop_passed,
-                                dipole_passed
-                            )
-                        )
-                        self.assertTrue(loop_passed)
-                        self.assertTrue(dipole_passed)
-
 
 def Vt_from_ESphere(
     XYZ, loc, sig_s, sig_b, radius, amp
@@ -644,14 +265,14 @@ class TestElectroStaticSphere:
         vt = ess.potential(xyz, field='total')
         vp = ess.potential(xyz, field='primary')
         vs = ess.potential(xyz, field='secondary')
-        np.testing.assert_equal(vttest, vt)
-        np.testing.assert_equal(vptest, vp)
-        np.testing.assert_equal(vstest, vs)
+        npt.assert_allclose(vttest, vt)
+        npt.assert_allclose(vptest, vp)
+        npt.assert_allclose(vstest, vs)
 
         vt, vp, vs = ess.potential(xyz, field='all')
-        np.testing.assert_equal(vttest, vt)
-        np.testing.assert_equal(vptest, vp)
-        np.testing.assert_equal(vstest, vs)
+        npt.assert_allclose(vttest, vt)
+        npt.assert_allclose(vptest, vp)
+        npt.assert_allclose(vstest, vs)
 
     def testE(self):
         radius = 1.0
@@ -687,14 +308,14 @@ class TestElectroStaticSphere:
         et = ess.electric_field(xyz, field='total')
         ep = ess.electric_field(xyz, field='primary')
         es = ess.electric_field(xyz, field='secondary')
-        np.testing.assert_equal(ettest, et)
-        np.testing.assert_equal(eptest, ep)
-        np.testing.assert_equal(estest, es)
+        npt.assert_allclose(ettest, et)
+        npt.assert_allclose(eptest, ep)
+        npt.assert_allclose(estest, es)
 
         et, ep, es =ess.electric_field(xyz, field='all')
-        np.testing.assert_equal(ettest, et)
-        np.testing.assert_equal(eptest, ep)
-        np.testing.assert_equal(estest, es)
+        npt.assert_allclose(ettest, et)
+        npt.assert_allclose(eptest, ep)
+        npt.assert_allclose(estest, es)
 
     def testJ(self):
         radius = 1.0
@@ -730,14 +351,14 @@ class TestElectroStaticSphere:
         jt = ess.current_density(xyz, field='total')
         jp = ess.current_density(xyz, field='primary')
         js = ess.current_density(xyz, field='secondary')
-        np.testing.assert_equal(jttest, jt)
-        np.testing.assert_equal(jptest, jp)
-        np.testing.assert_equal(jstest, js)
+        npt.assert_allclose(jttest, jt)
+        npt.assert_allclose(jptest, jp)
+        npt.assert_allclose(jstest, js)
 
         jt, jp, js = ess.current_density(xyz, field='all')
-        np.testing.assert_equal(jttest, jt)
-        np.testing.assert_equal(jptest, jp)
-        np.testing.assert_equal(jstest, js)
+        npt.assert_allclose(jttest, jt)
+        npt.assert_allclose(jptest, jp)
+        npt.assert_allclose(jstest, js)
 
     def test_rho(self):
         radius = 1.0
@@ -762,7 +383,7 @@ class TestElectroStaticSphere:
         )
 
         rho = ess.charge_density(xyz)
-        np.testing.assert_equal(rho_test, rho)
+        npt.assert_allclose(rho_test, rho)
 
 
 def Vt_from_Sphere(
@@ -947,14 +568,14 @@ class TestMagnetoStaticSphere:
         vt = mss.potential(xyz, field='total')
         vp = mss.potential(xyz, field='primary')
         vs = mss.potential(xyz, field='secondary')
-        np.testing.assert_equal(vttest, vt)
-        np.testing.assert_equal(vptest, vp)
-        np.testing.assert_equal(vstest, vs)
+        npt.assert_allclose(vttest, vt)
+        npt.assert_allclose(vptest, vp)
+        npt.assert_allclose(vstest, vs)
 
         vt, vp, vs = mss.potential(xyz, field='all')
-        np.testing.assert_equal(vttest, vt)
-        np.testing.assert_equal(vptest, vp)
-        np.testing.assert_equal(vstest, vs)
+        npt.assert_allclose(vttest, vt)
+        npt.assert_allclose(vptest, vp)
+        npt.assert_allclose(vstest, vs)
 
     def testH(self):
         radius = 1.0
@@ -990,14 +611,14 @@ class TestMagnetoStaticSphere:
         ht = mss.magnetic_field(xyz, field='total')
         hp = mss.magnetic_field(xyz, field='primary')
         hs = mss.magnetic_field(xyz, field='secondary')
-        np.testing.assert_equal(httest, ht)
-        np.testing.assert_equal(hptest, hp)
-        np.testing.assert_equal(hstest, hs)
+        npt.assert_allclose(httest, ht)
+        npt.assert_allclose(hptest, hp)
+        npt.assert_allclose(hstest, hs)
 
         ht, hp, hs = mss.magnetic_field(xyz, field='all')
-        np.testing.assert_equal(httest, ht)
-        np.testing.assert_equal(hptest, hp)
-        np.testing.assert_equal(hstest, hs)
+        npt.assert_allclose(httest, ht)
+        npt.assert_allclose(hptest, hp)
+        npt.assert_allclose(hstest, hs)
 
     def testB(self):
         radius = 1.0
@@ -1033,146 +654,15 @@ class TestMagnetoStaticSphere:
         bt = mss.magnetic_flux_density(xyz, field='total')
         bp = mss.magnetic_flux_density(xyz, field='primary')
         bs = mss.magnetic_flux_density(xyz, field='secondary')
-        np.testing.assert_equal(btest, bt)
-        np.testing.assert_equal(bptest, bp)
-        np.testing.assert_equal(bstest, bs)
+        npt.assert_allclose(btest, bt)
+        npt.assert_allclose(bptest, bp)
+        npt.assert_allclose(bstest, bs)
 
         bt, bp, bs = mss.magnetic_flux_density(xyz, field='all')
-        np.testing.assert_equal(btest, bt)
-        np.testing.assert_equal(bptest, bp)
-        np.testing.assert_equal(bstest, bs)
+        npt.assert_allclose(btest, bt)
+        npt.assert_allclose(bptest, bp)
+        npt.assert_allclose(bstest, bs)
 
-
-def V_from_PointCurrentW(
-    XYZ, loc, rho, cur
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    v = rho * cur / (4 * np.pi * r)
-    return v
-
-
-def J_from_PointCurrentW(
-    XYZ, loc, rho, cur
-):
-
-    j = E_from_PointCurrentW(XYZ, loc, rho, cur) / rho
-    return j
-
-
-def E_from_PointCurrentW(
-    XYZ, loc, rho, cur
-):
-
-    XYZ = np.atleast_2d(XYZ)
-
-    r_vec = XYZ - loc
-    r = np.linalg.norm(r_vec, axis=-1)
-
-    e = rho * cur * r_vec / (4 * np.pi * r[..., None] ** 3)
-    return e
-
-
-class TestPointCurrentWholeSpace:
-
-    def test_defaults(self):
-        rho = 1.0
-        pcws = static.PointCurrentWholeSpace(rho)
-        assert pcws.rho == 1.0
-        assert pcws.current == 1.0
-        assert np.all(pcws.location == np.r_[0., 0., 0.])
-
-    def test_error(self):
-        pcws = static.PointCurrentWholeSpace(rho=1.0, current=1.0, location=None)
-
-        with pytest.raises(TypeError):
-            pcws.rho = "string"
-        with pytest.raises(ValueError):
-            pcws.rho = -1
-        with pytest.raises(TypeError):
-            pcws.current = "string"
-        with pytest.raises(ValueError):
-            pcws.location = [0, 1, 2, 3]
-        with pytest.raises(ValueError):
-            pcws.location = [[0, 0], [0, 1]]
-        with pytest.raises(TypeError):
-            pcws.location = ["string"]
-
-    def test_potential(self):
-        rho = 1.0
-        current = 1.0
-        location = None
-        pcws = static.PointCurrentWholeSpace(
-            current=current,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        vtest = V_from_PointCurrentW(
-            xyz, pcws.location, pcws.rho, pcws.current
-        )
-        print(
-            "\n\nTesting Electric Potential V for Point Current\n"
-        )
-
-        v = pcws.potential(xyz)
-        np.testing.assert_equal(vtest, v)
-
-    def test_current_density(self):
-        rho = 1.0
-        current = 1.0
-        location = None
-        pcws = static.PointCurrentWholeSpace(
-            current=current,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        jtest = J_from_PointCurrentW(
-            xyz, pcws.location, pcws.rho, pcws.current
-        )
-        print(
-            "\n\nTesting Current Density J for Point Current\n"
-        )
-
-        j = pcws.current_density(xyz)
-        np.testing.assert_equal(jtest, j)
-
-    def test_electric_field(self):
-        rho = 1.0
-        current = 1.0
-        location = None
-        pcws = static.PointCurrentWholeSpace(
-            current=current,
-            rho=rho,
-            location=location
-        )
-        x = np.linspace(-20., 20., 50)
-        y = np.linspace(-30., 30., 50)
-        z = np.linspace(-40., 40., 50)
-        xyz = np.stack(np.meshgrid(x, y, z), axis=-1).reshape(-1, 3)
-
-        etest = E_from_PointCurrentW(
-            xyz, pcws.location, pcws.rho, pcws.current
-        )
-        print(
-            "\n\nTesting Electric Field E for Point Current\n"
-        )
-
-        e = pcws.electric_field(xyz)
-        np.testing.assert_equal(etest, e)
 
 
 def V_from_PointCurrentH(
@@ -1279,7 +769,7 @@ class TestPointCurrentHalfSpace:
         )
 
         v = pchs.potential(xyz)
-        np.testing.assert_equal(vtest, v)
+        npt.assert_allclose(vtest, v)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -1311,7 +801,7 @@ class TestPointCurrentHalfSpace:
         )
 
         e = pchs.electric_field(xyz)
-        np.testing.assert_equal(etest, e)
+        npt.assert_allclose(etest, e)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -1343,7 +833,7 @@ class TestPointCurrentHalfSpace:
         )
 
         j = pchs.current_density(xyz)
-        np.testing.assert_equal(jtest, j)
+        npt.assert_allclose(jtest, j)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -1520,8 +1010,8 @@ class TestDipoleHalfSpace:
 
         v1 = dhs.potential(xyz1)
         v2 = dhs.potential(xyz1, xyz2)
-        np.testing.assert_equal(vtest1, v1)
-        np.testing.assert_equal(vtest2, v2)
+        npt.assert_allclose(vtest1, v1)
+        npt.assert_allclose(vtest2, v2)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -1560,8 +1050,8 @@ class TestDipoleHalfSpace:
 
         e1 = dhs.electric_field(xyz1)
         e2 = dhs.electric_field(xyz1, xyz2)
-        np.testing.assert_equal(etest1, e1)
-        np.testing.assert_equal(etest2, e2)
+        npt.assert_allclose(etest1, e1)
+        npt.assert_allclose(etest2, e2)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)
@@ -1600,8 +1090,8 @@ class TestDipoleHalfSpace:
 
         j1 = dhs.current_density(xyz1)
         j2 = dhs.current_density(xyz1, xyz2)
-        np.testing.assert_equal(jtest1, j1)
-        np.testing.assert_equal(jtest2, j2)
+        npt.assert_allclose(jtest1, j1)
+        npt.assert_allclose(jtest2, j2)
 
         x = np.linspace(-20., 20., 50)
         y = np.linspace(-30., 30., 50)

@@ -300,7 +300,7 @@ class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
 
         Returns
         -------
-        (n_freq, n_loc, 3) numpy.array of complex
+        (n_freq, n_loc, 3) numpy.ndarray of complex
             Magnetic field at all frequencies for the gridded
             locations provided. Output array is squeezed when n_freq and/or
             n_loc = 1.

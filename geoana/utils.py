@@ -17,7 +17,6 @@ commonly used within the code base.
 """
 import numpy as np
 
-
 def mkvc(x, n_dims=1):
     """Creates a vector with specified dimensionality.
 
@@ -180,6 +179,13 @@ def check_xyz_dim(xyz, dim=3, dtype=float):
             f"Unexpected dimensionality of array, expected {dim}, saw {xyz.shape[-1]}"
         )
     return xyz
+
+
+def append_ndim(arr, ndim):
+    arr = np.asarray(arr)
+    for _ in range(ndim):
+        arr = arr[..., None]
+    return arr
 
 
 def requires(modules):

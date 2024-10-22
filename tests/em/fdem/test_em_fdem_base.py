@@ -26,17 +26,19 @@ def test_sigma_hat():
 
 
 def test_base_fdem():
-    edws = fdem.ElectricDipoleWholeSpace(1)
-    with pytest.raises(TypeError):
-        edws.frequency = "string"
-    with pytest.raises(ValueError):
-        edws.frequency = -1
-    with pytest.raises(TypeError):
-        edws.frequency = np.array([[1, 2], [3, 4]])
+    # gets frequency and quasistatic properties.
+    with pytest.raises(TypeError, match="frequencies are not a valid type"):
+        fdem.BaseFDEM("string")
+    with pytest.raises(ValueError, match="All frequencies must be greater than 0"):
+        fdem.BaseFDEM(-1)
+    with pytest.raises(TypeError, match="frequencies must have at most 1 dimension."):
+        fdem.BaseFDEM(np.array([[1, 2], [3, 4]]))
 
     fd = fdem.BaseFDEM(frequency=np.logspace(1, 4, 3), sigma=1, quasistatic=True)
     fds = fd.sigma_hat
     np.testing.assert_equal(1, fds)
+
+    assert fd.quasistatic is True
 
 
 
