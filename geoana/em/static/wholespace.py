@@ -838,6 +838,12 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
 
 class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
+    """Class for a static line current in whole space.
+
+    The ``LineCurrentFreeSpace`` class is used to analytically compute the
+    fields and potentials within a wholespace due to a set of constant current-carrying
+    wires.
+    """
 
     def scalar_potential(self, xyz):
         xyz = check_xyz_dim(xyz)
@@ -891,9 +897,103 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
         return out
 
     def magnetic_field(self, xyz):
+        r"""Compute the magnetic field for the static current-carrying wire segments.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray xyz
+            gridded locations at which we are calculating the magnetic field
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            The magnetic field at each observation location in H/m.
+
+        Examples
+        --------
+        Here, we define a horizontal square loop and plot the magnetic field
+        on the xz-plane that intercepts at y=0.
+
+        >>> from geoana.em.static import LineCurrentWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the loop. Note that to create an inductive
+        source, we closed the loop.
+
+        >>> x_nodes = np.array([-0.5, 0.5, 0.5, -0.5, -0.5])
+        >>> y_nodes = np.array([-0.5, -0.5, 0.5, 0.5, -0.5])
+        >>> z_nodes = np.zeros_like(x_nodes)
+        >>> nodes = np.c_[x_nodes, y_nodes, z_nodes]
+        >>> simulation = LineCurrentWholeSpace(nodes)
+
+        Now we create a set of gridded locations and compute the magnetic field.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 50), np.array([0]), np.linspace(-1, 1, 50))
+        >>> H = simulation.magnetic_field(xyz)
+
+        Finally, we plot the magnetic field.
+
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.75, 0.75])
+        >>> plot2Ddata(xyz[:, [0, 2]], H[:, [0, 2]], ax=ax, vec=True, scale='log', ncontour=25)
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Z')
+        >>> ax.set_title('Magnetic field')
+
+        """
         return self.magnetic_flux_density(xyz) / self.mu
 
     def magnetic_flux_density(self, xyz):
+        r"""Compute the magnetic flux density for the static current-carrying wire segments.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray xyz
+            gridded locations at which we are calculating the magnetic flux density
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            The magnetic flux density at each observation location in T.
+
+        Examples
+        --------
+        Here, we define a horizontal square loop and plot the magnetic flux
+        density on the XZ-plane that intercepts at Y=0.
+
+        >>> from geoana.em.static import LineCurrentWholeSpace
+        >>> from geoana.utils import ndgrid
+        >>> from geoana.plotting_utils import plot2Ddata
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+
+        Let us begin by defining the loop. Note that to create an inductive
+        source, we closed the loop
+
+        >>> x_nodes = np.array([-0.5, 0.5, 0.5, -0.5, -0.5])
+        >>> y_nodes = np.array([-0.5, -0.5, 0.5, 0.5, -0.5])
+        >>> z_nodes = np.zeros_like(x_nodes)
+        >>> nodes = np.c_[x_nodes, y_nodes, z_nodes]
+        >>> simulation = LineCurrentWholeSpace(nodes)
+
+        Now we create a set of gridded locations and compute the magnetic flux density.
+
+        >>> xyz = ndgrid(np.linspace(-1, 1, 50), np.array([0]), np.linspace(-1, 1, 50))
+        >>> B = simulation.magnetic_flux_density(xyz)
+
+        Finally, we plot the magnetic flux density on the plane.
+
+        >>> fig = plt.figure(figsize=(4, 4))
+        >>> ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
+        >>> plot2Ddata(xyz[:, [0, 2]], B[:, [0, 2]], ax=ax, vec=True, scale='log', ncontour=25)
+        >>> ax.set_xlabel('X')
+        >>> ax.set_ylabel('Z')
+        >>> ax.set_title('Magnetic flux density')
+
+        """
 
         xyz = check_xyz_dim(xyz)
 
@@ -930,6 +1030,22 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
         return out
 
     def electric_field(self, xyz):
+        r"""Compute the electric for the static current-carrying wire segments.
+
+        If the wire is closed, there is no electric field, but if it is an open
+        wire,
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray xyz
+            gridded locations at which we are calculating the electric field
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            The electric field y at each observation location in T.
+
+        """
         xyz = check_xyz_dim(xyz)
         # If I had a single point, treat it as a source
         if self.n_segments == 0:
@@ -948,6 +1064,22 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
         return self.current/(4 * np.pi * self.sigma) * (r_vec_A/r_A**3 - r_vec_B/r_B**3)
 
     def current_density(self, xyz):
+        r"""Compute the current density for the static current-carrying wire segments.
+
+        If the wire is closed, there is no current density, but if it is an open
+        wire,
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray xyz
+            gridded locations at which we are calculating the current density
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            The current density y at each observation location in T.
+
+        """
         return self.sigma * self.electric_field(xyz)
 
 
