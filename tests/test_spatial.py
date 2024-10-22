@@ -249,7 +249,11 @@ def test_rotation(source_vector, target_vector, as_matrix):
         npt.assert_allclose(rot.apply(source_vector), target_vector, atol=atol)
         npt.assert_allclose(rot.apply(target_vector, inverse=True), source_vector, atol=atol)
 
-
+def test_rotation_errors():
+    with pytest.raises(ValueError, match="v0 shape should be.*"):
+        rotation_matrix_from_normals([0, 1, 2, 3], [0, 1, 3])
+    with pytest.raises(ValueError, match="v1 shape should be.*"):
+        rotation_matrix_from_normals([0, 1, 2], [0, 1, 3, 3])
 
 if __name__ == '__main__':
     unittest.main()
