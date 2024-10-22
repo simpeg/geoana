@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.special import ellipk, ellipe
-from scipy.spatial.transform import Rotation
 
 from ..base import BaseDipole, BaseMagneticDipole, BaseEM, BaseLineCurrent
 from ... import spatial
@@ -11,9 +10,8 @@ __all__ = [
     "MagneticPoleWholeSpace", "PointCurrentWholeSpace"
 ]
 
-from ...kernels import prism_fzx, prism_fzy
-from ...spatial import cartesian_2_cylindrical, cylindrical_2_cartesian, cylindrical_to_cartesian, \
-    cartesian_2_spherical, spherical_to_cartesian, cartesian_to_spherical, cartesian_to_cylindrical
+from ...kernels import prism_fzy
+from ...spatial import  cylindrical_to_cartesian, cartesian_to_cylindrical, rotation_matrix_from_normals
 
 
 class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
@@ -108,7 +106,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
 
         # orientation of the dipole
         if coordinates.lower() == "cylindrical":
-            xyz = spatial.cylindrical_2_cartesian(xyz)
+            xyz = spatial.cylindrical_to_cartesian(xyz)
 
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
@@ -117,7 +115,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
         a = self.moment * self.mu / (4 * np.pi * r**2) * np.cross(self.orientation, r_hat)
 
         if coordinates.lower() == "cylindrical":
-            a = spatial.cartesian_2_cylindrical(xyz, a)
+            a = spatial.cartesian_to_cylindrical(xyz, a)
 
         return a
 
@@ -205,7 +203,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
         xyz = check_xyz_dim(xyz)
 
         if coordinates.lower() == "cylindrical":
-            xyz = spatial.cylindrical_2_cartesian(xyz)
+            xyz = spatial.cylindrical_to_cartesian(xyz)
 
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
@@ -216,7 +214,7 @@ class MagneticDipoleWholeSpace(BaseEM, BaseMagneticDipole):
         )
 
         if coordinates.lower() == "cylindrical":
-            b = spatial.cartesian_2_cylindrical(xyz, b)
+            b = spatial.cartesian_to_cylindrical(xyz, b)
 
         return b
 
@@ -349,7 +347,7 @@ class MagneticPoleWholeSpace(BaseEM, BaseMagneticDipole):
         xyz = check_xyz_dim(xyz)
 
         if coordinates.lower() == "cylindrical":
-            xyz = spatial.cylindrical_2_cartesian(xyz)
+            xyz = spatial.cylindrical_to_cartesian(xyz)
 
         r_vec = xyz - self.location
         r = np.linalg.norm(r_vec, axis=-1, keepdims=True)
@@ -358,7 +356,7 @@ class MagneticPoleWholeSpace(BaseEM, BaseMagneticDipole):
         b = self.moment * self.mu / (4 * np.pi * r ** 2) * r_hat
 
         if coordinates.lower() == "cylindrical":
-            b = spatial.cartesian_2_cylindrical(xyz, b)
+            b = spatial.cartesian_to_cylindrical(xyz, b)
 
         return b
 
@@ -572,15 +570,15 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         # convert coordinates if not cartesian
         if coordinates.lower() == "cylindrical":
-            xyz = spatial.cylindrical_2_cartesian(xyz)
+            xyz = spatial.cylindrical_to_cartesian(xyz)
 
         # define a rotation matrix that rotates my orientation to z:
-        rot, _ = Rotation.align_vectors(np.array([0, 0, 1]), self.orientation)
+        rot = rotation_matrix_from_normals(self.orientation, [0, 0, 1], as_matrix=False)
 
         # rotate the points
         r_vec = rot.apply(xyz.reshape(-1, 3) - self.location)
 
-        r_cyl = cartesian_2_cylindrical(r_vec)
+        r_cyl = cartesian_to_cylindrical(r_vec)
 
         rho = r_cyl[..., 0]
         z = r_cyl[..., 2]
@@ -632,7 +630,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
         A = rot.apply(A, inverse=True).reshape(xyz.shape)
 
         if coordinates.lower() == "cylindrical":
-            A = spatial.cartesian_2_cylindrical(xyz, A)
+            A = spatial.cartesian_to_cylindrical(xyz, A)
 
         return A
 
@@ -704,7 +702,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         # convert coordinates if not cartesian
         if coordinates.lower() == "cylindrical":
-            xyz = spatial.cylindrical_2_cartesian(xyz)
+            xyz = spatial.cylindrical_to_cartesian(xyz)
         elif coordinates.lower() != "cartesian":
             raise TypeError(
                 f"coordinates must be 'cartesian' or 'cylindrical', the coordinate "
@@ -712,7 +710,7 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
             )
 
         # define a rotation matrix that rotates my orientation to z:
-        rot, _ = Rotation.align_vectors(np.array([0, 0, 1]), self.orientation)
+        rot = rotation_matrix_from_normals(self.orientation, [0, 0, 1], as_matrix=False)
 
         # rotate the points
         r_vec = rot.apply(xyz.reshape(-1, 3) - self.location)
@@ -873,7 +871,7 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
 
             # find the rotation from the line segments orientation
             # to the x_hat direction.
-            rot, _ = Rotation.align_vectors([1, 0, 0], l_hat.reshape(-1, 3))
+            rot = rotation_matrix_from_normals(l_hat, [1, 0, 0], as_matrix=False)
 
             # shift and rotate the grid points
             r0_vec = rot.apply(xyz.reshape(-1, 3) - p0).reshape(xyz.shape)
@@ -1006,7 +1004,7 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
 
             # find the rotation from the line segments orientation
             # to the x_hat direction.
-            rot, _ = Rotation.align_vectors([1, 0, 0], l_hat)
+            rot = rotation_matrix_from_normals(l_hat, [1, 0, 0], as_matrix=False)
 
             # shift and rotate the grid points
             r0_vec = rot.apply(xyz.reshape(-1, 3) - p0).reshape(xyz.shape)
@@ -1018,10 +1016,10 @@ class LineCurrentWholeSpace(BaseLineCurrent, BaseEM):
             r0_hat = r0_vec / r0
             r1_hat = r1_vec / r1
 
-            cyl_points = cartesian_2_cylindrical(r0_vec[..., 1:])
+            cyl_points = cartesian_to_cylindrical(r0_vec[..., 1:])
 
             temp_storage[..., 1] = (r1_hat[..., 0] - r0_hat[..., 0])/cyl_points[..., 0]
-            temp_storage[..., 1:] = cylindrical_2_cartesian(cyl_points, temp_storage)
+            temp_storage[..., 1:] = cylindrical_to_cartesian(cyl_points, temp_storage)
 
             # the undo the local rotation...
             out += rot.apply(temp_storage.reshape(-1, 3), inverse=True).reshape(xyz.shape)

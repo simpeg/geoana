@@ -5,6 +5,7 @@ import numpy as np
 import numpy.testing as npt
 from geoana import utils
 from geoana import spatial
+from geoana.spatial import rotation_matrix_from_normals
 
 
 def test_errors():
@@ -208,6 +209,51 @@ class TestCoordinates(unittest.TestCase):
         np.testing.assert_equal(s2c, spatial.spherical_to_cartesian(grid, vec))
         np.testing.assert_equal(c2s, spatial.cartesian_to_spherical(grid, vec))
 
+@pytest.mark.parametrize(
+    'source_vector',
+    [
+        [0, 0, 1],
+        [0, 1, 0],
+        [1, 0, 0],
+        [0, 0, -1],
+        [0, -1, 0],
+        [-1, 0, 0],
+        [2/np.sqrt(5), 0, 1/np.sqrt(5)],
+        [2/np.sqrt(6), 1/np.sqrt(6), 1/np.sqrt(6)],
+        [-2/np.sqrt(6), -1/np.sqrt(6), -1/np.sqrt(6)],
+     ],
+)
+@pytest.mark.parametrize(
+    'target_vector',
+    [
+        [0, 0, 1],
+        [0, 1, 0],
+        [1, 0, 0],
+        [0, 0, -1],
+        [0, -1, 0],
+        [-1, 0, 0],
+        [2/np.sqrt(5), 0, 1/np.sqrt(5)],
+        [2/np.sqrt(6), 1/np.sqrt(6), 1/np.sqrt(6)],
+        [-2/np.sqrt(6), -1/np.sqrt(6), -1/np.sqrt(6)],
+     ],
+)
+@pytest.mark.parametrize('as_matrix', [True, False])
+def test_rotation(source_vector, target_vector, as_matrix):
+
+    rot = rotation_matrix_from_normals(source_vector, target_vector, as_matrix=as_matrix)
+    atol = 1E-15
+    if as_matrix:
+        npt.assert_allclose(rot @ source_vector, target_vector, atol=atol)
+        npt.assert_allclose(rot.T @ target_vector, source_vector, atol=atol)
+    else:
+        npt.assert_allclose(rot.apply(source_vector), target_vector, atol=atol)
+        npt.assert_allclose(rot.apply(target_vector, inverse=True), source_vector, atol=atol)
+
+def test_rotation_errors():
+    with pytest.raises(ValueError, match="v0 shape should be.*"):
+        rotation_matrix_from_normals([0, 1, 2, 3], [0, 1, 3])
+    with pytest.raises(ValueError, match="v1 shape should be.*"):
+        rotation_matrix_from_normals([0, 1, 2], [0, 1, 3, 3])
 
 if __name__ == '__main__':
     unittest.main()
