@@ -24,10 +24,10 @@ def circle_loop():
 
 @pytest.fixture()
 def xyz():
-    nx, ny, nz = (11, 13, 9)
-    x = np.linspace(-100, 100, nx)
-    y = np.linspace(-90, 90, ny)
-    z = np.linspace(-80, 80, nz)
+    nx, ny, nz = (32, 32, 32)
+    x = np.linspace(-50, 50, nx)
+    y = np.linspace(-50, 50, ny)
+    z = np.linspace(-50, 50, nz)
     xyz = np.meshgrid(x, y, z)
     return xyz
 
@@ -87,8 +87,5 @@ def test_circular_loop(circle_loop, orient, method, xyz):
     test = getattr(circle_loop, method)(xyz)
     other = getattr(loop_approx, method)(xyz)
 
-    atol = 1E-16
-    if method == 'magnetic_field':
-        atol /= mu_0
 
-    npt.assert_allclose(test, other, rtol=1E-3, atol=atol)
+    npt.assert_allclose(test, other, rtol=1E-3, atol=1E-20)

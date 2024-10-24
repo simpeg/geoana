@@ -597,10 +597,8 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         A_cyl = np.zeros_like(r_vec)
 
-        # when rho is small relative to the radius and z, k_sq -> 0
-        # this is unstable so use a small argument approximation.
-        # check k_sq for the relative sizes
-        small_rho = k_sq < 1E-3
+        # when rho is small relative to the radius and z
+        small_rho = rho**2/(a**2 + z**2) < 1E-6
 
         temp = np.sqrt(a**2 + z[small_rho]**2)
         A_cyl[small_rho, 1] = np.pi * C * (
@@ -731,10 +729,8 @@ class CircularLoopWholeSpace(BaseEM, BaseDipole):
 
         B_cyl = np.zeros_like(r_cyl)
 
-        # when rho is small relative to the radius and z, k_sq -> 0
-        # this is unstable so use a small argument approximation.
-        # check k_sq for the relative sizes
-        small_rho = k_sq < 1E-3
+        # when rho is small relative to the radius and z
+        small_rho = rho**2/(a**2 + z**2) < 1E-6
 
         temp = np.sqrt(a**2 + z[small_rho]**2)
         B_cyl[small_rho, 0] = 3 * C * np.pi * a**2 * z[small_rho] * (
