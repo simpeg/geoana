@@ -103,6 +103,7 @@ jobs:
     name: Create Release
     needs: [
       build_wheels,
+      build_sdist,
       pure_python
     ]
     runs-on: ubuntu-latest
