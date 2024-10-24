@@ -563,8 +563,8 @@ def rotation_matrix_from_normals(v0, v1, tol=1e-20, as_matrix=True):
         The rotation matrix from v0 to v1, whose type depends on the `as_matrix` parameter.
     """
 
-    v0 = np.asarray(v0, dtype=float, copy=True).squeeze()
-    v1 = np.asarray(v1, dtype=float, copy=True).squeeze()
+    v0 = np.asarray(v0, dtype=float).copy().squeeze()
+    v1 = np.asarray(v1, dtype=float).copy().squeeze()
 
     if v0.shape != (3, ):
         raise ValueError(f"v0 shape should be (3,), got {v0.shape}")
