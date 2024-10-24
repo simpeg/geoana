@@ -27,6 +27,20 @@ jobs:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build sdist
+        run: pipx run build --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-sdist
+          path: dist/*.tar.gz
+
   # Don't upload this one to pypi, otherwise it will be preferred over every compiled one
   # We can host it here on github though for those that need it (re: jupyter-light).
   pure_python:
@@ -51,7 +65,7 @@ jobs:
           path: ./dist/geoana*.whl
 
   distribute:
-    name: distribute source and documentation
+    name: Distribute documentation
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -67,15 +81,6 @@ jobs:
         environment-file: .github/environment_ci.yml
         activate-environment: geoana-test
         python-version: "3.11"
-    - name: Prepare source distribution
-      run: |
-        python -m build --no-isolation --skip-dependency-check --sdist .
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
-        skip_existing: true
     - name: Install Our Package
       run: |
         pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
@@ -106,10 +111,11 @@ jobs:
         shell: bash -l {0}
     steps:
     - uses: actions/download-artifact@v4
-      name: Retrieve assets
       with:
-        name: artifact
+        # unpacks all CIBW artifacts into dist/
+        pattern: cibw-*
         path: dist
+        merge-multiple: true
     - name: Release to github
       uses: softprops/action-gh-release@v1
       with:
