@@ -64,6 +64,7 @@ jobs:
         with:
           path: ./dist/geoana*.whl
 
+
   distribute:
     name: Distribute documentation
     runs-on: ubuntu-latest
