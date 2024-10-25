@@ -1,0 +1,6 @@
+geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic\_flux\_time\_derivative
+===============================================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: VerticalMagneticDipoleHalfSpace.magnetic_flux_time_derivative

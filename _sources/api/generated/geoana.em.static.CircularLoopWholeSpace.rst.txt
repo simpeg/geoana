@@ -1,0 +1,45 @@
+﻿geoana.em.static.CircularLoopWholeSpace
+=======================================
+
+.. currentmodule:: geoana.em.static
+
+.. inheritance-diagram:: CircularLoopWholeSpace
+    :parts: 1
+
+.. autoclass:: CircularLoopWholeSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         CircularLoopWholeSpace.cross_orientation
+         CircularLoopWholeSpace.distance
+         CircularLoopWholeSpace.dot_orientation
+         CircularLoopWholeSpace.magnetic_field
+         CircularLoopWholeSpace.magnetic_flux_density
+         CircularLoopWholeSpace.vector_distance
+         CircularLoopWholeSpace.vector_potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         CircularLoopWholeSpace.current
+         CircularLoopWholeSpace.epsilon
+         CircularLoopWholeSpace.location
+         CircularLoopWholeSpace.mu
+         CircularLoopWholeSpace.orientation
+         CircularLoopWholeSpace.radius
+         CircularLoopWholeSpace.rho
+         CircularLoopWholeSpace.sigma
+  
+  
+
+.. minigallery:: geoana.em.static.CircularLoopWholeSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.static.CircularLoopWholeSpace``
+    :heading-level: -

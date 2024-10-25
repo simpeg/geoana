@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.sigma
+=============================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: ElectricDipoleWholeSpace.sigma

@@ -1,0 +1,6 @@
+geoana.em.BaseEM.mu
+===================
+
+.. currentmodule:: geoana.em
+
+.. autoproperty:: BaseEM.mu

@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.mu
+====================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: TransientPlaneWave.mu

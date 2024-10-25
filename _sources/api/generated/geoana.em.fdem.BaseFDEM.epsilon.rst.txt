@@ -1,0 +1,6 @@
+geoana.em.fdem.BaseFDEM.epsilon
+===============================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: BaseFDEM.epsilon

@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.magnetic\_field\_time\_deriv
+====================================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: ElectricDipoleWholeSpace.magnetic_field_time_deriv

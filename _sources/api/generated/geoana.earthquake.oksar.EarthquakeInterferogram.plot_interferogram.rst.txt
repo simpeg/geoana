@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.plot\_interferogram
+===================================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. automethod:: EarthquakeInterferogram.plot_interferogram

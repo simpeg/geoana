@@ -1,0 +1,7 @@
+<map id="inheritanced5b33e3939" name="inheritanced5b33e3939">
+<area shape="rect" id="node1" href="geoana.em.BaseDipole.html#geoana.em.BaseDipole" target="_top" title="Base class for dipoles; namely the location and orientation." alt="" coords="5,5,101,33"/>
+<area shape="rect" id="node3" href="geoana.em.BaseMagneticDipole.html#geoana.em.BaseMagneticDipole" target="_top" title="Base class for magnetic dipoles." alt="" coords="149,5,304,33"/>
+<area shape="rect" id="node2" href="geoana.em.BaseEM.html#geoana.em.BaseEM" target="_top" title="Base electromagnetics class." alt="" coords="16,57,90,85"/>
+<area shape="rect" id="node4" href="geoana.em.tdem.BaseTDEM.html#geoana.em.tdem.BaseTDEM" target="_top" title="Base time domain electromagnetic class" alt="" coords="181,57,272,85"/>
+<area shape="rect" id="node5" href="#geoana.em.tdem.VerticalMagneticDipoleHalfSpace" target="_top" title="Transient of a vertical magnetic dipole in a half space." alt="" coords="352,32,590,60"/>
+</map>

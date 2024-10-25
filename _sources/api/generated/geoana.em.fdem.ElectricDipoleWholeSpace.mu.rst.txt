@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.mu
+==========================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: ElectricDipoleWholeSpace.mu

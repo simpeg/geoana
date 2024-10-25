@@ -1,0 +1,6 @@
+geoana.em.tdem.BaseTDEM.rho
+===========================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: BaseTDEM.rho

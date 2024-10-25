@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.plot\_mask
+==========================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. automethod:: EarthquakeInterferogram.plot_mask

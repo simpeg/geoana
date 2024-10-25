@@ -1,0 +1,6 @@
+geoana.em.static.MagnetostaticSphere.magnetic\_field
+====================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: MagnetostaticSphere.magnetic_field

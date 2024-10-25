@@ -1,0 +1,6 @@
+geoana.em.static.MagneticDipoleWholeSpace.moment
+================================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagneticDipoleWholeSpace.moment

@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.vector\_potential
+=========================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: ElectricDipoleWholeSpace.vector_potential

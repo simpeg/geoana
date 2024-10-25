@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.magnetic\_flux\_density
+===============================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: ElectricDipoleWholeSpace.magnetic_flux_density

@@ -1,0 +1,6 @@
+geoana.gravity.Sphere.gravitational\_gradient
+=============================================
+
+.. currentmodule:: geoana.gravity
+
+.. automethod:: Sphere.gravitational_gradient

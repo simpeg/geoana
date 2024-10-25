@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPoleWholeSpace.orientation
+===================================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagneticPoleWholeSpace.orientation

@@ -1,0 +1,7 @@
+<map id="inheritance92dc9f9f52" name="inheritance92dc9f9f52">
+<area shape="rect" id="node1" href="geoana.em.BaseDipole.html#geoana.em.BaseDipole" target="_top" title="Base class for dipoles; namely the location and orientation." alt="" coords="5,5,101,33"/>
+<area shape="rect" id="node3" href="geoana.em.BaseElectricDipole.html#geoana.em.BaseElectricDipole" target="_top" title="Base class for electric current dipoles." alt="" coords="149,5,292,33"/>
+<area shape="rect" id="node2" href="geoana.em.BaseEM.html#geoana.em.BaseEM" target="_top" title="Base electromagnetics class." alt="" coords="16,57,90,85"/>
+<area shape="rect" id="node4" href="geoana.em.fdem.BaseFDEM.html#geoana.em.fdem.BaseFDEM" target="_top" title="Base frequency domain electromagnetic class" alt="" coords="175,57,266,85"/>
+<area shape="rect" id="node5" href="#geoana.em.fdem.ElectricDipoleWholeSpace" target="_top" title="Class for simulating the fields and fluxes for a harmonic electric dipole in a wholespace." alt="" coords="340,32,531,60"/>
+</map>

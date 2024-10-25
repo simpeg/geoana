@@ -1,0 +1,6 @@
+geoana.em.static.LineCurrentFreeSpace.epsilon
+=============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: LineCurrentFreeSpace.epsilon

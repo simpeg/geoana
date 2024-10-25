@@ -1,0 +1,6 @@
+geoana.em.fdem.BaseFDEM.frequency
+=================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: BaseFDEM.frequency

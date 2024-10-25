@@ -1,0 +1,6 @@
+geoana.em.static.DipoleHalfSpace.potential
+==========================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: DipoleHalfSpace.potential

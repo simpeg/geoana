@@ -1,0 +1,6 @@
+geoana.em.static.CircularLoopWholeSpace.orientation
+===================================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: CircularLoopWholeSpace.orientation

@@ -1,0 +1,10 @@
+﻿geoana.spatial.repeat\_scalar
+=============================
+
+.. currentmodule:: geoana.spatial
+
+.. autofunction:: repeat_scalar
+
+.. minigallery:: geoana.spatial.repeat_scalar
+    :add-heading: Galleries and Tutorials using ``geoana.spatial.repeat_scalar``
+    :heading-level: -

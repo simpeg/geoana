@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.electric\_field
+=======================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: ElectricDipoleWholeSpace.electric_field

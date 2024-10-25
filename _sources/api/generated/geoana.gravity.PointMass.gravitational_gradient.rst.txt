@@ -1,0 +1,6 @@
+geoana.gravity.PointMass.gravitational\_gradient
+================================================
+
+.. currentmodule:: geoana.gravity
+
+.. automethod:: PointMass.gravitational_gradient

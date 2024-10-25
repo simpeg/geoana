@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.epsilon
+=========================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: TransientPlaneWave.epsilon

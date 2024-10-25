@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.diffusion\_distance
+===========================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: ElectricDipoleWholeSpace.diffusion_distance

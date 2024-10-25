@@ -1,0 +1,6 @@
+geoana.gravity.Prism.rho
+========================
+
+.. currentmodule:: geoana.gravity
+
+.. autoproperty:: Prism.rho

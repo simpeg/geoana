@@ -1,0 +1,10 @@
+﻿geoana.em.tdem.peak\_time
+=========================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autofunction:: peak_time
+
+.. minigallery:: geoana.em.tdem.peak_time
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.peak_time``
+    :heading-level: -

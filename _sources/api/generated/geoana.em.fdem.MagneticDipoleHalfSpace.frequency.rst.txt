@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleHalfSpace.frequency
+================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: MagneticDipoleHalfSpace.frequency

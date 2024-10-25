@@ -1,0 +1,6 @@
+geoana.em.BaseMagneticDipole.distance
+=====================================
+
+.. currentmodule:: geoana.em
+
+.. automethod:: BaseMagneticDipole.distance

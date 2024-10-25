@@ -1,0 +1,6 @@
+geoana.gravity.PointMass.gravitational\_potential
+=================================================
+
+.. currentmodule:: geoana.gravity
+
+.. automethod:: PointMass.gravitational_potential

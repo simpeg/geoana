@@ -1,0 +1,6 @@
+geoana.em.static.CircularLoopWholeSpace.sigma
+=============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: CircularLoopWholeSpace.sigma

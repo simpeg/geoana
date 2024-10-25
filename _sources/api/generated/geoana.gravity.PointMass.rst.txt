@@ -1,0 +1,35 @@
+﻿geoana.gravity.PointMass
+========================
+
+.. currentmodule:: geoana.gravity
+
+.. inheritance-diagram:: PointMass
+    :parts: 1
+
+.. autoclass:: PointMass
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         PointMass.gravitational_field
+         PointMass.gravitational_gradient
+         PointMass.gravitational_potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         PointMass.location
+         PointMass.mass
+  
+  
+
+.. minigallery:: geoana.gravity.PointMass
+    :add-heading: Galleries and Tutorials using ``geoana.gravity.PointMass``
+    :heading-level: -

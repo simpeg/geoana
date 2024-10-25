@@ -1,0 +1,10 @@
+﻿geoana.utils.check\_xyz\_dim
+============================
+
+.. currentmodule:: geoana.utils
+
+.. autofunction:: check_xyz_dim
+
+.. minigallery:: geoana.utils.check_xyz_dim
+    :add-heading: Galleries and Tutorials using ``geoana.utils.check_xyz_dim``
+    :heading-level: -
