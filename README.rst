@@ -70,7 +70,7 @@ To install from source, you can
 .. code::
 
     git clone https://github.com/simpeg/geoana.git
-    python setup.py install
+    pip install .
 
 .. _license:
 
