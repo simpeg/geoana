@@ -68,20 +68,20 @@ if __name__ == "__main__":
 
     py_vers = os.environ.get("PYTHON_VERSION", "3.11")
     is_free_threaded = os.environ.get("FREE_THREADED", "false").lower() == "true"
-    is_doctest = os.environ.get("DOCTEST", "false").lower() == "true"
-    with_numba = os.environ.get("WITH_NUMBA", "false").lower() == "true"
+    no_doctest = os.environ.get("NO_DOCTEST", "false").lower() == "true"
+    no_numba = os.environ.get("NO_NUMBA", "false").lower() == "true"
     env_name = os.environ.get("ENV_NAME", "geoana_env")
 
     skips = ["all"]
-    if not with_numba:
+    if no_numba:
         skips.append("jittable")
-    if not is_doctest:
+    if no_doctest:
         skips.append("doc")
 
     deps = parse_pyproject(pyproject_path, optional_sections_to_skip=skips)
     env_data = create_env_yaml(deps, name=env_name, python_version=py_vers, free_threaded=is_free_threaded)
 
-    out_name = ".github/environment_ci.yml"
+    out_name = "environment_ci.yml"
     with open(out_name, "w") as f:
         yaml.safe_dump(env_data, f, sort_keys=False)
 

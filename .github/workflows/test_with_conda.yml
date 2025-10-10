@@ -42,12 +42,12 @@ jobs:
       run: |
         python -m pip install pyyaml
         python .github/make_ci_environ.py
-      with:
-        python-version: ${{ matrix.python-version }}
-        free-threaded: ${{ matrix.free-threaded }}
-        no_doctest: ${{ matrix.no_doctest || false }}
-        no_numba: ${{ matrix.no_numba || false }}
-        env_name: geoana-test
+      env:
+        PYTHON_VERSION: ${{ matrix.python-version}}
+        FREE_THREADED: ${{ matrix.free-threaded && 'true' || 'false' }}
+        NO_DOCTEST: ${{ matrix.no_doctest && 'true' || 'false' }}
+        NO_NUMBA: ${{ matrix.no_numba && 'true' || 'false' }}
+        ENV_NAME: geoana-test
 
 
     - name: Setup Conda
