@@ -12,7 +12,7 @@ print(get_version())'''
     check: true
 ).stdout().strip(),
   license: 'MIT',
-  meson_version: '>= 1.1.0',
+  meson_version: '>= 1.4.0',
   default_options: [
     'buildtype=debugoptimized',
     'b_ndebug=if-release',
