@@ -52,7 +52,7 @@ def create_env_yaml(deps, name="env", python_version=None, free_threaded=False):
 
     if python_version:
         if free_threaded:
-            dependencies.insert(0, f"python-threading={python_version}")
+            dependencies.insert(0, f"python-freethreading={python_version}")
         dependencies.insert(0, f"python={python_version}")
 
     return {

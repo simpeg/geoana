@@ -69,7 +69,7 @@ jobs:
 
     - name: Run Tests
       run: |
-        pytest tests --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning -k ${{ matrix.freethreading && '"not docs"'|| ''}}
+        pytest tests --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning ${{ matrix.no_doctest && ' -k "not docs"'|| ''}}
 
     - name: "Upload coverage to Codecov"
       if: matrix.python-version == '3.11'
