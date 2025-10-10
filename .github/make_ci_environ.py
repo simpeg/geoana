@@ -72,7 +72,7 @@ if __name__ == "__main__":
     env_name = os.environ.get("ENV_NAME", "geoana_env")
 
     skips = ["all"]
-    if no_numba:
+    if no_numba or is_free_threaded:
         skips.append("jittable")
     if no_doc:
         skips.append("doc")
