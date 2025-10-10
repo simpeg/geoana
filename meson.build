@@ -1,6 +1,5 @@
 project(
   'geoana',
-  'c', 'cpp', 'cython',
   # Note that the git commit hash cannot be added dynamically here
   # (it is dynamically generated though setuptools_scm)
   version: run_command('python',
@@ -29,6 +28,7 @@ py = py_mod.find_installation(pure: not with_extensions)
 py_dep = py.dependency()
 
 if with_extensions
+    add_languages('c', 'cpp', 'cython')
     cc = meson.get_compiler('c')
     cpp = meson.get_compiler('cpp')
     cy = meson.get_compiler('cython')
