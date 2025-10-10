@@ -13,6 +13,12 @@ jobs:
       matrix:
         os: ["ubuntu-latest"]
         python-version: ["3.11", "3.12", "3.13", "3.14"]
+        free-threaded: [false, true]
+        exclude:
+          - python-version: "3.11"
+            free-threaded: true
+          - python-version: "3.12"
+            free-threaded: true
 
     steps:
     - uses: actions/checkout@v5
@@ -26,6 +32,11 @@ jobs:
         environment-file: .github/environment_ci.yml
         activate-environment: geoana-test
         python-version: ${{ matrix.python-version }}
+      
+    - name: install free-threaded python
+      if: matrix.free-threaded
+      run: |
+        conda install --yes -c conda-forge python-t=${{ matrix.python-version }}
 
     - name: Install numba
       # numba does not support py3.14 yet
