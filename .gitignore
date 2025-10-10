@@ -110,3 +110,5 @@ geoana/version.py
 .idea/
 
 .vscode/
+
+environment_ci.yml
