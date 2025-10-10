@@ -24,7 +24,3 @@ class TestOksar(unittest.TestCase):
         # compare against fortran code.
         true = np.array([0.427051, -0.090772, 0.899660])
         np.testing.assert_allclose(true, LOS, rtol=1E-5)
-
-
-if __name__ == '__main__':
-    unittest.main()

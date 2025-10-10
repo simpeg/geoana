@@ -69,6 +69,7 @@ test = [
     "pytest-cov",
     "sympy",
     "discretize",
+    "requests",
     "geoana[doc,all]",
 ]
 build = [
