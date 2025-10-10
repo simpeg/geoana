@@ -1,6 +1,7 @@
 # distutils: language=c++
 # cython: language_level=3
 # cython: embedsignature=True
+# cython: freethreading_compatible = True
 import numpy as np
 cimport numpy as np
 cimport cython
@@ -112,8 +113,9 @@ def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     if n_layers > 1:
         h_p = &hs[0]
 
-    rTE(out_p, &f[0], &lam[0], sig_p, &c_mu[0, 0], h_p,
-          n_frequency, n_filter, n_layers)
+    with nogil:
+        rTE(out_p, &f[0], &lam[0], sig_p, &c_mu[0, 0], h_p,
+            n_frequency, n_filter, n_layers)
 
     return np.array(out)
 
@@ -200,7 +202,8 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
         h_p = &hs[0]
         gh_p = <complex_t *> &gh[0, 0, 0]
 
-    rTEgrad(gsig_p, gmu_p, gh_p, &f[0], &lam[0], sig_p, &c_mu[0, 0], h_p,
-          n_frequency, n_filter, n_layers)
+    with nogil:
+        rTEgrad(gsig_p, gmu_p, gh_p, &f[0], &lam[0], sig_p, &c_mu[0, 0], h_p,
+            n_frequency, n_filter, n_layers)
 
     return np.array(gsig), np.array(gh), np.array(gmu)

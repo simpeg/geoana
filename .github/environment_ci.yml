@@ -7,7 +7,7 @@ dependencies:
   - libdlf
 
   # optionals
-  - matplotlib
+  - matplotlib-base
   - utm
 
   # documentation

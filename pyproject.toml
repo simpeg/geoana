@@ -3,7 +3,7 @@
 build-backend = 'mesonpy'
 requires = [
     "meson-python>=0.15.0",
-    "Cython>=3.0.8",
+    "Cython>=3.1.0",
     "setuptools_scm[toml]>=6.2",
     "numpy>=2.0.0rc1",
 ]
@@ -13,7 +13,7 @@ name = 'geoana'
 dynamic = ["version"]
 description = 'Analytic expressions for geophysical responses'
 readme = 'README.rst'
-requires-python = '>=3.10'
+requires-python = '>=3.11'
 authors = [
   {name = 'SimPEG developers', email = 'lindseyheagy@gmail.com'},
 ]
@@ -26,7 +26,7 @@ keywords = [
 #     https://scipy.github.io/devdocs/dev/core-dev/index.html#version-ranges-for-numpy-and-other-dependencies
 dependencies = [
     "numpy>=1.22.4",
-    "scipy>=1.8",
+    "scipy>=1.12",
     "libdlf",
 ]
 classifiers = [
@@ -55,10 +55,10 @@ extras = ["utm"]
 jittable = ["numba"]
 all = ["geoana[plot,extras,jittable]"]
 doc = [
-    "sphinx!=4.1.0",
-    "pydata-sphinx-theme==0.15.4",
-    "sphinx-gallery>=0.1.13",
-    "numpydoc>=1.5",
+    "sphinx==8.1.3",
+    "pydata-sphinx-theme==0.16.1",
+    "sphinx-gallery==0.19.0",
+    "numpydoc==1.9.0",
     "discretize",
     "jupyter",
     "graphviz",
@@ -71,11 +71,11 @@ test = [
     "geoana[doc,all]",
 ]
 build = [
-    "meson-python>=0.14.0",
+    "meson-python>=0.15.0",
     "meson",
     "ninja",
-    "numpy>=1.22.4",
-    "cython>=0.29.35",
+    "numpy>=2.0.0rc1",
+    "cython>=3.1.0",
     "setuptools_scm",
 ]
 
@@ -89,9 +89,9 @@ Repository = 'https://github.com/simpeg/geoana.git'
 [tool.cibuildwheel]
 # skip building wheels for python 3.6, 3.7, all pypy versions, and specialty linux
 # processors (still does arm builds though).
-# skip windows 32bit
-skip = "cp36-* cp37-* cp38-* cp39-* pp* *_ppc64le *_i686 *_s390x *-win32 cp38-musllinux_* *-musllinux_aarch64"
-build-verbosity = "3"
+skip = "cp38-* cp39-* cp310-* *_ppc64le *_i686 *_s390x *-win32 cp310-win_arm64"
+build-verbosity = 3
+enable = ["cpython-freethreading"]
 
 # test importing geoana to make sure externals are loadable.
 test-command = 'python -c "import geoana; geoana.show_config()"'
@@ -115,4 +115,34 @@ filterwarnings = [
     'ignore::numpy.exceptions.ComplexWarning'
 ]
 
+
+
+[tool.coverage.run]
+branch = true
+source = ["geoana"]
+# plugins = [
+#     "Cython.Coverage",
+# ]
+
+[tool.coverage.report]
+ignore_errors = false
+show_missing = true
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self\\.debug",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "AbstractMethodError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+]
 

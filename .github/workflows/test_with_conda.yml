@@ -1,12 +1,6 @@
 name: Testing With Conda
+on: [push, pull_request]
 
-on:
-  push:
-    branches:
-      - '*'
-  pull_request:
-    branches:
-      - '*'
 jobs:
   build_and_test:
     name: Testing (${{ matrix.python-version }}, ${{ matrix.os }})
@@ -18,10 +12,10 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
@@ -34,14 +28,12 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install numba
-      if: matrix.python-version != '3.13'
-      # Numba doesn't work on python 3.13 just yet:
       run: |
         conda install --yes -c conda-forge numba
 
       # Install discretize from it's repo until wheels/conda-forge built against numpy2.0 available:
     - name: Pull Discretize
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
         repository: 'simpeg/discretize'
