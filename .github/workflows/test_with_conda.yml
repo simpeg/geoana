@@ -28,21 +28,10 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install numba
+      # numba does not support py3.14 yet
+      if: matrix.python-version != '3.14'
       run: |
         conda install --yes -c conda-forge numba
-
-      # Install discretize from it's repo until wheels/conda-forge built against numpy2.0 available:
-    - name: Pull Discretize
-      uses: actions/checkout@v5
-      with:
-        fetch-depth: 0
-        repository: 'simpeg/discretize'
-        ref: 'main'
-        path: 'discretize'
-
-    - name: Install discretize
-      run: |
-        pip install ./discretize
 
     - name: Conda information
       run: |

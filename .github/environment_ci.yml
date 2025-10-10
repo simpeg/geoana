@@ -23,6 +23,7 @@ dependencies:
   - pytest
   - pytest-cov
   - sympy
+  - discretize
 
   # Building
   - pip
