@@ -1,8 +1,6 @@
 import tomllib
 from pathlib import Path
 import yaml
-from packaging.requirements import Requirement
-from packaging.version import Version, InvalidVersion
 import os
 
 def parse_pyproject(path: str, optional_sections_to_skip=None):
