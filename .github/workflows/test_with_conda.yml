@@ -36,7 +36,7 @@ jobs:
     - name: install free-threaded python
       if: matrix.free-threaded
       run: |
-        conda install --yes -c conda-forge python-t=${{ matrix.python-version }}
+        conda install --yes -c conda-forge python-freethreading=${{ matrix.python-version }}
 
     - name: Install numba
       # numba does not support py3.14 yet
