@@ -25,31 +25,5 @@ with_extensions = get_option('with_extensions')
 # https://mesonbuild.com/Python-module.html
 py_mod = import('python')
 py = py_mod.find_installation(pure: not with_extensions)
-py_dep = py.dependency()
-
-if with_extensions
-    add_languages('c', 'cpp', 'cython')
-    cc = meson.get_compiler('c')
-    cpp = meson.get_compiler('cpp')
-    cy = meson.get_compiler('cython')
-    # generator() doesn't accept compilers, only found programs - cast it.
-    cython = find_program(cy.cmd_array()[0])
-
-    _global_c_args = cc.get_supported_arguments(
-      '-Wno-unused-but-set-variable',
-      '-Wno-unused-function',
-      '-Wno-conversion',
-      '-Wno-misleading-indentation',
-    )
-    add_project_arguments(_global_c_args, language : 'c')
-
-    # We need -lm for all C code (assuming it uses math functions, which is safe to
-    # assume for SciPy). For C++ it isn't needed, because libstdc++/libc++ is
-    # guaranteed to depend on it.
-    m_dep = cc.find_library('m', required : false)
-    if m_dep.found()
-      add_project_link_arguments('-lm', language : 'c')
-    endif
-endif
 
 subdir('geoana')
