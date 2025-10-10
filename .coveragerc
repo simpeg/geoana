@@ -1,5 +1,0 @@
-[run]
-source = geoana
-plugins = Cython.Coverage
-omit =
-    */setup.py

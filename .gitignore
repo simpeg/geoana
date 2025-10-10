@@ -108,3 +108,7 @@ geoana/kernels/_extensions/potential_field_prism_api.h
 geoana/version.py
 
 .idea/
+
+.vscode/
+
+environment_ci.yml

@@ -5,7 +5,14 @@ from geoana.utils import ndgrid
 from geoana.em.static import MagneticDipoleWholeSpace
 from geoana.em.static import ElectrostaticSphere
 
+try:
+    import matplotlib
+    matplotlib.use('Agg')
+except ImportError:
+    matplotlib = None
 
+
+@pytest.mark.skipif(matplotlib is None, reason="matplotlib not installed")
 def test_plot_2d_data():
     xyz = np.array([np.linspace(-2, 2, 20), np.linspace(-2, 2, 20), np.linspace(-2, 2, 20)]).T
     location = np.r_[0., 0., 0.]

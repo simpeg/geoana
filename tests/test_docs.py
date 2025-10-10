@@ -1,8 +1,13 @@
 import os
-import unittest
-from sphinx.application import Sphinx
+import pytest
 
-class TestDoc(unittest.TestCase):
+try:
+    from sphinx.application import Sphinx
+except ImportError:
+    Sphinx = None
+
+@pytest.mark.skipif(Sphinx is None, reason="Sphinx not installed")
+class TestDoc():
 
     @property
     def path_to_docs(self):
@@ -22,7 +27,3 @@ class TestDoc(unittest.TestCase):
         doctree_dir = os.path.sep.join([src_dir, "_build", "doctree"])
         app = Sphinx(src_dir, config_dir, output_dir, doctree_dir, buildername="linkcheck", warningiserror=False)
         app.build()
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -1,3 +1,6 @@
+# cython: freethreading_compatible = True
+# cython: language_level=3
+# cython: embedsignature=True
 cimport cython
 
 from libc.math cimport sqrt, log, atan
