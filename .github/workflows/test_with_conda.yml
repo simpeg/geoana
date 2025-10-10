@@ -6,7 +6,7 @@ concurrency:
 
 jobs:
   build_and_test:
-    name: Testing (${{ matrix.python-version }}, ${{ matrix.os }})
+    name: Testing (${{ matrix.python-version }}${{ matrix.free-threaded && 't' || '' }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     defaults:
       run:
