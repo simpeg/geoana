@@ -31,9 +31,9 @@ def parse_pyproject(path: str, optional_sections_to_skip=None):
     deps.discard("geoana[plot,extras,jittable]")
 
     if "matplotlib" in deps:
-        deps.discard("matplotlib")
+        deps.remove("matplotlib")
         deps.add("matplotlib-base")
-    return sorted(deps)
+    return deps
 
 def create_env_yaml(deps, name="env", python_version=None, free_threaded=False):
     conda_pkgs = []
@@ -67,17 +67,19 @@ if __name__ == "__main__":
 
     py_vers = os.environ.get("PYTHON_VERSION", "3.11")
     is_free_threaded = os.environ.get("FREE_THREADED", "false").lower() == "true"
-    no_doctest = os.environ.get("NO_DOCTEST", "false").lower() == "true"
+    no_doc = os.environ.get("NO_DOC_BUILD", "false").lower() == "true"
     no_numba = os.environ.get("NO_NUMBA", "false").lower() == "true"
     env_name = os.environ.get("ENV_NAME", "geoana_env")
 
     skips = ["all"]
     if no_numba:
         skips.append("jittable")
-    if no_doctest:
+    if no_doc:
         skips.append("doc")
 
     deps = parse_pyproject(pyproject_path, optional_sections_to_skip=skips)
+    if is_free_threaded:
+        deps.discard("matplotlib-base")
     env_data = create_env_yaml(deps, name=env_name, python_version=py_vers, free_threaded=is_free_threaded)
 
     out_name = "environment_ci.yml"

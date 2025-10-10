@@ -19,7 +19,7 @@ jobs:
         free-threaded: [false, true]
         include:
           - free-threaded: true
-            no_doctest: true
+            no_doc: true
           - python-version: "3.14"
             no_numba: true
         exclude:
@@ -45,7 +45,7 @@ jobs:
       env:
         PYTHON_VERSION: ${{ matrix.python-version}}
         FREE_THREADED: ${{ matrix.free-threaded && 'true' || 'false' }}
-        NO_DOCTEST: ${{ matrix.no_doctest && 'true' || 'false' }}
+        NO_DOC_BUILD: ${{ matrix.no_doc && 'true' || 'false' }}
         NO_NUMBA: ${{ matrix.no_numba && 'true' || 'false' }}
         ENV_NAME: geoana-test
 
@@ -69,7 +69,7 @@ jobs:
 
     - name: Run Tests
       run: |
-        pytest tests --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning ${{ matrix.no_doctest && ' -k "not docs"'|| ''}}
+        pytest tests --cov-config=.coveragerc --cov=geoana --cov-report=xml -s -v -W ignore::DeprecationWarning ${{ matrix.NO_DOC_BUILD && ' -k "not docs"'|| ''}}
 
     - name: "Upload coverage to Codecov"
       if: matrix.python-version == '3.11'
