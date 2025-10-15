@@ -23,6 +23,11 @@ from geoana.utils import check_xyz_dim
 from geoana.shapes import BasePrism
 from geoana.kernels import prism_f, prism_fz, prism_fzx, prism_fzy, prism_fzz
 
+__all__ = [
+    "PointMass",
+    "Sphere",
+    "Prism",
+]
 
 class PointMass:
     """Class for gravitational solutions for a point mass.

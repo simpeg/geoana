@@ -7,7 +7,8 @@ from geoana.utils import check_xyz_dim
 
 __all__ = [
     "MagneticDipoleWholeSpace", "CircularLoopWholeSpace",
-    "MagneticPoleWholeSpace", "PointCurrentWholeSpace"
+    "MagneticPoleWholeSpace", "PointCurrentWholeSpace",
+    "LineCurrentWholeSpace"
 ]
 
 from ...kernels import prism_fzy

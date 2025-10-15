@@ -1,12 +1,18 @@
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
 
+__all__ = [
+    "BaseEM",
+    "BaseDipole",
+    "BaseElectricDipole",
+    "BaseMagneticDipole",
+    "BaseLineCurrent",
+]
 ###############################################################################
 #                                                                             #
 #                              Base Classes                                   #
 #                                                                             #
 ###############################################################################
-
 
 class BaseEM:
     """Base electromagnetics class.

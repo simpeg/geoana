@@ -6,6 +6,9 @@ from geoana.em.tdem.base import BaseTDEM
 from geoana.em.tdem.simple_functions import magnetic_field_vertical_magnetic_dipole, magnetic_field_time_deriv_magnetic_dipole
 from geoana.utils import check_xyz_dim
 
+__all__ = [
+    "VerticalMagneticDipoleHalfSpace",
+]
 
 class VerticalMagneticDipoleHalfSpace(BaseTDEM, BaseMagneticDipole):
     """Transient of a vertical magnetic dipole in a half space.

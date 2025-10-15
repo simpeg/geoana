@@ -1,12 +1,17 @@
 import numpy as np
 from scipy.constants import mu_0
 
+__all__ = [
+    "rTE_forward",
+    "rTE_gradient",
+]
+
 def _rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     """Compute reflection coefficients for Transverse Electric (TE) mode.
 
     The first layer is considered to be the top most layer. The last
-    layer is considered to have infinite thickness. All physical properties 
-    are defined starting from the top most layer. 
+    layer is considered to have infinite thickness. All physical properties
+    are defined starting from the top most layer.
 
     Parameters
     ----------
@@ -48,8 +53,8 @@ def _rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     """Compute reflection coefficients for Transverse Electric (TE) mode.
 
     The first layer is considered to be the top most layer. The last
-    layer is considered to have infinite thickness. All physical properties 
-    are defined starting from the top most layer. 
+    layer is considered to have infinite thickness. All physical properties
+    are defined starting from the top most layer.
 
     Parameters
     ----------

@@ -1,6 +1,10 @@
 import numpy as np
 from scipy.constants import mu_0
 
+__all__ = [
+    "vertical_magnetic_field_horizontal_loop",
+    "vertical_magnetic_flux_horizontal_loop",
+]
 
 def vertical_magnetic_field_horizontal_loop(
     frequencies, sigma=1.0, mu=mu_0, radius=1.0, current=1.0, turns=1, secondary=True

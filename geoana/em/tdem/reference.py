@@ -7,6 +7,13 @@ as few modifications as possible, of specific equations from Ward and Hohmann.
 from scipy.special import erf, ive, iv
 import numpy as np
 
+__all__ = [
+    "hz_from_vert_4_69a",
+    "dhz_from_vert_4_70",
+    "hp_from_vert_4_72",
+    "dhp_from_vert_4_74",
+]
+
 def hz_from_vert_4_69a(m, theta, rho):
     front = m / (4 * np.pi * rho**3)
     tp = theta * rho

@@ -15,6 +15,9 @@ from geoana.kernels import (
     prism_fxyz,
 )
 
+__all__ = [
+    "MagneticPrism",
+]
 
 class MagneticPrism(BasePrism):
     """Class for magnetic field solutions for a prism.

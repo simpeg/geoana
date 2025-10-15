@@ -83,30 +83,35 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: "3.13"
-    
+
     - name: Create Conda environment file
       run: |
         python -m pip install pyyaml
         python .github/make_ci_environ.py
       env:
         PYTHON_VERSION: "3.13"
+        FREE_THREADED: false
+        NO_DOC_BUILD: false
+        NO_NUMBA: true
         ENV_NAME: geoana-test
-        NO_NUMBA: "true"
 
     - name: Setup Conda
       uses: conda-incubator/setup-miniconda@v3
       with:
         auto-update-conda: true
-        environment-file: .github/environment_ci.yml
-        activate-environment: geoana-test 
+        environment-file: environment_ci.yml
+        activate-environment: geoana-test
+
     - name: Install Our Package
       run: |
         pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
+
     - name: Build documentation
       run: |
         cd docs
         make html
         cd ..
+
     - name: GitHub Pages
       uses: crazy-max/ghaction-github-pages@v2.5.0
       with:
@@ -136,14 +141,17 @@ jobs:
         pattern: cibw-*
         path: dist
         merge-multiple: true
+
     - name: Release to github
       uses: softprops/action-gh-release@v1
       with:
         files: dist/*
         generate_release_notes: true
         prerelease: false
+
     - name: Remove anywheel before pypi upload
       run: rm -f dist/geoana*none-any.whl
+
     - name: Upload wheels to pypi
       uses: pypa/gh-action-pypi-publish@release/v1
       with:

@@ -8,24 +8,48 @@ The ``geoana.spatial`` module provides rudimentary functions for vectors and
 functions for converting between Cartesian, cylindrical and spherical coordinates.
 
 
+Coordinate Transformations
+====================
 .. autosummary::
   :toctree: generated/
 
   cylindrical_to_cartesian
   cartesian_to_cylindrical
+  spherical_to_cartesian
+  cartesian_to_spherical
+  rotation_matrix_from_normals
+  rotate_points_from_normals
+
+Vector Operations
+=================
+.. autosummary::
+  :toctree: generated/
+
   vector_magnitude
   vector_distance
   distance
   vector_dot
   repeat_scalar
-  rotation_matrix_from_normals
-  rotate_points_from_normals
 
 """
 import numpy as np
 from scipy.spatial.transform import Rotation
 
 from .utils import mkvc
+
+__all__ = [
+    "cylindrical_to_cartesian",
+    "cartesian_to_cylindrical",
+    "spherical_to_cartesian",
+    "cartesian_to_spherical",
+    "rotation_matrix_from_normals",
+    "rotate_points_from_normals",
+    "vector_magnitude",
+    "vector_distance",
+    "distance",
+    "vector_dot",
+    "repeat_scalar",
+]
 
 
 def cylindrical_to_cartesian(grid, vec=None):

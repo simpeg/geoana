@@ -23,11 +23,13 @@ Simulation Classes
   PointCurrentWholeSpace
   PointCurrentHalfSpace
   DipoleHalfSpace
+  MagneticPrism
 """
 
-from geoana.em.static.sphere import ElectrostaticSphere
-
-from geoana.em.static.sphere import MagnetostaticSphere
+from geoana.em.static.sphere import (
+    ElectrostaticSphere,
+    MagnetostaticSphere,
+)
 
 from geoana.em.static.wholespace import (
     MagneticDipoleWholeSpace,

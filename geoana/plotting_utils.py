@@ -24,6 +24,9 @@ try:
 except ImportError:
     matplotlib = False
 
+__all__ = [
+    "plot2Ddata"
+]
 
 @requires({"matplotlib": matplotlib})
 def plot2Ddata(
@@ -61,7 +64,7 @@ def plot2Ddata(
     data : (n) or (n, 2) np.ndarray
         Data values. Either scalar or 2D vector.
     vec : bool
-        Default = ``False``. Plot vector data. If ``False``, the ``data`` input argument is 
+        Default = ``False``. Plot vector data. If ``False``, the ``data`` input argument is
         scalar-valued. If ``True``, the ``data`` input arument is vector.
     nx : int
         number of x grid locations

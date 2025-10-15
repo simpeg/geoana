@@ -5,6 +5,9 @@ from scipy.constants import mu_0, epsilon_0
 from geoana.kernels.tranverse_electric_reflections import rTE_forward
 import libdlf
 
+__all__ = [
+    "MagneticDipoleLayeredHalfSpace",
+]
 
 class MagneticDipoleLayeredHalfSpace(BaseFDEM, BaseMagneticDipole):
     """Simulation class for a harmonic magnetic dipole over a layered halfspace.

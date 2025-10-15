@@ -13,9 +13,19 @@ commonly used within the code base.
   mkvc
   ndgrid
   check_xyz_dim
+  append_ndim
+  requires
 
 """
 import numpy as np
+
+__all__ = [
+    "mkvc",
+    "ndgrid",
+    "check_xyz_dim",
+    "append_ndim",
+    "requires",
+]
 
 def mkvc(x, n_dims=1):
     """Creates a vector with specified dimensionality.
@@ -182,6 +192,18 @@ def check_xyz_dim(xyz, dim=3, dtype=float):
 
 
 def append_ndim(arr, ndim):
+    """Appends dimensions to a numpy ndarray
+
+    Parameters
+    ----------
+    arr : array_like
+    ndim : int
+        The number of dimensions to append to arr
+
+    Returns
+    -------
+    numpy.ndarray
+    """
     arr = np.asarray(arr)
     for _ in range(ndim):
         arr = arr[..., None]
