@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.rho
+=====================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: TransientPlaneWave.rho

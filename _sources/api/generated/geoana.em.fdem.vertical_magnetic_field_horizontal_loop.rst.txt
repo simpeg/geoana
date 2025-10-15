@@ -1,0 +1,10 @@
+﻿geoana.em.fdem.vertical\_magnetic\_field\_horizontal\_loop
+==========================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autofunction:: vertical_magnetic_field_horizontal_loop
+
+.. minigallery:: geoana.em.fdem.vertical_magnetic_field_horizontal_loop
+    :add-heading: Galleries and Tutorials using ``geoana.em.fdem.vertical_magnetic_field_horizontal_loop``
+    :heading-level: -

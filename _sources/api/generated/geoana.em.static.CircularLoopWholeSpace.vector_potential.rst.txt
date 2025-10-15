@@ -1,0 +1,6 @@
+geoana.em.static.CircularLoopWholeSpace.vector\_potential
+=========================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: CircularLoopWholeSpace.vector_potential

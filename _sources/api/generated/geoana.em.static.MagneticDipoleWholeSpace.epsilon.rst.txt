@@ -1,0 +1,6 @@
+geoana.em.static.MagneticDipoleWholeSpace.epsilon
+=================================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagneticDipoleWholeSpace.epsilon

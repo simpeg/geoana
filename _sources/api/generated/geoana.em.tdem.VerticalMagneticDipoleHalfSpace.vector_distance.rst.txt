@@ -1,0 +1,6 @@
+geoana.em.tdem.VerticalMagneticDipoleHalfSpace.vector\_distance
+===============================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: VerticalMagneticDipoleHalfSpace.vector_distance

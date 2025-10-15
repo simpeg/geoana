@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleHalfSpace.distance
+===============================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. automethod:: MagneticDipoleHalfSpace.distance

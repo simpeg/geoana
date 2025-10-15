@@ -1,0 +1,6 @@
+geoana.em.fdem.HarmonicPlaneWave.magnetic\_flux\_density
+========================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. automethod:: HarmonicPlaneWave.magnetic_flux_density

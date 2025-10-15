@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.diffusion\_distance
+=====================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: TransientPlaneWave.diffusion_distance

@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.magnetic\_flux\_density\_time\_deriv
+============================================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: ElectricDipoleWholeSpace.magnetic_flux_density_time_deriv

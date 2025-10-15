@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPrism.scalar\_potential
+================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: MagneticPrism.scalar_potential

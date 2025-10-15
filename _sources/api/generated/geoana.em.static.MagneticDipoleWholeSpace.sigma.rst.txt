@@ -1,0 +1,6 @@
+geoana.em.static.MagneticDipoleWholeSpace.sigma
+===============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagneticDipoleWholeSpace.sigma

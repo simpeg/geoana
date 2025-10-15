@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.copyright
+=========================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: EarthquakeInterferogram.copyright

@@ -1,0 +1,6 @@
+﻿geoana.kernels.prism\_fxxy
+==========================
+
+.. currentmodule:: geoana.kernels
+
+.. autodata:: prism_fxxy

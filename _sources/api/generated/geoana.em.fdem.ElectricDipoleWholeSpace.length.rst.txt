@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.length
+==============================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: ElectricDipoleWholeSpace.length

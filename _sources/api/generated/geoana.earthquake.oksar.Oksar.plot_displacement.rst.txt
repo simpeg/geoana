@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.Oksar.plot\_displacement
+================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. automethod:: Oksar.plot_displacement

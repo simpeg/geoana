@@ -1,0 +1,44 @@
+﻿geoana.em.tdem.TransientPlaneWave
+=================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. inheritance-diagram:: TransientPlaneWave
+    :parts: 1
+
+.. autoclass:: TransientPlaneWave
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         TransientPlaneWave.current_density
+         TransientPlaneWave.electric_field
+         TransientPlaneWave.magnetic_field
+         TransientPlaneWave.magnetic_flux_density
+         TransientPlaneWave.peak_time
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         TransientPlaneWave.amplitude
+         TransientPlaneWave.diffusion_distance
+         TransientPlaneWave.epsilon
+         TransientPlaneWave.mu
+         TransientPlaneWave.orientation
+         TransientPlaneWave.rho
+         TransientPlaneWave.sigma
+         TransientPlaneWave.theta
+         TransientPlaneWave.time
+  
+  
+
+.. minigallery:: geoana.em.tdem.TransientPlaneWave
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.TransientPlaneWave``
+    :heading-level: -

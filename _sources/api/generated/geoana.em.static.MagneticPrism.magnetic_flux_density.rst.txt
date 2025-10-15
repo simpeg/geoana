@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPrism.magnetic\_flux\_density
+======================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: MagneticPrism.magnetic_flux_density

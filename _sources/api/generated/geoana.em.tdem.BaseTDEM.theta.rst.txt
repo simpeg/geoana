@@ -1,0 +1,6 @@
+geoana.em.tdem.BaseTDEM.theta
+=============================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: BaseTDEM.theta

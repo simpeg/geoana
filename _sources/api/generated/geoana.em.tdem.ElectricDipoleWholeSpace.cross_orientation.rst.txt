@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.cross\_orientation
+==========================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: ElectricDipoleWholeSpace.cross_orientation

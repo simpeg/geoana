@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.Oksar.dip
+=================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: Oksar.dip

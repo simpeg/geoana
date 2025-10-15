@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.Oksar.V
+===============================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: Oksar.V

@@ -1,0 +1,6 @@
+geoana.em.static.MagneticDipoleWholeSpace.vector\_distance
+==========================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: MagneticDipoleWholeSpace.vector_distance

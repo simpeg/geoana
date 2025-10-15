@@ -1,0 +1,6 @@
+geoana.em.static.MagneticDipoleWholeSpace.cross\_orientation
+============================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: MagneticDipoleWholeSpace.cross_orientation

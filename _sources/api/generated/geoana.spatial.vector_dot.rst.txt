@@ -1,0 +1,10 @@
+﻿geoana.spatial.vector\_dot
+==========================
+
+.. currentmodule:: geoana.spatial
+
+.. autofunction:: vector_dot
+
+.. minigallery:: geoana.spatial.vector_dot
+    :add-heading: Galleries and Tutorials using ``geoana.spatial.vector_dot``
+    :heading-level: -

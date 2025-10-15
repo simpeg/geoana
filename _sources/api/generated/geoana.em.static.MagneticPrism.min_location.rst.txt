@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPrism.min\_location
+============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagneticPrism.min_location

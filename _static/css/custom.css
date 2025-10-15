@@ -1,0 +1,55 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway);
+
+.bd-header .navbar-header-items__center {
+    margin: auto!important;
+}
+
+body{
+    font-family: "Roboto", sans-serif;
+}
+h1{
+    font-family: "Raleway", Helvetica, Arial, sans-serif; font-weight: bold;
+}
+h2{
+    font-family: "Raleway", Helvetica, Arial, sans-serif; font-weight: bold;
+}
+h3{
+    font-family: "Raleway", Helvetica, Arial, sans-serif; font-weight: bold;
+}
+.column > h3{
+    font-family: "Raleway", Helvetica, Arial, sans-serif;
+}
+
+/* Dark theme tweaking
+Matplotlib images are in png and inverted while other output
+types are assumed to be normal images.
+*/
+
+html[data-theme=dark] img:not(.only-dark):not(.dark-light) {
+    filter: invert(0.82) brightness(0.8) contrast(1.2);
+}
+
+html[data-theme=dark] .MathJax_SVG *  {
+    fill: var(--pst-color-text-base);
+}
+
+html[data-theme=dark]  {
+    --pst-color-text-muted: #a6a6a6;
+}
+html[data-theme=light]  {
+    --pst-color-text-muted: rgb(51, 51, 51);
+}
+
+html[data-theme=dark] .navbar-nav>.active>.nav-link {
+    color: #FFFFFF!important;
+}
+html[data-theme=light] .navbar-nav>.active>.nav-link {
+    color: #000000!important;
+}
+
+html[data-theme=dark] .bd-header {
+    background: #213a1b!important;
+}
+html[data-theme=light] .bd-header {
+    background: #acd6af!important;
+}

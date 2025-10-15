@@ -1,0 +1,6 @@
+geoana.em.BaseDipole.orientation
+================================
+
+.. currentmodule:: geoana.em
+
+.. autoproperty:: BaseDipole.orientation

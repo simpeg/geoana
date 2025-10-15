@@ -1,0 +1,6 @@
+geoana.em.static.DipoleHalfSpace.rho
+====================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: DipoleHalfSpace.rho

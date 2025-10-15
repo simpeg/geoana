@@ -1,0 +1,6 @@
+geoana.em.static.MagneticDipoleWholeSpace.vector\_potential
+===========================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: MagneticDipoleWholeSpace.vector_potential

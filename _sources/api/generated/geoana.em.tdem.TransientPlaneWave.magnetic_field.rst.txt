@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.magnetic\_field
+=================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: TransientPlaneWave.magnetic_field

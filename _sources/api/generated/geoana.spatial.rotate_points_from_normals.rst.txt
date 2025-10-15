@@ -1,0 +1,10 @@
+﻿geoana.spatial.rotate\_points\_from\_normals
+============================================
+
+.. currentmodule:: geoana.spatial
+
+.. autofunction:: rotate_points_from_normals
+
+.. minigallery:: geoana.spatial.rotate_points_from_normals
+    :add-heading: Galleries and Tutorials using ``geoana.spatial.rotate_points_from_normals``
+    :heading-level: -

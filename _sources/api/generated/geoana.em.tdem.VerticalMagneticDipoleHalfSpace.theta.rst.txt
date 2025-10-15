@@ -1,0 +1,6 @@
+geoana.em.tdem.VerticalMagneticDipoleHalfSpace.theta
+====================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: VerticalMagneticDipoleHalfSpace.theta

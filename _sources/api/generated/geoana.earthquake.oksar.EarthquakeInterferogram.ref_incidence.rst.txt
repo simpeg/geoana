@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.ref\_incidence
+==============================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: EarthquakeInterferogram.ref_incidence

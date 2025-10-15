@@ -1,0 +1,6 @@
+geoana.em.tdem.BaseTDEM.epsilon
+===============================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: BaseTDEM.epsilon

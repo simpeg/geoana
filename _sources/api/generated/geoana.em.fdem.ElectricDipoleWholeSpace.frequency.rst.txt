@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.frequency
+=================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: ElectricDipoleWholeSpace.frequency

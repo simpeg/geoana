@@ -1,0 +1,10 @@
+﻿geoana.em.tdem.reference.dhz\_from\_vert\_4\_70
+===============================================
+
+.. currentmodule:: geoana.em.tdem.reference
+
+.. autofunction:: dhz_from_vert_4_70
+
+.. minigallery:: geoana.em.tdem.reference.dhz_from_vert_4_70
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.reference.dhz_from_vert_4_70``
+    :heading-level: -

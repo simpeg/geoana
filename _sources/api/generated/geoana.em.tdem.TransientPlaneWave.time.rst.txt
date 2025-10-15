@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.time
+======================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: TransientPlaneWave.time
