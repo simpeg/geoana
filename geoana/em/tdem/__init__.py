@@ -34,7 +34,19 @@ Utility Functions
   magnetic_field_time_deriv_magnetic_dipole
   magnetic_flux_vertical_magnetic_dipole
   magnetic_flux_time_deriv_magnetic_dipole
-  
+
+Reference Functions
+===================
+Useful reference functions from Ward and Hohmann.
+
+.. autosummary::
+  :toctree: generated/
+
+  reference.hz_from_vert_4_69a
+  reference.dhz_from_vert_4_70
+  reference.hp_from_vert_4_72
+  reference.dhp_from_vert_4_74
+
 """
 from geoana.em.tdem.base import peak_time, diffusion_distance, theta, BaseTDEM
 

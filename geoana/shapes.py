@@ -16,6 +16,10 @@ Shape Classes
 """
 import numpy as np
 
+__all__ = [
+    "BasePrism",
+]
+
 
 class BasePrism:
     """Class for basic geometry of a prism.

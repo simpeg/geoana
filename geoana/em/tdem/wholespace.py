@@ -6,6 +6,11 @@ from geoana.spatial import repeat_scalar
 from geoana.utils import check_xyz_dim, append_ndim
 from geoana.em.base import BaseElectricDipole
 
+__all__ = [
+    "ElectricDipoleWholeSpace",
+    "TransientPlaneWave",
+]
+
 ###############################################################################
 #                                                                             #
 #                                  Classes                                    #

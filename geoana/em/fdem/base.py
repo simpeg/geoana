@@ -2,6 +2,13 @@ from geoana.em.base import BaseEM
 import numpy as np
 from scipy.constants import mu_0, epsilon_0
 
+__all__ = [
+    "omega",
+    "wavenumber",
+    "skin_depth",
+    "sigma_hat",
+    "BaseFDEM",
+]
 ###############################################################################
 #                                                                             #
 #                           Utility Functions                                 #

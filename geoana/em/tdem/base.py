@@ -2,6 +2,12 @@ from geoana.em.base import BaseEM
 import numpy as np
 from scipy.constants import mu_0
 
+__all__ = [
+    "peak_time",
+    "diffusion_distance",
+    "theta",
+    "BaseTDEM",
+]
 
 ###############################################################################
 #                                                                             #

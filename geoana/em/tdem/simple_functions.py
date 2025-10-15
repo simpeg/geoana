@@ -6,6 +6,16 @@ from scipy.constants import mu_0
 from geoana.em.tdem.base import theta
 from geoana.utils import append_ndim, check_xyz_dim
 
+__all__ = [
+  "vertical_magnetic_field_horizontal_loop",
+  "vertical_magnetic_flux_horizontal_loop",
+  "vertical_magnetic_field_time_deriv_horizontal_loop",
+  "vertical_magnetic_flux_time_deriv_horizontal_loop",
+  "magnetic_field_vertical_magnetic_dipole",
+  "magnetic_field_time_deriv_magnetic_dipole",
+  "magnetic_flux_vertical_magnetic_dipole",
+  "magnetic_flux_time_deriv_magnetic_dipole",
+]
 
 def vertical_magnetic_field_horizontal_loop(
     t, sigma=1.0, mu=mu_0, radius=1.0, current=1.0, turns=1

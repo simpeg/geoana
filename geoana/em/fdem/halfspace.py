@@ -4,6 +4,9 @@ from scipy.special import iv, kv
 from geoana.em.base import BaseMagneticDipole
 from geoana.em.fdem.base import BaseFDEM
 
+__all__ = [
+    "MagneticDipoleHalfSpace",
+]
 
 class MagneticDipoleHalfSpace(BaseFDEM, BaseMagneticDipole):
     r"""Class for a harmonic magnetic dipole in a wholespace.

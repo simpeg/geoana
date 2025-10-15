@@ -1,6 +1,18 @@
 import numpy as np
 from scipy.special import xlogy
 
+__all__ = [
+    "prism_f",
+    "prism_fz",
+    "prism_fzz",
+    "prism_fzx",
+    "prism_fzy",
+    "prism_fzzz",
+    "prism_fxxy",
+    "prism_fxxz",
+    "prism_fxyz",
+]
+
 
 def _prism_f(x, y, z):
     """

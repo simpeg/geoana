@@ -3,6 +3,11 @@ from geoana.em.fdem.base import BaseFDEM
 from geoana.utils import check_xyz_dim, append_ndim
 from geoana.em.base import BaseElectricDipole, BaseMagneticDipole
 
+__all__ = [
+    "ElectricDipoleWholeSpace",
+    "MagneticDipoleWholeSpace",
+    "HarmonicPlaneWave",
+]
 
 class ElectricDipoleWholeSpace(BaseFDEM, BaseElectricDipole):
     r"""Class for simulating the fields and fluxes for a harmonic electric dipole in a wholespace.
