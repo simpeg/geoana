@@ -19,12 +19,12 @@ cdef extern from "_rTE.h" namespace "funcs":
         double *frequencies,
         double *lambdas,
         complex_t *sigmas,
-        double *mus,
+        complex_t *mus,
         double *thicks,
         SIZE_t n_frequency,
         SIZE_t n_filter,
         SIZE_t n_layers
-        ) nogil
+        ) noexcept nogil
 
     void rTEgrad(
         complex_t * TE_dsigma,
@@ -33,12 +33,12 @@ cdef extern from "_rTE.h" namespace "funcs":
         double * frequencies,
         double * lambdas,
         complex_t * sigmas,
-        double * mus,
+        complex_t * mus,
         double * h,
         SIZE_t n_frequency,
         SIZE_t n_filter,
         SIZE_t n_layers
-    ) nogil
+    ) noexcept nogil
 
 def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     """Compute reflection coefficients for Transverse Electric (TE) mode.
@@ -67,7 +67,7 @@ def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     """
     # Sigma and mu must be fortran contiguous
     sigma = np.require(sigma, dtype=np.complex128, requirements="F")
-    mu = np.require(mu, dtype=np.float64, requirements="F")
+    mu = np.require(mu, dtype=np.complex128, requirements="F")
 
     # These just must be contiguous
     lamb = np.require(lamb, dtype=np.float64, requirements="C")
@@ -92,7 +92,7 @@ def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
         REAL_t[:] f = frequencies
         REAL_t[:] lam = lamb
         COMPLEX_t[:, :] sig = sigma
-        REAL_t[:, :] c_mu = mu
+        COMPLEX_t[:, :] c_mu = mu
         REAL_t[:] hs = thicknesses
 
     cdef:
@@ -109,12 +109,13 @@ def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
         # Types are same size and both pairs of numbers (r, i), so can cast one to the other
         complex_t *out_p = <complex_t *> &out[0, 0]
         complex_t *sig_p = <complex_t *> &sig[0, 0]
+        complex_t *mu_p = <complex_t *> &c_mu[0, 0]
         REAL_t *h_p = NULL
     if n_layers > 1:
         h_p = &hs[0]
 
     with nogil:
-        rTE(out_p, &f[0], &lam[0], sig_p, &c_mu[0, 0], h_p,
+        rTE(out_p, &f[0], &lam[0], sig_p, mu_p, h_p,
             n_frequency, n_filter, n_layers)
 
     return np.array(out)
@@ -153,7 +154,7 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     """
     # Require that they are all the same ordering as sigma
     sigma = np.require(sigma, dtype=np.complex128, requirements="F")
-    mu = np.require(mu, dtype=np.float64, requirements="F")
+    mu = np.require(mu, dtype=np.complex128, requirements="F")
     lamb = np.require(lamb, dtype=np.float64, requirements="C")
     frequencies = np.require(frequencies, dtype=np.float64, requirements="C")
     thicknesses = np.require(thicknesses, dtype=np.float64, requirements="C")
@@ -176,7 +177,7 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
         REAL_t[:] f = frequencies
         REAL_t[:] lam = lamb
         COMPLEX_t[:, :] sig = sigma
-        REAL_t[:, :] c_mu = mu
+        COMPLEX_t[:, :] c_mu = mu
         REAL_t[:] hs = thicknesses
 
     cdef:
@@ -194,6 +195,7 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     cdef:
         # Types are same size and both pairs of numbers (r, i), so can cast one to the other
         complex_t *sig_p = <complex_t *> &sig[0, 0]
+        complex_t *mu_p = <complex_t *> &c_mu[0, 0]
         complex_t *gsig_p = <complex_t *> &gsig[0, 0, 0]
         complex_t *gmu_p = <complex_t *> &gmu[0, 0, 0]
         complex_t *gh_p = NULL
@@ -203,7 +205,7 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
         gh_p = <complex_t *> &gh[0, 0, 0]
 
     with nogil:
-        rTEgrad(gsig_p, gmu_p, gh_p, &f[0], &lam[0], sig_p, &c_mu[0, 0], h_p,
+        rTEgrad(gsig_p, gmu_p, gh_p, &f[0], &lam[0], sig_p, mu_p, h_p,
             n_frequency, n_filter, n_layers)
 
     return np.array(gsig), np.array(gh), np.array(gmu)

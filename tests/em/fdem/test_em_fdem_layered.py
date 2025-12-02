@@ -294,9 +294,9 @@ if check_derivative is not None:
             thicknesses = np.ones(n_layer-1)
             lamb = np.logspace(0, 3, n_lambda)
             np.random.seed(0)
-            sigma = 1E-1*(1 + 0.1 * np.random.rand(n_layer, n_frequency))
-            mu = mu_0 * (1 + 0.1 * np.random.rand(n_layer, n_frequency))
-            dmu = mu_0 * 0.1 * np.random.rand(n_layer, n_frequency)
+            sigma = 1E-1*(1 + 1E-4j + 0.1 * np.random.rand(n_layer, n_frequency))
+            mu = mu_0 * (1 + 1.0E-4j + 0.1 * np.random.rand(n_layer, n_frequency))
+            dmu = mu_0 * (0.1 + 1.0E-5j) * np.random.rand(n_layer, n_frequency)
 
             def rte_sigma(x):
                 sigma = x.reshape(n_layer, n_frequency)
@@ -354,8 +354,8 @@ class TestCompiledVsNumpy(unittest.TestCase):
         thicknesses = np.ones(n_layer-1)
         lamb = np.logspace(-5, -3, n_lambda)
         np.random.seed(123)
-        sigma = 1E-1 * (1 + 1.0/(n_layer*n_frequency) * np.arange(n_layer*n_frequency).reshape(n_layer, n_frequency))
-        mu = mu_0 * (1 + 1.0/(n_layer*n_frequency) * np.arange(n_layer*n_frequency).reshape(n_layer, n_frequency))
+        sigma = 1E-1 * (1 + 1E-4j + 1.0/(n_layer*n_frequency) * np.arange(n_layer*n_frequency).reshape(n_layer, n_frequency))
+        mu = mu_0 * (1 + 1.0E-4j + 1.0/(n_layer*n_frequency) * np.arange(n_layer*n_frequency).reshape(n_layer, n_frequency))
 
         self.rTE1 = rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
         self.rTE2 = _rTE_forward(frequencies, lamb, sigma, mu, thicknesses)
