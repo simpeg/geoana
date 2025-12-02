@@ -1,0 +1,6 @@
+geoana.em.tdem.VerticalMagneticDipoleHalfSpace.moment
+=====================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: VerticalMagneticDipoleHalfSpace.moment

@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleHalfSpace.location
+===============================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: MagneticDipoleHalfSpace.location

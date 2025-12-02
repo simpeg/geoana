@@ -1,0 +1,6 @@
+geoana.em.tdem.BaseTDEM.time
+============================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: BaseTDEM.time

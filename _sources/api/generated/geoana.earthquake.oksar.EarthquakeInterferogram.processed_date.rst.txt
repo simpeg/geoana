@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.processed\_date
+===============================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: EarthquakeInterferogram.processed_date

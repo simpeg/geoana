@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.magnetic\_field
+=======================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. automethod:: ElectricDipoleWholeSpace.magnetic_field

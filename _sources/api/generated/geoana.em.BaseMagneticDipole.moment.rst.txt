@@ -1,0 +1,6 @@
+geoana.em.BaseMagneticDipole.moment
+===================================
+
+.. currentmodule:: geoana.em
+
+.. autoproperty:: BaseMagneticDipole.moment

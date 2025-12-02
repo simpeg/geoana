@@ -1,0 +1,6 @@
+geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic\_flux\_density
+======================================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: VerticalMagneticDipoleHalfSpace.magnetic_flux_density

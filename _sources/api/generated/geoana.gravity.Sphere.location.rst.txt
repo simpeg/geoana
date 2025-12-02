@@ -1,0 +1,6 @@
+geoana.gravity.Sphere.location
+==============================
+
+.. currentmodule:: geoana.gravity
+
+.. autoproperty:: Sphere.location

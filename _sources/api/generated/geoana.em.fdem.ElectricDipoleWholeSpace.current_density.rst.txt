@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.current\_density
+========================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. automethod:: ElectricDipoleWholeSpace.current_density

@@ -1,0 +1,6 @@
+geoana.em.static.PointCurrentWholeSpace.electric\_field
+=======================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: PointCurrentWholeSpace.electric_field

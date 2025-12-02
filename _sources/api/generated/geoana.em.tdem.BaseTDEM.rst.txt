@@ -1,0 +1,38 @@
+﻿geoana.em.tdem.BaseTDEM
+=======================
+
+.. currentmodule:: geoana.em.tdem
+
+.. inheritance-diagram:: BaseTDEM
+    :parts: 1
+
+.. autoclass:: BaseTDEM
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         BaseTDEM.peak_time
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         BaseTDEM.diffusion_distance
+         BaseTDEM.epsilon
+         BaseTDEM.mu
+         BaseTDEM.rho
+         BaseTDEM.sigma
+         BaseTDEM.theta
+         BaseTDEM.time
+  
+  
+
+.. minigallery:: geoana.em.tdem.BaseTDEM
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.BaseTDEM``
+    :heading-level: -

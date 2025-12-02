@@ -1,0 +1,6 @@
+geoana.shapes.BasePrism.max\_location
+=====================================
+
+.. currentmodule:: geoana.shapes
+
+.. autoproperty:: BasePrism.max_location

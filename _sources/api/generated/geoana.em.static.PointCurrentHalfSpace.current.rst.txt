@@ -1,0 +1,6 @@
+geoana.em.static.PointCurrentHalfSpace.current
+==============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: PointCurrentHalfSpace.current

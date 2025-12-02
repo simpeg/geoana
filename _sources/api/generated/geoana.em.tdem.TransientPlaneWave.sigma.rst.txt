@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.sigma
+=======================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: TransientPlaneWave.sigma

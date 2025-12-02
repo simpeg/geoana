@@ -1,0 +1,6 @@
+geoana.em.static.DipoleHalfSpace.electric\_field
+================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: DipoleHalfSpace.electric_field

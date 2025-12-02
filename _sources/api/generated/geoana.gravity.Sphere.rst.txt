@@ -1,0 +1,37 @@
+﻿geoana.gravity.Sphere
+=====================
+
+.. currentmodule:: geoana.gravity
+
+.. inheritance-diagram:: Sphere
+    :parts: 1
+
+.. autoclass:: Sphere
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         Sphere.gravitational_field
+         Sphere.gravitational_gradient
+         Sphere.gravitational_potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         Sphere.location
+         Sphere.mass
+         Sphere.radius
+         Sphere.rho
+  
+  
+
+.. minigallery:: geoana.gravity.Sphere
+    :add-heading: Galleries and Tutorials using ``geoana.gravity.Sphere``
+    :heading-level: -

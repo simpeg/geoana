@@ -1,0 +1,10 @@
+﻿geoana.em.tdem.theta
+====================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autofunction:: theta
+
+.. minigallery:: geoana.em.tdem.theta
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.theta``
+    :heading-level: -

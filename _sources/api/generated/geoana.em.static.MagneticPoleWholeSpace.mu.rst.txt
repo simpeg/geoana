@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPoleWholeSpace.mu
+==========================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagneticPoleWholeSpace.mu

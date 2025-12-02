@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleWholeSpace.wavenumber
+==================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: MagneticDipoleWholeSpace.wavenumber

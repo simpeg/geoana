@@ -1,0 +1,6 @@
+geoana.em.tdem.BaseTDEM.sigma
+=============================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: BaseTDEM.sigma

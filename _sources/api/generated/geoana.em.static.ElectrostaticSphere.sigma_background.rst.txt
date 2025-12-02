@@ -1,0 +1,6 @@
+geoana.em.static.ElectrostaticSphere.sigma\_background
+======================================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: ElectrostaticSphere.sigma_background

@@ -1,0 +1,6 @@
+geoana.em.static.PointCurrentHalfSpace.current\_density
+=======================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: PointCurrentHalfSpace.current_density

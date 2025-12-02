@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.skin\_depth
+===================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: ElectricDipoleWholeSpace.skin_depth

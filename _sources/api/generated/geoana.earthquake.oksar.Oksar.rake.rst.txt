@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.Oksar.rake
+==================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: Oksar.rake

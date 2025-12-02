@@ -1,0 +1,36 @@
+﻿geoana.em.static.PointCurrentHalfSpace
+======================================
+
+.. currentmodule:: geoana.em.static
+
+.. inheritance-diagram:: PointCurrentHalfSpace
+    :parts: 1
+
+.. autoclass:: PointCurrentHalfSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         PointCurrentHalfSpace.current_density
+         PointCurrentHalfSpace.electric_field
+         PointCurrentHalfSpace.potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         PointCurrentHalfSpace.current
+         PointCurrentHalfSpace.location
+         PointCurrentHalfSpace.rho
+  
+  
+
+.. minigallery:: geoana.em.static.PointCurrentHalfSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.static.PointCurrentHalfSpace``
+    :heading-level: -

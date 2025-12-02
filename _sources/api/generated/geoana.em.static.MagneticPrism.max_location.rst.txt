@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPrism.max\_location
+============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagneticPrism.max_location

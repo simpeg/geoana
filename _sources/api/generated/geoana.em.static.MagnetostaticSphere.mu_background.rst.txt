@@ -1,0 +1,6 @@
+geoana.em.static.MagnetostaticSphere.mu\_background
+===================================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagnetostaticSphere.mu_background

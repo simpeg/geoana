@@ -1,0 +1,6 @@
+geoana.em.BaseElectricDipole.cross\_orientation
+===============================================
+
+.. currentmodule:: geoana.em
+
+.. automethod:: BaseElectricDipole.cross_orientation

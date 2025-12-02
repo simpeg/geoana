@@ -1,0 +1,6 @@
+geoana.em.tdem.VerticalMagneticDipoleHalfSpace.peak\_time
+=========================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: VerticalMagneticDipoleHalfSpace.peak_time

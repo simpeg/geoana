@@ -1,0 +1,6 @@
+geoana.gravity.Sphere.rho
+=========================
+
+.. currentmodule:: geoana.gravity
+
+.. autoproperty:: Sphere.rho

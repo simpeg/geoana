@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleHalfSpace.skin\_depth
+==================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: MagneticDipoleHalfSpace.skin_depth

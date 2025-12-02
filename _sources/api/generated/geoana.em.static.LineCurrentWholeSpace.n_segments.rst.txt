@@ -1,0 +1,6 @@
+geoana.em.static.LineCurrentWholeSpace.n\_segments
+==================================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: LineCurrentWholeSpace.n_segments

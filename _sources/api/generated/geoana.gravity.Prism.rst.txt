@@ -1,0 +1,39 @@
+﻿geoana.gravity.Prism
+====================
+
+.. currentmodule:: geoana.gravity
+
+.. inheritance-diagram:: Prism
+    :parts: 1
+
+.. autoclass:: Prism
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         Prism.gravitational_field
+         Prism.gravitational_gradient
+         Prism.gravitational_potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         Prism.location
+         Prism.mass
+         Prism.max_location
+         Prism.min_location
+         Prism.rho
+         Prism.volume
+  
+  
+
+.. minigallery:: geoana.gravity.Prism
+    :add-heading: Galleries and Tutorials using ``geoana.gravity.Prism``
+    :heading-level: -

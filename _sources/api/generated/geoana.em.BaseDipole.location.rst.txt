@@ -1,0 +1,6 @@
+geoana.em.BaseDipole.location
+=============================
+
+.. currentmodule:: geoana.em
+
+.. autoproperty:: BaseDipole.location

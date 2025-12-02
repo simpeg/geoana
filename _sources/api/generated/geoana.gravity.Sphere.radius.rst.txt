@@ -1,0 +1,6 @@
+geoana.gravity.Sphere.radius
+============================
+
+.. currentmodule:: geoana.gravity
+
+.. autoproperty:: Sphere.radius

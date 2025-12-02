@@ -1,0 +1,47 @@
+﻿geoana.earthquake.oksar.Oksar
+=============================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. inheritance-diagram:: Oksar
+    :parts: 1
+
+.. autoclass:: Oksar
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         Oksar.plot_displacement
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         Oksar.O
+         Oksar.U
+         Oksar.V
+         Oksar.beta
+         Oksar.center
+         Oksar.depth_bottom
+         Oksar.depth_top
+         Oksar.dip
+         Oksar.displacement_vector
+         Oksar.length
+         Oksar.mu
+         Oksar.rake
+         Oksar.shape
+         Oksar.simulation_grid
+         Oksar.slip
+         Oksar.strike
+  
+  
+
+.. minigallery:: geoana.earthquake.oksar.Oksar
+    :add-heading: Galleries and Tutorials using ``geoana.earthquake.oksar.Oksar``
+    :heading-level: -

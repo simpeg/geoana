@@ -1,0 +1,6 @@
+geoana.em.static.LineCurrentFreeSpace.scalar\_potential
+=======================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: LineCurrentFreeSpace.scalar_potential

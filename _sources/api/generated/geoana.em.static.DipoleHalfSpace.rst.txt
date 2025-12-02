@@ -1,0 +1,37 @@
+﻿geoana.em.static.DipoleHalfSpace
+================================
+
+.. currentmodule:: geoana.em.static
+
+.. inheritance-diagram:: DipoleHalfSpace
+    :parts: 1
+
+.. autoclass:: DipoleHalfSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         DipoleHalfSpace.current_density
+         DipoleHalfSpace.electric_field
+         DipoleHalfSpace.potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         DipoleHalfSpace.current
+         DipoleHalfSpace.location_a
+         DipoleHalfSpace.location_b
+         DipoleHalfSpace.rho
+  
+  
+
+.. minigallery:: geoana.em.static.DipoleHalfSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.static.DipoleHalfSpace``
+    :heading-level: -

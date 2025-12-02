@@ -1,0 +1,6 @@
+geoana.em.static.LineCurrentWholeSpace.current\_density
+=======================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: LineCurrentWholeSpace.current_density

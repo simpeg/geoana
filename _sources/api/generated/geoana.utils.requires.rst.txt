@@ -1,0 +1,10 @@
+﻿geoana.utils.requires
+=====================
+
+.. currentmodule:: geoana.utils
+
+.. autofunction:: requires
+
+.. minigallery:: geoana.utils.requires
+    :add-heading: Galleries and Tutorials using ``geoana.utils.requires``
+    :heading-level: -

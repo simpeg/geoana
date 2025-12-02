@@ -1,0 +1,6 @@
+geoana.em.static.PointCurrentWholeSpace.nodes
+=============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: PointCurrentWholeSpace.nodes

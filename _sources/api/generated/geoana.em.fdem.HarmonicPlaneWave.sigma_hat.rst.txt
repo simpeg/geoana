@@ -1,0 +1,6 @@
+geoana.em.fdem.HarmonicPlaneWave.sigma\_hat
+===========================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: HarmonicPlaneWave.sigma_hat

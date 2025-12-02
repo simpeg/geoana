@@ -1,0 +1,10 @@
+﻿geoana.em.tdem.diffusion\_distance
+==================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autofunction:: diffusion_distance
+
+.. minigallery:: geoana.em.tdem.diffusion_distance
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.diffusion_distance``
+    :heading-level: -

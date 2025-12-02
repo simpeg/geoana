@@ -1,0 +1,6 @@
+geoana.em.tdem.BaseTDEM.diffusion\_distance
+===========================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: BaseTDEM.diffusion_distance

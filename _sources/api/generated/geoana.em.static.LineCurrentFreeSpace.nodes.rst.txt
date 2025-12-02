@@ -1,0 +1,6 @@
+geoana.em.static.LineCurrentFreeSpace.nodes
+===========================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: LineCurrentFreeSpace.nodes

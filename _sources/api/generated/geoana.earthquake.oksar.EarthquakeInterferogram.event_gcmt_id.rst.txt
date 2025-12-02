@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.event\_gcmt\_id
+===============================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: EarthquakeInterferogram.event_gcmt_id

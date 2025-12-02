@@ -1,0 +1,6 @@
+geoana.em.BaseMagneticDipole.dot\_orientation
+=============================================
+
+.. currentmodule:: geoana.em
+
+.. automethod:: BaseMagneticDipole.dot_orientation

@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.sigma\_hat
+==================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: ElectricDipoleWholeSpace.sigma_hat

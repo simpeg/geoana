@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.satellite\_azimuth
+==================================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: EarthquakeInterferogram.satellite_azimuth

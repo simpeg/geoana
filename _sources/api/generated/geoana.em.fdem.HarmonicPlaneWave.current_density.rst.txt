@@ -1,0 +1,6 @@
+geoana.em.fdem.HarmonicPlaneWave.current\_density
+=================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. automethod:: HarmonicPlaneWave.current_density

@@ -1,0 +1,6 @@
+geoana.em.static.CircularLoopWholeSpace.epsilon
+===============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: CircularLoopWholeSpace.epsilon

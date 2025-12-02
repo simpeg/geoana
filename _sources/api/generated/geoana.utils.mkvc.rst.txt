@@ -1,0 +1,10 @@
+﻿geoana.utils.mkvc
+=================
+
+.. currentmodule:: geoana.utils
+
+.. autofunction:: mkvc
+
+.. minigallery:: geoana.utils.mkvc
+    :add-heading: Galleries and Tutorials using ``geoana.utils.mkvc``
+    :heading-level: -

@@ -1,0 +1,38 @@
+﻿geoana.em.BaseElectricDipole
+============================
+
+.. currentmodule:: geoana.em
+
+.. inheritance-diagram:: BaseElectricDipole
+    :parts: 1
+
+.. autoclass:: BaseElectricDipole
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         BaseElectricDipole.cross_orientation
+         BaseElectricDipole.distance
+         BaseElectricDipole.dot_orientation
+         BaseElectricDipole.vector_distance
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         BaseElectricDipole.current
+         BaseElectricDipole.length
+         BaseElectricDipole.location
+         BaseElectricDipole.orientation
+  
+  
+
+.. minigallery:: geoana.em.BaseElectricDipole
+    :add-heading: Galleries and Tutorials using ``geoana.em.BaseElectricDipole``
+    :heading-level: -

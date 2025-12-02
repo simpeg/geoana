@@ -1,0 +1,6 @@
+<map id="inheritance9d35a25af8" name="inheritance9d35a25af8">
+<area shape="rect" id="node1" href="geoana.em.BaseEM.html#geoana.em.BaseEM" target="_top" title="Base electromagnetics class." alt="" coords="33,5,106,33"/>
+<area shape="rect" id="node3" href="geoana.em.static.LineCurrentWholeSpace.html#geoana.em.static.LineCurrentWholeSpace" target="_top" title="Class for a static line current in whole space." alt="" coords="182,32,358,60"/>
+<area shape="rect" id="node2" href="geoana.em.BaseLineCurrent.html#geoana.em.BaseLineCurrent" target="_top" title="Base class for connected segments of current&#45;carrying wire." alt="" coords="5,57,134,85"/>
+<area shape="rect" id="node4" href="#geoana.em.static.PointCurrentWholeSpace" target="_top" title="Class for a point current in a wholespace." alt="" coords="406,32,588,60"/>
+</map>

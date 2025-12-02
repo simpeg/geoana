@@ -1,0 +1,10 @@
+﻿geoana.spatial.spherical\_to\_cartesian
+=======================================
+
+.. currentmodule:: geoana.spatial
+
+.. autofunction:: spherical_to_cartesian
+
+.. minigallery:: geoana.spatial.spherical_to_cartesian
+    :add-heading: Galleries and Tutorials using ``geoana.spatial.spherical_to_cartesian``
+    :heading-level: -

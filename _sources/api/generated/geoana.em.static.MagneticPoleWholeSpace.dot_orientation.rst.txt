@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPoleWholeSpace.dot\_orientation
+========================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: MagneticPoleWholeSpace.dot_orientation

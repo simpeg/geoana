@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.Oksar.depth\_top
+========================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: Oksar.depth_top

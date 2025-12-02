@@ -1,0 +1,6 @@
+geoana.em.static.LineCurrentFreeSpace.electric\_field
+=====================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: LineCurrentFreeSpace.electric_field

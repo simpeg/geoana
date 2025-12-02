@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.dot\_orientation
+========================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. automethod:: ElectricDipoleWholeSpace.dot_orientation

@@ -1,0 +1,10 @@
+﻿geoana.em.fdem.skin\_depth
+==========================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autofunction:: skin_depth
+
+.. minigallery:: geoana.em.fdem.skin_depth
+    :add-heading: Galleries and Tutorials using ``geoana.em.fdem.skin_depth``
+    :heading-level: -

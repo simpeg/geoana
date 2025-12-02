@@ -1,0 +1,6 @@
+geoana.em.static.CircularLoopWholeSpace.dot\_orientation
+========================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: CircularLoopWholeSpace.dot_orientation

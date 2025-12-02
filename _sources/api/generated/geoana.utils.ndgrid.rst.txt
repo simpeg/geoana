@@ -1,0 +1,10 @@
+﻿geoana.utils.ndgrid
+===================
+
+.. currentmodule:: geoana.utils
+
+.. autofunction:: ndgrid
+
+.. minigallery:: geoana.utils.ndgrid
+    :add-heading: Galleries and Tutorials using ``geoana.utils.ndgrid``
+    :heading-level: -

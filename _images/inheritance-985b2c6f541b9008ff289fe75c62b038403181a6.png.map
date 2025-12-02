@@ -1,0 +1,5 @@
+<map id="inheritance82a1dd13ee" name="inheritance82a1dd13ee">
+<area shape="rect" id="node1" href="geoana.em.BaseEM.html#geoana.em.BaseEM" target="_top" title="Base electromagnetics class." alt="" coords="5,5,79,33"/>
+<area shape="rect" id="node2" href="geoana.em.tdem.BaseTDEM.html#geoana.em.tdem.BaseTDEM" target="_top" title="Base time domain electromagnetic class" alt="" coords="127,5,218,33"/>
+<area shape="rect" id="node3" href="#geoana.em.tdem.TransientPlaneWave" target="_top" title="Class for simulating the fields for a transient planewave in a wholespace." alt="" coords="266,5,418,33"/>
+</map>

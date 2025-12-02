@@ -1,0 +1,10 @@
+﻿geoana.spatial.vector\_distance
+===============================
+
+.. currentmodule:: geoana.spatial
+
+.. autofunction:: vector_distance
+
+.. minigallery:: geoana.spatial.vector_distance
+    :add-heading: Galleries and Tutorials using ``geoana.spatial.vector_distance``
+    :heading-level: -

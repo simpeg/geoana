@@ -1,0 +1,1826 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; geoana 0.8.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e4d102bf" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=ec16d22d"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.8" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">geoana 0.8.1 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/conventions.html">
+    Conventions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://simpeg.xyz">
+    SimPEG
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="http://slack.simpeg.xyz">
+    Contact
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/simpeg/geoana" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="http://slack.simpeg.xyz/" title="Slack" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-slack fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Slack</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://simpeg.discourse.group/" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discourse</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/c/geoscixyz" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/simpegpy" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/conventions.html">
+    Conventions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://simpeg.xyz">
+    SimPEG
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="http://slack.simpeg.xyz">
+    Contact
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/simpeg/geoana" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="http://slack.simpeg.xyz/" title="Slack" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-slack fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Slack</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://simpeg.discourse.group/" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discourse</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/c/geoscixyz" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/simpegpy" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ 
+</div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.amplitude.html#geoana.em.fdem.HarmonicPlaneWave.amplitude">amplitude (geoana.em.fdem.HarmonicPlaneWave property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.amplitude.html#geoana.em.tdem.TransientPlaneWave.amplitude">(geoana.em.tdem.TransientPlaneWave property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.utils.append_ndim.html#geoana.utils.append_ndim">append_ndim() (in module geoana.utils)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.BaseDipole.html#geoana.em.BaseDipole">BaseDipole (class in geoana.em)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseElectricDipole.html#geoana.em.BaseElectricDipole">BaseElectricDipole (class in geoana.em)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseEM.html#geoana.em.BaseEM">BaseEM (class in geoana.em)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.BaseFDEM.html#geoana.em.fdem.BaseFDEM">BaseFDEM (class in geoana.em.fdem)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.BaseLineCurrent.html#geoana.em.BaseLineCurrent">BaseLineCurrent (class in geoana.em)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseMagneticDipole.html#geoana.em.BaseMagneticDipole">BaseMagneticDipole (class in geoana.em)</a>
+</li>
+      <li><a href="api/generated/geoana.shapes.BasePrism.html#geoana.shapes.BasePrism">BasePrism (class in geoana.shapes)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.BaseTDEM.html#geoana.em.tdem.BaseTDEM">BaseTDEM (class in geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.beta.html#geoana.earthquake.oksar.Oksar.beta">beta (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.spatial.cartesian_to_cylindrical.html#geoana.spatial.cartesian_to_cylindrical">cartesian_to_cylindrical() (in module geoana.spatial)</a>
+</li>
+      <li><a href="api/generated/geoana.spatial.cartesian_to_spherical.html#geoana.spatial.cartesian_to_spherical">cartesian_to_spherical() (in module geoana.spatial)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.center.html#geoana.earthquake.oksar.Oksar.center">center (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.charge_density.html#geoana.em.static.ElectrostaticSphere.charge_density">charge_density() (geoana.em.static.ElectrostaticSphere method)</a>
+</li>
+      <li><a href="api/generated/geoana.utils.check_xyz_dim.html#geoana.utils.check_xyz_dim">check_xyz_dim() (in module geoana.utils)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.html#geoana.em.static.CircularLoopWholeSpace">CircularLoopWholeSpace (class in geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.copyright.html#geoana.earthquake.oksar.EarthquakeInterferogram.copyright">copyright (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseDipole.cross_orientation.html#geoana.em.BaseDipole.cross_orientation">cross_orientation() (geoana.em.BaseDipole method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.BaseElectricDipole.cross_orientation.html#geoana.em.BaseElectricDipole.cross_orientation">(geoana.em.BaseElectricDipole method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.BaseMagneticDipole.cross_orientation.html#geoana.em.BaseMagneticDipole.cross_orientation">(geoana.em.BaseMagneticDipole method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.cross_orientation.html#geoana.em.fdem.ElectricDipoleWholeSpace.cross_orientation">(geoana.em.fdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.cross_orientation.html#geoana.em.fdem.MagneticDipoleHalfSpace.cross_orientation">(geoana.em.fdem.MagneticDipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.cross_orientation.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.cross_orientation">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.cross_orientation.html#geoana.em.fdem.MagneticDipoleWholeSpace.cross_orientation">(geoana.em.fdem.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.cross_orientation.html#geoana.em.static.CircularLoopWholeSpace.cross_orientation">(geoana.em.static.CircularLoopWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.cross_orientation.html#geoana.em.static.MagneticDipoleWholeSpace.cross_orientation">(geoana.em.static.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.cross_orientation.html#geoana.em.static.MagneticPoleWholeSpace.cross_orientation">(geoana.em.static.MagneticPoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.cross_orientation.html#geoana.em.tdem.ElectricDipoleWholeSpace.cross_orientation">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.cross_orientation.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.cross_orientation">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.BaseElectricDipole.current.html#geoana.em.BaseElectricDipole.current">current (geoana.em.BaseElectricDipole property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.BaseLineCurrent.current.html#geoana.em.BaseLineCurrent.current">(geoana.em.BaseLineCurrent property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.current.html#geoana.em.fdem.ElectricDipoleWholeSpace.current">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.current.html#geoana.em.static.CircularLoopWholeSpace.current">(geoana.em.static.CircularLoopWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.DipoleHalfSpace.current.html#geoana.em.static.DipoleHalfSpace.current">(geoana.em.static.DipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.current.html#geoana.em.static.LineCurrentFreeSpace.current">(geoana.em.static.LineCurrentFreeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.current.html#geoana.em.static.LineCurrentWholeSpace.current">(geoana.em.static.LineCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentHalfSpace.current.html#geoana.em.static.PointCurrentHalfSpace.current">(geoana.em.static.PointCurrentHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.current.html#geoana.em.static.PointCurrentWholeSpace.current">(geoana.em.static.PointCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.current.html#geoana.em.tdem.ElectricDipoleWholeSpace.current">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.current_density.html#geoana.em.fdem.ElectricDipoleWholeSpace.current_density">current_density() (geoana.em.fdem.ElectricDipoleWholeSpace method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.current_density.html#geoana.em.fdem.HarmonicPlaneWave.current_density">(geoana.em.fdem.HarmonicPlaneWave method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.current_density.html#geoana.em.fdem.MagneticDipoleWholeSpace.current_density">(geoana.em.fdem.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.DipoleHalfSpace.current_density.html#geoana.em.static.DipoleHalfSpace.current_density">(geoana.em.static.DipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.current_density.html#geoana.em.static.ElectrostaticSphere.current_density">(geoana.em.static.ElectrostaticSphere method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.current_density.html#geoana.em.static.LineCurrentFreeSpace.current_density">(geoana.em.static.LineCurrentFreeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.current_density.html#geoana.em.static.LineCurrentWholeSpace.current_density">(geoana.em.static.LineCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentHalfSpace.current_density.html#geoana.em.static.PointCurrentHalfSpace.current_density">(geoana.em.static.PointCurrentHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.current_density.html#geoana.em.static.PointCurrentWholeSpace.current_density">(geoana.em.static.PointCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.current_density.html#geoana.em.tdem.ElectricDipoleWholeSpace.current_density">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.current_density.html#geoana.em.tdem.TransientPlaneWave.current_density">(geoana.em.tdem.TransientPlaneWave method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.spatial.cylindrical_to_cartesian.html#geoana.spatial.cylindrical_to_cartesian">cylindrical_to_cartesian() (in module geoana.spatial)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.data.html#geoana.earthquake.oksar.EarthquakeInterferogram.data">data (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.data_source.html#geoana.earthquake.oksar.EarthquakeInterferogram.data_source">data_source (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.date1.html#geoana.earthquake.oksar.EarthquakeInterferogram.date1">date1 (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.date2.html#geoana.earthquake.oksar.EarthquakeInterferogram.date2">date2 (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.depth_bottom.html#geoana.earthquake.oksar.Oksar.depth_bottom">depth_bottom (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.depth_top.html#geoana.earthquake.oksar.Oksar.depth_top">depth_top (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.description.html#geoana.earthquake.oksar.EarthquakeInterferogram.description">description (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.reference.dhp_from_vert_4_74.html#geoana.em.tdem.reference.dhp_from_vert_4_74">dhp_from_vert_4_74() (in module geoana.em.tdem.reference)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.reference.dhz_from_vert_4_70.html#geoana.em.tdem.reference.dhz_from_vert_4_70">dhz_from_vert_4_70() (in module geoana.em.tdem.reference)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.BaseTDEM.diffusion_distance.html#geoana.em.tdem.BaseTDEM.diffusion_distance">diffusion_distance (geoana.em.tdem.BaseTDEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.diffusion_distance.html#geoana.em.tdem.ElectricDipoleWholeSpace.diffusion_distance">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.diffusion_distance.html#geoana.em.tdem.TransientPlaneWave.diffusion_distance">(geoana.em.tdem.TransientPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.diffusion_distance.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.diffusion_distance">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.tdem.diffusion_distance.html#geoana.em.tdem.diffusion_distance">diffusion_distance() (in module geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.dip.html#geoana.earthquake.oksar.Oksar.dip">dip (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.DipoleHalfSpace.html#geoana.em.static.DipoleHalfSpace">DipoleHalfSpace (class in geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.displacement_vector.html#geoana.earthquake.oksar.Oksar.displacement_vector">displacement_vector (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseDipole.distance.html#geoana.em.BaseDipole.distance">distance() (geoana.em.BaseDipole method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.BaseElectricDipole.distance.html#geoana.em.BaseElectricDipole.distance">(geoana.em.BaseElectricDipole method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.BaseMagneticDipole.distance.html#geoana.em.BaseMagneticDipole.distance">(geoana.em.BaseMagneticDipole method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.distance.html#geoana.em.fdem.ElectricDipoleWholeSpace.distance">(geoana.em.fdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.distance.html#geoana.em.fdem.MagneticDipoleHalfSpace.distance">(geoana.em.fdem.MagneticDipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.distance.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.distance">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.distance.html#geoana.em.fdem.MagneticDipoleWholeSpace.distance">(geoana.em.fdem.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.distance.html#geoana.em.static.CircularLoopWholeSpace.distance">(geoana.em.static.CircularLoopWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.distance.html#geoana.em.static.MagneticDipoleWholeSpace.distance">(geoana.em.static.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.distance.html#geoana.em.static.MagneticPoleWholeSpace.distance">(geoana.em.static.MagneticPoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.distance.html#geoana.em.tdem.ElectricDipoleWholeSpace.distance">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.distance.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.distance">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.spatial.distance.html#geoana.spatial.distance">(in module geoana.spatial)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.BaseDipole.dot_orientation.html#geoana.em.BaseDipole.dot_orientation">dot_orientation() (geoana.em.BaseDipole method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.BaseElectricDipole.dot_orientation.html#geoana.em.BaseElectricDipole.dot_orientation">(geoana.em.BaseElectricDipole method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.BaseMagneticDipole.dot_orientation.html#geoana.em.BaseMagneticDipole.dot_orientation">(geoana.em.BaseMagneticDipole method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.dot_orientation.html#geoana.em.fdem.ElectricDipoleWholeSpace.dot_orientation">(geoana.em.fdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.dot_orientation.html#geoana.em.fdem.MagneticDipoleHalfSpace.dot_orientation">(geoana.em.fdem.MagneticDipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.dot_orientation.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.dot_orientation">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.dot_orientation.html#geoana.em.fdem.MagneticDipoleWholeSpace.dot_orientation">(geoana.em.fdem.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.dot_orientation.html#geoana.em.static.CircularLoopWholeSpace.dot_orientation">(geoana.em.static.CircularLoopWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.dot_orientation.html#geoana.em.static.MagneticDipoleWholeSpace.dot_orientation">(geoana.em.static.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.dot_orientation.html#geoana.em.static.MagneticPoleWholeSpace.dot_orientation">(geoana.em.static.MagneticPoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.dot_orientation.html#geoana.em.tdem.ElectricDipoleWholeSpace.dot_orientation">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.dot_orientation.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.dot_orientation">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.html#geoana.earthquake.oksar.EarthquakeInterferogram">EarthquakeInterferogram (class in geoana.earthquake.oksar)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.electric_field.html#geoana.em.fdem.ElectricDipoleWholeSpace.electric_field">electric_field() (geoana.em.fdem.ElectricDipoleWholeSpace method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.electric_field.html#geoana.em.fdem.HarmonicPlaneWave.electric_field">(geoana.em.fdem.HarmonicPlaneWave method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.electric_field.html#geoana.em.fdem.MagneticDipoleWholeSpace.electric_field">(geoana.em.fdem.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.DipoleHalfSpace.electric_field.html#geoana.em.static.DipoleHalfSpace.electric_field">(geoana.em.static.DipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.electric_field.html#geoana.em.static.ElectrostaticSphere.electric_field">(geoana.em.static.ElectrostaticSphere method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.electric_field.html#geoana.em.static.LineCurrentFreeSpace.electric_field">(geoana.em.static.LineCurrentFreeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.electric_field.html#geoana.em.static.LineCurrentWholeSpace.electric_field">(geoana.em.static.LineCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentHalfSpace.electric_field.html#geoana.em.static.PointCurrentHalfSpace.electric_field">(geoana.em.static.PointCurrentHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.electric_field.html#geoana.em.static.PointCurrentWholeSpace.electric_field">(geoana.em.static.PointCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.electric_field.html#geoana.em.tdem.ElectricDipoleWholeSpace.electric_field">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.electric_field.html#geoana.em.tdem.TransientPlaneWave.electric_field">(geoana.em.tdem.TransientPlaneWave method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.html#geoana.em.fdem.ElectricDipoleWholeSpace">ElectricDipoleWholeSpace (class in geoana.em.fdem)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.html#geoana.em.tdem.ElectricDipoleWholeSpace">(class in geoana.em.tdem)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.html#geoana.em.static.ElectrostaticSphere">ElectrostaticSphere (class in geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseEM.epsilon.html#geoana.em.BaseEM.epsilon">epsilon (geoana.em.BaseEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.BaseFDEM.epsilon.html#geoana.em.fdem.BaseFDEM.epsilon">(geoana.em.fdem.BaseFDEM property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.epsilon.html#geoana.em.fdem.ElectricDipoleWholeSpace.epsilon">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.epsilon.html#geoana.em.fdem.HarmonicPlaneWave.epsilon">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.epsilon.html#geoana.em.fdem.MagneticDipoleHalfSpace.epsilon">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.epsilon.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.epsilon">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.epsilon.html#geoana.em.fdem.MagneticDipoleWholeSpace.epsilon">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.epsilon.html#geoana.em.static.CircularLoopWholeSpace.epsilon">(geoana.em.static.CircularLoopWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.epsilon.html#geoana.em.static.LineCurrentFreeSpace.epsilon">(geoana.em.static.LineCurrentFreeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.epsilon.html#geoana.em.static.LineCurrentWholeSpace.epsilon">(geoana.em.static.LineCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.epsilon.html#geoana.em.static.MagneticDipoleWholeSpace.epsilon">(geoana.em.static.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.epsilon.html#geoana.em.static.MagneticPoleWholeSpace.epsilon">(geoana.em.static.MagneticPoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.epsilon.html#geoana.em.static.PointCurrentWholeSpace.epsilon">(geoana.em.static.PointCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.BaseTDEM.epsilon.html#geoana.em.tdem.BaseTDEM.epsilon">(geoana.em.tdem.BaseTDEM property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.epsilon.html#geoana.em.tdem.ElectricDipoleWholeSpace.epsilon">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.epsilon.html#geoana.em.tdem.TransientPlaneWave.epsilon">(geoana.em.tdem.TransientPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.epsilon.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.epsilon">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.event_country.html#geoana.earthquake.oksar.EarthquakeInterferogram.event_country">event_country (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.event_date.html#geoana.earthquake.oksar.EarthquakeInterferogram.event_date">event_date (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.event_gcmt_id.html#geoana.earthquake.oksar.EarthquakeInterferogram.event_gcmt_id">event_gcmt_id (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.event_name.html#geoana.earthquake.oksar.EarthquakeInterferogram.event_name">event_name (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.fdem.BaseFDEM.frequency.html#geoana.em.fdem.BaseFDEM.frequency">frequency (geoana.em.fdem.BaseFDEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.frequency.html#geoana.em.fdem.ElectricDipoleWholeSpace.frequency">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.frequency.html#geoana.em.fdem.HarmonicPlaneWave.frequency">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.frequency.html#geoana.em.fdem.MagneticDipoleHalfSpace.frequency">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.frequency.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.frequency">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.frequency.html#geoana.em.fdem.MagneticDipoleWholeSpace.frequency">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    geoana.earthquake
+
+      <ul>
+        <li><a href="api/geoana.earthquake.oksar.html#module-geoana.earthquake">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoana.em
+
+      <ul>
+        <li><a href="api/geoana.em.base.html#module-geoana.em">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoana.em.fdem
+
+      <ul>
+        <li><a href="api/geoana.em.fdem.html#module-geoana.em.fdem">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoana.em.static
+
+      <ul>
+        <li><a href="api/geoana.em.static.html#module-geoana.em.static">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoana.em.tdem
+
+      <ul>
+        <li><a href="api/geoana.em.tdem.html#module-geoana.em.tdem">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoana.gravity
+
+      <ul>
+        <li><a href="api/geoana.gravity.html#module-geoana.gravity">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoana.kernels
+
+      <ul>
+        <li><a href="api/geoana.kernels.html#module-geoana.kernels">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoana.plotting_utils
+
+      <ul>
+        <li><a href="api/geoana.plotting_utils.html#module-geoana.plotting_utils">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    geoana.shapes
+
+      <ul>
+        <li><a href="api/geoana.shapes.html#module-geoana.shapes">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoana.spatial
+
+      <ul>
+        <li><a href="api/geoana.spatial.html#module-geoana.spatial">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoana.utils
+
+      <ul>
+        <li><a href="api/geoana.utils.html#module-geoana.utils">module</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.get_LOS_vector.html#geoana.earthquake.oksar.EarthquakeInterferogram.get_LOS_vector">get_LOS_vector() (geoana.earthquake.oksar.EarthquakeInterferogram method)</a>
+</li>
+      <li><a href="api/generated/geoana.gravity.PointMass.gravitational_field.html#geoana.gravity.PointMass.gravitational_field">gravitational_field() (geoana.gravity.PointMass method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.gravity.Prism.gravitational_field.html#geoana.gravity.Prism.gravitational_field">(geoana.gravity.Prism method)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.Sphere.gravitational_field.html#geoana.gravity.Sphere.gravitational_field">(geoana.gravity.Sphere method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.gravity.PointMass.gravitational_gradient.html#geoana.gravity.PointMass.gravitational_gradient">gravitational_gradient() (geoana.gravity.PointMass method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.gravity.Prism.gravitational_gradient.html#geoana.gravity.Prism.gravitational_gradient">(geoana.gravity.Prism method)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.Sphere.gravitational_gradient.html#geoana.gravity.Sphere.gravitational_gradient">(geoana.gravity.Sphere method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.gravity.PointMass.gravitational_potential.html#geoana.gravity.PointMass.gravitational_potential">gravitational_potential() (geoana.gravity.PointMass method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.gravity.Prism.gravitational_potential.html#geoana.gravity.Prism.gravitational_potential">(geoana.gravity.Prism method)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.Sphere.gravitational_potential.html#geoana.gravity.Sphere.gravitational_potential">(geoana.gravity.Sphere method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.html#geoana.em.fdem.HarmonicPlaneWave">HarmonicPlaneWave (class in geoana.em.fdem)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.tdem.reference.hp_from_vert_4_72.html#geoana.em.tdem.reference.hp_from_vert_4_72">hp_from_vert_4_72() (in module geoana.em.tdem.reference)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.reference.hz_from_vert_4_69a.html#geoana.em.tdem.reference.hz_from_vert_4_69a">hz_from_vert_4_69a() (in module geoana.em.tdem.reference)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.length.html#geoana.earthquake.oksar.Oksar.length">length (geoana.earthquake.oksar.Oksar property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.BaseElectricDipole.length.html#geoana.em.BaseElectricDipole.length">(geoana.em.BaseElectricDipole property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.length.html#geoana.em.fdem.ElectricDipoleWholeSpace.length">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.length.html#geoana.em.tdem.ElectricDipoleWholeSpace.length">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.html#geoana.em.static.LineCurrentFreeSpace">LineCurrentFreeSpace (in module geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.html#geoana.em.static.LineCurrentWholeSpace">LineCurrentWholeSpace (class in geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.local_earth_radius.html#geoana.earthquake.oksar.EarthquakeInterferogram.local_earth_radius">local_earth_radius (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.local_rigidity.html#geoana.earthquake.oksar.EarthquakeInterferogram.local_rigidity">local_rigidity (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.location.html#geoana.earthquake.oksar.EarthquakeInterferogram.location">location (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.BaseDipole.location.html#geoana.em.BaseDipole.location">(geoana.em.BaseDipole property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.BaseElectricDipole.location.html#geoana.em.BaseElectricDipole.location">(geoana.em.BaseElectricDipole property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.BaseMagneticDipole.location.html#geoana.em.BaseMagneticDipole.location">(geoana.em.BaseMagneticDipole property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.location.html#geoana.em.fdem.ElectricDipoleWholeSpace.location">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.location.html#geoana.em.fdem.MagneticDipoleHalfSpace.location">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.location.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.location">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.location.html#geoana.em.fdem.MagneticDipoleWholeSpace.location">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.location.html#geoana.em.static.CircularLoopWholeSpace.location">(geoana.em.static.CircularLoopWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.location.html#geoana.em.static.ElectrostaticSphere.location">(geoana.em.static.ElectrostaticSphere property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.location.html#geoana.em.static.MagneticDipoleWholeSpace.location">(geoana.em.static.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.location.html#geoana.em.static.MagneticPoleWholeSpace.location">(geoana.em.static.MagneticPoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPrism.location.html#geoana.em.static.MagneticPrism.location">(geoana.em.static.MagneticPrism property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagnetostaticSphere.location.html#geoana.em.static.MagnetostaticSphere.location">(geoana.em.static.MagnetostaticSphere property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentHalfSpace.location.html#geoana.em.static.PointCurrentHalfSpace.location">(geoana.em.static.PointCurrentHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.location.html#geoana.em.static.PointCurrentWholeSpace.location">(geoana.em.static.PointCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.location.html#geoana.em.tdem.ElectricDipoleWholeSpace.location">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.location.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.location">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.PointMass.location.html#geoana.gravity.PointMass.location">(geoana.gravity.PointMass property)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.Prism.location.html#geoana.gravity.Prism.location">(geoana.gravity.Prism property)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.Sphere.location.html#geoana.gravity.Sphere.location">(geoana.gravity.Sphere property)</a>
+</li>
+        <li><a href="api/generated/geoana.shapes.BasePrism.location.html#geoana.shapes.BasePrism.location">(geoana.shapes.BasePrism property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.static.DipoleHalfSpace.location_a.html#geoana.em.static.DipoleHalfSpace.location_a">location_a (geoana.em.static.DipoleHalfSpace property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.DipoleHalfSpace.location_b.html#geoana.em.static.DipoleHalfSpace.location_b">location_b (geoana.em.static.DipoleHalfSpace property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.location_UTM_zone.html#geoana.earthquake.oksar.EarthquakeInterferogram.location_UTM_zone">location_UTM_zone (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.magnetic_field.html#geoana.em.fdem.ElectricDipoleWholeSpace.magnetic_field">magnetic_field() (geoana.em.fdem.ElectricDipoleWholeSpace method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.magnetic_field.html#geoana.em.fdem.HarmonicPlaneWave.magnetic_field">(geoana.em.fdem.HarmonicPlaneWave method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.magnetic_field.html#geoana.em.fdem.MagneticDipoleHalfSpace.magnetic_field">(geoana.em.fdem.MagneticDipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.magnetic_field.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.magnetic_field">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.magnetic_field.html#geoana.em.fdem.MagneticDipoleWholeSpace.magnetic_field">(geoana.em.fdem.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.magnetic_field.html#geoana.em.static.CircularLoopWholeSpace.magnetic_field">(geoana.em.static.CircularLoopWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.magnetic_field.html#geoana.em.static.LineCurrentFreeSpace.magnetic_field">(geoana.em.static.LineCurrentFreeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.magnetic_field.html#geoana.em.static.LineCurrentWholeSpace.magnetic_field">(geoana.em.static.LineCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.magnetic_field.html#geoana.em.static.MagneticDipoleWholeSpace.magnetic_field">(geoana.em.static.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.magnetic_field.html#geoana.em.static.MagneticPoleWholeSpace.magnetic_field">(geoana.em.static.MagneticPoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPrism.magnetic_field.html#geoana.em.static.MagneticPrism.magnetic_field">(geoana.em.static.MagneticPrism method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagnetostaticSphere.magnetic_field.html#geoana.em.static.MagnetostaticSphere.magnetic_field">(geoana.em.static.MagnetostaticSphere method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.magnetic_field.html#geoana.em.static.PointCurrentWholeSpace.magnetic_field">(geoana.em.static.PointCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_field.html#geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_field">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.magnetic_field.html#geoana.em.tdem.TransientPlaneWave.magnetic_field">(geoana.em.tdem.TransientPlaneWave method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_field.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_field">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.static.MagneticPrism.magnetic_field_gradient.html#geoana.em.static.MagneticPrism.magnetic_field_gradient">magnetic_field_gradient() (geoana.em.static.MagneticPrism method)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_field_time_deriv.html#geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_field_time_deriv">magnetic_field_time_deriv() (geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.magnetic_field_time_deriv_magnetic_dipole.html#geoana.em.tdem.magnetic_field_time_deriv_magnetic_dipole">magnetic_field_time_deriv_magnetic_dipole() (in module geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_field_time_derivative.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_field_time_derivative">magnetic_field_time_derivative() (geoana.em.tdem.VerticalMagneticDipoleHalfSpace method)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.magnetic_field_vertical_magnetic_dipole.html#geoana.em.tdem.magnetic_field_vertical_magnetic_dipole">magnetic_field_vertical_magnetic_dipole() (in module geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.magnetic_flux_density.html#geoana.em.fdem.ElectricDipoleWholeSpace.magnetic_flux_density">magnetic_flux_density() (geoana.em.fdem.ElectricDipoleWholeSpace method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.magnetic_flux_density.html#geoana.em.fdem.HarmonicPlaneWave.magnetic_flux_density">(geoana.em.fdem.HarmonicPlaneWave method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.magnetic_flux_density.html#geoana.em.fdem.MagneticDipoleWholeSpace.magnetic_flux_density">(geoana.em.fdem.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.magnetic_flux_density.html#geoana.em.static.CircularLoopWholeSpace.magnetic_flux_density">(geoana.em.static.CircularLoopWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.magnetic_flux_density.html#geoana.em.static.LineCurrentFreeSpace.magnetic_flux_density">(geoana.em.static.LineCurrentFreeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.magnetic_flux_density.html#geoana.em.static.LineCurrentWholeSpace.magnetic_flux_density">(geoana.em.static.LineCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.magnetic_flux_density.html#geoana.em.static.MagneticDipoleWholeSpace.magnetic_flux_density">(geoana.em.static.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.magnetic_flux_density.html#geoana.em.static.MagneticPoleWholeSpace.magnetic_flux_density">(geoana.em.static.MagneticPoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPrism.magnetic_flux_density.html#geoana.em.static.MagneticPrism.magnetic_flux_density">(geoana.em.static.MagneticPrism method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagnetostaticSphere.magnetic_flux_density.html#geoana.em.static.MagnetostaticSphere.magnetic_flux_density">(geoana.em.static.MagnetostaticSphere method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.magnetic_flux_density.html#geoana.em.static.PointCurrentWholeSpace.magnetic_flux_density">(geoana.em.static.PointCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_flux_density.html#geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_flux_density">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.magnetic_flux_density.html#geoana.em.tdem.TransientPlaneWave.magnetic_flux_density">(geoana.em.tdem.TransientPlaneWave method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_flux_density.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_flux_density">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_flux_density_time_deriv.html#geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_flux_density_time_deriv">magnetic_flux_density_time_deriv() (geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.magnetic_flux_time_deriv_magnetic_dipole.html#geoana.em.tdem.magnetic_flux_time_deriv_magnetic_dipole">magnetic_flux_time_deriv_magnetic_dipole() (in module geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_flux_time_derivative.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_flux_time_derivative">magnetic_flux_time_derivative() (geoana.em.tdem.VerticalMagneticDipoleHalfSpace method)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.magnetic_flux_vertical_magnetic_dipole.html#geoana.em.tdem.magnetic_flux_vertical_magnetic_dipole">magnetic_flux_vertical_magnetic_dipole() (in module geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.html#geoana.em.fdem.MagneticDipoleHalfSpace">MagneticDipoleHalfSpace (class in geoana.em.fdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace">MagneticDipoleLayeredHalfSpace (class in geoana.em.fdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.html#geoana.em.fdem.MagneticDipoleWholeSpace">MagneticDipoleWholeSpace (class in geoana.em.fdem)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.html#geoana.em.static.MagneticDipoleWholeSpace">(class in geoana.em.static)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.html#geoana.em.static.MagneticPoleWholeSpace">MagneticPoleWholeSpace (class in geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.MagneticPrism.html#geoana.em.static.MagneticPrism">MagneticPrism (class in geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.MagneticPrism.magnetization.html#geoana.em.static.MagneticPrism.magnetization">magnetization (geoana.em.static.MagneticPrism property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.MagnetostaticSphere.html#geoana.em.static.MagnetostaticSphere">MagnetostaticSphere (class in geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.gravity.PointMass.mass.html#geoana.gravity.PointMass.mass">mass (geoana.gravity.PointMass property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.gravity.Prism.mass.html#geoana.gravity.Prism.mass">(geoana.gravity.Prism property)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.Sphere.mass.html#geoana.gravity.Sphere.mass">(geoana.gravity.Sphere property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.static.MagneticPrism.max_location.html#geoana.em.static.MagneticPrism.max_location">max_location (geoana.em.static.MagneticPrism property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.gravity.Prism.max_location.html#geoana.gravity.Prism.max_location">(geoana.gravity.Prism property)</a>
+</li>
+        <li><a href="api/generated/geoana.shapes.BasePrism.max_location.html#geoana.shapes.BasePrism.max_location">(geoana.shapes.BasePrism property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.static.MagneticPrism.min_location.html#geoana.em.static.MagneticPrism.min_location">min_location (geoana.em.static.MagneticPrism property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.gravity.Prism.min_location.html#geoana.gravity.Prism.min_location">(geoana.gravity.Prism property)</a>
+</li>
+        <li><a href="api/generated/geoana.shapes.BasePrism.min_location.html#geoana.shapes.BasePrism.min_location">(geoana.shapes.BasePrism property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.utils.mkvc.html#geoana.utils.mkvc">mkvc() (in module geoana.utils)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="api/geoana.earthquake.oksar.html#module-geoana.earthquake">geoana.earthquake</a>
+</li>
+        <li><a href="api/geoana.em.base.html#module-geoana.em">geoana.em</a>
+</li>
+        <li><a href="api/geoana.em.fdem.html#module-geoana.em.fdem">geoana.em.fdem</a>
+</li>
+        <li><a href="api/geoana.em.static.html#module-geoana.em.static">geoana.em.static</a>
+</li>
+        <li><a href="api/geoana.em.tdem.html#module-geoana.em.tdem">geoana.em.tdem</a>
+</li>
+        <li><a href="api/geoana.gravity.html#module-geoana.gravity">geoana.gravity</a>
+</li>
+        <li><a href="api/geoana.kernels.html#module-geoana.kernels">geoana.kernels</a>
+</li>
+        <li><a href="api/geoana.plotting_utils.html#module-geoana.plotting_utils">geoana.plotting_utils</a>
+</li>
+        <li><a href="api/geoana.shapes.html#module-geoana.shapes">geoana.shapes</a>
+</li>
+        <li><a href="api/geoana.spatial.html#module-geoana.spatial">geoana.spatial</a>
+</li>
+        <li><a href="api/geoana.utils.html#module-geoana.utils">geoana.utils</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.BaseMagneticDipole.moment.html#geoana.em.BaseMagneticDipole.moment">moment (geoana.em.BaseMagneticDipole property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.moment.html#geoana.em.fdem.MagneticDipoleHalfSpace.moment">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.moment.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.moment">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.moment.html#geoana.em.fdem.MagneticDipoleWholeSpace.moment">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.moment.html#geoana.em.static.MagneticDipoleWholeSpace.moment">(geoana.em.static.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.moment.html#geoana.em.static.MagneticPoleWholeSpace.moment">(geoana.em.static.MagneticPoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPrism.moment.html#geoana.em.static.MagneticPrism.moment">(geoana.em.static.MagneticPrism property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.moment.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.moment">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.mu.html#geoana.earthquake.oksar.Oksar.mu">mu (geoana.earthquake.oksar.Oksar property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.BaseEM.mu.html#geoana.em.BaseEM.mu">(geoana.em.BaseEM property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.BaseFDEM.mu.html#geoana.em.fdem.BaseFDEM.mu">(geoana.em.fdem.BaseFDEM property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.mu.html#geoana.em.fdem.ElectricDipoleWholeSpace.mu">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.mu.html#geoana.em.fdem.HarmonicPlaneWave.mu">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.mu.html#geoana.em.fdem.MagneticDipoleHalfSpace.mu">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.mu.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.mu">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.mu.html#geoana.em.fdem.MagneticDipoleWholeSpace.mu">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.mu.html#geoana.em.static.CircularLoopWholeSpace.mu">(geoana.em.static.CircularLoopWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.mu.html#geoana.em.static.LineCurrentFreeSpace.mu">(geoana.em.static.LineCurrentFreeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.mu.html#geoana.em.static.LineCurrentWholeSpace.mu">(geoana.em.static.LineCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.mu.html#geoana.em.static.MagneticDipoleWholeSpace.mu">(geoana.em.static.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.mu.html#geoana.em.static.MagneticPoleWholeSpace.mu">(geoana.em.static.MagneticPoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.mu.html#geoana.em.static.PointCurrentWholeSpace.mu">(geoana.em.static.PointCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.BaseTDEM.mu.html#geoana.em.tdem.BaseTDEM.mu">(geoana.em.tdem.BaseTDEM property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.mu.html#geoana.em.tdem.ElectricDipoleWholeSpace.mu">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.mu.html#geoana.em.tdem.TransientPlaneWave.mu">(geoana.em.tdem.TransientPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.mu.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.mu">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.static.MagnetostaticSphere.mu_background.html#geoana.em.static.MagnetostaticSphere.mu_background">mu_background (geoana.em.static.MagnetostaticSphere property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.MagnetostaticSphere.mu_sphere.html#geoana.em.static.MagnetostaticSphere.mu_sphere">mu_sphere (geoana.em.static.MagnetostaticSphere property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.BaseLineCurrent.n_segments.html#geoana.em.BaseLineCurrent.n_segments">n_segments (geoana.em.BaseLineCurrent property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.n_segments.html#geoana.em.static.LineCurrentFreeSpace.n_segments">(geoana.em.static.LineCurrentFreeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.n_segments.html#geoana.em.static.LineCurrentWholeSpace.n_segments">(geoana.em.static.LineCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.n_segments.html#geoana.em.static.PointCurrentWholeSpace.n_segments">(geoana.em.static.PointCurrentWholeSpace property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.utils.ndgrid.html#geoana.utils.ndgrid">ndgrid() (in module geoana.utils)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseLineCurrent.nodes.html#geoana.em.BaseLineCurrent.nodes">nodes (geoana.em.BaseLineCurrent property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.nodes.html#geoana.em.static.LineCurrentFreeSpace.nodes">(geoana.em.static.LineCurrentFreeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.nodes.html#geoana.em.static.LineCurrentWholeSpace.nodes">(geoana.em.static.LineCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.nodes.html#geoana.em.static.PointCurrentWholeSpace.nodes">(geoana.em.static.PointCurrentWholeSpace property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.O.html#geoana.earthquake.oksar.Oksar.O">O (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.html#geoana.earthquake.oksar.Oksar">Oksar (class in geoana.earthquake.oksar)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.BaseFDEM.omega.html#geoana.em.fdem.BaseFDEM.omega">omega (geoana.em.fdem.BaseFDEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.omega.html#geoana.em.fdem.ElectricDipoleWholeSpace.omega">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.omega.html#geoana.em.fdem.HarmonicPlaneWave.omega">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.omega.html#geoana.em.fdem.MagneticDipoleHalfSpace.omega">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.omega.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.omega">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.omega.html#geoana.em.fdem.MagneticDipoleWholeSpace.omega">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.fdem.omega.html#geoana.em.fdem.omega">omega() (in module geoana.em.fdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseDipole.orientation.html#geoana.em.BaseDipole.orientation">orientation (geoana.em.BaseDipole property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.BaseElectricDipole.orientation.html#geoana.em.BaseElectricDipole.orientation">(geoana.em.BaseElectricDipole property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.BaseMagneticDipole.orientation.html#geoana.em.BaseMagneticDipole.orientation">(geoana.em.BaseMagneticDipole property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.orientation.html#geoana.em.fdem.ElectricDipoleWholeSpace.orientation">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.orientation.html#geoana.em.fdem.HarmonicPlaneWave.orientation">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.orientation.html#geoana.em.fdem.MagneticDipoleHalfSpace.orientation">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.orientation.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.orientation">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.orientation.html#geoana.em.fdem.MagneticDipoleWholeSpace.orientation">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.orientation.html#geoana.em.static.CircularLoopWholeSpace.orientation">(geoana.em.static.CircularLoopWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.orientation.html#geoana.em.static.MagneticDipoleWholeSpace.orientation">(geoana.em.static.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.orientation.html#geoana.em.static.MagneticPoleWholeSpace.orientation">(geoana.em.static.MagneticPoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.orientation.html#geoana.em.tdem.ElectricDipoleWholeSpace.orientation">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.orientation.html#geoana.em.tdem.TransientPlaneWave.orientation">(geoana.em.tdem.TransientPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.orientation.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.orientation">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.tdem.BaseTDEM.peak_time.html#geoana.em.tdem.BaseTDEM.peak_time">peak_time() (geoana.em.tdem.BaseTDEM method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.peak_time.html#geoana.em.tdem.ElectricDipoleWholeSpace.peak_time">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.peak_time.html#geoana.em.tdem.TransientPlaneWave.peak_time">(geoana.em.tdem.TransientPlaneWave method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.peak_time.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.peak_time">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.peak_time.html#geoana.em.tdem.peak_time">(in module geoana.em.tdem)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.pixel_size.html#geoana.earthquake.oksar.EarthquakeInterferogram.pixel_size">pixel_size (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.plotting_utils.plot2Ddata.html#geoana.plotting_utils.plot2Ddata">plot2Ddata() (in module geoana.plotting_utils)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.plot_displacement.html#geoana.earthquake.oksar.Oksar.plot_displacement">plot_displacement() (geoana.earthquake.oksar.Oksar method)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.plot_interferogram.html#geoana.earthquake.oksar.EarthquakeInterferogram.plot_interferogram">plot_interferogram() (geoana.earthquake.oksar.EarthquakeInterferogram method)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.plot_mask.html#geoana.earthquake.oksar.EarthquakeInterferogram.plot_mask">plot_mask() (geoana.earthquake.oksar.EarthquakeInterferogram method)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.PointCurrentHalfSpace.html#geoana.em.static.PointCurrentHalfSpace">PointCurrentHalfSpace (class in geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.html#geoana.em.static.PointCurrentWholeSpace">PointCurrentWholeSpace (class in geoana.em.static)</a>
+</li>
+      <li><a href="api/generated/geoana.gravity.PointMass.html#geoana.gravity.PointMass">PointMass (class in geoana.gravity)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.DipoleHalfSpace.potential.html#geoana.em.static.DipoleHalfSpace.potential">potential() (geoana.em.static.DipoleHalfSpace method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.potential.html#geoana.em.static.ElectrostaticSphere.potential">(geoana.em.static.ElectrostaticSphere method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagnetostaticSphere.potential.html#geoana.em.static.MagnetostaticSphere.potential">(geoana.em.static.MagnetostaticSphere method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentHalfSpace.potential.html#geoana.em.static.PointCurrentHalfSpace.potential">(geoana.em.static.PointCurrentHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.potential.html#geoana.em.static.PointCurrentWholeSpace.potential">(geoana.em.static.PointCurrentWholeSpace method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.primary_field.html#geoana.em.static.ElectrostaticSphere.primary_field">primary_field (geoana.em.static.ElectrostaticSphere property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.static.MagnetostaticSphere.primary_field.html#geoana.em.static.MagnetostaticSphere.primary_field">(geoana.em.static.MagnetostaticSphere property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.gravity.Prism.html#geoana.gravity.Prism">Prism (class in geoana.gravity)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.prism_f.html#geoana.kernels.prism_f">prism_f (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.prism_fxxy.html#geoana.kernels.prism_fxxy">prism_fxxy (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.prism_fxxz.html#geoana.kernels.prism_fxxz">prism_fxxz (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.prism_fxyz.html#geoana.kernels.prism_fxyz">prism_fxyz (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.prism_fz.html#geoana.kernels.prism_fz">prism_fz (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.prism_fzx.html#geoana.kernels.prism_fzx">prism_fzx (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.prism_fzy.html#geoana.kernels.prism_fzy">prism_fzy (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.prism_fzz.html#geoana.kernels.prism_fzz">prism_fzz (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.prism_fzzz.html#geoana.kernels.prism_fzzz">prism_fzzz (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.processed_by.html#geoana.earthquake.oksar.EarthquakeInterferogram.processed_by">processed_by (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.processed_date.html#geoana.earthquake.oksar.EarthquakeInterferogram.processed_date">processed_date (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.radius.html#geoana.em.static.CircularLoopWholeSpace.radius">radius (geoana.em.static.CircularLoopWholeSpace property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.radius.html#geoana.em.static.ElectrostaticSphere.radius">(geoana.em.static.ElectrostaticSphere property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagnetostaticSphere.radius.html#geoana.em.static.MagnetostaticSphere.radius">(geoana.em.static.MagnetostaticSphere property)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.Sphere.radius.html#geoana.gravity.Sphere.radius">(geoana.gravity.Sphere property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.rake.html#geoana.earthquake.oksar.Oksar.rake">rake (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.ref.html#geoana.earthquake.oksar.EarthquakeInterferogram.ref">ref (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.ref_incidence.html#geoana.earthquake.oksar.EarthquakeInterferogram.ref_incidence">ref_incidence (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.spatial.repeat_scalar.html#geoana.spatial.repeat_scalar">repeat_scalar() (in module geoana.spatial)</a>
+</li>
+      <li><a href="api/generated/geoana.utils.requires.html#geoana.utils.requires">requires() (in module geoana.utils)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseEM.rho.html#geoana.em.BaseEM.rho">rho (geoana.em.BaseEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.BaseFDEM.rho.html#geoana.em.fdem.BaseFDEM.rho">(geoana.em.fdem.BaseFDEM property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.rho.html#geoana.em.fdem.ElectricDipoleWholeSpace.rho">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.rho.html#geoana.em.fdem.HarmonicPlaneWave.rho">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.rho.html#geoana.em.fdem.MagneticDipoleHalfSpace.rho">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.rho.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.rho">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.rho.html#geoana.em.fdem.MagneticDipoleWholeSpace.rho">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.rho.html#geoana.em.static.CircularLoopWholeSpace.rho">(geoana.em.static.CircularLoopWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.DipoleHalfSpace.rho.html#geoana.em.static.DipoleHalfSpace.rho">(geoana.em.static.DipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.rho.html#geoana.em.static.LineCurrentFreeSpace.rho">(geoana.em.static.LineCurrentFreeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.rho.html#geoana.em.static.LineCurrentWholeSpace.rho">(geoana.em.static.LineCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.rho.html#geoana.em.static.MagneticDipoleWholeSpace.rho">(geoana.em.static.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.rho.html#geoana.em.static.MagneticPoleWholeSpace.rho">(geoana.em.static.MagneticPoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentHalfSpace.rho.html#geoana.em.static.PointCurrentHalfSpace.rho">(geoana.em.static.PointCurrentHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.rho.html#geoana.em.static.PointCurrentWholeSpace.rho">(geoana.em.static.PointCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.BaseTDEM.rho.html#geoana.em.tdem.BaseTDEM.rho">(geoana.em.tdem.BaseTDEM property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.rho.html#geoana.em.tdem.ElectricDipoleWholeSpace.rho">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.rho.html#geoana.em.tdem.TransientPlaneWave.rho">(geoana.em.tdem.TransientPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.rho.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.rho">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.Prism.rho.html#geoana.gravity.Prism.rho">(geoana.gravity.Prism property)</a>
+</li>
+        <li><a href="api/generated/geoana.gravity.Sphere.rho.html#geoana.gravity.Sphere.rho">(geoana.gravity.Sphere property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.spatial.rotate_points_from_normals.html#geoana.spatial.rotate_points_from_normals">rotate_points_from_normals() (in module geoana.spatial)</a>
+</li>
+      <li><a href="api/generated/geoana.spatial.rotation_matrix_from_normals.html#geoana.spatial.rotation_matrix_from_normals">rotation_matrix_from_normals() (in module geoana.spatial)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.rTE_forward.html#geoana.kernels.rTE_forward">rTE_forward() (in module geoana.kernels)</a>
+</li>
+      <li><a href="api/generated/geoana.kernels.rTE_gradient.html#geoana.kernels.rTE_gradient">rTE_gradient() (in module geoana.kernels)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.satellite_altitude.html#geoana.earthquake.oksar.EarthquakeInterferogram.satellite_altitude">satellite_altitude (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.satellite_azimuth.html#geoana.earthquake.oksar.EarthquakeInterferogram.satellite_azimuth">satellite_azimuth (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.satellite_fringe_interval.html#geoana.earthquake.oksar.EarthquakeInterferogram.satellite_fringe_interval">satellite_fringe_interval (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.satellite_name.html#geoana.earthquake.oksar.EarthquakeInterferogram.satellite_name">satellite_name (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.scalar_potential.html#geoana.em.static.LineCurrentFreeSpace.scalar_potential">scalar_potential() (geoana.em.static.LineCurrentFreeSpace method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.scalar_potential.html#geoana.em.static.LineCurrentWholeSpace.scalar_potential">(geoana.em.static.LineCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPrism.scalar_potential.html#geoana.em.static.MagneticPrism.scalar_potential">(geoana.em.static.MagneticPrism method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.scalar_potential.html#geoana.em.static.PointCurrentWholeSpace.scalar_potential">(geoana.em.static.PointCurrentWholeSpace method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.scaling.html#geoana.earthquake.oksar.EarthquakeInterferogram.scaling">scaling (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.shape.html#geoana.earthquake.oksar.EarthquakeInterferogram.shape">shape (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.earthquake.oksar.Oksar.shape.html#geoana.earthquake.oksar.Oksar.shape">(geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.BaseEM.sigma.html#geoana.em.BaseEM.sigma">sigma (geoana.em.BaseEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.BaseFDEM.sigma.html#geoana.em.fdem.BaseFDEM.sigma">(geoana.em.fdem.BaseFDEM property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.sigma.html#geoana.em.fdem.ElectricDipoleWholeSpace.sigma">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.sigma.html#geoana.em.fdem.HarmonicPlaneWave.sigma">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.sigma.html#geoana.em.fdem.MagneticDipoleHalfSpace.sigma">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.sigma.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.sigma">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.sigma.html#geoana.em.fdem.MagneticDipoleWholeSpace.sigma">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.sigma.html#geoana.em.static.CircularLoopWholeSpace.sigma">(geoana.em.static.CircularLoopWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.sigma.html#geoana.em.static.LineCurrentFreeSpace.sigma">(geoana.em.static.LineCurrentFreeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.sigma.html#geoana.em.static.LineCurrentWholeSpace.sigma">(geoana.em.static.LineCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.sigma.html#geoana.em.static.MagneticDipoleWholeSpace.sigma">(geoana.em.static.MagneticDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.sigma.html#geoana.em.static.MagneticPoleWholeSpace.sigma">(geoana.em.static.MagneticPoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.sigma.html#geoana.em.static.PointCurrentWholeSpace.sigma">(geoana.em.static.PointCurrentWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.BaseTDEM.sigma.html#geoana.em.tdem.BaseTDEM.sigma">(geoana.em.tdem.BaseTDEM property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.sigma.html#geoana.em.tdem.ElectricDipoleWholeSpace.sigma">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.sigma.html#geoana.em.tdem.TransientPlaneWave.sigma">(geoana.em.tdem.TransientPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.sigma.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.sigma">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.sigma_background.html#geoana.em.static.ElectrostaticSphere.sigma_background">sigma_background (geoana.em.static.ElectrostaticSphere property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.BaseFDEM.sigma_hat.html#geoana.em.fdem.BaseFDEM.sigma_hat">sigma_hat (geoana.em.fdem.BaseFDEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.sigma_hat.html#geoana.em.fdem.ElectricDipoleWholeSpace.sigma_hat">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.sigma_hat.html#geoana.em.fdem.HarmonicPlaneWave.sigma_hat">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.sigma_hat.html#geoana.em.fdem.MagneticDipoleHalfSpace.sigma_hat">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.sigma_hat.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.sigma_hat">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.sigma_hat.html#geoana.em.fdem.MagneticDipoleWholeSpace.sigma_hat">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.fdem.sigma_hat.html#geoana.em.fdem.sigma_hat">sigma_hat() (in module geoana.em.fdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.ElectrostaticSphere.sigma_sphere.html#geoana.em.static.ElectrostaticSphere.sigma_sphere">sigma_sphere (geoana.em.static.ElectrostaticSphere property)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.simulation_grid.html#geoana.earthquake.oksar.Oksar.simulation_grid">simulation_grid (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.BaseFDEM.skin_depth.html#geoana.em.fdem.BaseFDEM.skin_depth">skin_depth (geoana.em.fdem.BaseFDEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.skin_depth.html#geoana.em.fdem.ElectricDipoleWholeSpace.skin_depth">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.skin_depth.html#geoana.em.fdem.HarmonicPlaneWave.skin_depth">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.skin_depth.html#geoana.em.fdem.MagneticDipoleHalfSpace.skin_depth">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.skin_depth.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.skin_depth">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.skin_depth.html#geoana.em.fdem.MagneticDipoleWholeSpace.skin_depth">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.fdem.skin_depth.html#geoana.em.fdem.skin_depth">skin_depth() (in module geoana.em.fdem)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.slip.html#geoana.earthquake.oksar.Oksar.slip">slip (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.gravity.Sphere.html#geoana.gravity.Sphere">Sphere (class in geoana.gravity)</a>
+</li>
+      <li><a href="api/generated/geoana.spatial.spherical_to_cartesian.html#geoana.spatial.spherical_to_cartesian">spherical_to_cartesian() (in module geoana.spatial)</a>
+</li>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.strike.html#geoana.earthquake.oksar.Oksar.strike">strike (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.tdem.BaseTDEM.theta.html#geoana.em.tdem.BaseTDEM.theta">theta (geoana.em.tdem.BaseTDEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.theta.html#geoana.em.tdem.ElectricDipoleWholeSpace.theta">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.theta.html#geoana.em.tdem.TransientPlaneWave.theta">(geoana.em.tdem.TransientPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.theta.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.theta">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.tdem.theta.html#geoana.em.tdem.theta">theta() (in module geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.thickness.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.thickness">thickness (geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.tdem.BaseTDEM.time.html#geoana.em.tdem.BaseTDEM.time">time (geoana.em.tdem.BaseTDEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.time.html#geoana.em.tdem.ElectricDipoleWholeSpace.time">(geoana.em.tdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.time.html#geoana.em.tdem.TransientPlaneWave.time">(geoana.em.tdem.TransientPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.time.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.time">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.earthquake.oksar.EarthquakeInterferogram.title.html#geoana.earthquake.oksar.EarthquakeInterferogram.title">title (geoana.earthquake.oksar.EarthquakeInterferogram property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.TransientPlaneWave.html#geoana.em.tdem.TransientPlaneWave">TransientPlaneWave (class in geoana.em.tdem)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.U.html#geoana.earthquake.oksar.Oksar.U">U (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.earthquake.oksar.Oksar.V.html#geoana.earthquake.oksar.Oksar.V">V (geoana.earthquake.oksar.Oksar property)</a>
+</li>
+      <li><a href="api/generated/geoana.em.BaseDipole.vector_distance.html#geoana.em.BaseDipole.vector_distance">vector_distance() (geoana.em.BaseDipole method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.BaseElectricDipole.vector_distance.html#geoana.em.BaseElectricDipole.vector_distance">(geoana.em.BaseElectricDipole method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.BaseMagneticDipole.vector_distance.html#geoana.em.BaseMagneticDipole.vector_distance">(geoana.em.BaseMagneticDipole method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.vector_distance.html#geoana.em.fdem.ElectricDipoleWholeSpace.vector_distance">(geoana.em.fdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.vector_distance.html#geoana.em.fdem.MagneticDipoleHalfSpace.vector_distance">(geoana.em.fdem.MagneticDipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.vector_distance.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.vector_distance">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.vector_distance.html#geoana.em.fdem.MagneticDipoleWholeSpace.vector_distance">(geoana.em.fdem.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.vector_distance.html#geoana.em.static.CircularLoopWholeSpace.vector_distance">(geoana.em.static.CircularLoopWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.vector_distance.html#geoana.em.static.MagneticDipoleWholeSpace.vector_distance">(geoana.em.static.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticPoleWholeSpace.vector_distance.html#geoana.em.static.MagneticPoleWholeSpace.vector_distance">(geoana.em.static.MagneticPoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.vector_distance.html#geoana.em.tdem.ElectricDipoleWholeSpace.vector_distance">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.vector_distance.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace.vector_distance">(geoana.em.tdem.VerticalMagneticDipoleHalfSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.spatial.vector_distance.html#geoana.spatial.vector_distance">(in module geoana.spatial)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.spatial.vector_dot.html#geoana.spatial.vector_dot">vector_dot() (in module geoana.spatial)</a>
+</li>
+      <li><a href="api/generated/geoana.spatial.vector_magnitude.html#geoana.spatial.vector_magnitude">vector_magnitude() (in module geoana.spatial)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.vector_potential.html#geoana.em.fdem.ElectricDipoleWholeSpace.vector_potential">vector_potential() (geoana.em.fdem.ElectricDipoleWholeSpace method)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.vector_potential.html#geoana.em.fdem.MagneticDipoleWholeSpace.vector_potential">(geoana.em.fdem.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.CircularLoopWholeSpace.vector_potential.html#geoana.em.static.CircularLoopWholeSpace.vector_potential">(geoana.em.static.CircularLoopWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentFreeSpace.vector_potential.html#geoana.em.static.LineCurrentFreeSpace.vector_potential">(geoana.em.static.LineCurrentFreeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.LineCurrentWholeSpace.vector_potential.html#geoana.em.static.LineCurrentWholeSpace.vector_potential">(geoana.em.static.LineCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.MagneticDipoleWholeSpace.vector_potential.html#geoana.em.static.MagneticDipoleWholeSpace.vector_potential">(geoana.em.static.MagneticDipoleWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.static.PointCurrentWholeSpace.vector_potential.html#geoana.em.static.PointCurrentWholeSpace.vector_potential">(geoana.em.static.PointCurrentWholeSpace method)</a>
+</li>
+        <li><a href="api/generated/geoana.em.tdem.ElectricDipoleWholeSpace.vector_potential.html#geoana.em.tdem.ElectricDipoleWholeSpace.vector_potential">(geoana.em.tdem.ElectricDipoleWholeSpace method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.fdem.vertical_magnetic_field_horizontal_loop.html#geoana.em.fdem.vertical_magnetic_field_horizontal_loop">vertical_magnetic_field_horizontal_loop() (in module geoana.em.fdem)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.tdem.vertical_magnetic_field_horizontal_loop.html#geoana.em.tdem.vertical_magnetic_field_horizontal_loop">(in module geoana.em.tdem)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.tdem.vertical_magnetic_field_time_deriv_horizontal_loop.html#geoana.em.tdem.vertical_magnetic_field_time_deriv_horizontal_loop">vertical_magnetic_field_time_deriv_horizontal_loop() (in module geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.fdem.vertical_magnetic_flux_horizontal_loop.html#geoana.em.fdem.vertical_magnetic_flux_horizontal_loop">vertical_magnetic_flux_horizontal_loop() (in module geoana.em.fdem)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.tdem.vertical_magnetic_flux_horizontal_loop.html#geoana.em.tdem.vertical_magnetic_flux_horizontal_loop">(in module geoana.em.tdem)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/geoana.em.tdem.vertical_magnetic_flux_time_deriv_horizontal_loop.html#geoana.em.tdem.vertical_magnetic_flux_time_deriv_horizontal_loop">vertical_magnetic_flux_time_deriv_horizontal_loop() (in module geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.tdem.VerticalMagneticDipoleHalfSpace.html#geoana.em.tdem.VerticalMagneticDipoleHalfSpace">VerticalMagneticDipoleHalfSpace (class in geoana.em.tdem)</a>
+</li>
+      <li><a href="api/generated/geoana.em.static.MagneticPrism.volume.html#geoana.em.static.MagneticPrism.volume">volume (geoana.em.static.MagneticPrism property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.gravity.Prism.volume.html#geoana.gravity.Prism.volume">(geoana.gravity.Prism property)</a>
+</li>
+        <li><a href="api/generated/geoana.shapes.BasePrism.volume.html#geoana.shapes.BasePrism.volume">(geoana.shapes.BasePrism property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.fdem.BaseFDEM.wavenumber.html#geoana.em.fdem.BaseFDEM.wavenumber">wavenumber (geoana.em.fdem.BaseFDEM property)</a>
+
+      <ul>
+        <li><a href="api/generated/geoana.em.fdem.ElectricDipoleWholeSpace.wavenumber.html#geoana.em.fdem.ElectricDipoleWholeSpace.wavenumber">(geoana.em.fdem.ElectricDipoleWholeSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.HarmonicPlaneWave.wavenumber.html#geoana.em.fdem.HarmonicPlaneWave.wavenumber">(geoana.em.fdem.HarmonicPlaneWave property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleHalfSpace.wavenumber.html#geoana.em.fdem.MagneticDipoleHalfSpace.wavenumber">(geoana.em.fdem.MagneticDipoleHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleLayeredHalfSpace.wavenumber.html#geoana.em.fdem.MagneticDipoleLayeredHalfSpace.wavenumber">(geoana.em.fdem.MagneticDipoleLayeredHalfSpace property)</a>
+</li>
+        <li><a href="api/generated/geoana.em.fdem.MagneticDipoleWholeSpace.wavenumber.html#geoana.em.fdem.MagneticDipoleWholeSpace.wavenumber">(geoana.em.fdem.MagneticDipoleWholeSpace property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/geoana.em.fdem.wavenumber.html#geoana.em.fdem.wavenumber">wavenumber() (in module geoana.em.fdem)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2017, SimPEG Team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

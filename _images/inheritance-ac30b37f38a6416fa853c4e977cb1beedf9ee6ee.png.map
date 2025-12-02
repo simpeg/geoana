@@ -1,0 +1,7 @@
+<map id="inheritance8ef683017a" name="inheritance8ef683017a">
+<area shape="rect" id="node1" href="geoana.em.BaseDipole.html#geoana.em.BaseDipole" target="_top" title="Base class for dipoles; namely the location and orientation." alt="" coords="5,5,101,33"/>
+<area shape="rect" id="node4" href="geoana.em.BaseMagneticDipole.html#geoana.em.BaseMagneticDipole" target="_top" title="Base class for magnetic dipoles." alt="" coords="149,5,304,33"/>
+<area shape="rect" id="node2" href="geoana.em.BaseEM.html#geoana.em.BaseEM" target="_top" title="Base electromagnetics class." alt="" coords="16,57,90,85"/>
+<area shape="rect" id="node3" href="geoana.em.fdem.BaseFDEM.html#geoana.em.fdem.BaseFDEM" target="_top" title="Base frequency domain electromagnetic class" alt="" coords="181,57,272,85"/>
+<area shape="rect" id="node5" href="#geoana.em.fdem.MagneticDipoleHalfSpace" target="_top" title="Class for a harmonic magnetic dipole in a wholespace." alt="" coords="352,32,541,60"/>
+</map>

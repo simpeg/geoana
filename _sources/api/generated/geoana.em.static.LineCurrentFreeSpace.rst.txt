@@ -1,0 +1,43 @@
+﻿geoana.em.static.LineCurrentFreeSpace
+=====================================
+
+.. currentmodule:: geoana.em.static
+
+.. inheritance-diagram:: LineCurrentFreeSpace
+    :parts: 1
+
+.. autoclass:: LineCurrentFreeSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         LineCurrentFreeSpace.current_density
+         LineCurrentFreeSpace.electric_field
+         LineCurrentFreeSpace.magnetic_field
+         LineCurrentFreeSpace.magnetic_flux_density
+         LineCurrentFreeSpace.scalar_potential
+         LineCurrentFreeSpace.vector_potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         LineCurrentFreeSpace.current
+         LineCurrentFreeSpace.epsilon
+         LineCurrentFreeSpace.mu
+         LineCurrentFreeSpace.n_segments
+         LineCurrentFreeSpace.nodes
+         LineCurrentFreeSpace.rho
+         LineCurrentFreeSpace.sigma
+  
+  
+
+.. minigallery:: geoana.em.static.LineCurrentFreeSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.static.LineCurrentFreeSpace``
+    :heading-level: -

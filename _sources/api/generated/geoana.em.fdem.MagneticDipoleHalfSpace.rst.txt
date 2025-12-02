@@ -1,0 +1,47 @@
+﻿geoana.em.fdem.MagneticDipoleHalfSpace
+======================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. inheritance-diagram:: MagneticDipoleHalfSpace
+    :parts: 1
+
+.. autoclass:: MagneticDipoleHalfSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         MagneticDipoleHalfSpace.cross_orientation
+         MagneticDipoleHalfSpace.distance
+         MagneticDipoleHalfSpace.dot_orientation
+         MagneticDipoleHalfSpace.magnetic_field
+         MagneticDipoleHalfSpace.vector_distance
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         MagneticDipoleHalfSpace.epsilon
+         MagneticDipoleHalfSpace.frequency
+         MagneticDipoleHalfSpace.location
+         MagneticDipoleHalfSpace.moment
+         MagneticDipoleHalfSpace.mu
+         MagneticDipoleHalfSpace.omega
+         MagneticDipoleHalfSpace.orientation
+         MagneticDipoleHalfSpace.rho
+         MagneticDipoleHalfSpace.sigma
+         MagneticDipoleHalfSpace.sigma_hat
+         MagneticDipoleHalfSpace.skin_depth
+         MagneticDipoleHalfSpace.wavenumber
+  
+  
+
+.. minigallery:: geoana.em.fdem.MagneticDipoleHalfSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.fdem.MagneticDipoleHalfSpace``
+    :heading-level: -

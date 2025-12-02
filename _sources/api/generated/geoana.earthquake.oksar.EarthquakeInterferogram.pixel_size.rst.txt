@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.pixel\_size
+===========================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: EarthquakeInterferogram.pixel_size

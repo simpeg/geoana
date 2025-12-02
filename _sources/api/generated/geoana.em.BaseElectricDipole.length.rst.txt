@@ -1,0 +1,6 @@
+geoana.em.BaseElectricDipole.length
+===================================
+
+.. currentmodule:: geoana.em
+
+.. autoproperty:: BaseElectricDipole.length

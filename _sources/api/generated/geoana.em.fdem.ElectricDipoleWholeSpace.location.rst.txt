@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.location
+================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: ElectricDipoleWholeSpace.location

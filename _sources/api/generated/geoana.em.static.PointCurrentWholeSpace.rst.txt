@@ -1,0 +1,45 @@
+﻿geoana.em.static.PointCurrentWholeSpace
+=======================================
+
+.. currentmodule:: geoana.em.static
+
+.. inheritance-diagram:: PointCurrentWholeSpace
+    :parts: 1
+
+.. autoclass:: PointCurrentWholeSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         PointCurrentWholeSpace.current_density
+         PointCurrentWholeSpace.electric_field
+         PointCurrentWholeSpace.magnetic_field
+         PointCurrentWholeSpace.magnetic_flux_density
+         PointCurrentWholeSpace.potential
+         PointCurrentWholeSpace.scalar_potential
+         PointCurrentWholeSpace.vector_potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         PointCurrentWholeSpace.current
+         PointCurrentWholeSpace.epsilon
+         PointCurrentWholeSpace.location
+         PointCurrentWholeSpace.mu
+         PointCurrentWholeSpace.n_segments
+         PointCurrentWholeSpace.nodes
+         PointCurrentWholeSpace.rho
+         PointCurrentWholeSpace.sigma
+  
+  
+
+.. minigallery:: geoana.em.static.PointCurrentWholeSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.static.PointCurrentWholeSpace``
+    :heading-level: -

@@ -1,0 +1,10 @@
+﻿geoana.em.tdem.magnetic\_field\_vertical\_magnetic\_dipole
+==========================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autofunction:: magnetic_field_vertical_magnetic_dipole
+
+.. minigallery:: geoana.em.tdem.magnetic_field_vertical_magnetic_dipole
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.magnetic_field_vertical_magnetic_dipole``
+    :heading-level: -

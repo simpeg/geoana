@@ -1,0 +1,10 @@
+﻿geoana.spatial.rotation\_matrix\_from\_normals
+==============================================
+
+.. currentmodule:: geoana.spatial
+
+.. autofunction:: rotation_matrix_from_normals
+
+.. minigallery:: geoana.spatial.rotation_matrix_from_normals
+    :add-heading: Galleries and Tutorials using ``geoana.spatial.rotation_matrix_from_normals``
+    :heading-level: -

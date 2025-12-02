@@ -1,0 +1,10 @@
+﻿geoana.em.fdem.omega
+====================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autofunction:: omega
+
+.. minigallery:: geoana.em.fdem.omega
+    :add-heading: Galleries and Tutorials using ``geoana.em.fdem.omega``
+    :heading-level: -

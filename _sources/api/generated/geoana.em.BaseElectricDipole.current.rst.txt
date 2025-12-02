@@ -1,0 +1,6 @@
+geoana.em.BaseElectricDipole.current
+====================================
+
+.. currentmodule:: geoana.em
+
+.. autoproperty:: BaseElectricDipole.current

@@ -1,0 +1,10 @@
+﻿geoana.em.fdem.wavenumber
+=========================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autofunction:: wavenumber
+
+.. minigallery:: geoana.em.fdem.wavenumber
+    :add-heading: Galleries and Tutorials using ``geoana.em.fdem.wavenumber``
+    :heading-level: -

@@ -1,0 +1,6 @@
+geoana.em.static.CircularLoopWholeSpace.radius
+==============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: CircularLoopWholeSpace.radius

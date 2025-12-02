@@ -1,0 +1,6 @@
+geoana.gravity.Prism.min\_location
+==================================
+
+.. currentmodule:: geoana.gravity
+
+.. autoproperty:: Prism.min_location

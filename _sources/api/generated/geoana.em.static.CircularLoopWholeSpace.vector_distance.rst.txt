@@ -1,0 +1,6 @@
+geoana.em.static.CircularLoopWholeSpace.vector\_distance
+========================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: CircularLoopWholeSpace.vector_distance

@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.location
+================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: ElectricDipoleWholeSpace.location

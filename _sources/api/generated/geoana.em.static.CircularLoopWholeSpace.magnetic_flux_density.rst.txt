@@ -1,0 +1,6 @@
+geoana.em.static.CircularLoopWholeSpace.magnetic\_flux\_density
+===============================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: CircularLoopWholeSpace.magnetic_flux_density

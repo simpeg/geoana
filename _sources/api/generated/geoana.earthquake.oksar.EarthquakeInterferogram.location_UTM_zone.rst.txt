@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.location\_UTM\_zone
+===================================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: EarthquakeInterferogram.location_UTM_zone

@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleHalfSpace.sigma\_hat
+=================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: MagneticDipoleHalfSpace.sigma_hat

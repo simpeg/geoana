@@ -1,0 +1,1183 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>geoana.em.fdem.BaseFDEM.frequency &#8212; geoana 0.8.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e4d102bf" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=ec16d22d"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/geoana.em.fdem.BaseFDEM.frequency';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="geoana.em.fdem.BaseFDEM.mu" href="geoana.em.fdem.BaseFDEM.mu.html" />
+    <link rel="prev" title="geoana.em.fdem.BaseFDEM.epsilon" href="geoana.em.fdem.BaseFDEM.epsilon.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.8" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">geoana 0.8.1 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/conventions.html">
+    Conventions
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://simpeg.xyz">
+    SimPEG
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="http://slack.simpeg.xyz">
+    Contact
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/simpeg/geoana" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="http://slack.simpeg.xyz/" title="Slack" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-slack fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Slack</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://simpeg.discourse.group/" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discourse</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/c/geoscixyz" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/simpegpy" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/conventions.html">
+    Conventions
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://simpeg.xyz">
+    SimPEG
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="http://slack.simpeg.xyz">
+    Contact
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/simpeg/geoana" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="http://slack.simpeg.xyz/" title="Slack" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-slack fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Slack</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://simpeg.discourse.group/" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discourse</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/c/geoscixyz" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/simpegpy" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.em.base.html">Base Electromagnetics (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.em</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.BaseEM.html">geoana.em.BaseEM</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseEM.epsilon.html">geoana.em.BaseEM.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseEM.mu.html">geoana.em.BaseEM.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseEM.rho.html">geoana.em.BaseEM.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseEM.sigma.html">geoana.em.BaseEM.sigma</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.BaseDipole.html">geoana.em.BaseDipole</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseDipole.location.html">geoana.em.BaseDipole.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseDipole.orientation.html">geoana.em.BaseDipole.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseDipole.cross_orientation.html">geoana.em.BaseDipole.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseDipole.distance.html">geoana.em.BaseDipole.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseDipole.dot_orientation.html">geoana.em.BaseDipole.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseDipole.vector_distance.html">geoana.em.BaseDipole.vector_distance</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.BaseElectricDipole.html">geoana.em.BaseElectricDipole</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseElectricDipole.current.html">geoana.em.BaseElectricDipole.current</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseElectricDipole.length.html">geoana.em.BaseElectricDipole.length</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseElectricDipole.location.html">geoana.em.BaseElectricDipole.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseElectricDipole.orientation.html">geoana.em.BaseElectricDipole.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseElectricDipole.cross_orientation.html">geoana.em.BaseElectricDipole.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseElectricDipole.distance.html">geoana.em.BaseElectricDipole.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseElectricDipole.dot_orientation.html">geoana.em.BaseElectricDipole.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseElectricDipole.vector_distance.html">geoana.em.BaseElectricDipole.vector_distance</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.BaseMagneticDipole.html">geoana.em.BaseMagneticDipole</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseMagneticDipole.location.html">geoana.em.BaseMagneticDipole.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseMagneticDipole.moment.html">geoana.em.BaseMagneticDipole.moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseMagneticDipole.orientation.html">geoana.em.BaseMagneticDipole.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseMagneticDipole.cross_orientation.html">geoana.em.BaseMagneticDipole.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseMagneticDipole.distance.html">geoana.em.BaseMagneticDipole.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseMagneticDipole.dot_orientation.html">geoana.em.BaseMagneticDipole.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseMagneticDipole.vector_distance.html">geoana.em.BaseMagneticDipole.vector_distance</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.BaseLineCurrent.html">geoana.em.BaseLineCurrent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseLineCurrent.current.html">geoana.em.BaseLineCurrent.current</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseLineCurrent.n_segments.html">geoana.em.BaseLineCurrent.n_segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.BaseLineCurrent.nodes.html">geoana.em.BaseLineCurrent.nodes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.em.static.html">Static Electromagnetics (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.em.static</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.static.LineCurrentFreeSpace.html">geoana.em.static.LineCurrentFreeSpace</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.html">geoana.em.static.LineCurrentWholeSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.current.html">geoana.em.static.LineCurrentWholeSpace.current</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.epsilon.html">geoana.em.static.LineCurrentWholeSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.mu.html">geoana.em.static.LineCurrentWholeSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.n_segments.html">geoana.em.static.LineCurrentWholeSpace.n_segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.nodes.html">geoana.em.static.LineCurrentWholeSpace.nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.rho.html">geoana.em.static.LineCurrentWholeSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.sigma.html">geoana.em.static.LineCurrentWholeSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.current_density.html">geoana.em.static.LineCurrentWholeSpace.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.electric_field.html">geoana.em.static.LineCurrentWholeSpace.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.magnetic_field.html">geoana.em.static.LineCurrentWholeSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.LineCurrentWholeSpace.magnetic_flux_density.html">geoana.em.static.LineCurrentWholeSpace.magnetic_flux_density</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.html">geoana.em.static.MagneticDipoleWholeSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.epsilon.html">geoana.em.static.MagneticDipoleWholeSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.location.html">geoana.em.static.MagneticDipoleWholeSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.moment.html">geoana.em.static.MagneticDipoleWholeSpace.moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.mu.html">geoana.em.static.MagneticDipoleWholeSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.orientation.html">geoana.em.static.MagneticDipoleWholeSpace.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.rho.html">geoana.em.static.MagneticDipoleWholeSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.sigma.html">geoana.em.static.MagneticDipoleWholeSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.cross_orientation.html">geoana.em.static.MagneticDipoleWholeSpace.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.distance.html">geoana.em.static.MagneticDipoleWholeSpace.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.dot_orientation.html">geoana.em.static.MagneticDipoleWholeSpace.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.magnetic_field.html">geoana.em.static.MagneticDipoleWholeSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.magnetic_flux_density.html">geoana.em.static.MagneticDipoleWholeSpace.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.vector_distance.html">geoana.em.static.MagneticDipoleWholeSpace.vector_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticDipoleWholeSpace.vector_potential.html">geoana.em.static.MagneticDipoleWholeSpace.vector_potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.html">geoana.em.static.MagneticPoleWholeSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.epsilon.html">geoana.em.static.MagneticPoleWholeSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.location.html">geoana.em.static.MagneticPoleWholeSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.moment.html">geoana.em.static.MagneticPoleWholeSpace.moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.mu.html">geoana.em.static.MagneticPoleWholeSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.orientation.html">geoana.em.static.MagneticPoleWholeSpace.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.rho.html">geoana.em.static.MagneticPoleWholeSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.sigma.html">geoana.em.static.MagneticPoleWholeSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.cross_orientation.html">geoana.em.static.MagneticPoleWholeSpace.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.distance.html">geoana.em.static.MagneticPoleWholeSpace.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.dot_orientation.html">geoana.em.static.MagneticPoleWholeSpace.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.magnetic_field.html">geoana.em.static.MagneticPoleWholeSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.magnetic_flux_density.html">geoana.em.static.MagneticPoleWholeSpace.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPoleWholeSpace.vector_distance.html">geoana.em.static.MagneticPoleWholeSpace.vector_distance</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.html">geoana.em.static.CircularLoopWholeSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.current.html">geoana.em.static.CircularLoopWholeSpace.current</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.epsilon.html">geoana.em.static.CircularLoopWholeSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.location.html">geoana.em.static.CircularLoopWholeSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.mu.html">geoana.em.static.CircularLoopWholeSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.orientation.html">geoana.em.static.CircularLoopWholeSpace.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.radius.html">geoana.em.static.CircularLoopWholeSpace.radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.rho.html">geoana.em.static.CircularLoopWholeSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.sigma.html">geoana.em.static.CircularLoopWholeSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.cross_orientation.html">geoana.em.static.CircularLoopWholeSpace.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.distance.html">geoana.em.static.CircularLoopWholeSpace.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.dot_orientation.html">geoana.em.static.CircularLoopWholeSpace.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.magnetic_field.html">geoana.em.static.CircularLoopWholeSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.magnetic_flux_density.html">geoana.em.static.CircularLoopWholeSpace.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.vector_distance.html">geoana.em.static.CircularLoopWholeSpace.vector_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.CircularLoopWholeSpace.vector_potential.html">geoana.em.static.CircularLoopWholeSpace.vector_potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.html">geoana.em.static.ElectrostaticSphere</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.location.html">geoana.em.static.ElectrostaticSphere.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.primary_field.html">geoana.em.static.ElectrostaticSphere.primary_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.radius.html">geoana.em.static.ElectrostaticSphere.radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.sigma_background.html">geoana.em.static.ElectrostaticSphere.sigma_background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.sigma_sphere.html">geoana.em.static.ElectrostaticSphere.sigma_sphere</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.charge_density.html">geoana.em.static.ElectrostaticSphere.charge_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.current_density.html">geoana.em.static.ElectrostaticSphere.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.electric_field.html">geoana.em.static.ElectrostaticSphere.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.ElectrostaticSphere.potential.html">geoana.em.static.ElectrostaticSphere.potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.MagnetostaticSphere.html">geoana.em.static.MagnetostaticSphere</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagnetostaticSphere.location.html">geoana.em.static.MagnetostaticSphere.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagnetostaticSphere.mu_background.html">geoana.em.static.MagnetostaticSphere.mu_background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagnetostaticSphere.mu_sphere.html">geoana.em.static.MagnetostaticSphere.mu_sphere</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagnetostaticSphere.primary_field.html">geoana.em.static.MagnetostaticSphere.primary_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagnetostaticSphere.radius.html">geoana.em.static.MagnetostaticSphere.radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagnetostaticSphere.magnetic_field.html">geoana.em.static.MagnetostaticSphere.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagnetostaticSphere.magnetic_flux_density.html">geoana.em.static.MagnetostaticSphere.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagnetostaticSphere.potential.html">geoana.em.static.MagnetostaticSphere.potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.html">geoana.em.static.PointCurrentWholeSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.current.html">geoana.em.static.PointCurrentWholeSpace.current</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.epsilon.html">geoana.em.static.PointCurrentWholeSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.location.html">geoana.em.static.PointCurrentWholeSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.mu.html">geoana.em.static.PointCurrentWholeSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.n_segments.html">geoana.em.static.PointCurrentWholeSpace.n_segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.nodes.html">geoana.em.static.PointCurrentWholeSpace.nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.rho.html">geoana.em.static.PointCurrentWholeSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.sigma.html">geoana.em.static.PointCurrentWholeSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.current_density.html">geoana.em.static.PointCurrentWholeSpace.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.electric_field.html">geoana.em.static.PointCurrentWholeSpace.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.magnetic_field.html">geoana.em.static.PointCurrentWholeSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.magnetic_flux_density.html">geoana.em.static.PointCurrentWholeSpace.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentWholeSpace.potential.html">geoana.em.static.PointCurrentWholeSpace.potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.PointCurrentHalfSpace.html">geoana.em.static.PointCurrentHalfSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentHalfSpace.current.html">geoana.em.static.PointCurrentHalfSpace.current</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentHalfSpace.location.html">geoana.em.static.PointCurrentHalfSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentHalfSpace.rho.html">geoana.em.static.PointCurrentHalfSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentHalfSpace.current_density.html">geoana.em.static.PointCurrentHalfSpace.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentHalfSpace.electric_field.html">geoana.em.static.PointCurrentHalfSpace.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.PointCurrentHalfSpace.potential.html">geoana.em.static.PointCurrentHalfSpace.potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.DipoleHalfSpace.html">geoana.em.static.DipoleHalfSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.DipoleHalfSpace.current.html">geoana.em.static.DipoleHalfSpace.current</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.DipoleHalfSpace.location_a.html">geoana.em.static.DipoleHalfSpace.location_a</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.DipoleHalfSpace.location_b.html">geoana.em.static.DipoleHalfSpace.location_b</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.DipoleHalfSpace.rho.html">geoana.em.static.DipoleHalfSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.DipoleHalfSpace.current_density.html">geoana.em.static.DipoleHalfSpace.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.DipoleHalfSpace.electric_field.html">geoana.em.static.DipoleHalfSpace.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.DipoleHalfSpace.potential.html">geoana.em.static.DipoleHalfSpace.potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.static.MagneticPrism.html">geoana.em.static.MagneticPrism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPrism.location.html">geoana.em.static.MagneticPrism.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPrism.max_location.html">geoana.em.static.MagneticPrism.max_location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPrism.min_location.html">geoana.em.static.MagneticPrism.min_location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPrism.volume.html">geoana.em.static.MagneticPrism.volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPrism.magnetic_field.html">geoana.em.static.MagneticPrism.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPrism.magnetic_field_gradient.html">geoana.em.static.MagneticPrism.magnetic_field_gradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPrism.magnetic_flux_density.html">geoana.em.static.MagneticPrism.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.static.MagneticPrism.scalar_potential.html">geoana.em.static.MagneticPrism.scalar_potential</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../geoana.em.fdem.html">Frequency-Domain Electromagnetics (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.em.fdem</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="geoana.em.fdem.BaseFDEM.html">geoana.em.fdem.BaseFDEM</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.BaseFDEM.epsilon.html">geoana.em.fdem.BaseFDEM.epsilon</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">geoana.em.fdem.BaseFDEM.frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.BaseFDEM.mu.html">geoana.em.fdem.BaseFDEM.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.BaseFDEM.omega.html">geoana.em.fdem.BaseFDEM.omega</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.BaseFDEM.rho.html">geoana.em.fdem.BaseFDEM.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.BaseFDEM.sigma.html">geoana.em.fdem.BaseFDEM.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.BaseFDEM.sigma_hat.html">geoana.em.fdem.BaseFDEM.sigma_hat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.BaseFDEM.skin_depth.html">geoana.em.fdem.BaseFDEM.skin_depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.BaseFDEM.wavenumber.html">geoana.em.fdem.BaseFDEM.wavenumber</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.html">geoana.em.fdem.ElectricDipoleWholeSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.current.html">geoana.em.fdem.ElectricDipoleWholeSpace.current</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.epsilon.html">geoana.em.fdem.ElectricDipoleWholeSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.frequency.html">geoana.em.fdem.ElectricDipoleWholeSpace.frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.length.html">geoana.em.fdem.ElectricDipoleWholeSpace.length</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.location.html">geoana.em.fdem.ElectricDipoleWholeSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.mu.html">geoana.em.fdem.ElectricDipoleWholeSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.omega.html">geoana.em.fdem.ElectricDipoleWholeSpace.omega</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.orientation.html">geoana.em.fdem.ElectricDipoleWholeSpace.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.rho.html">geoana.em.fdem.ElectricDipoleWholeSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.sigma.html">geoana.em.fdem.ElectricDipoleWholeSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.sigma_hat.html">geoana.em.fdem.ElectricDipoleWholeSpace.sigma_hat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.skin_depth.html">geoana.em.fdem.ElectricDipoleWholeSpace.skin_depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.wavenumber.html">geoana.em.fdem.ElectricDipoleWholeSpace.wavenumber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.cross_orientation.html">geoana.em.fdem.ElectricDipoleWholeSpace.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.current_density.html">geoana.em.fdem.ElectricDipoleWholeSpace.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.distance.html">geoana.em.fdem.ElectricDipoleWholeSpace.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.dot_orientation.html">geoana.em.fdem.ElectricDipoleWholeSpace.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.electric_field.html">geoana.em.fdem.ElectricDipoleWholeSpace.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.magnetic_field.html">geoana.em.fdem.ElectricDipoleWholeSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.magnetic_flux_density.html">geoana.em.fdem.ElectricDipoleWholeSpace.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.vector_distance.html">geoana.em.fdem.ElectricDipoleWholeSpace.vector_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.ElectricDipoleWholeSpace.vector_potential.html">geoana.em.fdem.ElectricDipoleWholeSpace.vector_potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.html">geoana.em.fdem.MagneticDipoleWholeSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.epsilon.html">geoana.em.fdem.MagneticDipoleWholeSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.frequency.html">geoana.em.fdem.MagneticDipoleWholeSpace.frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.location.html">geoana.em.fdem.MagneticDipoleWholeSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.moment.html">geoana.em.fdem.MagneticDipoleWholeSpace.moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.mu.html">geoana.em.fdem.MagneticDipoleWholeSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.omega.html">geoana.em.fdem.MagneticDipoleWholeSpace.omega</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.orientation.html">geoana.em.fdem.MagneticDipoleWholeSpace.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.rho.html">geoana.em.fdem.MagneticDipoleWholeSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.sigma.html">geoana.em.fdem.MagneticDipoleWholeSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.sigma_hat.html">geoana.em.fdem.MagneticDipoleWholeSpace.sigma_hat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.skin_depth.html">geoana.em.fdem.MagneticDipoleWholeSpace.skin_depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.wavenumber.html">geoana.em.fdem.MagneticDipoleWholeSpace.wavenumber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.cross_orientation.html">geoana.em.fdem.MagneticDipoleWholeSpace.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.current_density.html">geoana.em.fdem.MagneticDipoleWholeSpace.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.distance.html">geoana.em.fdem.MagneticDipoleWholeSpace.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.dot_orientation.html">geoana.em.fdem.MagneticDipoleWholeSpace.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.electric_field.html">geoana.em.fdem.MagneticDipoleWholeSpace.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.magnetic_field.html">geoana.em.fdem.MagneticDipoleWholeSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.magnetic_flux_density.html">geoana.em.fdem.MagneticDipoleWholeSpace.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.vector_distance.html">geoana.em.fdem.MagneticDipoleWholeSpace.vector_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleWholeSpace.vector_potential.html">geoana.em.fdem.MagneticDipoleWholeSpace.vector_potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.html">geoana.em.fdem.MagneticDipoleHalfSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.epsilon.html">geoana.em.fdem.MagneticDipoleHalfSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.frequency.html">geoana.em.fdem.MagneticDipoleHalfSpace.frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.location.html">geoana.em.fdem.MagneticDipoleHalfSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.moment.html">geoana.em.fdem.MagneticDipoleHalfSpace.moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.mu.html">geoana.em.fdem.MagneticDipoleHalfSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.omega.html">geoana.em.fdem.MagneticDipoleHalfSpace.omega</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.orientation.html">geoana.em.fdem.MagneticDipoleHalfSpace.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.rho.html">geoana.em.fdem.MagneticDipoleHalfSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.sigma.html">geoana.em.fdem.MagneticDipoleHalfSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.sigma_hat.html">geoana.em.fdem.MagneticDipoleHalfSpace.sigma_hat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.skin_depth.html">geoana.em.fdem.MagneticDipoleHalfSpace.skin_depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.wavenumber.html">geoana.em.fdem.MagneticDipoleHalfSpace.wavenumber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.cross_orientation.html">geoana.em.fdem.MagneticDipoleHalfSpace.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.distance.html">geoana.em.fdem.MagneticDipoleHalfSpace.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.dot_orientation.html">geoana.em.fdem.MagneticDipoleHalfSpace.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.magnetic_field.html">geoana.em.fdem.MagneticDipoleHalfSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleHalfSpace.vector_distance.html">geoana.em.fdem.MagneticDipoleHalfSpace.vector_distance</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.epsilon.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.frequency.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.location.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.moment.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.mu.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.omega.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.omega</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.orientation.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.rho.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.sigma.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.sigma_hat.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.sigma_hat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.skin_depth.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.skin_depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.thickness.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.thickness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.wavenumber.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.wavenumber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.cross_orientation.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.distance.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.dot_orientation.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.magnetic_field.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.MagneticDipoleLayeredHalfSpace.vector_distance.html">geoana.em.fdem.MagneticDipoleLayeredHalfSpace.vector_distance</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.html">geoana.em.fdem.HarmonicPlaneWave</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.amplitude.html">geoana.em.fdem.HarmonicPlaneWave.amplitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.epsilon.html">geoana.em.fdem.HarmonicPlaneWave.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.frequency.html">geoana.em.fdem.HarmonicPlaneWave.frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.mu.html">geoana.em.fdem.HarmonicPlaneWave.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.omega.html">geoana.em.fdem.HarmonicPlaneWave.omega</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.orientation.html">geoana.em.fdem.HarmonicPlaneWave.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.rho.html">geoana.em.fdem.HarmonicPlaneWave.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.sigma.html">geoana.em.fdem.HarmonicPlaneWave.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.sigma_hat.html">geoana.em.fdem.HarmonicPlaneWave.sigma_hat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.skin_depth.html">geoana.em.fdem.HarmonicPlaneWave.skin_depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.wavenumber.html">geoana.em.fdem.HarmonicPlaneWave.wavenumber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.current_density.html">geoana.em.fdem.HarmonicPlaneWave.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.electric_field.html">geoana.em.fdem.HarmonicPlaneWave.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.magnetic_field.html">geoana.em.fdem.HarmonicPlaneWave.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.fdem.HarmonicPlaneWave.magnetic_flux_density.html">geoana.em.fdem.HarmonicPlaneWave.magnetic_flux_density</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.fdem.omega.html">geoana.em.fdem.omega</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.fdem.wavenumber.html">geoana.em.fdem.wavenumber</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.fdem.skin_depth.html">geoana.em.fdem.skin_depth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.fdem.sigma_hat.html">geoana.em.fdem.sigma_hat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.fdem.vertical_magnetic_field_horizontal_loop.html">geoana.em.fdem.vertical_magnetic_field_horizontal_loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.fdem.vertical_magnetic_flux_horizontal_loop.html">geoana.em.fdem.vertical_magnetic_flux_horizontal_loop</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.em.tdem.html">Time-Domain Electromagnetics (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.em.tdem</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.tdem.BaseTDEM.html">geoana.em.tdem.BaseTDEM</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.BaseTDEM.diffusion_distance.html">geoana.em.tdem.BaseTDEM.diffusion_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.BaseTDEM.epsilon.html">geoana.em.tdem.BaseTDEM.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.BaseTDEM.mu.html">geoana.em.tdem.BaseTDEM.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.BaseTDEM.rho.html">geoana.em.tdem.BaseTDEM.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.BaseTDEM.sigma.html">geoana.em.tdem.BaseTDEM.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.BaseTDEM.theta.html">geoana.em.tdem.BaseTDEM.theta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.BaseTDEM.time.html">geoana.em.tdem.BaseTDEM.time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.BaseTDEM.peak_time.html">geoana.em.tdem.BaseTDEM.peak_time</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.html">geoana.em.tdem.ElectricDipoleWholeSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.current.html">geoana.em.tdem.ElectricDipoleWholeSpace.current</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.diffusion_distance.html">geoana.em.tdem.ElectricDipoleWholeSpace.diffusion_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.epsilon.html">geoana.em.tdem.ElectricDipoleWholeSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.length.html">geoana.em.tdem.ElectricDipoleWholeSpace.length</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.location.html">geoana.em.tdem.ElectricDipoleWholeSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.mu.html">geoana.em.tdem.ElectricDipoleWholeSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.orientation.html">geoana.em.tdem.ElectricDipoleWholeSpace.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.rho.html">geoana.em.tdem.ElectricDipoleWholeSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.sigma.html">geoana.em.tdem.ElectricDipoleWholeSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.theta.html">geoana.em.tdem.ElectricDipoleWholeSpace.theta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.time.html">geoana.em.tdem.ElectricDipoleWholeSpace.time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.cross_orientation.html">geoana.em.tdem.ElectricDipoleWholeSpace.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.current_density.html">geoana.em.tdem.ElectricDipoleWholeSpace.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.distance.html">geoana.em.tdem.ElectricDipoleWholeSpace.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.dot_orientation.html">geoana.em.tdem.ElectricDipoleWholeSpace.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.electric_field.html">geoana.em.tdem.ElectricDipoleWholeSpace.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_field.html">geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_field_time_deriv.html">geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_field_time_deriv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_flux_density.html">geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_flux_density_time_deriv.html">geoana.em.tdem.ElectricDipoleWholeSpace.magnetic_flux_density_time_deriv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.peak_time.html">geoana.em.tdem.ElectricDipoleWholeSpace.peak_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.vector_distance.html">geoana.em.tdem.ElectricDipoleWholeSpace.vector_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.ElectricDipoleWholeSpace.vector_potential.html">geoana.em.tdem.ElectricDipoleWholeSpace.vector_potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.diffusion_distance.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.diffusion_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.epsilon.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.location.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.moment.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.mu.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.orientation.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.rho.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.sigma.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.theta.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.theta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.time.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.cross_orientation.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.cross_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.distance.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.dot_orientation.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.dot_orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_field.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_field_time_derivative.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_field_time_derivative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_flux_density.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_flux_time_derivative.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.magnetic_flux_time_derivative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.peak_time.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.peak_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.VerticalMagneticDipoleHalfSpace.vector_distance.html">geoana.em.tdem.VerticalMagneticDipoleHalfSpace.vector_distance</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.html">geoana.em.tdem.TransientPlaneWave</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.amplitude.html">geoana.em.tdem.TransientPlaneWave.amplitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.diffusion_distance.html">geoana.em.tdem.TransientPlaneWave.diffusion_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.epsilon.html">geoana.em.tdem.TransientPlaneWave.epsilon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.mu.html">geoana.em.tdem.TransientPlaneWave.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.orientation.html">geoana.em.tdem.TransientPlaneWave.orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.rho.html">geoana.em.tdem.TransientPlaneWave.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.sigma.html">geoana.em.tdem.TransientPlaneWave.sigma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.theta.html">geoana.em.tdem.TransientPlaneWave.theta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.time.html">geoana.em.tdem.TransientPlaneWave.time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.current_density.html">geoana.em.tdem.TransientPlaneWave.current_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.electric_field.html">geoana.em.tdem.TransientPlaneWave.electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.magnetic_field.html">geoana.em.tdem.TransientPlaneWave.magnetic_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.magnetic_flux_density.html">geoana.em.tdem.TransientPlaneWave.magnetic_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.em.tdem.TransientPlaneWave.peak_time.html">geoana.em.tdem.TransientPlaneWave.peak_time</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.peak_time.html">geoana.em.tdem.peak_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.diffusion_distance.html">geoana.em.tdem.diffusion_distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.theta.html">geoana.em.tdem.theta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.vertical_magnetic_field_horizontal_loop.html">geoana.em.tdem.vertical_magnetic_field_horizontal_loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.vertical_magnetic_flux_horizontal_loop.html">geoana.em.tdem.vertical_magnetic_flux_horizontal_loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.vertical_magnetic_field_time_deriv_horizontal_loop.html">geoana.em.tdem.vertical_magnetic_field_time_deriv_horizontal_loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.vertical_magnetic_flux_time_deriv_horizontal_loop.html">geoana.em.tdem.vertical_magnetic_flux_time_deriv_horizontal_loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.magnetic_field_vertical_magnetic_dipole.html">geoana.em.tdem.magnetic_field_vertical_magnetic_dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.magnetic_field_time_deriv_magnetic_dipole.html">geoana.em.tdem.magnetic_field_time_deriv_magnetic_dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.magnetic_flux_vertical_magnetic_dipole.html">geoana.em.tdem.magnetic_flux_vertical_magnetic_dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.magnetic_flux_time_deriv_magnetic_dipole.html">geoana.em.tdem.magnetic_flux_time_deriv_magnetic_dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.reference.hz_from_vert_4_69a.html">geoana.em.tdem.reference.hz_from_vert_4_69a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.reference.dhz_from_vert_4_70.html">geoana.em.tdem.reference.dhz_from_vert_4_70</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.reference.hp_from_vert_4_72.html">geoana.em.tdem.reference.hp_from_vert_4_72</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.em.tdem.reference.dhp_from_vert_4_74.html">geoana.em.tdem.reference.dhp_from_vert_4_74</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.earthquake.oksar.html">Earthquake (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.earthquake.oksar</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.html">geoana.earthquake.oksar.EarthquakeInterferogram</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.copyright.html">geoana.earthquake.oksar.EarthquakeInterferogram.copyright</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.data.html">geoana.earthquake.oksar.EarthquakeInterferogram.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.data_source.html">geoana.earthquake.oksar.EarthquakeInterferogram.data_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.date1.html">geoana.earthquake.oksar.EarthquakeInterferogram.date1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.date2.html">geoana.earthquake.oksar.EarthquakeInterferogram.date2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.description.html">geoana.earthquake.oksar.EarthquakeInterferogram.description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.event_country.html">geoana.earthquake.oksar.EarthquakeInterferogram.event_country</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.event_date.html">geoana.earthquake.oksar.EarthquakeInterferogram.event_date</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.event_gcmt_id.html">geoana.earthquake.oksar.EarthquakeInterferogram.event_gcmt_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.event_name.html">geoana.earthquake.oksar.EarthquakeInterferogram.event_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.local_earth_radius.html">geoana.earthquake.oksar.EarthquakeInterferogram.local_earth_radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.local_rigidity.html">geoana.earthquake.oksar.EarthquakeInterferogram.local_rigidity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.location.html">geoana.earthquake.oksar.EarthquakeInterferogram.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.location_UTM_zone.html">geoana.earthquake.oksar.EarthquakeInterferogram.location_UTM_zone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.pixel_size.html">geoana.earthquake.oksar.EarthquakeInterferogram.pixel_size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.processed_by.html">geoana.earthquake.oksar.EarthquakeInterferogram.processed_by</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.processed_date.html">geoana.earthquake.oksar.EarthquakeInterferogram.processed_date</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.ref.html">geoana.earthquake.oksar.EarthquakeInterferogram.ref</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.ref_incidence.html">geoana.earthquake.oksar.EarthquakeInterferogram.ref_incidence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.satellite_altitude.html">geoana.earthquake.oksar.EarthquakeInterferogram.satellite_altitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.satellite_azimuth.html">geoana.earthquake.oksar.EarthquakeInterferogram.satellite_azimuth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.satellite_fringe_interval.html">geoana.earthquake.oksar.EarthquakeInterferogram.satellite_fringe_interval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.satellite_name.html">geoana.earthquake.oksar.EarthquakeInterferogram.satellite_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.scaling.html">geoana.earthquake.oksar.EarthquakeInterferogram.scaling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.shape.html">geoana.earthquake.oksar.EarthquakeInterferogram.shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.title.html">geoana.earthquake.oksar.EarthquakeInterferogram.title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.get_LOS_vector.html">geoana.earthquake.oksar.EarthquakeInterferogram.get_LOS_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.plot_interferogram.html">geoana.earthquake.oksar.EarthquakeInterferogram.plot_interferogram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.EarthquakeInterferogram.plot_mask.html">geoana.earthquake.oksar.EarthquakeInterferogram.plot_mask</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.html">geoana.earthquake.oksar.Oksar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.O.html">geoana.earthquake.oksar.Oksar.O</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.U.html">geoana.earthquake.oksar.Oksar.U</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.V.html">geoana.earthquake.oksar.Oksar.V</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.beta.html">geoana.earthquake.oksar.Oksar.beta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.center.html">geoana.earthquake.oksar.Oksar.center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.depth_bottom.html">geoana.earthquake.oksar.Oksar.depth_bottom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.depth_top.html">geoana.earthquake.oksar.Oksar.depth_top</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.dip.html">geoana.earthquake.oksar.Oksar.dip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.displacement_vector.html">geoana.earthquake.oksar.Oksar.displacement_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.length.html">geoana.earthquake.oksar.Oksar.length</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.mu.html">geoana.earthquake.oksar.Oksar.mu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.rake.html">geoana.earthquake.oksar.Oksar.rake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.shape.html">geoana.earthquake.oksar.Oksar.shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.simulation_grid.html">geoana.earthquake.oksar.Oksar.simulation_grid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.slip.html">geoana.earthquake.oksar.Oksar.slip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.strike.html">geoana.earthquake.oksar.Oksar.strike</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.earthquake.oksar.Oksar.plot_displacement.html">geoana.earthquake.oksar.Oksar.plot_displacement</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.gravity.html">Gravity (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.gravity</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.gravity.PointMass.html">geoana.gravity.PointMass</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.PointMass.location.html">geoana.gravity.PointMass.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.PointMass.mass.html">geoana.gravity.PointMass.mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.PointMass.gravitational_field.html">geoana.gravity.PointMass.gravitational_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.PointMass.gravitational_gradient.html">geoana.gravity.PointMass.gravitational_gradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.PointMass.gravitational_potential.html">geoana.gravity.PointMass.gravitational_potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.gravity.Sphere.html">geoana.gravity.Sphere</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Sphere.location.html">geoana.gravity.Sphere.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Sphere.mass.html">geoana.gravity.Sphere.mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Sphere.radius.html">geoana.gravity.Sphere.radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Sphere.rho.html">geoana.gravity.Sphere.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Sphere.gravitational_field.html">geoana.gravity.Sphere.gravitational_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Sphere.gravitational_gradient.html">geoana.gravity.Sphere.gravitational_gradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Sphere.gravitational_potential.html">geoana.gravity.Sphere.gravitational_potential</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.gravity.Prism.html">geoana.gravity.Prism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Prism.location.html">geoana.gravity.Prism.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Prism.mass.html">geoana.gravity.Prism.mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Prism.max_location.html">geoana.gravity.Prism.max_location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Prism.min_location.html">geoana.gravity.Prism.min_location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Prism.rho.html">geoana.gravity.Prism.rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Prism.volume.html">geoana.gravity.Prism.volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Prism.gravitational_field.html">geoana.gravity.Prism.gravitational_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Prism.gravitational_gradient.html">geoana.gravity.Prism.gravitational_gradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.gravity.Prism.gravitational_potential.html">geoana.gravity.Prism.gravitational_potential</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.shapes.html">Shapes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.shapes</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="geoana.shapes.BasePrism.html">geoana.shapes.BasePrism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoana.shapes.BasePrism.location.html">geoana.shapes.BasePrism.location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.shapes.BasePrism.max_location.html">geoana.shapes.BasePrism.max_location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.shapes.BasePrism.min_location.html">geoana.shapes.BasePrism.min_location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoana.shapes.BasePrism.volume.html">geoana.shapes.BasePrism.volume</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.utils.html">Basic Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.utils</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="geoana.utils.mkvc.html">geoana.utils.mkvc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.utils.ndgrid.html">geoana.utils.ndgrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.utils.check_xyz_dim.html">geoana.utils.check_xyz_dim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.utils.append_ndim.html">geoana.utils.append_ndim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.utils.requires.html">geoana.utils.requires</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.spatial.html">Spatial Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.spatial</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.cylindrical_to_cartesian.html">geoana.spatial.cylindrical_to_cartesian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.cartesian_to_cylindrical.html">geoana.spatial.cartesian_to_cylindrical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.spherical_to_cartesian.html">geoana.spatial.spherical_to_cartesian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.cartesian_to_spherical.html">geoana.spatial.cartesian_to_spherical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.rotation_matrix_from_normals.html">geoana.spatial.rotation_matrix_from_normals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.rotate_points_from_normals.html">geoana.spatial.rotate_points_from_normals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.vector_magnitude.html">geoana.spatial.vector_magnitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.vector_distance.html">geoana.spatial.vector_distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.distance.html">geoana.spatial.distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.vector_dot.html">geoana.spatial.vector_dot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.spatial.repeat_scalar.html">geoana.spatial.repeat_scalar</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.plotting_utils.html">Plotting Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.plotting_utils</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="geoana.plotting_utils.plot2Ddata.html">geoana.plotting_utils.plot2Ddata</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geoana.kernels.html">Kernel Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.kernels</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.prism_f.html">geoana.kernels.prism_f</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.prism_fz.html">geoana.kernels.prism_fz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.prism_fzz.html">geoana.kernels.prism_fzz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.prism_fzx.html">geoana.kernels.prism_fzx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.prism_fzy.html">geoana.kernels.prism_fzy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.prism_fzzz.html">geoana.kernels.prism_fzzz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.prism_fxxy.html">geoana.kernels.prism_fxxy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.prism_fxxz.html">geoana.kernels.prism_fxxz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.prism_fxyz.html">geoana.kernels.prism_fxyz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.rTE_forward.html">geoana.kernels.rTE_forward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoana.kernels.rTE_gradient.html">geoana.kernels.rTE_gradient</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../geoana.em.fdem.html" class="nav-link">Frequency-Domain Electromagnetics (<code class="xref py py-mod docutils literal notranslate"><span class="pre">geoana.em.fdem</span></code>)</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="geoana.em.fdem.BaseFDEM.html" class="nav-link">geoana.em.fdem.BaseFDEM</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">geoana.em.fdem.BaseFDEM.frequency</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="geoana-em-fdem-basefdem-frequency">
+<h1>geoana.em.fdem.BaseFDEM.frequency<a class="headerlink" href="#geoana-em-fdem-basefdem-frequency" title="Link to this heading">#</a></h1>
+<dl class="py property">
+<dt class="sig sig-object py" id="geoana.em.fdem.BaseFDEM.frequency">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BaseFDEM.</span></span><span class="sig-name descname"><span class="pre">frequency</span></span><a class="headerlink" href="#geoana.em.fdem.BaseFDEM.frequency" title="Link to this definition">#</a></dt>
+<dd><p>Frequency (Hz) used for all computations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>numpy.ndarray</dt><dd><p>Frequency (or frequencies) in Hz used for all computations</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="geoana.em.fdem.BaseFDEM.epsilon.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">geoana.em.fdem.BaseFDEM.epsilon</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="geoana.em.fdem.BaseFDEM.mu.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">geoana.em.fdem.BaseFDEM.mu</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geoana.em.fdem.BaseFDEM.frequency"><code class="docutils literal notranslate"><span class="pre">BaseFDEM.frequency</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/api/generated/geoana.em.fdem.BaseFDEM.frequency.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2017, SimPEG Team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

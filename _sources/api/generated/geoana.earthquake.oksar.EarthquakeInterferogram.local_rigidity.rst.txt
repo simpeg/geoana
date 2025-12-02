@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.local\_rigidity
+===============================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: EarthquakeInterferogram.local_rigidity

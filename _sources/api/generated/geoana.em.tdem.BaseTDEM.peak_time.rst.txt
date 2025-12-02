@@ -1,0 +1,6 @@
+geoana.em.tdem.BaseTDEM.peak\_time
+==================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: BaseTDEM.peak_time

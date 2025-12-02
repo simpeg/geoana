@@ -1,0 +1,6 @@
+geoana.em.fdem.BaseFDEM.skin\_depth
+===================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: BaseFDEM.skin_depth
