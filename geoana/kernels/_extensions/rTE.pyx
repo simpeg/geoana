@@ -109,12 +109,13 @@ def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
         # Types are same size and both pairs of numbers (r, i), so can cast one to the other
         complex_t *out_p = <complex_t *> &out[0, 0]
         complex_t *sig_p = <complex_t *> &sig[0, 0]
+        complex_t *mu_p = <complex_t *> &c_mu[0, 0]
         REAL_t *h_p = NULL
     if n_layers > 1:
         h_p = &hs[0]
 
     with nogil:
-        rTE(out_p, &f[0], &lam[0], sig_p, &c_mu[0, 0], h_p,
+        rTE(out_p, &f[0], &lam[0], sig_p, mu_p, h_p,
             n_frequency, n_filter, n_layers)
 
     return np.array(out)
@@ -194,6 +195,7 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     cdef:
         # Types are same size and both pairs of numbers (r, i), so can cast one to the other
         complex_t *sig_p = <complex_t *> &sig[0, 0]
+        complex_t *mu_p = <complex_t *> &c_mu[0, 0]
         complex_t *gsig_p = <complex_t *> &gsig[0, 0, 0]
         complex_t *gmu_p = <complex_t *> &gmu[0, 0, 0]
         complex_t *gh_p = NULL
@@ -203,7 +205,7 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
         gh_p = <complex_t *> &gh[0, 0, 0]
 
     with nogil:
-        rTEgrad(gsig_p, gmu_p, gh_p, &f[0], &lam[0], sig_p, &c_mu[0, 0], h_p,
+        rTEgrad(gsig_p, gmu_p, gh_p, &f[0], &lam[0], sig_p, mu_p, h_p,
             n_frequency, n_filter, n_layers)
 
     return np.array(gsig), np.array(gh), np.array(gmu)
