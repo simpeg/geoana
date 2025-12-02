@@ -14,12 +14,12 @@ namespace funcs {
         double *frequencies,
         double *lambdas,
         complex_t *sigmas,
-        double *mus,
+        complex_t *mus,
         double *depths,
         size_t n_frequency,
         size_t n_filter,
         size_t n_layers
-    );
+    ) noexcept(true);
 
     void rTEgrad(
         complex_t * TE_dsigma,
@@ -28,12 +28,12 @@ namespace funcs {
         double * frequencies,
         double * lambdas,
         complex_t * sigmas,
-        double * mus,
+        complex_t * mus,
         double * h,
         size_t n_frequency,
         size_t n_filter,
         size_t n_layers
-    );
+    ) noexcept(true);
 }
 
 #endif

@@ -9,19 +9,20 @@ void funcs::rTE(
     double * frequencies,
     double * lambdas,
     complex_t * sigmas,
-    double * mus,
+    complex_t * mus,
     double * h,
     size_t n_frequency,
     size_t n_filter,
     size_t n_layers
-){
+) noexcept(true){
     double mu_0 = 4.0E-7*M_PI;
     complex_t j(0.0, 1.0);
 
     complex_t k2, u, Yh, Y, tanhuh, Y0;
     complex_t *sigi;
-    double *mui;
-    double omega, mu_c, l2;
+    complex_t *mui;
+    double omega, l2;
+    complex_t mu_c;
 
     for(size_t i_filt=0, i=0; i_filt<n_filter; ++i_filt){
         l2 = lambdas[i_filt] * lambdas[i_filt];
@@ -55,12 +56,12 @@ void funcs::rTEgrad(
     double * frequencies,
     double * lambdas,
     complex_t * sigmas,
-    double * mus,
+    complex_t * mus,
     double * h,
     size_t n_frequency,
     size_t n_filter,
     size_t n_layers
-){
+) noexcept(true){
     double mu_0 = 4.0E-7*M_PI;
     complex_t j(0.0, 1.0);
 
@@ -74,7 +75,7 @@ void funcs::rTEgrad(
     vec_complex_t k2s(n_layers), us(n_layers), Yhs(n_layers);
     vec_complex_t Ys(n_layers-1), tanhs(n_layers-1);
 
-    double *mui;
+    complex_t *mui;
     complex_t *sigi, *TE_dhi, *TE_dmui, *TE_dsigmai;
     complex_t gyh0, bot, gy, gtanh, Y0;
     complex_t gu, gmu, gk2;

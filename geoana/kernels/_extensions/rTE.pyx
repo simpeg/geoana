@@ -19,12 +19,12 @@ cdef extern from "_rTE.h" namespace "funcs":
         double *frequencies,
         double *lambdas,
         complex_t *sigmas,
-        double *mus,
+        complex_t *mus,
         double *thicks,
         SIZE_t n_frequency,
         SIZE_t n_filter,
         SIZE_t n_layers
-        ) nogil
+        ) noexcept nogil
 
     void rTEgrad(
         complex_t * TE_dsigma,
@@ -33,12 +33,12 @@ cdef extern from "_rTE.h" namespace "funcs":
         double * frequencies,
         double * lambdas,
         complex_t * sigmas,
-        double * mus,
+        complex_t * mus,
         double * h,
         SIZE_t n_frequency,
         SIZE_t n_filter,
         SIZE_t n_layers
-    ) nogil
+    ) noexcept nogil
 
 def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     """Compute reflection coefficients for Transverse Electric (TE) mode.
@@ -67,7 +67,7 @@ def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
     """
     # Sigma and mu must be fortran contiguous
     sigma = np.require(sigma, dtype=np.complex128, requirements="F")
-    mu = np.require(mu, dtype=np.float64, requirements="F")
+    mu = np.require(mu, dtype=np.complex128, requirements="F")
 
     # These just must be contiguous
     lamb = np.require(lamb, dtype=np.float64, requirements="C")
@@ -92,7 +92,7 @@ def rTE_forward(frequencies, lamb, sigma, mu, thicknesses):
         REAL_t[:] f = frequencies
         REAL_t[:] lam = lamb
         COMPLEX_t[:, :] sig = sigma
-        REAL_t[:, :] c_mu = mu
+        COMPLEX_t[:, :] c_mu = mu
         REAL_t[:] hs = thicknesses
 
     cdef:
@@ -153,7 +153,7 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
     """
     # Require that they are all the same ordering as sigma
     sigma = np.require(sigma, dtype=np.complex128, requirements="F")
-    mu = np.require(mu, dtype=np.float64, requirements="F")
+    mu = np.require(mu, dtype=np.complex128, requirements="F")
     lamb = np.require(lamb, dtype=np.float64, requirements="C")
     frequencies = np.require(frequencies, dtype=np.float64, requirements="C")
     thicknesses = np.require(thicknesses, dtype=np.float64, requirements="C")
@@ -176,7 +176,7 @@ def rTE_gradient(frequencies, lamb, sigma, mu, thicknesses):
         REAL_t[:] f = frequencies
         REAL_t[:] lam = lamb
         COMPLEX_t[:, :] sig = sigma
-        REAL_t[:, :] c_mu = mu
+        COMPLEX_t[:, :] c_mu = mu
         REAL_t[:] hs = thicknesses
 
     cdef:
