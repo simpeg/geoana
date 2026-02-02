@@ -153,7 +153,7 @@ def vertical_magnetic_field_time_deriv_horizontal_loop(
     Matches equation 4.97 of Ward and Hohmann 1988.
 
     .. math::
-        \\frac{\\partial h_z}{\\partial t} = -\\frac{I}{\\sigma a^3}\\left[
+        \\frac{\\partial h_z}{\\partial t} = -\\frac{I}{\\mu_0 \\sigma a^3}\\left[
         3 \\mathrm{erf}(\\theta a)
         - \\frac{2}{\\sqrt{\\pi}}\\theta a (3 + 2 \\theta^2 a^2)e^{-\\theta^2 a^2}
         \\right]
