@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.2.0
+        uses: pypa/cibuildwheel@v4.2.1
 
       - uses: actions/upload-artifact@v4
         with:
@@ -52,16 +52,14 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.11
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10
       - name: Build pure python wheel and install
         run: |
-          python -m pip install --user --upgrade build
-          python -m build
-          find ./dist/*.whl | xargs pip install
-          python -c "import geoana; geoana.show_config()"
+          uv build --wheel --python 3.12
+          uv venv --python 3.12 /tmp/pure-venv
+          uv pip install --python /tmp/pure-venv ./dist/geoana*.whl
+          (cd / && /tmp/pure-venv/bin/python -c "import geoana; geoana.show_config()")
       - uses: actions/upload-artifact@v4
         with:
           path: ./dist/geoana*.whl
@@ -71,46 +69,23 @@ jobs:
     name: Distribute documentation
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    defaults:
-      run:
-        shell: bash -l {0}
     steps:
     - uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: "3.13"
+    - name: Install uv
+      uses: astral-sh/setup-uv@v10
 
-    - name: Create Conda environment file
-      run: |
-        python -m pip install pyyaml
-        python .github/make_ci_environ.py
-      env:
-        PYTHON_VERSION: "3.13"
-        FREE_THREADED: false
-        NO_DOC_BUILD: false
-        NO_NUMBA: true
-        ENV_NAME: geoana-test
-
-    - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        environment-file: environment_ci.yml
-        activate-environment: geoana-test
+    - name: Install graphviz
+      run: sudo apt-get update && sudo apt-get install -y graphviz
 
     - name: Install Our Package
       run: |
-        pip install --no-build-isolation --editable . --config-settings=setup-args="-Dwith_extensions=true"
+        uv sync --python 3.13 --no-editable --extra doc --extra all --extra build           --config-settings=setup-args="-Dwith_extensions=true"
 
     - name: Build documentation
-      run: |
-        cd docs
-        make html
-        cd ..
+      run: uv run --no-sync make -C docs html
 
     - name: GitHub Pages
       uses: crazy-max/ghaction-github-pages@v2.5.0

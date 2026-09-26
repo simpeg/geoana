@@ -2,7 +2,9 @@
 [build-system]
 build-backend = 'mesonpy'
 requires = [
-    "meson-python>=0.15.0",
+    # >=0.21.0 for limited API (abi3) wheel support, including the handling
+    # of free-threaded interpreters.
+    "meson-python>=0.21.0",
     "Cython>=3.1.0",
     "setuptools_scm[toml]>=6.2",
     "numpy>=2.0.0rc1",
@@ -13,7 +15,7 @@ name = 'geoana'
 dynamic = ["version"]
 description = 'Analytic expressions for geophysical responses'
 readme = 'README.rst'
-requires-python = '>=3.11'
+requires-python = '>=3.12'
 authors = [
   {name = 'SimPEG developers', email = 'lindseyheagy@gmail.com'},
 ]
@@ -70,10 +72,9 @@ test = [
     "sympy",
     "discretize",
     "requests",
-    "geoana[doc,all]",
 ]
 build = [
-    "meson-python>=0.15.0",
+    "meson-python>=0.21.0",
     "meson",
     "ninja",
     "numpy>=2.0.0rc1",
@@ -88,27 +89,48 @@ Repository = 'https://github.com/simpeg/geoana.git'
 
 [tool.setuptools_scm]
 
+[tool.meson-python]
+# Build one abi3 wheel per platform (targeting the 3.12 limited API, see
+# geoana/kernels/_extensions/meson.build) instead of one per Python version.
+# Free-threaded builds opt out with `-Dpython.allow_limited_api=false` for
+# now: 3.14t has no stable ABI at all, and Cython can't yet generate code
+# for the 3.15t one (abi3t). Revisit once Cython ships abi3t support.
+# This has no effect on the default pure-python build (no extensions).
+limited-api = true
+
 [tool.cibuildwheel]
-# skip building wheels for python 3.6, 3.7, all pypy versions, and specialty linux
-# processors (still does arm builds though).
-skip = "cp38-* cp39-* cp310-* *_ppc64le *_i686 *_s390x *-win32 cp310-win_arm64"
+# cp312-* is the abi3 wheel covering every GIL-enabled CPython >= 3.12. The
+# free-threaded builds are ordinary per-version wheels (see the override
+# below).
+build = ["cp312-*", "cp314t-*", "cp315t-*"]
+# skip specialty linux processors (still does arm builds though) and 32-bit
+# windows.
+skip = "*_ppc64le *_i686 *_s390x *-win32"
 build-verbosity = 3
-enable = ["cpython-freethreading"]
+# build the compiled extensions, and use the visual studio compilers on
+# windows (--vsenv is a no-op elsewhere).
+config-settings = { setup-args = ["-Dwith_extensions=true", "--vsenv"] }
 
 # test importing geoana to make sure externals are loadable.
 test-command = 'python -c "import geoana; geoana.show_config()"'
 
-[tool.cibuildwheel.config-settings]
-setup-args = '-Dwith_extensions=true'
-
-# use the visual studio compilers
-[tool.cibuildwheel.windows.config-settings]
-setup-args = [
-    '-Dwith_extensions=true',
-    '--vsenv'
-]
+[[tool.cibuildwheel.overrides]]
+# Free-threaded builds use the regular (non-limited) API, see
+# [tool.meson-python]. The base setup-args are repeated here because an
+# override replaces the whole key rather than appending to it.
+select = ["cp314t-*", "cp315t-*"]
+config-settings = { setup-args = [
+    "-Dwith_extensions=true",
+    "--vsenv",
+    "-Dpython.allow_limited_api=false",
+] }
 
 [tool.pytest.ini_options]
+# avoids geoana/ (a sibling of tests/) shadowing an installed, compiled
+# geoana when pytest is invoked from the repo root -- matters for
+# non-editable installs, where the default "prepend" import mode can resolve
+# the uncompiled source tree ahead of the real (site-packages) package.
+addopts = "--import-mode=importlib"
 filterwarnings = [
     'ignore:divide by zero encountered in divide:RuntimeWarning',
     'ignore:invalid value encountered in divide:RuntimeWarning',
@@ -121,10 +143,18 @@ filterwarnings = [
 
 [tool.coverage.run]
 branch = true
-source = ["geoana"]
+# geoana is measured as an importable package (wherever it's installed,
+# e.g. site-packages for CI's non-editable install) rather than as the
+# geoana/ source directory, which the tests don't actually execute.
+source_pkgs = ["geoana"]
 # plugins = [
 #     "Cython.Coverage",
 # ]
+
+[tool.coverage.paths]
+# map an installed geoana back onto the repo's geoana/ directory, so
+# reports (and codecov) point at the source files.
+geoana = ["geoana/", "*/site-packages/geoana/"]
 
 [tool.coverage.report]
 ignore_errors = false
