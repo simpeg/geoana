@@ -53,7 +53,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install uv
-        uses: astral-sh/setup-uv@v10
+        uses: astral-sh/setup-uv@v10.2.0
       - name: Build pure python wheel and install
         run: |
           uv build --wheel --python 3.12
@@ -75,7 +75,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v10
+      uses: astral-sh/setup-uv@v10.2.0
 
     - name: Install graphviz
       run: sudo apt-get update && sudo apt-get install -y graphviz
