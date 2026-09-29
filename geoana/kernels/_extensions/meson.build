@@ -59,6 +59,21 @@ py.extension_module(
     dependencies : [py_dep, np_dep],
 )
 
+# The polyhedron kernels rely on swapping an edge's end points exactly negating
+# a cross product, so that faces sharing an edge cancel; fused multiply-adds
+# would break that.
+polyhedron_c_args = cython_c_args + cc.get_supported_arguments('-ffp-contract=off')
+
+py.extension_module(
+    'potential_field_polyhedron',
+    'potential_field_polyhedron.pyx',
+    cython_args: cython_args,
+    c_args: polyhedron_c_args,
+    install: true,
+    subdir: module_path,
+    dependencies : [py_dep, np_dep],
+)
+
 py.extension_module(
     'rTE',
     ['rTE.pyx', '_rTE.cpp'],
