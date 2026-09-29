@@ -14,6 +14,12 @@ __all__ = [
 ]
 
 
+def _plus_r(a, b, c, r):
+    """a + r, with r = sqrt(a**2 + b**2 + c**2), without cancellation for a < 0."""
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return np.where(a < 0, (b * b + c * c) / (r - a), a + r)
+
+
 def _prism_f(x, y, z):
     """
     Evaluates the indefinite volume integral for the 1/r kernel.
@@ -36,15 +42,15 @@ def _prism_f(x, y, z):
     nz_y = y != 0.0
     nz_z = z != 0.0
 
-    temp = z + r
+    temp = _plus_r(z, x, y, r)
     nz = nz_x & nz_y & (temp > 0.0)
     out[nz] -= x[nz] * y[nz] * np.log(temp[nz])
 
-    temp = x + r
+    temp = _plus_r(x, y, z, r)
     nz = nz_y & nz_z & (temp > 0.0)
     out[nz] -= y[nz] * z[nz] * np.log(temp[nz])
 
-    temp = y + r
+    temp = _plus_r(y, x, z, r)
     nz = nz_x & nz_z & (temp > 0.0)
     out[nz] -= x[nz] * z[nz] * np.log(temp[nz])
 
@@ -76,11 +82,11 @@ def _prism_fz(x, y, z):
     r = np.sqrt(x * x + y * y + z * z)
     out = np.zeros_like(r)
 
-    temp = y + r
+    temp = _plus_r(y, x, z, r)
     nz = (x != 0.0) & (temp > 0)
     out[nz] += x[nz] * np.log(temp[nz])
 
-    temp = x + r
+    temp = _plus_r(x, y, z, r)
     nz = (y != 0.0) & (temp > 0)
     out[nz] += y[nz] * np.log(temp[nz])
 
@@ -139,13 +145,19 @@ def _prism_fzx(x, y, z):
     r = np.sqrt(x * x + y * y + z * z)
 
     out = np.zeros_like(r)
+    # y + r cancels near the negative y axis; there it equals
+    # (x**2 + z**2) / (r - y). On the axis the kernel diverges as -2 ln(d)
+    # with the distance d to it; keep the finite part.
+    neg = y < 0
+    temp = x * x + z * z
+    on = neg & (temp == 0)
+    out[on] = np.log(-2 * y[on])
+    near = neg & (temp != 0)
+    out[near] = np.log((r[near] - y[near]) / temp[near])
+
     v = y + r
-
-    nz = (v == 0) & (y < 0)
-    out[nz] = np.log(-2 * y[nz])
-
-    nz = v != 0
-    out[nz] = -np.log(v[nz])
+    pos = ~neg & (v != 0)
+    out[pos] = -np.log(v[pos])
     return out
 
 
@@ -171,13 +183,19 @@ def _prism_fzy(x, y, z):
     r = np.sqrt(x * x + y * y + z * z)
 
     out = np.zeros_like(r)
+    # x + r cancels near the negative x axis; there it equals
+    # (y**2 + z**2) / (r - x). On the axis the kernel diverges as -2 ln(d)
+    # with the distance d to it; keep the finite part.
+    neg = x < 0
+    temp = y * y + z * z
+    on = neg & (temp == 0)
+    out[on] = np.log(-2 * x[on])
+    near = neg & (temp != 0)
+    out[near] = np.log((r[near] - x[near]) / temp[near])
+
     v = x + r
-
-    nz = (v == 0) & (x < 0)
-    out[nz] = np.log(-2 * x[nz])
-
-    nz = v != 0
-    out[nz] = -np.log(v[nz])
+    pos = ~neg & (v != 0)
+    out[pos] = -np.log(v[pos])
     return out
 
 

@@ -162,3 +162,19 @@ def test_numba_jitting_nopython(function):
     v2 = function(x, y, z)
 
     npt.assert_allclose(v1, v2)
+
+
+@pytest.mark.parametrize("compiled", [True, False])
+def test_log_kernels_near_negative_axis(compiled):
+    # Near the negative y axis y + r cancels; log(y + r) = log(d) + asinh(y / d)
+    # with d the distance to the axis. On the axis, the finite part is kept.
+    fzx = pf.prism_fzx if compiled else pf._prism_fzx
+    fz = pf.prism_fz if compiled else pf._prism_fz
+    d = np.array([1e-150, 1e-12, 1e-8, 1e-4])
+    y = np.full_like(d, -2.0)
+    zero = np.zeros_like(d)
+    log_y_r = np.log(d) + np.arcsinh(y / d)
+    npt.assert_allclose(fzx(d, y, zero), -log_y_r, rtol=1e-14)
+    # prism_fz = x log(y + r) + y log(x + r) at z = 0.
+    npt.assert_allclose(fz(d, y, zero), d * log_y_r + y * np.log(d + np.sqrt(d * d + 4)), rtol=1e-14)
+    npt.assert_allclose(fzx(zero, y, zero), np.log(4.0))
