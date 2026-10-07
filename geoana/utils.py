@@ -183,7 +183,13 @@ def check_xyz_dim(xyz, dim=3, dtype=float):
     """
     if isinstance(xyz, tuple):
         xyz = np.stack(xyz, axis=-1)
+    xyz_in = xyz
     xyz = np.asarray(xyz, dtype=dtype)
+    if xyz.shape[-1] != dim and isinstance(xyz_in, list) and len(xyz_in) == dim and xyz.ndim > 1:
+        # A list of `dim` arrays that isn't already (..., dim), such as the
+        # output of `np.meshgrid` on numpy < 2 (which returns a list instead
+        # of a tuple). Stack it along the last dimension like a tuple.
+        xyz = np.asarray(np.stack(xyz_in, axis=-1), dtype=dtype)
     if xyz.shape[-1] != dim:
         raise ValueError(
             f"Unexpected dimensionality of array, expected {dim}, saw {xyz.shape[-1]}"

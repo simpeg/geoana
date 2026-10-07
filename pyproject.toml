@@ -27,8 +27,8 @@ keywords = [
 # release branches, see:
 #     https://scipy.github.io/devdocs/dev/core-dev/index.html#version-ranges-for-numpy-and-other-dependencies
 dependencies = [
-    "numpy>=2.0",
-    "scipy>=1.13",
+    "numpy>=1.26.0",
+    "scipy>=1.11.2",
     "libdlf",
 ]
 classifiers = [
