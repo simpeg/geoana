@@ -112,3 +112,7 @@ geoana/version.py
 .vscode/
 
 environment_ci.yml
+
+# uv
+.venv/
+uv.lock

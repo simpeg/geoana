@@ -1,0 +1,86 @@
+name: Testing
+on: [push, pull_request]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_test:
+    name: Testing (${{ matrix.python-version }}${{ matrix.free-threaded && 't' || '' }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.12", "3.13", "3.14"]
+        free-threaded: [false, true]
+        include:
+          - python-version: "3.12"
+            free-threaded: false
+            coverage: true
+        exclude:
+          # numpy and scipy no longer ship cp313t wheels.
+          - python-version: "3.13"
+            free-threaded: true
+          - python-version: "3.12"
+            free-threaded: true
+
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v10.2.0
+
+    - name: Install graphviz
+      if: ${{ !matrix.free-threaded }}
+      run: sudo apt-get update && sudo apt-get install -y graphviz
+
+    - name: Install geoana and dependencies
+      run: |
+        py_spec="${{ matrix.python-version }}"
+        # the doc stack isn't installed on free-threaded builds (the docs
+        # tests skip themselves without sphinx).
+        extras=(--extra test --extra all --extra build)
+        setup_args=(--config-settings=setup-args="-Dwith_extensions=true")
+        if [[ "${{ matrix.free-threaded }}" == "true" ]]; then
+          py_spec="${py_spec}t"
+          # the limited API (abi3) build from pyproject.toml's
+          # [tool.meson-python] isn't available for free-threaded builds yet,
+          # so opt out of it.
+          setup_args+=(--config-settings=setup-args="-Dpython.allow_limited_api=false")
+        else
+          extras+=(--extra doc)
+        fi
+        # pytest's import mode is set to importlib in pyproject.toml, so we do
+        # not need an editable install here. --no-build-package turns a
+        # missing binary wheel into a clear resolution error instead of a
+        # slow, likely-to-fail source build.
+        uv sync --python "$py_spec" --no-editable "${extras[@]}" \
+          --no-build-package numpy --no-build-package scipy \
+          --no-build-package numba --no-build-package matplotlib \
+          --no-build-package discretize \
+          "${setup_args[@]}"
+
+    - name: Environment information
+      run: |
+        uv pip list
+        # run from outside the repo root so the source tree's geoana/ doesn't
+        # shadow the installed (compiled) package.
+        (cd / && "$GITHUB_WORKSPACE/.venv/bin/python" -c "import geoana; geoana.show_config()")
+
+    - name: Run Tests
+      run: |
+        uv run --no-sync pytest tests -s -v -W ignore::DeprecationWarning \
+          ${{ matrix.coverage && '--cov --cov-config=pyproject.toml --cov-report=xml' || '' }}
+
+    - name: "Upload coverage to Codecov"
+      if: ${{ matrix.coverage }}
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true

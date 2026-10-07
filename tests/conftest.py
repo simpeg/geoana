@@ -9,6 +9,13 @@ c = 299792458 # m/s
 mu_0 = (4 * sympy.pi * sympy.sympify(10)**-7)
 epsilon_0 = 1/(mu_0 * c**2)
 
+def _as_numeric(arr):
+    # on numpy < 2, some lambdified expressions evaluate to object arrays of
+    # python scalars, which numpy.testing can't compare.
+    if arr.dtype == object:
+        arr = np.array(arr.tolist())
+    return arr
+
 def vector_lambdify(vec_func, coord_sys, *args):
 
     vec_func = vec_func.to_matrix(coord_sys)
@@ -18,7 +25,7 @@ def vector_lambdify(vec_func, coord_sys, *args):
         out_shape = np.broadcast(*inner_args).shape
         expansion = np.ones(out_shape)
         outs = [lamb(*inner_args) * expansion for lamb in lambs]
-        return np.stack(outs, axis=-1)
+        return _as_numeric(np.stack(outs, axis=-1))
     return out
 
 def tensor_lambdify(row_vec_funcs, coord_sys, *args):
@@ -34,7 +41,7 @@ def tensor_lambdify(row_vec_funcs, coord_sys, *args):
         for row in lambs:
             out_row = [lamb(*inner_args) * expansion for lamb in row]
             outs.append(np.stack(out_row, axis=-1))
-        return np.stack(outs, axis=-1)
+        return _as_numeric(np.stack(outs, axis=-1))
     return out
 
 @pytest.fixture(scope='session')
