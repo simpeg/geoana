@@ -69,6 +69,23 @@ def test_x_y_z_stack():
     assert xyz2.shape == (10, 4, 3)
 
 
+def test_x_y_z_list_stack():
+    # e.g. np.meshgrid's output on numpy < 2, which is a list, not a tuple.
+    xyz = np.random.rand(10, 4, 3)
+    xyz_list = [xyz[..., 0], xyz[..., 1], xyz[..., 2]]
+    xyz2 = check_xyz_dim(xyz_list)
+    np.testing.assert_equal(xyz, xyz2)
+    assert xyz2.shape == (10, 4, 3)
+
+
+def test_list_of_points():
+    # a list of points is still read as points, not as x, y, z components.
+    pts = [[0., 1., 2.], [3., 4., 5.], [6., 7., 8.]]
+    np.testing.assert_equal(check_xyz_dim(pts), np.array(pts))
+    pts = [np.array([0., 1., 2.]), np.array([3., 4., 5.])]
+    np.testing.assert_equal(check_xyz_dim(pts), np.array(pts))
+
+
 def test_good_pass_through():
     xyz = np.random.rand(20, 2, 3)
     xyz2 = check_xyz_dim(xyz)
