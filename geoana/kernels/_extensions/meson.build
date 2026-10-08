@@ -79,6 +79,7 @@ py.extension_module(
     c_args: polyhedron_c_args,
     install: true,
     subdir: module_path,
+    limited_api: limited_api,
     dependencies : [py_dep, np_dep],
 )
 
