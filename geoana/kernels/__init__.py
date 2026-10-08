@@ -29,6 +29,21 @@ extensions, these are callable in no-python mode.
   prism_fxxz
   prism_fxyz
 
+Polyhedron Integral Kernels
+===========================
+Pointwise terms of the closed-form 1/r volume integrals of polyhedra
+(Werner and Scheeres, 1996), and those integrals over tetrahedra, which
+broadcast over tetrahedra and observation points alike.
+
+.. autosummary::
+  :toctree: generated/
+
+  polyhedron_edge_log
+  triangle_solid_angle
+  face_edge_solid_angle
+  tetrahedron_integrals
+  tetrahedron_inside_fraction
+
 Layered Electromagnetic Reflection Kernels
 ==========================================
 .. autosummary::
@@ -49,4 +64,11 @@ from geoana.kernels.potential_field_prism import (
     prism_fxxy,
     prism_fxxz,
     prism_fxyz,
+)
+from geoana.kernels.potential_field_polyhedron import (
+    polyhedron_edge_log,
+    triangle_solid_angle,
+    face_edge_solid_angle,
+    tetrahedron_integrals,
+    tetrahedron_inside_fraction,
 )

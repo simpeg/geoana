@@ -2,6 +2,7 @@
 python_sources = [
   '__init__.py',
   'potential_field_prism.py',
+  'potential_field_polyhedron.py',
   'tranverse_electric_reflections.py',
 ]
 
