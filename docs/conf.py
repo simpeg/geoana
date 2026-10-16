@@ -79,7 +79,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'geoana'
-copyright = u'2017, SimPEG Team'
+copyright = u'2017-2026, SimPEG Team'
 author = u'SimPEG Team'
 
 # The version info for the project you're documenting, acts as replacement for
