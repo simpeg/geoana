@@ -24,6 +24,8 @@ Simulation Classes
   PointCurrentHalfSpace
   DipoleHalfSpace
   MagneticPrism
+  MagneticPolyhedron
+  MagneticTetrahedron
 """
 
 from geoana.em.static.sphere import (
@@ -44,7 +46,11 @@ from geoana.em.static.halfspace import (
     DipoleHalfSpace
 )
 
-from geoana.em.static.freespace import MagneticPrism
+from geoana.em.static.freespace import (
+    MagneticPrism,
+    MagneticPolyhedron,
+    MagneticTetrahedron,
+)
 
 
 LineCurrentFreeSpace = LineCurrentWholeSpace

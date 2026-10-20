@@ -15,18 +15,22 @@ Simulation Classes
   PointMass
   Sphere
   Prism
+  Polyhedron
+  Tetrahedron
 """
 
 import numpy as np
 from scipy.constants import G
 from geoana.utils import check_xyz_dim
-from geoana.shapes import BasePrism
+from geoana.shapes import BasePrism, BasePolyhedron, BaseTetrahedron
 from geoana.kernels import prism_f, prism_fz, prism_fzx, prism_fzy, prism_fzz
 
 __all__ = [
     "PointMass",
     "Sphere",
     "Prism",
+    "Polyhedron",
+    "Tetrahedron",
 ]
 
 class PointMass:
@@ -692,3 +696,131 @@ class Prism(BasePrism):
         third = np.stack([gxz, gyz, gzz], axis=-1)
 
         return - G * self.rho * np.stack([first, second, third], axis=-1)
+
+
+class _PolyhedronGravity:
+    """Gravitational solutions shared by the polyhedral shapes."""
+
+    @property
+    def rho(self):
+        """ The density of the body.
+
+        Returns
+        -------
+        density : float
+            In :math:`\\frac{kg}{m^3}`.
+        """
+        return self._rho
+
+    @rho.setter
+    def rho(self, value):
+        try:
+            value = float(value)
+        except:
+            raise TypeError(f"rho must be a number, got {type(value)}")
+        self._rho = value
+
+    @property
+    def mass(self):
+        """ The mass of the body
+
+        Returns
+        -------
+        mass : float
+            In :math:`kg`.
+        """
+        return self.volume * self.rho
+
+    def gravitational_potential(self, xyz):
+        """
+        Gravitational potential due to the body.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Observation locations in units m.
+
+        Returns
+        -------
+        (..., ) numpy.ndarray
+            Gravitational potential at location xyz in units :math:`\\frac{m^2}{s^2}`.
+        """
+        xyz = check_xyz_dim(xyz)
+        return G * self.rho * self._newtonian_integrals(xyz, 0)
+
+    def gravitational_field(self, xyz):
+        """
+        Gravitational field due to the body.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Observation locations in units m.
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            Gravitational field at location xyz in units :math:`\\frac{m}{s^2}`.
+        """
+        xyz = check_xyz_dim(xyz)
+        return G * self.rho * self._newtonian_integrals(xyz, 1)
+
+    def gravitational_gradient(self, xyz):
+        """
+        Gravitational gradient due to the body.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Observation locations in units m.
+
+        Returns
+        -------
+        (..., 3, 3) numpy.ndarray
+            Gravitational gradient at location xyz in units :math:`\\frac{1}{s^2}`.
+        """
+        xyz = check_xyz_dim(xyz)
+        return G * self.rho * self._newtonian_integrals(xyz, 2)
+
+
+class Polyhedron(_PolyhedronGravity, BasePolyhedron):
+    """Class for gravitational solutions for a polyhedron.
+
+    The ``Polyhedron`` class is used to analytically compute the gravitational
+    potentials, fields, and gradients of a closed polyhedron with triangular
+    faces and constant density. See :class:`geoana.shapes.BasePolyhedron` for the
+    closed-form expressions and the requirements on ``faces``.
+
+    Parameters
+    ----------
+    vertices : (n_vertices, 3) array_like of float
+        Vertex locations.
+    faces : (n_faces, 3) array_like of int
+        Vertex indices of each triangular face of a closed, consistently
+        oriented surface.
+    rho : float, optional
+        Density of the body (:math:`\\frac{kg}{m^3}`).
+    """
+
+    def __init__(self, vertices, faces, rho=1.0):
+        self.rho = rho
+        super().__init__(vertices=vertices, faces=faces)
+
+
+class Tetrahedron(_PolyhedronGravity, BaseTetrahedron):
+    """Class for gravitational solutions for a tetrahedron.
+
+    The ``Tetrahedron`` class is used to analytically compute the gravitational
+    potentials, fields, and gradients of a tetrahedron with constant density.
+
+    Parameters
+    ----------
+    vertices : (4, 3) array_like of float
+        The four vertex locations, in any order.
+    rho : float, optional
+        Density of the tetrahedron (:math:`\\frac{kg}{m^3}`).
+    """
+
+    def __init__(self, vertices, rho=1.0):
+        self.rho = rho
+        super().__init__(vertices=vertices)

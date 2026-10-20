@@ -5,6 +5,14 @@ cimport cython
 
 from libc.math cimport sqrt, log, atan
 
+
+cdef inline double _plus_r(double a, double b, double c, double r) nogil:
+    """a + r, with r = sqrt(a**2 + b**2 + c**2), without cancellation for a < 0."""
+    if a < 0.0:
+        return (b * b + c * c) / (r - a)
+    return a + r
+
+
 @cython.cdivision
 @cython.ufunc
 cdef api double prism_f(double x, double y, double z) nogil:
@@ -27,17 +35,17 @@ cdef api double prism_f(double x, double y, double z) nogil:
 
     r = sqrt(x * x + y * y + z * z)
     if x != 0.0 and y != 0.0:
-        temp = z + r
+        temp = _plus_r(z, x, y, r)
         if temp > 0.0:
             v -= x * y * log(temp)
         v += 0.5 * x * x * atan( y * z / (x * r))
     if y != 0.0 and z != 0.0:
-        temp = x + r
+        temp = _plus_r(x, y, z, r)
         if temp > 0.0:
             v -= y * z * log(temp)
         v += 0.5 * y * y * atan(z * x / (y * r))
     if z != 0.0 and x != 0.0:
-        temp = y + r
+        temp = _plus_r(y, x, z, r)
         if temp > 0.0:
             v -= z * x * log(temp)
         v += 0.5 * z * z * atan(x * y / (z * r))
@@ -69,11 +77,11 @@ cdef api double prism_fz(double x, double y, double z) nogil:
 
     r = sqrt(x * x + y * y + z * z)
     if x != 0.0:
-        temp = y + r
+        temp = _plus_r(y, x, z, r)
         if temp > 0.0:
             v += x * log(temp)
     if y != 0.0:
-        temp = x + r
+        temp = _plus_r(x, y, z, r)
         if temp > 0.0:
             v += y * log(temp)
     if z != 0.0:
@@ -133,15 +141,20 @@ cdef api double prism_fzx(double x, double y, double z) nogil:
     """
     cdef:
         double v = 0.0
-        double r
+        double r, temp
     r = sqrt(x * x + y * y + z * z)
+    if y < 0.0:
+        # y + r cancels near the negative y axis; there it equals
+        # (x**2 + z**2) / (r - y). On the axis the kernel diverges as
+        # -2 ln(d) with the distance d to it; keep the finite part.
+        temp = x * x + z * z
+        if temp == 0.0:
+            return log(-2 * y)
+        return log((r - y) / temp)
     v = y + r
     if v == 0.0:
-        if y < 0:
-            v = log(-2 * y)
-    else:
-        v = -log(v)
-    return v
+        return 0.0
+    return -log(v)
 
 
 @cython.ufunc
@@ -168,13 +181,18 @@ cdef api double prism_fzy(double x, double y, double z) nogil:
         double v = 0.0
         double r, temp
     r = sqrt(x * x + y * y + z * z)
+    if x < 0.0:
+        # x + r cancels near the negative x axis; there it equals
+        # (y**2 + z**2) / (r - x). On the axis the kernel diverges as
+        # -2 ln(d) with the distance d to it; keep the finite part.
+        temp = y * y + z * z
+        if temp == 0.0:
+            return log(-2 * x)
+        return log((r - x) / temp)
     v = x + r
     if v == 0.0:
-        if x < 0:
-            v = log(-2 * x)
-    else:
-        v = -log(v)
-    return v
+        return 0.0
+    return -log(v)
 
 
 @cython.ufunc

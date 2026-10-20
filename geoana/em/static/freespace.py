@@ -3,7 +3,7 @@ from scipy.constants import mu_0
 
 from ..base import BaseLineCurrent
 from geoana.utils import check_xyz_dim
-from geoana.shapes import BasePrism
+from geoana.shapes import BasePrism, BasePolyhedron, BaseTetrahedron
 from geoana.kernels import (
     prism_fz,
     prism_fzz,
@@ -17,6 +17,8 @@ from geoana.kernels import (
 
 __all__ = [
     "MagneticPrism",
+    "MagneticPolyhedron",
+    "MagneticTetrahedron",
 ]
 
 class MagneticPrism(BasePrism):
@@ -147,11 +149,17 @@ class MagneticPrism(BasePrism):
         """
         xyz = check_xyz_dim(xyz)
         H = self.magnetic_field(xyz)
-        is_inside = (
-            np.all(xyz >= self.min_location, axis=-1)
-            & np.all(xyz <= self.max_location, axis=-1)
+        # Fraction of a small sphere about each point that lies inside the prism:
+        # 1 inside, 1/2 on a face, 1/4 on an edge, 1/8 at a corner. On the
+        # surface this makes the normal component of B exact (it is continuous)
+        # and the tangential component the mean of its limits from either side,
+        # consistent with H there.
+        lo, hi = self.min_location, self.max_location
+        per_axis = np.where(
+            (xyz > lo) & (xyz < hi), 1.0, np.where((xyz == lo) | (xyz == hi), 0.5, 0.0)
         )
-        H[is_inside] = H[is_inside] + self.magnetization
+        inside = np.prod(per_axis, axis=-1)
+        H += inside[..., None] * self.magnetization
 
         return mu_0 * H
 
@@ -198,3 +206,135 @@ class MagneticPrism(BasePrism):
 
         H_grad = - 1.0/(4 * np.pi) * np.stack((first, second, third), axis=-1)
         return H_grad
+
+
+class _PolyhedronMagnetics:
+    """Magnetostatic solutions shared by the uniformly magnetized polyhedral shapes.
+
+    By Poisson's relation, the field of a uniformly magnetized body is the
+    Hessian of the Newtonian integral contracted with the magnetization,
+    :math:`\\mathbf{H} = \\frac{1}{4\\pi}(\\nabla\\nabla V)\\cdot\\mathbf{M}`,
+    with :math:`V` evaluated in closed form by
+    :class:`geoana.shapes.BasePolyhedron`.
+    """
+
+    @property
+    def magnetization(self):
+        return self._magnetization
+
+    @magnetization.setter
+    def magnetization(self, vec):
+        try:
+            vec = np.asarray(vec, dtype=float)
+        except:
+            raise TypeError(f"magnetization must be array_like of float, got {type(vec)}")
+        vec = np.squeeze(vec)
+        if vec.shape != (3,):
+            raise ValueError(
+                f"magnetization must be array_like with shape (3,), got {vec.shape}"
+            )
+        self._magnetization = vec
+
+    @property
+    def moment(self):
+        return self.volume * self.magnetization
+
+    def scalar_potential(self, xyz):
+        """
+        Magnetic scalar potential due to the body. Defined such that
+        :math:`H = \\nabla \\phi`.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Observation locations in units m.
+
+        Returns
+        -------
+        (...) numpy.ndarray
+            Magnetic scalar potential at location xyz in units :math:`A`.
+        """
+        xyz = check_xyz_dim(xyz)
+        return 1.0 / (4 * np.pi) * self._newtonian_integrals(xyz, 1) @ self.magnetization
+
+    def magnetic_field(self, xyz):
+        """
+        Magnetic field due to the body.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Observation locations in units m.
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            Magnetic field at location xyz in units :math:`\\frac{A}{m}`.
+        """
+        xyz = check_xyz_dim(xyz)
+        return 1.0 / (4 * np.pi) * self._newtonian_integrals(xyz, 2) @ self.magnetization
+
+    def magnetic_flux_density(self, xyz):
+        """
+        Magnetic flux density due to the body.
+
+        Parameters
+        ----------
+        xyz : (..., 3) numpy.ndarray
+            Observation locations in units m.
+
+        Returns
+        -------
+        (..., 3) numpy.ndarray
+            Magnetic flux density at location xyz in units :math:`T`.
+        """
+        xyz = check_xyz_dim(xyz)
+        H = self.magnetic_field(xyz)
+        # Weighted by the fraction of a small sphere about each point inside the
+        # body (1/2 on a face), as for MagneticPrism.
+        H += self._inside_fraction(xyz)[..., None] * self.magnetization
+        return mu_0 * H
+
+
+class MagneticPolyhedron(_PolyhedronMagnetics, BasePolyhedron):
+    """Class for magnetic field solutions for a polyhedron.
+
+    The ``MagneticPolyhedron`` class is used to analytically compute the
+    magnetic potentials and fields of a closed polyhedron with triangular faces
+    and constant magnetization. See :class:`geoana.shapes.BasePolyhedron` for
+    the requirements on ``faces``.
+
+    Parameters
+    ----------
+    vertices : (n_vertices, 3) array_like of float
+        Vertex locations.
+    faces : (n_faces, 3) array_like of int
+        Vertex indices of each triangular face of a closed, consistently
+        oriented surface.
+    magnetization : (3,) array_like, optional
+        Magnetization of the body (:math:`\\frac{A}{m}`).
+    """
+
+    def __init__(self, vertices, faces, magnetization=None):
+        if magnetization is None:
+            magnetization = np.r_[0.0, 0.0, 1.0]
+        self.magnetization = magnetization
+        super().__init__(vertices=vertices, faces=faces)
+
+
+class MagneticTetrahedron(_PolyhedronMagnetics, BaseTetrahedron):
+    """Class for magnetic field solutions for a tetrahedron.
+
+    Parameters
+    ----------
+    vertices : (4, 3) array_like of float
+        The four vertex locations, in any order.
+    magnetization : (3,) array_like, optional
+        Magnetization of the tetrahedron (:math:`\\frac{A}{m}`).
+    """
+
+    def __init__(self, vertices, magnetization=None):
+        if magnetization is None:
+            magnetization = np.r_[0.0, 0.0, 1.0]
+        self.magnetization = magnetization
+        super().__init__(vertices=vertices)
