@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.magnetic\_flux\_density
+=========================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: TransientPlaneWave.magnetic_flux_density

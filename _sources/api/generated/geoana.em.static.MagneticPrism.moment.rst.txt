@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPrism.moment
+=====================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagneticPrism.moment

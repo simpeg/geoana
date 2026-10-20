@@ -1,0 +1,10 @@
+﻿geoana.plotting\_utils.plot2Ddata
+=================================
+
+.. currentmodule:: geoana.plotting_utils
+
+.. autofunction:: plot2Ddata
+
+.. minigallery:: geoana.plotting_utils.plot2Ddata
+    :add-heading: Galleries and Tutorials using ``geoana.plotting_utils.plot2Ddata``
+    :heading-level: -

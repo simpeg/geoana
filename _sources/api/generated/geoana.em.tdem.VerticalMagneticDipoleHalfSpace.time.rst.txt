@@ -1,0 +1,6 @@
+geoana.em.tdem.VerticalMagneticDipoleHalfSpace.time
+===================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: VerticalMagneticDipoleHalfSpace.time

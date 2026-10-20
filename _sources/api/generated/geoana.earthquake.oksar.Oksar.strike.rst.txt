@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.Oksar.strike
+====================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: Oksar.strike

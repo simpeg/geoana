@@ -1,0 +1,6 @@
+geoana.em.static.ElectrostaticSphere.sigma\_sphere
+==================================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: ElectrostaticSphere.sigma_sphere

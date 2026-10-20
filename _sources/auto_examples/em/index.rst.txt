@@ -1,0 +1,80 @@
+
+
+.. _sphx_glr_auto_examples_em:
+
+Electromagnetics
+----------------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we plot the vector potential for a dipole and a loop source in a wholespace.">
+
+.. only:: html
+
+  .. image:: /auto_examples/em/images/thumb/sphx_glr_plot_static_vector_potentials_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_em_plot_static_vector_potentials.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Magnetostatic Vector Potentials: Dipole and Loop Sources</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we plot anomalous total magnetic field from a magnetic dipole and pole targets. These targets are excited by Earth magnetic fields. We can vary the direction of the Earth magnetic field, and magnetic moment of the target.">
+
+.. only:: html
+
+  .. image:: /auto_examples/em/images/thumb/sphx_glr_plot_static_magnetic_fields_from_pole_source_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_em_plot_static_magnetic_fields_from_pole_source.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Total magnetic fields: Dipole and Pole sources</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we plot electric and magnetic flux density due to an electric dipole in a whole space. Note that you can also examine the current density and magnetic field.">
+
+.. only:: html
+
+  .. image:: /auto_examples/em/images/thumb/sphx_glr_plot_fdem_ElectricDipoleWholeSpace_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_em_plot_fdem_ElectricDipoleWholeSpace.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Electric Dipole in a Whole Space: Frequency Domain</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/em/plot_static_vector_potentials
+   /auto_examples/em/plot_static_magnetic_fields_from_pole_source
+   /auto_examples/em/plot_fdem_ElectricDipoleWholeSpace
+

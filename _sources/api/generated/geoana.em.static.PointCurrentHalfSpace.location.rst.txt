@@ -1,0 +1,6 @@
+geoana.em.static.PointCurrentHalfSpace.location
+===============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: PointCurrentHalfSpace.location

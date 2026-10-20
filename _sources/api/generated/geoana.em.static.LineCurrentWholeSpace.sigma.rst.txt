@@ -1,0 +1,6 @@
+geoana.em.static.LineCurrentWholeSpace.sigma
+============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: LineCurrentWholeSpace.sigma

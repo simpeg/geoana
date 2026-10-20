@@ -1,0 +1,10 @@
+﻿geoana.em.fdem.sigma\_hat
+=========================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autofunction:: sigma_hat
+
+.. minigallery:: geoana.em.fdem.sigma_hat
+    :add-heading: Galleries and Tutorials using ``geoana.em.fdem.sigma_hat``
+    :heading-level: -

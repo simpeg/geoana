@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.current\_density
+==================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: TransientPlaneWave.current_density

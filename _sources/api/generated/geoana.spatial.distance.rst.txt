@@ -1,0 +1,10 @@
+﻿geoana.spatial.distance
+=======================
+
+.. currentmodule:: geoana.spatial
+
+.. autofunction:: distance
+
+.. minigallery:: geoana.spatial.distance
+    :add-heading: Galleries and Tutorials using ``geoana.spatial.distance``
+    :heading-level: -

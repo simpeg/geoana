@@ -1,0 +1,6 @@
+geoana.em.tdem.ElectricDipoleWholeSpace.peak\_time
+==================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: ElectricDipoleWholeSpace.peak_time

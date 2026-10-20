@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.Oksar.center
+====================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: Oksar.center

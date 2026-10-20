@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPrism.magnetic\_field\_gradient
+========================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: MagneticPrism.magnetic_field_gradient

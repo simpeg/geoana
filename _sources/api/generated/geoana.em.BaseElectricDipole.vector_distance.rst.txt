@@ -1,0 +1,6 @@
+geoana.em.BaseElectricDipole.vector\_distance
+=============================================
+
+.. currentmodule:: geoana.em
+
+.. automethod:: BaseElectricDipole.vector_distance

@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleLayeredHalfSpace.mu
+================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: MagneticDipoleLayeredHalfSpace.mu

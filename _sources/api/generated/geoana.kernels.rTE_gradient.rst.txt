@@ -1,0 +1,10 @@
+﻿geoana.kernels.rTE\_gradient
+============================
+
+.. currentmodule:: geoana.kernels
+
+.. autofunction:: rTE_gradient
+
+.. minigallery:: geoana.kernels.rTE_gradient
+    :add-heading: Galleries and Tutorials using ``geoana.kernels.rTE_gradient``
+    :heading-level: -

@@ -1,0 +1,6 @@
+geoana.em.static.DipoleHalfSpace.location\_a
+============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: DipoleHalfSpace.location_a

@@ -1,0 +1,6 @@
+geoana.em.static.CircularLoopWholeSpace.magnetic\_field
+=======================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: CircularLoopWholeSpace.magnetic_field

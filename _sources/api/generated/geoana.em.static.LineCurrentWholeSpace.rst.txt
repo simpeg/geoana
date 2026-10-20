@@ -1,0 +1,43 @@
+﻿geoana.em.static.LineCurrentWholeSpace
+======================================
+
+.. currentmodule:: geoana.em.static
+
+.. inheritance-diagram:: LineCurrentWholeSpace
+    :parts: 1
+
+.. autoclass:: LineCurrentWholeSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         LineCurrentWholeSpace.current_density
+         LineCurrentWholeSpace.electric_field
+         LineCurrentWholeSpace.magnetic_field
+         LineCurrentWholeSpace.magnetic_flux_density
+         LineCurrentWholeSpace.scalar_potential
+         LineCurrentWholeSpace.vector_potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         LineCurrentWholeSpace.current
+         LineCurrentWholeSpace.epsilon
+         LineCurrentWholeSpace.mu
+         LineCurrentWholeSpace.n_segments
+         LineCurrentWholeSpace.nodes
+         LineCurrentWholeSpace.rho
+         LineCurrentWholeSpace.sigma
+  
+  
+
+.. minigallery:: geoana.em.static.LineCurrentWholeSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.static.LineCurrentWholeSpace``
+    :heading-level: -

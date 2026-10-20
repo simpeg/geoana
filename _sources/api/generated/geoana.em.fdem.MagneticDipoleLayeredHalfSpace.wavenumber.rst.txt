@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleLayeredHalfSpace.wavenumber
+========================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: MagneticDipoleLayeredHalfSpace.wavenumber

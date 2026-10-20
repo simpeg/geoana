@@ -1,0 +1,10 @@
+﻿geoana.spatial.vector\_magnitude
+================================
+
+.. currentmodule:: geoana.spatial
+
+.. autofunction:: vector_magnitude
+
+.. minigallery:: geoana.spatial.vector_magnitude
+    :add-heading: Galleries and Tutorials using ``geoana.spatial.vector_magnitude``
+    :heading-level: -

@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleWholeSpace.rho
+===========================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: MagneticDipoleWholeSpace.rho

@@ -1,0 +1,6 @@
+geoana.em.static.ElectrostaticSphere.electric\_field
+====================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: ElectrostaticSphere.electric_field

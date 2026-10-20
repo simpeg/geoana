@@ -1,0 +1,6 @@
+geoana.em.tdem.VerticalMagneticDipoleHalfSpace.diffusion\_distance
+==================================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: VerticalMagneticDipoleHalfSpace.diffusion_distance

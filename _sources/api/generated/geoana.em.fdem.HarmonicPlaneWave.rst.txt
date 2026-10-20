@@ -1,0 +1,45 @@
+﻿geoana.em.fdem.HarmonicPlaneWave
+================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. inheritance-diagram:: HarmonicPlaneWave
+    :parts: 1
+
+.. autoclass:: HarmonicPlaneWave
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         HarmonicPlaneWave.current_density
+         HarmonicPlaneWave.electric_field
+         HarmonicPlaneWave.magnetic_field
+         HarmonicPlaneWave.magnetic_flux_density
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         HarmonicPlaneWave.amplitude
+         HarmonicPlaneWave.epsilon
+         HarmonicPlaneWave.frequency
+         HarmonicPlaneWave.mu
+         HarmonicPlaneWave.omega
+         HarmonicPlaneWave.orientation
+         HarmonicPlaneWave.rho
+         HarmonicPlaneWave.sigma
+         HarmonicPlaneWave.sigma_hat
+         HarmonicPlaneWave.skin_depth
+         HarmonicPlaneWave.wavenumber
+  
+  
+
+.. minigallery:: geoana.em.fdem.HarmonicPlaneWave
+    :add-heading: Galleries and Tutorials using ``geoana.em.fdem.HarmonicPlaneWave``
+    :heading-level: -

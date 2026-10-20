@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.title
+=====================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: EarthquakeInterferogram.title

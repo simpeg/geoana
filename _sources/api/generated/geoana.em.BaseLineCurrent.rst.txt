@@ -1,0 +1,33 @@
+﻿geoana.em.BaseLineCurrent
+=========================
+
+.. currentmodule:: geoana.em
+
+.. inheritance-diagram:: BaseLineCurrent
+    :parts: 1
+
+.. autoclass:: BaseLineCurrent
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         BaseLineCurrent.current
+         BaseLineCurrent.n_segments
+         BaseLineCurrent.nodes
+  
+  
+
+.. minigallery:: geoana.em.BaseLineCurrent
+    :add-heading: Galleries and Tutorials using ``geoana.em.BaseLineCurrent``
+    :heading-level: -

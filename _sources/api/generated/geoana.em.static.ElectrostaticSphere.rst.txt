@@ -1,0 +1,39 @@
+﻿geoana.em.static.ElectrostaticSphere
+====================================
+
+.. currentmodule:: geoana.em.static
+
+.. inheritance-diagram:: ElectrostaticSphere
+    :parts: 1
+
+.. autoclass:: ElectrostaticSphere
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ElectrostaticSphere.charge_density
+         ElectrostaticSphere.current_density
+         ElectrostaticSphere.electric_field
+         ElectrostaticSphere.potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ElectrostaticSphere.location
+         ElectrostaticSphere.primary_field
+         ElectrostaticSphere.radius
+         ElectrostaticSphere.sigma_background
+         ElectrostaticSphere.sigma_sphere
+  
+  
+
+.. minigallery:: geoana.em.static.ElectrostaticSphere
+    :add-heading: Galleries and Tutorials using ``geoana.em.static.ElectrostaticSphere``
+    :heading-level: -

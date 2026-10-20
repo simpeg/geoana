@@ -1,0 +1,6 @@
+geoana.em.fdem.BaseFDEM.wavenumber
+==================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: BaseFDEM.wavenumber

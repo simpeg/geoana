@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.orientation
+=============================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: TransientPlaneWave.orientation

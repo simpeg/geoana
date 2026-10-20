@@ -1,0 +1,6 @@
+geoana.gravity.PointMass.mass
+=============================
+
+.. currentmodule:: geoana.gravity
+
+.. autoproperty:: PointMass.mass

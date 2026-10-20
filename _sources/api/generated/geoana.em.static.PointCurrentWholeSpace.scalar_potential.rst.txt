@@ -1,0 +1,6 @@
+geoana.em.static.PointCurrentWholeSpace.scalar\_potential
+=========================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: PointCurrentWholeSpace.scalar_potential

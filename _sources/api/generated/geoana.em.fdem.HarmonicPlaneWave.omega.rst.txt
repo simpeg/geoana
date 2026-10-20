@@ -1,0 +1,6 @@
+geoana.em.fdem.HarmonicPlaneWave.omega
+======================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: HarmonicPlaneWave.omega

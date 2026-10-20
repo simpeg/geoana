@@ -1,0 +1,6 @@
+geoana.gravity.Sphere.mass
+==========================
+
+.. currentmodule:: geoana.gravity
+
+.. autoproperty:: Sphere.mass

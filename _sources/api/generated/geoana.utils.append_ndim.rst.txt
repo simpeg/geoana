@@ -1,0 +1,10 @@
+﻿geoana.utils.append\_ndim
+=========================
+
+.. currentmodule:: geoana.utils
+
+.. autofunction:: append_ndim
+
+.. minigallery:: geoana.utils.append_ndim
+    :add-heading: Galleries and Tutorials using ``geoana.utils.append_ndim``
+    :heading-level: -

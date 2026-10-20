@@ -1,0 +1,6 @@
+geoana.gravity.Prism.gravitational\_field
+=========================================
+
+.. currentmodule:: geoana.gravity
+
+.. automethod:: Prism.gravitational_field

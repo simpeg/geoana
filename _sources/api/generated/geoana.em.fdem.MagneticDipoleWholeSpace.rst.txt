@@ -1,0 +1,51 @@
+﻿geoana.em.fdem.MagneticDipoleWholeSpace
+=======================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. inheritance-diagram:: MagneticDipoleWholeSpace
+    :parts: 1
+
+.. autoclass:: MagneticDipoleWholeSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         MagneticDipoleWholeSpace.cross_orientation
+         MagneticDipoleWholeSpace.current_density
+         MagneticDipoleWholeSpace.distance
+         MagneticDipoleWholeSpace.dot_orientation
+         MagneticDipoleWholeSpace.electric_field
+         MagneticDipoleWholeSpace.magnetic_field
+         MagneticDipoleWholeSpace.magnetic_flux_density
+         MagneticDipoleWholeSpace.vector_distance
+         MagneticDipoleWholeSpace.vector_potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         MagneticDipoleWholeSpace.epsilon
+         MagneticDipoleWholeSpace.frequency
+         MagneticDipoleWholeSpace.location
+         MagneticDipoleWholeSpace.moment
+         MagneticDipoleWholeSpace.mu
+         MagneticDipoleWholeSpace.omega
+         MagneticDipoleWholeSpace.orientation
+         MagneticDipoleWholeSpace.rho
+         MagneticDipoleWholeSpace.sigma
+         MagneticDipoleWholeSpace.sigma_hat
+         MagneticDipoleWholeSpace.skin_depth
+         MagneticDipoleWholeSpace.wavenumber
+  
+  
+
+.. minigallery:: geoana.em.fdem.MagneticDipoleWholeSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.fdem.MagneticDipoleWholeSpace``
+    :heading-level: -

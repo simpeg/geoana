@@ -1,0 +1,6 @@
+geoana.em.BaseLineCurrent.current
+=================================
+
+.. currentmodule:: geoana.em
+
+.. autoproperty:: BaseLineCurrent.current

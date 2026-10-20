@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleHalfSpace.dot\_orientation
+=======================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. automethod:: MagneticDipoleHalfSpace.dot_orientation

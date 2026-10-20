@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.Oksar.displacement\_vector
+==================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: Oksar.displacement_vector

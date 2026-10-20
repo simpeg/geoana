@@ -1,0 +1,6 @@
+geoana.shapes.BasePrism.volume
+==============================
+
+.. currentmodule:: geoana.shapes
+
+.. autoproperty:: BasePrism.volume

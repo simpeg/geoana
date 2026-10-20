@@ -1,0 +1,6 @@
+geoana.gravity.Sphere.gravitational\_field
+==========================================
+
+.. currentmodule:: geoana.gravity
+
+.. automethod:: Sphere.gravitational_field

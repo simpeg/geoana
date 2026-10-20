@@ -1,0 +1,6 @@
+geoana.shapes.BasePrism.min\_location
+=====================================
+
+.. currentmodule:: geoana.shapes
+
+.. autoproperty:: BasePrism.min_location

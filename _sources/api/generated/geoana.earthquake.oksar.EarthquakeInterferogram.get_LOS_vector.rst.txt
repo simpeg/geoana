@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.EarthquakeInterferogram.get\_LOS\_vector
+================================================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. automethod:: EarthquakeInterferogram.get_LOS_vector

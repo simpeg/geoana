@@ -1,0 +1,10 @@
+﻿geoana.spatial.cylindrical\_to\_cartesian
+=========================================
+
+.. currentmodule:: geoana.spatial
+
+.. autofunction:: cylindrical_to_cartesian
+
+.. minigallery:: geoana.spatial.cylindrical_to_cartesian
+    :add-heading: Galleries and Tutorials using ``geoana.spatial.cylindrical_to_cartesian``
+    :heading-level: -

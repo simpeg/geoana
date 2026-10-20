@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.electric\_field
+=================================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. automethod:: TransientPlaneWave.electric_field

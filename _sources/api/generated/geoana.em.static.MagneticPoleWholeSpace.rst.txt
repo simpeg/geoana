@@ -1,0 +1,43 @@
+﻿geoana.em.static.MagneticPoleWholeSpace
+=======================================
+
+.. currentmodule:: geoana.em.static
+
+.. inheritance-diagram:: MagneticPoleWholeSpace
+    :parts: 1
+
+.. autoclass:: MagneticPoleWholeSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         MagneticPoleWholeSpace.cross_orientation
+         MagneticPoleWholeSpace.distance
+         MagneticPoleWholeSpace.dot_orientation
+         MagneticPoleWholeSpace.magnetic_field
+         MagneticPoleWholeSpace.magnetic_flux_density
+         MagneticPoleWholeSpace.vector_distance
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         MagneticPoleWholeSpace.epsilon
+         MagneticPoleWholeSpace.location
+         MagneticPoleWholeSpace.moment
+         MagneticPoleWholeSpace.mu
+         MagneticPoleWholeSpace.orientation
+         MagneticPoleWholeSpace.rho
+         MagneticPoleWholeSpace.sigma
+  
+  
+
+.. minigallery:: geoana.em.static.MagneticPoleWholeSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.static.MagneticPoleWholeSpace``
+    :heading-level: -

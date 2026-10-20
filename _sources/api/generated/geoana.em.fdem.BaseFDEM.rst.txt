@@ -1,0 +1,39 @@
+﻿geoana.em.fdem.BaseFDEM
+=======================
+
+.. currentmodule:: geoana.em.fdem
+
+.. inheritance-diagram:: BaseFDEM
+    :parts: 1
+
+.. autoclass:: BaseFDEM
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         BaseFDEM.epsilon
+         BaseFDEM.frequency
+         BaseFDEM.mu
+         BaseFDEM.omega
+         BaseFDEM.rho
+         BaseFDEM.sigma
+         BaseFDEM.sigma_hat
+         BaseFDEM.skin_depth
+         BaseFDEM.wavenumber
+  
+  
+
+.. minigallery:: geoana.em.fdem.BaseFDEM
+    :add-heading: Galleries and Tutorials using ``geoana.em.fdem.BaseFDEM``
+    :heading-level: -

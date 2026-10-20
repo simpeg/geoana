@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPrism.volume
+=====================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagneticPrism.volume

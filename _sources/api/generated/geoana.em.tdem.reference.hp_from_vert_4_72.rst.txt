@@ -1,0 +1,10 @@
+﻿geoana.em.tdem.reference.hp\_from\_vert\_4\_72
+==============================================
+
+.. currentmodule:: geoana.em.tdem.reference
+
+.. autofunction:: hp_from_vert_4_72
+
+.. minigallery:: geoana.em.tdem.reference.hp_from_vert_4_72
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.reference.hp_from_vert_4_72``
+    :heading-level: -

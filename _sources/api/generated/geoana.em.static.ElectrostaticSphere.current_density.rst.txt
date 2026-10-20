@@ -1,0 +1,6 @@
+geoana.em.static.ElectrostaticSphere.current\_density
+=====================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: ElectrostaticSphere.current_density

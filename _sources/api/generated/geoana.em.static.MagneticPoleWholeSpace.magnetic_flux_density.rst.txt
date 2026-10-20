@@ -1,0 +1,6 @@
+geoana.em.static.MagneticPoleWholeSpace.magnetic\_flux\_density
+===============================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: MagneticPoleWholeSpace.magnetic_flux_density

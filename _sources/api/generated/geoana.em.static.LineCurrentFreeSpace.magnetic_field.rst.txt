@@ -1,0 +1,6 @@
+geoana.em.static.LineCurrentFreeSpace.magnetic\_field
+=====================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: LineCurrentFreeSpace.magnetic_field

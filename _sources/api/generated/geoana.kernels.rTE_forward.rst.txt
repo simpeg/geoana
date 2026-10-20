@@ -1,0 +1,10 @@
+﻿geoana.kernels.rTE\_forward
+===========================
+
+.. currentmodule:: geoana.kernels
+
+.. autofunction:: rTE_forward
+
+.. minigallery:: geoana.kernels.rTE_forward
+    :add-heading: Galleries and Tutorials using ``geoana.kernels.rTE_forward``
+    :heading-level: -

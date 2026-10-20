@@ -1,0 +1,6 @@
+geoana.gravity.Prism.mass
+=========================
+
+.. currentmodule:: geoana.gravity
+
+.. autoproperty:: Prism.mass

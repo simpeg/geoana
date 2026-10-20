@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleLayeredHalfSpace.orientation
+=========================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: MagneticDipoleLayeredHalfSpace.orientation

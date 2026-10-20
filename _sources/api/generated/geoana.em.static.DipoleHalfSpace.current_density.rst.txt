@@ -1,0 +1,6 @@
+geoana.em.static.DipoleHalfSpace.current\_density
+=================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: DipoleHalfSpace.current_density

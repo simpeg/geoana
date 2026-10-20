@@ -1,0 +1,37 @@
+﻿geoana.em.BaseMagneticDipole
+============================
+
+.. currentmodule:: geoana.em
+
+.. inheritance-diagram:: BaseMagneticDipole
+    :parts: 1
+
+.. autoclass:: BaseMagneticDipole
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         BaseMagneticDipole.cross_orientation
+         BaseMagneticDipole.distance
+         BaseMagneticDipole.dot_orientation
+         BaseMagneticDipole.vector_distance
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         BaseMagneticDipole.location
+         BaseMagneticDipole.moment
+         BaseMagneticDipole.orientation
+  
+  
+
+.. minigallery:: geoana.em.BaseMagneticDipole
+    :add-heading: Galleries and Tutorials using ``geoana.em.BaseMagneticDipole``
+    :heading-level: -

@@ -1,0 +1,6 @@
+geoana.em.tdem.TransientPlaneWave.amplitude
+===========================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. autoproperty:: TransientPlaneWave.amplitude

@@ -1,0 +1,53 @@
+﻿geoana.em.tdem.ElectricDipoleWholeSpace
+=======================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. inheritance-diagram:: ElectricDipoleWholeSpace
+    :parts: 1
+
+.. autoclass:: ElectricDipoleWholeSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ElectricDipoleWholeSpace.cross_orientation
+         ElectricDipoleWholeSpace.current_density
+         ElectricDipoleWholeSpace.distance
+         ElectricDipoleWholeSpace.dot_orientation
+         ElectricDipoleWholeSpace.electric_field
+         ElectricDipoleWholeSpace.magnetic_field
+         ElectricDipoleWholeSpace.magnetic_field_time_deriv
+         ElectricDipoleWholeSpace.magnetic_flux_density
+         ElectricDipoleWholeSpace.magnetic_flux_density_time_deriv
+         ElectricDipoleWholeSpace.peak_time
+         ElectricDipoleWholeSpace.vector_distance
+         ElectricDipoleWholeSpace.vector_potential
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ElectricDipoleWholeSpace.current
+         ElectricDipoleWholeSpace.diffusion_distance
+         ElectricDipoleWholeSpace.epsilon
+         ElectricDipoleWholeSpace.length
+         ElectricDipoleWholeSpace.location
+         ElectricDipoleWholeSpace.mu
+         ElectricDipoleWholeSpace.orientation
+         ElectricDipoleWholeSpace.rho
+         ElectricDipoleWholeSpace.sigma
+         ElectricDipoleWholeSpace.theta
+         ElectricDipoleWholeSpace.time
+  
+  
+
+.. minigallery:: geoana.em.tdem.ElectricDipoleWholeSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.ElectricDipoleWholeSpace``
+    :heading-level: -

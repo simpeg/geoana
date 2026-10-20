@@ -1,0 +1,6 @@
+geoana.em.static.MagnetostaticSphere.location
+=============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagnetostaticSphere.location

@@ -1,0 +1,6 @@
+geoana.earthquake.oksar.Oksar.slip
+==================================
+
+.. currentmodule:: geoana.earthquake.oksar
+
+.. autoproperty:: Oksar.slip

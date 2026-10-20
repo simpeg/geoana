@@ -1,0 +1,6 @@
+geoana.em.BaseLineCurrent.n\_segments
+=====================================
+
+.. currentmodule:: geoana.em
+
+.. autoproperty:: BaseLineCurrent.n_segments

@@ -1,0 +1,6 @@
+geoana.em.static.ElectrostaticSphere.radius
+===========================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: ElectrostaticSphere.radius

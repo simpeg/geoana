@@ -1,0 +1,6 @@
+geoana.em.static.PointCurrentHalfSpace.potential
+================================================
+
+.. currentmodule:: geoana.em.static
+
+.. automethod:: PointCurrentHalfSpace.potential

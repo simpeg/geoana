@@ -1,0 +1,6 @@
+geoana.em.fdem.HarmonicPlaneWave.skin\_depth
+============================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. autoproperty:: HarmonicPlaneWave.skin_depth

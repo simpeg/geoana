@@ -1,0 +1,6 @@
+geoana.shapes.BasePrism.location
+================================
+
+.. currentmodule:: geoana.shapes
+
+.. autoproperty:: BasePrism.location

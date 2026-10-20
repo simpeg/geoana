@@ -1,0 +1,6 @@
+geoana.gravity.Prism.location
+=============================
+
+.. currentmodule:: geoana.gravity
+
+.. autoproperty:: Prism.location

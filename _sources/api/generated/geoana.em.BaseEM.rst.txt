@@ -1,0 +1,34 @@
+﻿geoana.em.BaseEM
+================
+
+.. currentmodule:: geoana.em
+
+.. inheritance-diagram:: BaseEM
+    :parts: 1
+
+.. autoclass:: BaseEM
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         BaseEM.epsilon
+         BaseEM.mu
+         BaseEM.rho
+         BaseEM.sigma
+  
+  
+
+.. minigallery:: geoana.em.BaseEM
+    :add-heading: Galleries and Tutorials using ``geoana.em.BaseEM``
+    :heading-level: -

@@ -1,0 +1,6 @@
+geoana.gravity.Prism.gravitational\_potential
+=============================================
+
+.. currentmodule:: geoana.gravity
+
+.. automethod:: Prism.gravitational_potential

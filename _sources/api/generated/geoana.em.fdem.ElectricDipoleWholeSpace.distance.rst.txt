@@ -1,0 +1,6 @@
+geoana.em.fdem.ElectricDipoleWholeSpace.distance
+================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. automethod:: ElectricDipoleWholeSpace.distance

@@ -1,0 +1,6 @@
+geoana.em.fdem.MagneticDipoleHalfSpace.cross\_orientation
+=========================================================
+
+.. currentmodule:: geoana.em.fdem
+
+.. automethod:: MagneticDipoleHalfSpace.cross_orientation

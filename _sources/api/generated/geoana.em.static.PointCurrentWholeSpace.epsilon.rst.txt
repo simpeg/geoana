@@ -1,0 +1,6 @@
+geoana.em.static.PointCurrentWholeSpace.epsilon
+===============================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: PointCurrentWholeSpace.epsilon

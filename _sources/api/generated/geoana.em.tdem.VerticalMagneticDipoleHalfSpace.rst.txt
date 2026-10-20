@@ -1,0 +1,49 @@
+﻿geoana.em.tdem.VerticalMagneticDipoleHalfSpace
+==============================================
+
+.. currentmodule:: geoana.em.tdem
+
+.. inheritance-diagram:: VerticalMagneticDipoleHalfSpace
+    :parts: 1
+
+.. autoclass:: VerticalMagneticDipoleHalfSpace
+
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         VerticalMagneticDipoleHalfSpace.cross_orientation
+         VerticalMagneticDipoleHalfSpace.distance
+         VerticalMagneticDipoleHalfSpace.dot_orientation
+         VerticalMagneticDipoleHalfSpace.magnetic_field
+         VerticalMagneticDipoleHalfSpace.magnetic_field_time_derivative
+         VerticalMagneticDipoleHalfSpace.magnetic_flux_density
+         VerticalMagneticDipoleHalfSpace.magnetic_flux_time_derivative
+         VerticalMagneticDipoleHalfSpace.peak_time
+         VerticalMagneticDipoleHalfSpace.vector_distance
+      
+  
+
+  
+  
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         VerticalMagneticDipoleHalfSpace.diffusion_distance
+         VerticalMagneticDipoleHalfSpace.epsilon
+         VerticalMagneticDipoleHalfSpace.location
+         VerticalMagneticDipoleHalfSpace.moment
+         VerticalMagneticDipoleHalfSpace.mu
+         VerticalMagneticDipoleHalfSpace.orientation
+         VerticalMagneticDipoleHalfSpace.rho
+         VerticalMagneticDipoleHalfSpace.sigma
+         VerticalMagneticDipoleHalfSpace.theta
+         VerticalMagneticDipoleHalfSpace.time
+  
+  
+
+.. minigallery:: geoana.em.tdem.VerticalMagneticDipoleHalfSpace
+    :add-heading: Galleries and Tutorials using ``geoana.em.tdem.VerticalMagneticDipoleHalfSpace``
+    :heading-level: -

@@ -1,0 +1,6 @@
+geoana.em.static.MagnetostaticSphere.radius
+===========================================
+
+.. currentmodule:: geoana.em.static
+
+.. autoproperty:: MagnetostaticSphere.radius
